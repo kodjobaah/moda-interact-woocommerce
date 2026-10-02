@@ -2,6 +2,8 @@
 
 namespace ModaInteract\WooCommerce\Admin;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * ModaInteract Setup Class
  */
@@ -22,9 +24,8 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	public function register_scripts() {
-		if ( ! method_exists( 'Automattic\WooCommerce\Admin\PageController', 'is_admin_or_embed_page' ) ||
-		! \Automattic\WooCommerce\Admin\PageController::is_admin_or_embed_page()
-		) {
+		$screen = get_current_screen();
+		if ( ! $screen || 'woocommerce_page_wc-admin' !== $screen->id ) {
 			return;
 		}
 

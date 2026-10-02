@@ -3,10 +3,12 @@
  * Plugin Name: Moda Interact
  * Description: A WooCommerce Admin extension foundation for Moda Interact.
  * Version: 0.1.0
- * Requires at least: 7.1.2
- * Requires PHP: 8.5
- * WC requires at least: 11.1.2
- * WC tested up to: 11.1.2
+ * Requires at least: 7.0
+ * Tested up to: 7.1
+ * Requires PHP: 8.1
+ * Requires Plugins: woocommerce
+ * WC requires at least: 11.0
+ * WC tested up to: 11.1
  * Text Domain: moda-interact
  * Domain Path: /languages
  *
@@ -24,8 +26,8 @@ if ( ! defined( 'MODA_INTERACT_MAIN_PLUGIN_FILE' ) ) {
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/includes/Admin/Setup.php';
 
 
 register_activation_hook( __FILE__, array( Plugin::class, 'activate' ) );
-add_action( 'plugins_loaded', array( Plugin::class, 'boot' ), 10 );
+register_deactivation_hook( __FILE__, array( Plugin::class, 'deactivate' ) );
+add_action( 'plugins_loaded', array( Plugin::class, 'boot' ), 20 );
