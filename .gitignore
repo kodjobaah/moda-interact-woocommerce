@@ -50,6 +50,7 @@ tsconfig.tsbuildinfo
 
 # Unit tests
 tmp/
+.phpunit.cache/
 
 # Composer
 vendor/
