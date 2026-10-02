@@ -12,8 +12,36 @@ packaging; source code remains in `src/`.
 
 - Node.js and npm selected by the workspace `.nvmrc`.
 - PHP, Composer, Docker and a running Docker daemon on the host.
-- The repository-owned WordPress environment uses WordPress `7.1.2`, WooCommerce
-	`11.1.2` and PHP `8.5`.
+- Supported runtime: WordPress `7.0` and `7.1`, PHP `8.1+`, and WooCommerce
+	`11.0` and `11.1`.
+- The current validation environment pins WordPress `7.1.2`, WooCommerce `11.1.2`
+	and container PHP `8.1`.
+
+## Runtime Compatibility
+
+WordPress plugin headers declare the native requirements: WordPress `7.0`, PHP
+`8.1`, and the `woocommerce` plugin. The runtime remains inert unless active
+WooCommerce is version `11.0` or later. Unsupported or missing WooCommerce is
+reported only to administrators who can activate plugins. WooCommerce-dependent
+Admin setup waits for the public `woocommerce_init` hook and runs once per request.
+
+The deterministic `wp-env` matrix is:
+
+| Matrix | WordPress | WooCommerce | Container PHP |
+| --- | --- | --- | --- |
+| Minimum | 7.0.6 | 11.0.1 | 8.1 |
+| Current | 7.1.2 | 11.1.2 | 8.1 |
+
+Run the minimum matrix on a separate port so it can coexist with the current
+environment:
+
+```sh
+WP_ENV_PORT=8892 npm run env:start:minimum
+WP_ENV_PORT=8892 npm run env:stop:minimum
+```
+
+The default `npm run env:start` / `npm run env:stop` commands use the current
+matrix from `.wp-env.json`.
 
 Before Node, PHP, Composer, Docker or wp-env commands, source the workspace bootstrap
 from this repository:

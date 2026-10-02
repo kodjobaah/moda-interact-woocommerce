@@ -2,38 +2,40 @@
 
 namespace ModaInteract\WooCommerce;
 
+defined( 'ABSPATH' ) || exit;
+
 use ModaInteract\WooCommerce\Admin\Setup;
 
 final class Plugin {
+	private static ?Runtime $runtime = null;
+
 	public static function activate(): void {
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			add_action( 'admin_notices', array( self::class, 'missing_woocommerce_notice' ) );
-		}
+	}
+
+	public static function deactivate(): void {
 	}
 
 	public static function boot(): void {
+		if ( null === self::$runtime ) {
+			self::$runtime = new Runtime( self::woocommerce_version() );
+		}
+
+		self::$runtime->boot();
+	}
+
+	public static function load_textdomain(): void {
 		load_plugin_textdomain(
 			'moda-interact',
 			false,
 			plugin_basename( dirname( MODA_INTERACT_MAIN_PLUGIN_FILE ) ) . '/languages'
 		);
-
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			add_action( 'admin_notices', array( self::class, 'missing_woocommerce_notice' ) );
-			return;
-		}
-
-		if ( is_admin() ) {
-			new Setup();
-		}
 	}
 
-	public static function missing_woocommerce_notice(): void {
-		$message = esc_html__(
-			'Moda Interact requires WooCommerce to be installed and active.',
-			'moda-interact'
-		);
+	public static function woocommerce_version(): ?string {
+		if ( ! class_exists( 'WooCommerce' ) || ! defined( 'WC_VERSION' ) ) {
+			return null;
+		}
 
-		echo '<div class="notice notice-error"><p>' . esc_html( $message ) . '</p></div>';
+		return (string) constant( 'WC_VERSION' );
 	}
 }
