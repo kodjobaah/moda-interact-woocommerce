@@ -1,0 +1,25 @@
+{
+	"name": "moda-interact/moda-interact",
+	"description": "Moda Interact WooCommerce extension",
+	"autoload": {
+		"psr-4": {
+			"ModaInteract\\WooCommerce\\": "includes/"
+		}
+	},
+	"scripts": {
+		"lint": [
+			"@php -l moda-interact.php",
+			"@php -l includes/Plugin.php",
+			"@php -l includes/Admin/Setup.php",
+			"@php -l tests/bootstrap.php",
+			"@php -l tests/PluginTest.php"
+		],
+		"test": "@php vendor/bin/phpunit"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^11.5"
+	},
+	"config": {
+		"sort-packages": true
+	}
+}
