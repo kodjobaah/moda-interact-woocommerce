@@ -119,6 +119,106 @@ final class ConnectionStorageAndApiTest extends TestCase {
 		}
 	}
 
+	public function test_merchant_bootstrap_client_authenticates_without_tenant_selectors_and_validates_contract(): void {
+		$requests = array();
+		$payload = self::merchantBootstrapPayload();
+		$client = new ModaApiClient(
+			ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ),
+			static function ( string $url, array $args ) use ( &$requests, $payload ): array {
+				$requests[] = array( $url, $args );
+				return self::response( 200, $payload );
+			}
+		);
+		$connection = self::connectionRecord();
+		self::assertSame( $payload, $client->merchantBootstrap( $connection ) );
+		self::assertSame( 'https://api.example.test/v1/merchant/bootstrap', $requests[0][0] );
+		self::assertSame( 'install_123', $requests[0][1]['headers']['X-Moda-Installation-Id'] );
+		self::assertSame( 'Bearer ' . $connection['credential'], $requests[0][1]['headers']['Authorization'] );
+		self::assertArrayNotHasKey( 'X-Shop-Id', $requests[0][1]['headers'] );
+		self::assertArrayNotHasKey( 'body', $requests[0][1] );
+		self::assertSame( array(), $requests[0][1]['cookies'] );
+
+		$payload['internationalContext']['storeLocale'] = 'pt_BR';
+		$payload['internationalContext']['languageTag'] = null;
+		$localized = ( new ModaApiClient(
+			ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ),
+			static fn() => self::response( 200, $payload )
+		) )->merchantBootstrap( $connection );
+		self::assertSame( 'pt_BR', $localized['internationalContext']['storeLocale'] );
+		self::assertNull( $localized['internationalContext']['languageTag'] );
+	}
+
+	public function test_merchant_bootstrap_client_rejects_unknown_schema_oversized_and_non_json_responses(): void {
+		$connection = self::connectionRecord();
+		foreach (
+			array(
+				self::response( 200, self::merchantBootstrapPayload( 2 ) ),
+				self::response( 200, self::merchantBootstrapPayload( 1, true ) ),
+				array( 'headers' => array( 'content-type' => 'application/json' ), 'body' => str_repeat( 'x', 8193 ), 'response' => array( 'code' => 200 ) ),
+				array( 'headers' => array( 'content-type' => 'text/plain' ), 'body' => '{}', 'response' => array( 'code' => 200 ) ),
+				array( 'headers' => array( 'content-type' => 'application/json' ), 'body' => '{', 'response' => array( 'code' => 200 ) ),
+			) as $index => $response
+		) {
+			$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), static fn() => $response );
+			try {
+				$client->merchantBootstrap( $connection );
+				self::fail( 'Expected invalid remote response.' );
+			} catch ( ModaApiClientException $error ) {
+				self::assertSame( 'remote_response_invalid', $error->getMessage(), 'Invalid response case ' . $index );
+			}
+		}
+	}
+
+	public function test_merchant_bootstrap_client_maps_remote_authentication_rejection(): void {
+		$client = new ModaApiClient(
+			ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ),
+			static fn() => array( 'headers' => array(), 'body' => '', 'response' => array( 'code' => 401 ) )
+		);
+		try {
+			$client->merchantBootstrap( self::connectionRecord() );
+			self::fail( 'Expected authentication rejection.' );
+		} catch ( ModaApiClientException $error ) {
+			self::assertSame( 'unauthorized', $error->getMessage() );
+		}
+	}
+
+	private static function merchantBootstrapPayload( int $schema_version = 1, bool $extra_field = false ): array {
+		$payload = array(
+			'schemaVersion' => $schema_version,
+			'shop' => array(
+				'id' => 'shop_456',
+				'platform' => 'WOOCOMMERCE',
+				'domain' => 'https://merchant.example',
+				'onboardingCompleted' => false,
+				'installedAt' => '2026-10-03T12:00:00.000Z',
+			),
+			'internationalContext' => array(
+				'storeLocale' => null,
+				'languageTag' => null,
+				'timeZone' => null,
+				'countryCode' => null,
+			),
+			'storeProfile' => array(
+				'activeCategory' => null,
+				'pendingCategory' => null,
+				'pendingSelectionGeneration' => 0,
+				'pendingSelectedAt' => null,
+			),
+		);
+		if ( $extra_field ) {
+			$payload['shop']['unrecognized'] = true;
+		}
+		return $payload;
+	}
+
+	private static function response( int $status, array $payload ): array {
+		return array(
+			'headers' => array( 'content-type' => 'application/json; charset=utf-8' ),
+			'body' => json_encode( $payload ),
+			'response' => array( 'code' => $status ),
+		);
+	}
+
 	private static function connectionRecord(): array {
 		return array(
 			'schemaVersion' => 1,

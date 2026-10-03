@@ -15,6 +15,7 @@ const keyPath = join(temporaryDirectory, 'fixture-key.pem');
 const certificatePath = join(temporaryDirectory, 'fixture-cert.pem');
 let probeCount = 0;
 let connectCount = 0;
+let bootstrapCount = 0;
 let wordpressStarted = false;
 
 function command(program, args, options = {}) {
@@ -139,6 +140,68 @@ const server = createServer({ key: await readFile(keyPath), cert: certificate },
 			}
 			return;
 		}
+		if (url.pathname === '/v1/merchant/bootstrap' && request.method === 'GET') {
+			bootstrapCount += 1;
+			assert.equal(url.search, '', 'the authenticated bootstrap request must not contain tenant selectors');
+			assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
+			assert.equal(request.headers.authorization, `Bearer ${Buffer.alloc(32, 2).toString('base64url')}`);
+			assert.equal(request.headers.cookie, undefined);
+			assert.equal(bodyBytes.length, 0);
+			if (bootstrapCount === 1) {
+				sendJson(response, 200, {
+					schemaVersion: 1,
+					shop: {
+						id: 'shop_wp_fixture',
+						platform: 'WOOCOMMERCE',
+						domain: 'https://merchant.example',
+						onboardingCompleted: false,
+						installedAt: '2026-10-03T12:00:00.000Z',
+					},
+					internationalContext: {
+						storeLocale: 'pt_BR',
+						languageTag: null,
+						timeZone: 'Europe/Lisbon',
+						countryCode: 'PT',
+					},
+					storeProfile: {
+						activeCategory: null,
+						pendingCategory: { id: 'category_1', slug: 'apparel', displayName: 'Apparel' },
+						pendingSelectionGeneration: 3,
+						pendingSelectedAt: '2026-10-02T12:30:00Z',
+					},
+				});
+			} else if (bootstrapCount === 2) {
+				sendJson(response, 401, { error: 'unauthorized' });
+			} else if (bootstrapCount === 3) {
+				sendJson(response, 500, { error: 'private provider detail' });
+			} else if (bootstrapCount === 4) {
+				sendJson(response, 200, { schemaVersion: 999, private: 'must not be relayed' });
+			} else {
+				sendJson(response, 200, {
+					schemaVersion: 1,
+					shop: {
+						id: 'shop_wp_fixture',
+						platform: 'WOOCOMMERCE',
+						domain: 'https://merchant.example',
+						onboardingCompleted: false,
+						installedAt: '2026-10-03T12:00:00.000Z',
+					},
+					internationalContext: {
+						storeLocale: 'pt_BR',
+						languageTag: null,
+						timeZone: 'Europe/Lisbon',
+						countryCode: 'PT',
+					},
+					storeProfile: {
+						activeCategory: null,
+						pendingCategory: { id: 'category_1', slug: 'apparel', displayName: 'Apparel' },
+						pendingSelectionGeneration: 3,
+						pendingSelectedAt: '2026-10-02T12:30:00Z',
+					},
+				});
+			}
+			return;
+		}
 		sendJson(response, 404, { error: 'not_found' });
 	} catch {
 		sendJson(response, 500, { error: 'fixture_failure' });
@@ -176,6 +239,12 @@ try {
 			'X-WP-Nonce': auth.nonce,
 		},
 	});
+	const merchantBootstrapRequest = (query = '') => fetch(`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap${query}`, {
+		headers: {
+			Cookie: `${auth.cookieName}=${auth.cookie}`,
+			'X-WP-Nonce': auth.nonce,
+		},
+	});
 
 	const noAuth = await fetch(`${siteUrl}/wp-json/moda-interact/v1/connection`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
 	assert.ok(noAuth.status === 401 || noAuth.status === 403, `unauthenticated POST must be denied, got ${noAuth.status}`);
@@ -206,6 +275,33 @@ try {
 	assert.deepEqual(await (await request('')).json(), {
 		status: 'CONNECTED', installationId: 'install_wp_fixture', shopId: 'shop_wp_fixture', canonicalSiteUrl: siteUrl, credentialVersion: 2,
 	});
+	const bootstrapResponse = await merchantBootstrapRequest('?_locale=user');
+	const bootstrap = await bootstrapResponse.json();
+	assert.equal(bootstrapResponse.status, 200);
+	assert.match(bootstrapResponse.headers.get('cache-control') ?? '', /\bprivate\b/i);
+	assert.match(bootstrapResponse.headers.get('cache-control') ?? '', /\bno-store\b/i);
+	assert.equal(bootstrapResponse.headers.get('pragma'), 'no-cache');
+	assert.deepEqual(Object.keys(bootstrap).sort(), ['internationalContext', 'schemaVersion', 'shop', 'storeProfile']);
+	assert.equal(bootstrap.shop.onboardingCompleted, false);
+	assert.equal(bootstrap.internationalContext.storeLocale, 'pt_BR');
+	assert.equal(bootstrap.internationalContext.languageTag, null);
+	assert.equal(bootstrap.storeProfile.pendingCategory.displayName, 'Apparel');
+	assert.equal(JSON.stringify(bootstrap).includes(Buffer.alloc(32, 2).toString('base64url')), false);
+	const rejectedBootstrap = await merchantBootstrapRequest();
+	assert.equal(rejectedBootstrap.status, 401);
+	assert.deepEqual(await rejectedBootstrap.json(), { error: 'RECONNECT_REQUIRED' });
+	const outageBootstrap = await merchantBootstrapRequest();
+	assert.equal(outageBootstrap.status, 503);
+	assert.deepEqual(await outageBootstrap.json(), { error: 'REMOTE_UNAVAILABLE' });
+	const invalidBootstrap = await merchantBootstrapRequest();
+	assert.equal(invalidBootstrap.status, 502);
+	assert.deepEqual(await invalidBootstrap.json(), { error: 'REMOTE_RESPONSE_INVALID' });
+	const deniedBootstrap = await fetch(`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`);
+	assert.ok(deniedBootstrap.status === 401 || deniedBootstrap.status === 403);
+	const badNonceBootstrap = await fetch(`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`, {
+		headers: { Cookie: `${auth.cookieName}=${auth.cookie}`, 'X-WP-Nonce': 'invalid' },
+	});
+	assert.ok(badNonceBootstrap.status === 401 || badNonceBootstrap.status === 403);
 	for (let index = 0; index < 3; index += 1) {
 		assert.deepEqual(await (await request('')).json(), { status: 'REMOTE_UNAVAILABLE' });
 	}
@@ -225,6 +321,10 @@ try {
 	const stored = parseJsonOutput(wp('eval', 'echo wp_json_encode(array(get_option("moda_interact_woocommerce_connection")["installationId"], get_option("moda_interact_woocommerce_connection")["credentialVersion"]));'));
 	assert.deepEqual(stored, ['install_wp_fixture', 2]);
 	console.log('WOO-003 WordPress REST + HTTPS fixture integration passed.');
+	if (process.env.KEEP_WP_ENV === '1') {
+		console.log('KEEP_WP_ENV=1: integration fixture is ready for browser smoke; send SIGTERM to clean up.');
+		await new Promise((resolveSignal) => process.once('SIGTERM', resolveSignal));
+	}
 } finally {
 	server.closeAllConnections();
 	await new Promise((resolveClose) => server.close(() => resolveClose()));

@@ -1,6 +1,8 @@
 import { createElement, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ConnectionController } from './connection-controller';
+import { MerchantBootstrapController } from './merchant-bootstrap-controller';
+import { OverviewScreen } from './overview-screen';
 
 function ConnectionPanel({ state, onConnect, onRetry }) {
 	const { connection, pendingAction, actionError } = state;
@@ -223,21 +225,36 @@ const applicationSections = [{ id: 'connection', component: ConnectionPanel }];
 
 function ModaInteractPage() {
 	const controllerRef = useRef(null);
+	const merchantControllerRef = useRef(null);
 	const [state, setState] = useState({
 		connection: { status: 'LOADING' },
 		pendingAction: null,
 		actionError: false,
 	});
+	const [merchantState, setMerchantState] = useState({ status: 'IDLE' });
 
 	useEffect(() => {
 		const controller = new ConnectionController();
+		const merchantController = new MerchantBootstrapController(
+			undefined,
+			() => controller.refresh()
+		);
 		controllerRef.current = controller;
-		const unsubscribe = controller.subscribe(setState);
+		merchantControllerRef.current = merchantController;
+		const unsubscribeMerchant =
+			merchantController.subscribe(setMerchantState);
+		const unsubscribe = controller.subscribe((nextState) => {
+			setState(nextState);
+			merchantController.setConnectionStatus(nextState.connection.status);
+		});
 		controller.refresh();
 		return () => {
 			controllerRef.current = null;
+			merchantControllerRef.current = null;
 			unsubscribe();
+			unsubscribeMerchant();
 			controller.dispose();
+			merchantController.dispose();
 		};
 	}, []);
 
@@ -249,6 +266,15 @@ function ModaInteractPage() {
 			onRetry: () => controllerRef.current?.refresh(),
 		})
 	);
+	if (state.connection.status === 'CONNECTED') {
+		sections.push(
+			createElement(OverviewScreen, {
+				key: 'overview',
+				state: merchantState,
+				onRefresh: () => merchantControllerRef.current?.refresh(),
+			})
+		);
+	}
 
 	return createElement(
 		'main',

@@ -79,6 +79,15 @@ final class ConnectionController {
 				'permission_callback' => '__return_true',
 			)
 		);
+		register_rest_route(
+			'moda-interact/v1',
+			'/merchant/bootstrap',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'getMerchantBootstrap' ),
+				'permission_callback' => array( $this, 'authorizeAdministrator' ),
+			)
+		);
 	}
 
 	public function authorizeAdministrator(): bool|\WP_Error {
@@ -120,6 +129,43 @@ final class ConnectionController {
 			return self::state( 'SITE_URL_CHANGED', 200 );
 		} catch ( \Throwable $error ) {
 			return self::state( 'REMOTE_UNAVAILABLE', 200 );
+		}
+	}
+
+	public function getMerchantBootstrap( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
+		if ( ! self::requestHasNoInput( $request ) ) {
+			return self::merchantResponse( array( 'error' => 'MERCHANT_BOOTSTRAP_UNAVAILABLE' ), 400 );
+		}
+		if ( ! $this->configuration || ! $this->api_client ) {
+			return self::merchantResponse( array( 'error' => 'MERCHANT_BOOTSTRAP_UNAVAILABLE' ), 503 );
+		}
+
+		$local = $this->installation_store->read();
+		if ( 'invalid' === $local['state'] ) {
+			return self::merchantResponse( array( 'error' => 'LOCAL_STATE_INVALID' ), 409 );
+		}
+		if ( 'missing' === $local['state'] ) {
+			return self::merchantResponse( array( 'error' => 'RECONNECT_REQUIRED' ), 401 );
+		}
+
+		try {
+			if ( $this->site_identity->currentCanonicalUrl() !== $local['record']['canonicalSiteUrl'] ) {
+				return self::merchantResponse( array( 'error' => 'SITE_URL_CHANGED' ), 409 );
+			}
+			return self::merchantResponse( $this->api_client->merchantBootstrap( $local['record'] ), 200 );
+		} catch ( ModaApiClientException $error ) {
+			$mapping = array(
+				'unauthorized'               => array( 'RECONNECT_REQUIRED', 401 ),
+				'remote_response_invalid'    => array( 'REMOTE_RESPONSE_INVALID', 502 ),
+				'local_state_invalid'        => array( 'LOCAL_STATE_INVALID', 409 ),
+				'remote_unavailable'         => array( 'REMOTE_UNAVAILABLE', 503 ),
+			);
+			$outcome = $mapping[ $error->getMessage() ] ?? array( 'MERCHANT_BOOTSTRAP_UNAVAILABLE', 503 );
+			return self::merchantResponse( array( 'error' => $outcome[0] ), $outcome[1] );
+		} catch ( SiteIdentityException $error ) {
+			return self::merchantResponse( array( 'error' => 'SITE_URL_CHANGED' ), 409 );
+		} catch ( \Throwable $error ) {
+			return self::merchantResponse( array( 'error' => 'MERCHANT_BOOTSTRAP_UNAVAILABLE' ), 503 );
 		}
 	}
 
@@ -197,6 +243,13 @@ final class ConnectionController {
 
 	private static function state( string $status, int $http_status ): \WP_REST_Response {
 		return new \WP_REST_Response( array( 'status' => $status ), $http_status );
+	}
+
+	private static function merchantResponse( array $data, int $http_status ): \WP_REST_Response {
+		$response = new \WP_REST_Response( $data, $http_status );
+		$response->header( 'Cache-Control', 'private, no-store' );
+		$response->header( 'Pragma', 'no-cache' );
+		return $response;
 	}
 
 	private static function error( string $code, int $http_status ): \WP_Error {

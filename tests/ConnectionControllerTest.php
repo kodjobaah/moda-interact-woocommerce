@@ -117,6 +117,76 @@ final class ConnectionControllerTest extends TestCase {
 		self::assertSame( 'invalid_request', $other_locale->get_error_code() );
 	}
 
+	public function test_merchant_bootstrap_route_is_privileged_and_returns_private_no_store_data(): void {
+		$store = new InstallationStore();
+		$record = array(
+			'schemaVersion' => 1,
+			'installationId' => 'install_123',
+			'shopId' => 'shop_456',
+			'canonicalSiteUrl' => 'http://woocommerce-sandbox.local:8080/store',
+			'credential' => Base64Url::encode( str_repeat( "\x07", 32 ) ),
+			'credentialVersion' => 1,
+			'connectedAt' => gmdate( 'c' ),
+		);
+		self::assertTrue( $store->save( $record ) );
+		$requests = array();
+		$configuration = ModaApiConfiguration::fromServerConfiguration( 'http://127.0.0.1:8081', ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT );
+		$client = new ModaApiClient( $configuration, static function ( string $url, array $args ) use ( &$requests ): array {
+			$requests[] = array( $url, $args );
+			return self::response( 200, self::merchantBootstrapPayload() );
+		} );
+		$identity = new SiteIdentity( ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT, static fn() => array( '127.0.0.1' ) );
+		$controller = new ConnectionController( $configuration, $identity, null, $store, $client );
+		$controller->registerRoutes();
+		$route = $GLOBALS['moda_interact_registered_rest_routes']['moda-interact/v1/merchant/bootstrap'];
+		self::assertSame( 'GET', $route['methods'] );
+		self::assertTrue( call_user_func( $route['permission_callback'] ) );
+
+		$response = $controller->getMerchantBootstrap( new WP_REST_Request( 'GET', array( '_locale' => 'user' ) ) );
+		self::assertSame( 200, $response->get_status() );
+		self::assertSame( self::merchantBootstrapPayload(), $response->get_data() );
+		self::assertSame( 'private, no-store', $response->get_headers()['Cache-Control'] );
+		self::assertSame( 'no-cache', $response->get_headers()['Pragma'] );
+		self::assertSame( 'http://127.0.0.1:8081/v1/merchant/bootstrap', $requests[0][0] );
+		self::assertSame( 'install_123', $requests[0][1]['headers']['X-Moda-Installation-Id'] );
+		self::assertSame( 'Bearer ' . $record['credential'], $requests[0][1]['headers']['Authorization'] );
+		self::assertArrayNotHasKey( 'X-Shop-Id', $requests[0][1]['headers'] );
+
+		$GLOBALS['moda_interact_can_manage_woocommerce'] = false;
+		self::assertInstanceOf( WP_Error::class, call_user_func( $route['permission_callback'] ) );
+	}
+
+	public function test_merchant_bootstrap_route_rejects_browser_identity_and_site_url_mismatch_without_api_call(): void {
+		$store = new InstallationStore();
+		self::assertTrue( $store->save( array(
+			'schemaVersion' => 1,
+			'installationId' => 'install_123',
+			'shopId' => 'shop_456',
+			'canonicalSiteUrl' => 'http://woocommerce-sandbox.local:8080/store',
+			'credential' => Base64Url::encode( str_repeat( "\x07", 32 ) ),
+			'credentialVersion' => 1,
+			'connectedAt' => gmdate( 'c' ),
+		) ) );
+		$called = false;
+		$configuration = ModaApiConfiguration::fromServerConfiguration( 'http://127.0.0.1:8081', ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT );
+		$client = new ModaApiClient( $configuration, static function () use ( &$called ): array {
+			$called = true;
+			return self::response( 200, self::merchantBootstrapPayload() );
+		} );
+		$identity = new SiteIdentity( ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT, static fn() => array( '127.0.0.1' ) );
+		$controller = new ConnectionController( $configuration, $identity, null, $store, $client );
+
+		$browser_identity = $controller->getMerchantBootstrap( new WP_REST_Request( 'GET', array( 'shopId' => 'attacker' ) ) );
+		self::assertSame( 400, $browser_identity->get_status() );
+		self::assertSame( array( 'error' => 'MERCHANT_BOOTSTRAP_UNAVAILABLE' ), $browser_identity->get_data() );
+		$GLOBALS['moda_interact_home_url'] = 'http://cloned-site.local';
+		$changed_site = $controller->getMerchantBootstrap( new WP_REST_Request( 'GET' ) );
+		self::assertSame( 409, $changed_site->get_status() );
+		self::assertSame( array( 'error' => 'SITE_URL_CHANGED' ), $changed_site->get_data() );
+		self::assertSame( 'private, no-store', $changed_site->get_headers()['Cache-Control'] );
+		self::assertFalse( $called );
+	}
+
 	public function test_invalid_server_api_mode_disables_connection_without_breaking_controller_initialization(): void {
 		putenv( 'MODA_INTERACT_API_BASE_URL=https://api.example.test' );
 		putenv( 'MODA_INTERACT_CONNECTION_MODE=invalid-mode' );
@@ -217,6 +287,31 @@ final class ConnectionControllerTest extends TestCase {
 			'headers' => array( 'content-type' => 'application/json; charset=utf-8' ),
 			'body' => json_encode( $payload ),
 			'response' => array( 'code' => $status ),
+		);
+	}
+
+	private static function merchantBootstrapPayload(): array {
+		return array(
+			'schemaVersion' => 1,
+			'shop' => array(
+				'id' => 'shop_456',
+				'platform' => 'WOOCOMMERCE',
+				'domain' => 'https://merchant.example',
+				'onboardingCompleted' => false,
+				'installedAt' => '2026-10-03T12:00:00.000Z',
+			),
+			'internationalContext' => array(
+				'storeLocale' => null,
+				'languageTag' => null,
+				'timeZone' => null,
+				'countryCode' => null,
+			),
+			'storeProfile' => array(
+				'activeCategory' => null,
+				'pendingCategory' => null,
+				'pendingSelectionGeneration' => 0,
+				'pendingSelectedAt' => null,
+			),
 		);
 	}
 }

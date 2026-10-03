@@ -24,7 +24,7 @@
 }
 
 .moda-interact-page__content {
-	max-width: 760px;
+	max-width: 1040px;
 }
 
 .moda-interact-connection {
@@ -89,6 +89,65 @@
 	background: #fcf0f1;
 }
 
+.moda-interact-overview {
+	margin-top: 24px;
+}
+
+.moda-interact-overview__heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.moda-interact-overview__heading h2 {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.moda-interact-overview-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.moda-interact-overview-card {
+	min-width: 0;
+	padding: 20px;
+	border: 1px solid #c3c4c7;
+	background: #fff;
+}
+
+.moda-interact-overview-card h3 {
+	margin: 0 0 16px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.moda-interact-overview__category + .moda-interact-overview__category {
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 1px solid #dcdcde;
+}
+
+.moda-interact-overview__category h4 {
+	margin: 0 0 10px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.moda-interact-overview__empty {
+	margin: 0;
+	color: #646970;
+}
+
+.moda-interact-overview-card .moda-interact-details {
+	grid-template-columns: minmax(110px, 150px) minmax(0, 1fr);
+	gap: 10px 16px;
+}
+
 @media (max-width: 600px) {
 
 	.moda-interact-page {
@@ -102,6 +161,23 @@
 	.moda-interact-details {
 		grid-template-columns: 1fr;
 		gap: 4px;
+	}
+
+	.moda-interact-overview-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.moda-interact-overview-card {
+		padding: 18px;
+	}
+
+	.moda-interact-overview-card .moda-interact-details {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+
+	.moda-interact-overview-card .moda-interact-details dd + dt {
+		margin-top: 10px;
 	}
 
 	.moda-interact-details dd + dt {

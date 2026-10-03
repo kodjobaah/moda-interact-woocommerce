@@ -33,6 +33,7 @@
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "7.56.0",
+		"@wordpress/date": "5.56.0",
 		"@wordpress/element": "6.33.1",
 		"@wordpress/hooks": "4.56.0",
 		"@wordpress/i18n": "6.29.0"
