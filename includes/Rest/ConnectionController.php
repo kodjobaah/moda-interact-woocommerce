@@ -189,6 +189,9 @@ final class ConnectionController {
 		$json  = $request->get_json_params();
 		$body  = $request->get_body_params();
 		$query = $request->get_query_params();
+		if ( array( '_locale' ) === array_keys( $query ) && 'user' === $query['_locale'] ) {
+			$query = array();
+		}
 		return ( null === $json || array() === $json ) && array() === $body && array() === $query;
 	}
 

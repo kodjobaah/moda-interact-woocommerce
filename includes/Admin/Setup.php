@@ -49,9 +49,10 @@ class Setup {
 			'moda-interact',
 			$script_url,
 			$script_asset['dependencies'],
-			$script_asset['version'],
+			(string) filemtime( $plugin_path . $script_path ),
 			true
 		);
+		wp_set_script_translations( 'moda-interact', 'moda-interact', $plugin_path . '/languages' );
 
 		wp_register_style(
 			'moda-interact',

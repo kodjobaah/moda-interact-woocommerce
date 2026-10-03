@@ -104,6 +104,19 @@ final class ConnectionControllerTest extends TestCase {
 		self::assertInstanceOf( WP_Error::class, $controller->authorizeAdministrator() );
 	}
 
+	public function test_connection_routes_allow_only_wordpress_api_fetch_locale_query(): void {
+		$controller = new ConnectionController();
+		$get = $controller->getConnection( new WP_REST_Request( 'GET', array( '_locale' => 'user' ) ) );
+		$post = $controller->postConnection( new WP_REST_Request( 'POST', array( '_locale' => 'user' ) ) );
+		$identity_input = $controller->getConnection( new WP_REST_Request( 'GET', array( 'shopId' => 'browser_supplied' ) ) );
+		$other_locale = $controller->getConnection( new WP_REST_Request( 'GET', array( '_locale' => 'site' ) ) );
+
+		self::assertSame( array( 'status' => 'API_NOT_CONFIGURED' ), $get->get_data() );
+		self::assertSame( array( 'status' => 'API_NOT_CONFIGURED' ), $post->get_data() );
+		self::assertSame( 'invalid_request', $identity_input->get_error_code() );
+		self::assertSame( 'invalid_request', $other_locale->get_error_code() );
+	}
+
 	public function test_invalid_server_api_mode_disables_connection_without_breaking_controller_initialization(): void {
 		putenv( 'MODA_INTERACT_API_BASE_URL=https://api.example.test' );
 		putenv( 'MODA_INTERACT_CONNECTION_MODE=invalid-mode' );

@@ -13,6 +13,7 @@ final class PluginTest extends TestCase {
 		$GLOBALS['moda_interact_can_activate_plugins'] = true;
 		$GLOBALS['moda_interact_current_screen_id'] = 'woocommerce_page_wc-admin';
 		$GLOBALS['moda_interact_registered_scripts'] = array();
+		$GLOBALS['moda_interact_script_translations'] = array();
 		$GLOBALS['moda_interact_registered_styles'] = array();
 		$GLOBALS['moda_interact_enqueued_scripts'] = array();
 		$GLOBALS['moda_interact_enqueued_styles'] = array();
@@ -142,5 +143,9 @@ final class PluginTest extends TestCase {
 
 		self::assertSame( array( 'moda-interact' ), $GLOBALS['moda_interact_enqueued_scripts'] );
 		self::assertSame( array( 'moda-interact' ), $GLOBALS['moda_interact_enqueued_styles'] );
+		self::assertSame(
+			array( array( 'moda-interact', 'moda-interact', dirname( __DIR__ ) . '/languages' ) ),
+			$GLOBALS['moda_interact_script_translations']
+		);
 	}
 }

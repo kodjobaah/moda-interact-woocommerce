@@ -88,6 +88,18 @@ Stop and remove the local environment with:
 npm run env:stop
 ```
 
+## Admin Shell Extension Boundary
+
+The `/moda-interact` page composes its current connection section through a
+repository-local section registry in `src/page.js`. Later merchant screens may
+be added there only when their owning task has implemented the capability and
+its accepted local API boundary. The registry is not a router: unimplemented
+screens must not be registered or exposed as navigation destinations.
+
+The connection section consumes only the local WordPress REST connection
+routes. `CONNECTED` confirms installation authentication only; it does not
+represent merchant onboarding, billing, entitlement, or business-feature state.
+
 ## Moda API Connection Boundary
 
 The PHP runtime reads `MODA_INTERACT_API_BASE_URL` from server-side environment
