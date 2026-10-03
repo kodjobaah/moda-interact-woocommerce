@@ -103,6 +103,10 @@ function wp_register_script( $handle, $src, $dependencies, $version, $in_footer 
 	$GLOBALS['moda_interact_registered_scripts'][] = $handle;
 }
 
+function wp_set_script_translations( $handle, $domain, $path = null ) {
+	$GLOBALS['moda_interact_script_translations'][] = array( $handle, $domain, $path );
+}
+
 function wp_register_style( $handle, $src, $dependencies, $version ) {
 	$GLOBALS['moda_interact_registered_styles'][] = $handle;
 }
