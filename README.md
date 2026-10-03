@@ -88,6 +88,29 @@ Stop and remove the local environment with:
 npm run env:stop
 ```
 
+## Moda API Connection Boundary
+
+The PHP runtime reads `MODA_INTERACT_API_BASE_URL` from server-side environment
+or `wp-config.php`; it is not exposed to Woo Admin JavaScript. Public mode is the
+default and requires an HTTPS DNS origin. `MODA_INTERACT_CONNECTION_MODE` may be
+set to `local-development` explicitly for local testing; that mode accepts only
+approved local API and WordPress origins and must not be enabled by browser input.
+An optional server-side `MODA_INTERACT_API_CA_BUNDLE` path adds a test CA while
+TLS verification remains enabled.
+
+Run the real WordPress REST and HTTPS API fixture flow with:
+
+```sh
+npm run test:integration:wordpress
+```
+
+The runner starts `wp-env`, provisions a temporary HTTPS fixture certificate,
+exercises the public one-attempt challenge and privileged cookie/nonce routes,
+and removes its CA fixture and WordPress environment on completion. Connection
+responses are limited to status and non-secret installation metadata. Bootstrap
+secrets, the long-lived installation credential, and Authorization headers stay
+inside PHP and the server-side WordPress option.
+
 ## Plugin Package
 
 Create `moda-interact.zip` with:
