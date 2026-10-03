@@ -5,6 +5,10 @@ namespace ModaInteract\WooCommerce;
 defined( 'ABSPATH' ) || exit;
 
 use ModaInteract\WooCommerce\Admin\Setup;
+use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
+use ModaInteract\WooCommerce\Api\ModaApiConfigurationException;
+use ModaInteract\WooCommerce\Connection\SiteIdentity;
+use ModaInteract\WooCommerce\Rest\ConnectionController;
 
 final class Runtime {
 	private const MINIMUM_WOOCOMMERCE_VERSION = '11.0';
@@ -54,6 +58,12 @@ final class Runtime {
 		}
 
 		$this->initialized = true;
+		try {
+			$mode = ModaApiConfiguration::serverMode();
+		} catch ( ModaApiConfigurationException $error ) {
+			$mode = ModaApiConfiguration::MODE_PUBLIC;
+		}
+		( new ConnectionController( null, new SiteIdentity( $mode ) ) )->register();
 		if ( is_admin() ) {
 			new Setup();
 		}

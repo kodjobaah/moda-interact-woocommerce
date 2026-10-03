@@ -23,6 +23,7 @@
 		"plugin-zip": "npm run build && composer install --no-dev --no-interaction --classmap-authoritative && wp-scripts plugin-zip",
 		"test:js": "wp-scripts test-unit-js",
 		"test:php": "composer test",
+		"test:integration:wordpress": "node tests/integration/run-wordpress.mjs",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",
 		"env:start:minimum": "wp-env --config=.wp-env.minimum.json start",
