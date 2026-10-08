@@ -85,6 +85,40 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+	public function merchantBootstrap( array $connection ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+
+		$response = $this->request(
+			'/v1/merchant/bootstrap',
+			'GET',
+			array(
+				'X-Moda-Installation-Id' => $connection['installationId'],
+				'Authorization'         => 'Bearer ' . $connection['credential'],
+			)
+		);
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) {
+			throw new ModaApiClientException( 'unauthorized', $status );
+		}
+		if ( 200 !== $status ) {
+			throw new ModaApiClientException( 'remote_unavailable', $status );
+		}
+
+		try {
+			$payload = $this->jsonBody( $response );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+
+		if ( ! self::isMerchantBootstrap( $payload ) || $payload['shop']['id'] !== $connection['shopId'] ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+
+		return $payload;
+	}
+
 	private function request( string $path, string $method, array $headers, ?string $body = null ): mixed {
 		$url = $this->configuration->base_url . $path;
 		$args = array(
@@ -126,6 +160,69 @@ final class ModaApiClient {
 		sort( $actual );
 		sort( $expected );
 		return $actual === $expected;
+	}
+
+	private static function isMerchantBootstrap( array $payload ): bool {
+		if (
+			! self::hasExactKeys( $payload, array( 'schemaVersion', 'shop', 'internationalContext', 'storeProfile' ) ) ||
+			1 !== $payload['schemaVersion'] ||
+			! is_array( $payload['shop'] ) ||
+			! self::hasExactKeys( $payload['shop'], array( 'id', 'platform', 'domain', 'onboardingCompleted', 'installedAt' ) ) ||
+			! self::isBoundedString( $payload['shop']['id'], 128 ) ||
+			'WOOCOMMERCE' !== $payload['shop']['platform'] ||
+			! self::isBoundedString( $payload['shop']['domain'], 512 ) ||
+			! is_bool( $payload['shop']['onboardingCompleted'] ) ||
+			! self::isDateTime( $payload['shop']['installedAt'] ) ||
+			! is_array( $payload['internationalContext'] ) ||
+			! self::hasExactKeys( $payload['internationalContext'], array( 'storeLocale', 'languageTag', 'timeZone', 'countryCode' ) ) ||
+			! self::isNullableBoundedString( $payload['internationalContext']['storeLocale'], 128 ) ||
+			! self::isNullableBoundedString( $payload['internationalContext']['languageTag'], 64 ) ||
+			! self::isNullableBoundedString( $payload['internationalContext']['timeZone'], 255 ) ||
+			! self::isNullableBoundedString( $payload['internationalContext']['countryCode'], 2 ) ||
+			! is_array( $payload['storeProfile'] ) ||
+			! self::hasExactKeys( $payload['storeProfile'], array( 'activeCategory', 'pendingCategory', 'pendingSelectionGeneration', 'pendingSelectedAt' ) ) ||
+			! is_int( $payload['storeProfile']['pendingSelectionGeneration'] ) ||
+			$payload['storeProfile']['pendingSelectionGeneration'] < 0 ||
+			! self::isNullableDateTime( $payload['storeProfile']['pendingSelectedAt'] )
+		) {
+			return false;
+		}
+
+		return self::isNullableCategory( $payload['storeProfile']['activeCategory'] ) &&
+			self::isNullableCategory( $payload['storeProfile']['pendingCategory'] );
+	}
+
+	private static function isNullableCategory( mixed $category ): bool {
+		return null === $category || (
+			is_array( $category ) &&
+			self::hasExactKeys( $category, array( 'id', 'slug', 'displayName' ) ) &&
+			self::isBoundedString( $category['id'], 128 ) &&
+			self::isBoundedString( $category['slug'], 128 ) &&
+			self::isBoundedString( $category['displayName'], 255 )
+		);
+	}
+
+	private static function isNullableBoundedString( mixed $value, int $maximum ): bool {
+		return null === $value || self::isBoundedString( $value, $maximum );
+	}
+
+	private static function isBoundedString( mixed $value, int $maximum ): bool {
+		if ( ! is_string( $value ) || '' === $value || false === preg_match_all( '/./us', $value, $matches ) ) {
+			return false;
+		}
+		return count( $matches[0] ) <= $maximum;
+	}
+
+	private static function isNullableDateTime( mixed $value ): bool {
+		return null === $value || self::isDateTime( $value );
+	}
+
+	private static function isDateTime( mixed $value ): bool {
+		if ( ! is_string( $value ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/', $value ) ) {
+			return false;
+		}
+		$parsed = date_parse( $value );
+		return 0 === $parsed['error_count'] && 0 === $parsed['warning_count'];
 	}
 }
 

@@ -6,7 +6,8 @@ services.
 
 The plugin uses the official WooCommerce `create-woo-extension` template and the
 WordPress Scripts build system. Production assets are generated into `build/` before
-packaging; source code remains in `src/`.
+packaging; source code remains in `src/`. The Admin Overview reads authenticated
+merchant state through the PHP plugin and does not run a separate Node server.
 
 ## Requirements
 
@@ -90,15 +91,19 @@ npm run env:stop
 
 ## Admin Shell Extension Boundary
 
-The `/moda-interact` page composes its current connection section through a
-repository-local section registry in `src/page.js`. Later merchant screens may
-be added there only when their owning task has implemented the capability and
-its accepted local API boundary. The registry is not a router: unimplemented
-screens must not be registered or exposed as navigation destinations.
+The `/moda-interact` page presents the connection section and, only while
+connected, the real Overview backed by the authenticated merchant bootstrap API.
+Later merchant screens may be added only when their owning task has implemented
+the capability and its accepted local API boundary. Unimplemented screens must
+not be registered or exposed as navigation destinations.
 
 The connection section consumes only the local WordPress REST connection
 routes. `CONNECTED` confirms installation authentication only; it does not
 represent merchant onboarding, billing, entitlement, or business-feature state.
+The Overview separately displays the shared onboarding milestone, active and
+pending Store Category projections, and provider-neutral store international
+context. It is read-only: this plugin screen does not complete onboarding,
+change a category, or write store locale/time-zone/country values.
 
 ## Moda API Connection Boundary
 
@@ -118,7 +123,8 @@ npm run test:integration:wordpress
 
 The runner starts `wp-env`, provisions a temporary HTTPS fixture certificate,
 exercises the public one-attempt challenge and privileged cookie/nonce routes,
-and removes its CA fixture and WordPress environment on completion. Connection
+the authenticated `/v1/merchant/bootstrap` HTTPS fixture and privileged local
+WordPress REST route, and removes its CA fixture and WordPress environment on completion. Connection
 responses are limited to status and non-secret installation metadata. Bootstrap
 secrets, the long-lived installation credential, and Authorization headers stay
 inside PHP and the server-side WordPress option.
