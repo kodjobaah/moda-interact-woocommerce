@@ -31,6 +31,9 @@ wpEnv([
 	pluginDirectory,
 	`${pluginDirectory}/languages/moda-interact.pot`,
 	'--domain=moda-interact',
+	'--slug=moda-interact',
+	'--package-name=Moda Interact',
+	'--headers={"Report-Msgid-Bugs-To":""}',
 	'--exclude=node_modules,vendor,tests',
 ]);
 process.stdout.write(

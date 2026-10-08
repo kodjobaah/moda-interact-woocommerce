@@ -140,6 +140,16 @@ function verifyPackage() {
 		/Woo Plugin Setup|psealock|woo-plugin-setup/i,
 		'translation template retains scaffold identity'
 	);
+	assert.match(
+		pot,
+		/^"Report-Msgid-Bugs-To:[ \t]*\\n"$/m,
+		'translation template must not invent a support destination'
+	);
+	assertNoPattern(
+		pot,
+		/ARCH-\d{3}-[A-Z0-9-]+/,
+		'translation template contains an internal architecture task identifier'
+	);
 
 	const readme = readArchiveFile('readme.txt');
 	assert.match(readme, /== External services ==/);
