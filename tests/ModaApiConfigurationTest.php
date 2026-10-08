@@ -5,6 +5,23 @@ use ModaInteract\WooCommerce\Api\ModaApiConfigurationException;
 use PHPUnit\Framework\TestCase;
 
 final class ModaApiConfigurationTest extends TestCase {
+	public function test_missing_server_origin_defaults_to_production_https_origin(): void {
+		$previous_origin = getenv( 'MODA_INTERACT_API_BASE_URL' );
+		putenv( 'MODA_INTERACT_API_BASE_URL' );
+		try {
+			$config = ModaApiConfiguration::fromServerConfiguration();
+		} finally {
+			if ( false === $previous_origin ) {
+				putenv( 'MODA_INTERACT_API_BASE_URL' );
+			} else {
+				putenv( 'MODA_INTERACT_API_BASE_URL=' . $previous_origin );
+			}
+		}
+
+		self::assertSame( 'https://api.modainteract.com', $config->base_url );
+		self::assertSame( ModaApiConfiguration::MODE_PUBLIC, $config->mode );
+	}
+
 	public function test_public_mode_requires_https_and_a_dns_host(): void {
 		$config = ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test:8443/' );
 		self::assertSame( 'https://api.example.test:8443', $config->base_url );

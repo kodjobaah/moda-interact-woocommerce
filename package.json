@@ -10,6 +10,7 @@
 		"languages",
 		"vendor",
 		"moda-interact.php",
+		"readme.txt",
 		"README.md",
 		"CHANGELOG.md"
 	],
@@ -20,10 +21,13 @@
 		"lint:js": "wp-scripts lint-js",
 		"lint:php": "composer lint",
 		"packages-update": "wp-scripts packages-update",
-		"plugin-zip": "npm run build && composer install --no-dev --no-interaction --classmap-authoritative && wp-scripts plugin-zip",
+		"plugin-zip": "npm run package:production",
+		"package:production": "node scripts/package-production.mjs",
+		"i18n:makepot": "node scripts/make-pot.mjs",
 		"test:js": "wp-scripts test-unit-js",
 		"test:php": "composer test",
 		"test:integration:wordpress": "node tests/integration/run-wordpress.mjs",
+		"test:integration:package-lifecycle": "node tests/integration/run-package-lifecycle.mjs",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",
 		"env:start:minimum": "wp-env --config=.wp-env.minimum.json start",
@@ -44,6 +48,7 @@
 		"@wordpress/env": "11.16.0",
 		"@wordpress/prettier-config": "4.56.0",
 		"@wordpress/scripts": "36.0.0",
+		"playwright": "1.63.0",
 		"vite": "8.3.2",
 		"vitest": "5.0.3"
 	}

@@ -111,8 +111,8 @@ final class ConnectionControllerTest extends TestCase {
 		$identity_input = $controller->getConnection( new WP_REST_Request( 'GET', array( 'shopId' => 'browser_supplied' ) ) );
 		$other_locale = $controller->getConnection( new WP_REST_Request( 'GET', array( '_locale' => 'site' ) ) );
 
-		self::assertSame( array( 'status' => 'API_NOT_CONFIGURED' ), $get->get_data() );
-		self::assertSame( array( 'status' => 'API_NOT_CONFIGURED' ), $post->get_data() );
+		self::assertSame( array( 'status' => 'DISCONNECTED' ), $get->get_data() );
+		self::assertSame( 'site_url_invalid', $post->get_error_code() );
 		self::assertSame( 'invalid_request', $identity_input->get_error_code() );
 		self::assertSame( 'invalid_request', $other_locale->get_error_code() );
 	}
