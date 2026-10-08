@@ -147,7 +147,7 @@ function verifyPackage() {
 	);
 	assertNoPattern(
 		pot,
-		/ARCH-\d{3}-[A-Z0-9-]+/,
+		/ARCH-\d+-[A-Z0-9-]+/,
 		'translation template contains an internal architecture task identifier'
 	);
 
