@@ -2,6 +2,8 @@
  * Keep wp-env REST assertions independent of stale HTTP keep-alive sockets.
  * Describe network failures without exposing session cookies, nonce or query data.
  * Deliberately do not retry: several test GETs advance stateful fixture responses.
+ *
+ * @param {typeof fetch} fetchImpl - Fetch implementation or test transport.
  */
 export function createWordPressFetch(fetchImpl = fetch) {
 	return async (url, options = {}) => {

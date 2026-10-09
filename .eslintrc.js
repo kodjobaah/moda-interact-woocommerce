@@ -3,4 +3,12 @@ module.exports = {
 	rules: {
 		'react/react-in-jsx-scope': 'off',
 	},
+	overrides: [
+		{
+			files: ['tests/integration/*.test.mjs'],
+			rules: {
+				'vitest/no-import-node-test': 'off',
+			},
+		},
+	],
 };

@@ -1,3 +1,5 @@
+/* eslint vitest/no-import-node-test: "off" */
+
 import assert from 'node:assert/strict';
 import { createServer } from 'node:net';
 import test from 'node:test';
@@ -27,7 +29,9 @@ test('allocates a valid, bindable host port rather than a fixed port', async () 
 		});
 		assert.equal(server.address().port, port);
 	} finally {
-		if (server.listening) await close(server);
+		if (server.listening) {
+			await close(server);
+		}
 	}
 });
 
@@ -39,6 +43,8 @@ test('avoids a port actively reserved by another listener', async () => {
 		const port = await availableWpEnvHostPort();
 		assert.notEqual(port, busyPort);
 	} finally {
-		if (busyServer.listening) await close(busyServer);
+		if (busyServer.listening) {
+			await close(busyServer);
+		}
 	}
 });

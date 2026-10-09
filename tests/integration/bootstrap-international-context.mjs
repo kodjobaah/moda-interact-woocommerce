@@ -1,6 +1,8 @@
 /**
  * The PUT store-context snapshot is versioned; the bootstrap read model is not.
  * Project only the four allowed internationalContext fields into the mock API.
+ *
+ * @param {object|null} savedContext - Previously saved versioned context, if present.
  */
 export function bootstrapInternationalContext(savedContext) {
 	const context = savedContext ?? {

@@ -5,6 +5,8 @@ use ModaInteract\WooCommerce\Plugin;
 define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 $GLOBALS['moda_interact_test_hooks'] = array();
 $GLOBALS['moda_interact_registered_pages'] = array();
+$GLOBALS['moda_interact_native_menu'] = array();
+$GLOBALS['moda_interact_native_submenus'] = array();
 $GLOBALS['moda_interact_is_admin'] = true;
 $GLOBALS['moda_interact_can_activate_plugins'] = true;
 $GLOBALS['moda_interact_current_screen_id'] = 'woocommerce_page_wc-admin';
@@ -101,6 +103,36 @@ function wc_admin_register_page( $page ) {
 	$GLOBALS['moda_interact_registered_pages'][] = $page;
 }
 
+function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $callback, $icon_url = '', $position = null ) {
+	if ( ! current_user_can( $capability ) ) {
+		return false;
+	}
+	$GLOBALS['moda_interact_native_menu'][] = array(
+		'page_title' => $page_title,
+		'menu_title' => $menu_title,
+		'capability' => $capability,
+		'slug' => $menu_slug,
+		'callback' => $callback,
+		'icon' => $icon_url,
+	);
+	return 'toplevel_page_' . $menu_slug;
+}
+
+function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null ) {
+	if ( ! current_user_can( $capability ) ) {
+		return false;
+	}
+	$GLOBALS['moda_interact_native_submenus'][] = array(
+		'parent' => $parent_slug,
+		'page_title' => $page_title,
+		'menu_title' => $menu_title,
+		'capability' => $capability,
+		'slug' => $menu_slug,
+		'callback' => $callback,
+	);
+	return $parent_slug . '_page_' . $menu_slug;
+}
+
 function plugins_url( $path, $plugin_file ) {
 	return 'https://example.org/plugins' . $path;
 }
@@ -137,10 +169,6 @@ function delete_option( $option ) {
 
 function get_locale() {
 	return $GLOBALS['moda_interact_store_locale'];
-}
-
-function get_user_locale() {
-	return $GLOBALS['moda_interact_admin_locale'] ?? $GLOBALS['moda_interact_store_locale'];
 }
 
 function wc_get_base_location() {

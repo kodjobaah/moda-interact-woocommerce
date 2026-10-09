@@ -4,6 +4,7 @@
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import ModaInteractPage from './page';
+import { mountNativeAdmin } from './native-admin/mount';
 
 /**
  * Internal dependencies
@@ -22,3 +23,6 @@ addFilter('woocommerce_admin_pages_list', 'moda-interact', (pages) => {
 
 	return pages;
 });
+
+// The existing wc-admin route is retained for previously bookmarked links.
+mountNativeAdmin();

@@ -1,3 +1,5 @@
+/* eslint vitest/no-import-node-test: "off" */
+
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
@@ -25,7 +27,11 @@ test('omits the versioned write envelope from the bootstrap read model', () => {
 		timeZone: 'Europe/London',
 		countryCode: 'GB',
 	});
-	assert.equal(saved.schemaVersion, 1, 'the persisted snapshot remains unchanged');
+	assert.equal(
+		saved.schemaVersion,
+		1,
+		'the persisted snapshot remains unchanged'
+	);
 });
 
 test('retains nullable language values without adding contract fields', () => {

@@ -1,7 +1,7 @@
 import { isValidElement } from '@wordpress/element';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { ConnectionPanel } from '../../src/page';
+import { ConnectionPanel } from '../../src/page/connection-panel';
 
 function textContent(node) {
 	if (node === null || node === undefined || typeof node === 'boolean') {
@@ -134,6 +134,14 @@ describe('Moda Interact connection presentation', () => {
 			new URL('../../src/page.js', import.meta.url),
 			'utf8'
 		);
+		const stateSource = readFileSync(
+			new URL('../../src/page/use-moda-page-state.js', import.meta.url),
+			'utf8'
+		);
+		const controllerSource = readFileSync(
+			new URL('../../src/page/controller-factory.js', import.meta.url),
+			'utf8'
+		);
 
 		expect(textContent(element)).toContain('https://merchant.example');
 		expect(textContent(element)).not.toMatch(
@@ -142,10 +150,13 @@ describe('Moda Interact connection presentation', () => {
 		expect(source).not.toMatch(
 			/localStorage|sessionStorage|currentLocale|localeAllowlist|Recoveries/
 		);
-		expect(source).toContain('new BillingController');
-		expect(source).toContain('isBillingReturn(globalThis.location?.search');
-		expect(source).toContain("state.connection.status === 'CONNECTED'");
-		expect(source).toContain("['BILLING', __('Billing', 'moda-interact')]");
-		expect(source).toMatch(/'moda-interact'/);
+		expect(source).toContain('createElement(ConnectionPanel');
+		expect(source).toContain('createElement(ConnectedWorkspace');
+		expect(source).not.toContain('new BillingController');
+		expect(controllerSource).toContain('new BillingController');
+		expect(stateSource).toContain(
+			'initialMerchantSurface(globalThis.location?.search'
+		);
+		expect(source).toContain("status === 'CONNECTED'");
 	});
 });

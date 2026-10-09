@@ -22,6 +22,9 @@ final class PluginTest extends TestCase {
 	protected function setUp(): void {
 		$GLOBALS['moda_interact_test_hooks'] = $GLOBALS['moda_interact_initial_hooks'];
 		$GLOBALS['moda_interact_registered_pages'] = array();
+		$GLOBALS['moda_interact_native_menu'] = array();
+		$GLOBALS['moda_interact_native_submenus'] = array();
+		$GLOBALS['moda_interact_can_manage_woocommerce'] = true;
 		$GLOBALS['moda_interact_is_admin'] = true;
 		$GLOBALS['moda_interact_can_activate_plugins'] = true;
 		$GLOBALS['moda_interact_current_screen_id'] = 'woocommerce_page_wc-admin';
@@ -156,6 +159,63 @@ final class PluginTest extends TestCase {
 			),
 			$GLOBALS['moda_interact_registered_pages'][0]
 		);
+	}
+
+	public function test_native_menu_matches_shopify_order_with_supported_and_planned_pages(): void {
+		$setup = new Setup();
+		$setup->register_page();
+
+		self::assertCount( 1, $GLOBALS['moda_interact_native_menu'] );
+		self::assertSame( 'moda-interact', $GLOBALS['moda_interact_native_menu'][0]['slug'] );
+		self::assertSame( 'manage_woocommerce', $GLOBALS['moda_interact_native_menu'][0]['capability'] );
+		self::assertSame( 'dashicons-store', $GLOBALS['moda_interact_native_menu'][0]['icon'] );
+		self::assertSame(
+			array( 'Overview', 'Recoveries', 'Billing', 'Promotions', 'Support', 'Recovery settings' ),
+			array_column( $GLOBALS['moda_interact_native_submenus'], 'menu_title' )
+		);
+		self::assertSame(
+			array( 'moda-interact', 'moda-interact-recoveries', 'moda-interact-billing', 'moda-interact-promotions', 'moda-interact-support', 'moda-interact-recovery-settings' ),
+			array_column( $GLOBALS['moda_interact_native_submenus'], 'slug' )
+		);
+		foreach ( $GLOBALS['moda_interact_native_submenus'] as $submenu ) {
+			self::assertSame( 'moda-interact', $submenu['parent'] );
+			self::assertSame( 'manage_woocommerce', $submenu['capability'] );
+		}
+
+		ob_start();
+		call_user_func( $GLOBALS['moda_interact_native_submenus'][2]['callback'] );
+		$app = ob_get_clean();
+		self::assertStringContainsString( 'id="moda-interact-native-root"', $app );
+
+		ob_start();
+		call_user_func( $GLOBALS['moda_interact_native_submenus'][1]['callback'] );
+		$planned = ob_get_clean();
+		self::assertStringContainsString( 'Recoveries', $planned );
+		self::assertStringContainsString( 'not yet available for WooCommerce', $planned );
+		self::assertStringNotContainsString( 'moda-interact-native-root', $planned );
+	}
+
+	public function test_native_navigation_checks_merchant_capability_and_only_loads_app_assets(): void {
+		$setup = new Setup();
+		$setup->register_page();
+
+		foreach ( array( 'toplevel_page_moda-interact', 'moda-interact_page_moda-interact-billing', 'moda-interact_page_moda-interact-recovery-settings' ) as $screen ) {
+			$GLOBALS['moda_interact_current_screen_id'] = $screen;
+			$setup->register_scripts();
+		}
+		self::assertCount( 3, $GLOBALS['moda_interact_enqueued_scripts'] );
+
+		$GLOBALS['moda_interact_current_screen_id'] = 'moda-interact_page_moda-interact-promotions';
+		$setup->register_scripts();
+		self::assertCount( 3, $GLOBALS['moda_interact_enqueued_scripts'] );
+
+		$GLOBALS['moda_interact_can_manage_woocommerce'] = false;
+		ob_start();
+		call_user_func( $GLOBALS['moda_interact_native_menu'][0]['callback'] );
+		self::assertSame( '', ob_get_clean() );
+		ob_start();
+		call_user_func( $GLOBALS['moda_interact_native_submenus'][3]['callback'] );
+		self::assertSame( '', ob_get_clean() );
 	}
 
 	public function test_assets_load_only_on_the_woocommerce_admin_screen(): void {

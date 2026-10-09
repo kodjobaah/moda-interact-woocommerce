@@ -24,7 +24,7 @@
 		"plugin-zip": "npm run package:production",
 		"package:production": "node scripts/package-production.mjs",
 		"i18n:makepot": "node scripts/make-pot.mjs",
-		"test:js": "wp-scripts test-unit-js",
+		"test:js": "wp-scripts test-unit-js tests/js && node --test tests/integration/*.test.mjs",
 		"test:php": "composer test",
 		"test:integration:wordpress": "node tests/integration/run-wordpress.mjs",
 		"test:integration:package-lifecycle": "node tests/integration/run-package-lifecycle.mjs",

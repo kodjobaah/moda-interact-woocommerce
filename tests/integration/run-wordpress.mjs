@@ -64,9 +64,13 @@ function restoreWpHome() {
 		originalWpHome === null
 			? ['delete', 'WP_HOME']
 			: ['set', 'WP_HOME', originalWpHome, '--type=constant'];
-	command('npm', ['exec', '--', 'wp-env', 'run', 'cli', 'wp', 'config', ...args], {
-		env: { ...process.env, WP_ENV_PORT: String(port) },
-	});
+	command(
+		'npm',
+		['exec', '--', 'wp-env', 'run', 'cli', 'wp', 'config', ...args],
+		{
+			env: { ...process.env, WP_ENV_PORT: String(port) },
+		}
+	);
 }
 
 function parseJsonOutput(output) {
@@ -367,23 +371,54 @@ const server = createServer(
 			) {
 				assert.match(url.search, /^\?locale=[A-Za-z0-9_%\-]+$/);
 				assert.equal(bodyBytes.length, 0);
-				assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
-				assert.equal(request.headers.authorization, `Bearer ${Buffer.alloc(32, 2).toString('base64url')}`);
+				assert.equal(
+					request.headers['x-moda-installation-id'],
+					'install_wp_fixture'
+				);
+				assert.equal(
+					request.headers.authorization,
+					`Bearer ${Buffer.alloc(32, 2).toString('base64url')}`
+				);
 				const category = {
-					id: 'fashion', slug: 'fashion', localizedDisplayName: 'Fashion',
+					id: 'fashion',
+					slug: 'fashion',
+					localizedDisplayName: 'Fashion',
 					localizedDescription: 'Clothing and accessories',
 				};
 				sendJson(response, 200, {
-					schemaVersion: 1, requestedLocale: 'en_GB', resolvedLocale: 'en',
-					categories: [{ ...category,
-						mappings: [{ id: 'clothing', conditionKey: 'is_clothing', localizedDisplayName: 'Clothing' }],
-						defaultTemplate: { id: 'template_1', key: 'fashion', displayName: 'Fashion', editVersion: 1 },
-					}],
+					schemaVersion: 1,
+					requestedLocale: 'en_GB',
+					resolvedLocale: 'en',
+					categories: [
+						{
+							...category,
+							mappings: [
+								{
+									id: 'clothing',
+									conditionKey: 'is_clothing',
+									localizedDisplayName: 'Clothing',
+								},
+							],
+							defaultTemplate: {
+								id: 'template_1',
+								key: 'fashion',
+								displayName: 'Fashion',
+								editVersion: 1,
+							},
+						},
+					],
 					storeProfile: {
-						activeCategory: activeCategorySelection ? category : null, pendingCategory: null,
-						activeMappingIds: activeCategorySelection?.selectedMappingIds ?? [], pendingMappingIds: [],
-						pendingSelectionGeneration: categoryGeneration, pendingSelectedAt: null,
-						pendingState: 'NONE', pendingTemplate: null,
+						activeCategory: activeCategorySelection
+							? category
+							: null,
+						pendingCategory: null,
+						activeMappingIds:
+							activeCategorySelection?.selectedMappingIds ?? [],
+						pendingMappingIds: [],
+						pendingSelectionGeneration: categoryGeneration,
+						pendingSelectedAt: null,
+						pendingState: 'NONE',
+						pendingTemplate: null,
 					},
 				});
 				return;
@@ -393,14 +428,28 @@ const server = createServer(
 				request.method === 'POST'
 			) {
 				assert.equal(url.search, '');
-				assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
-				assert.equal(request.headers.authorization, `Bearer ${Buffer.alloc(32, 2).toString('base64url')}`);
+				assert.equal(
+					request.headers['x-moda-installation-id'],
+					'install_wp_fixture'
+				);
+				assert.equal(
+					request.headers.authorization,
+					`Bearer ${Buffer.alloc(32, 2).toString('base64url')}`
+				);
 				const selection = JSON.parse(bodyBytes.toString('utf8'));
 				assert.deepEqual(Object.keys(selection).sort(), [
-					'categoryId', 'expectedPendingSelectionGeneration', 'schemaVersion', 'selectedMappingIds',
+					'categoryId',
+					'expectedPendingSelectionGeneration',
+					'schemaVersion',
+					'selectedMappingIds',
 				]);
-				if (selection.expectedPendingSelectionGeneration !== categoryGeneration) {
-					sendJson(response, 409, { error: 'store_category_conflict' });
+				if (
+					selection.expectedPendingSelectionGeneration !==
+					categoryGeneration
+				) {
+					sendJson(response, 409, {
+						error: 'store_category_conflict',
+					});
 					return;
 				}
 				assert.equal(selection.categoryId, 'fashion');
@@ -408,7 +457,9 @@ const server = createServer(
 				categoryGeneration += 1;
 				activeCategorySelection = selection;
 				sendJson(response, 200, {
-					schemaVersion: 1, activeCategoryId: 'fashion', activePromptRevisionId: 'revision_1',
+					schemaVersion: 1,
+					activeCategoryId: 'fashion',
+					activePromptRevisionId: 'revision_1',
 					activeMappingIds: [...selection.selectedMappingIds],
 					pendingSelectionGeneration: categoryGeneration,
 				});
@@ -444,9 +495,16 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: bootstrapInternationalContext(savedContext),
+						internationalContext:
+							bootstrapInternationalContext(savedContext),
 						storeProfile: {
-							activeCategory: activeCategorySelection ? { id: 'fashion', slug: 'fashion', displayName: 'Fashion' } : null,
+							activeCategory: activeCategorySelection
+								? {
+										id: 'fashion',
+										slug: 'fashion',
+										displayName: 'Fashion',
+									}
+								: null,
 							pendingCategory: {
 								id: 'category_1',
 								slug: 'apparel',
@@ -477,9 +535,16 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: bootstrapInternationalContext(savedContext),
+						internationalContext:
+							bootstrapInternationalContext(savedContext),
 						storeProfile: {
-							activeCategory: activeCategorySelection ? { id: 'fashion', slug: 'fashion', displayName: 'Fashion' } : null,
+							activeCategory: activeCategorySelection
+								? {
+										id: 'fashion',
+										slug: 'fashion',
+										displayName: 'Fashion',
+									}
+								: null,
 							pendingCategory: {
 								id: 'category_1',
 								slug: 'apparel',
@@ -754,14 +819,17 @@ try {
 		)
 	);
 	const request = (path, options = {}) =>
-		fetchWordPress(`${siteUrl}/wp-json/moda-interact/v1/connection${path}`, {
-			...options,
-			headers: {
-				...(options.headers ?? {}),
-				Cookie: `${auth.cookieName}=${auth.cookie}`,
-				'X-WP-Nonce': auth.nonce,
-			},
-		});
+		fetchWordPress(
+			`${siteUrl}/wp-json/moda-interact/v1/connection${path}`,
+			{
+				...options,
+				headers: {
+					...(options.headers ?? {}),
+					Cookie: `${auth.cookieName}=${auth.cookie}`,
+					'X-WP-Nonce': auth.nonce,
+				},
+			}
+		);
 	const merchantBootstrapRequest = (query = '') =>
 		fetchWordPress(
 			`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap${query}`,
@@ -1187,9 +1255,14 @@ try {
 		auth,
 		wp,
 		parseJsonOutput,
-		getCategoryState: () => ({ selections: categorySelections, generation: categoryGeneration }),
+		getCategoryState: () => ({
+			selections: categorySelections,
+			generation: categoryGeneration,
+		}),
 	});
-	process.stdout.write('WOO-008 WordPress category selection + active readback integration passed.\n');
+	process.stdout.write(
+		'WOO-008 WordPress category selection + active readback integration passed.\n'
+	);
 	process.stdout.write(
 		'WOO-007 WordPress store-context sync + readback integration passed.\n'
 	);

@@ -8,12 +8,15 @@ defined( 'ABSPATH' ) || exit;
  * ModaInteract Setup Class
  */
 class Setup {
+	private NativeNavigation $native_navigation;
+
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		$this->native_navigation = new NativeNavigation();
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 		add_action( 'admin_menu', array( $this, 'register_page' ) );
 	}
@@ -25,7 +28,7 @@ class Setup {
 	 */
 	public function register_scripts() {
 		$screen = get_current_screen();
-		if ( ! $screen || 'woocommerce_page_wc-admin' !== $screen->id ) {
+		if ( ! $screen || ( 'woocommerce_page_wc-admin' !== $screen->id && ! $this->native_navigation->is_application_screen( $screen->id ) ) ) {
 			return;
 		}
 
@@ -72,6 +75,7 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	public function register_page() {
+		$this->native_navigation->register();
 
 		if ( ! function_exists( 'wc_admin_register_page' ) ) {
 			return;

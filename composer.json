@@ -28,6 +28,7 @@
 			"@php -l includes/Security/Base64Url.php",
 			"@php -l includes/Security/HmacProof.php",
 			"@php -l includes/Admin/Setup.php",
+			"@php -l includes/Admin/NativeNavigation.php",
 			"@php -l tests/bootstrap.php",
 			"@php -l tests/PluginTest.php",
 			"@php -l tests/BillingApiClientTest.php",
