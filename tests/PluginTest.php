@@ -5,6 +5,19 @@ use ModaInteract\WooCommerce\Plugin;
 use ModaInteract\WooCommerce\Runtime;
 use PHPUnit\Framework\TestCase;
 
+/** Test-only observer for WooCommerce's HPOS feature declaration. */
+final class ModaInteractHposFeatureUtilProbe {
+	public static array $declarations = array();
+
+	public static function declare_compatibility( string $feature, string $plugin_file, bool $compatible ): void {
+		self::$declarations[] = array( $feature, $plugin_file, $compatible );
+	}
+}
+
+if ( ! class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class, false ) ) {
+	class_alias( ModaInteractHposFeatureUtilProbe::class, \Automattic\WooCommerce\Utilities\FeaturesUtil::class );
+}
+
 final class PluginTest extends TestCase {
 	protected function setUp(): void {
 		$GLOBALS['moda_interact_test_hooks'] = $GLOBALS['moda_interact_initial_hooks'];
@@ -19,12 +32,27 @@ final class PluginTest extends TestCase {
 		$GLOBALS['moda_interact_enqueued_styles'] = array();
 		$GLOBALS['moda_interact_external_requests'] = array();
 		$GLOBALS['moda_interact_deleted_options'] = array();
+		ModaInteractHposFeatureUtilProbe::$declarations = array();
 	}
 
 	public function test_bootstrap_registers_bounded_lifecycle_hooks(): void {
 		self::assertSame( array( Plugin::class, 'activate' ), $GLOBALS['moda_interact_activation_callback'] );
 		self::assertSame( array( Plugin::class, 'deactivate' ), $GLOBALS['moda_interact_deactivation_callback'] );
 		self::assertSame( array( Plugin::class, 'boot' ), $GLOBALS['moda_interact_initial_hooks']['plugins_loaded'][0] );
+	}
+
+	public function test_declares_hpos_compatibility_before_woocommerce_initializes(): void {
+		self::assertCount( 1, $GLOBALS['moda_interact_initial_hooks']['before_woocommerce_init'] );
+		self::assertSame(
+			array( Plugin::class, 'declare_hpos_compatibility' ),
+			$GLOBALS['moda_interact_initial_hooks']['before_woocommerce_init'][0]
+		);
+
+		call_user_func( $GLOBALS['moda_interact_initial_hooks']['before_woocommerce_init'][0] );
+		self::assertSame(
+			array( array( 'custom_order_tables', MODA_INTERACT_MAIN_PLUGIN_FILE, true ) ),
+			ModaInteractHposFeatureUtilProbe::$declarations
+		);
 	}
 
 	public function test_plugin_headers_declare_the_supported_window(): void {

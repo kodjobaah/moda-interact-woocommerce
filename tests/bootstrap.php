@@ -20,6 +20,8 @@ $GLOBALS['moda_interact_transients'] = array();
 $GLOBALS['moda_interact_scheduled_events'] = array();
 $GLOBALS['moda_interact_registered_rest_routes'] = array();
 $GLOBALS['moda_interact_home_url'] = 'https://merchant.example';
+$GLOBALS['moda_interact_store_locale'] = 'en_GB';
+$GLOBALS['moda_interact_base_location'] = array( 'country' => 'GB', 'state' => '' );
 $GLOBALS['moda_interact_can_manage_woocommerce'] = true;
 $GLOBALS['moda_interact_fail_option_writes'] = false;
 define( 'WC_VERSION', '11.1.2' );
@@ -131,6 +133,14 @@ function delete_option( $option ) {
 	$GLOBALS['moda_interact_deleted_options'][] = $option;
 	unset( $GLOBALS['moda_interact_options'][ $option ], $GLOBALS['moda_interact_option_autoload'][ $option ] );
 	return true;
+}
+
+function get_locale() {
+	return $GLOBALS['moda_interact_store_locale'];
+}
+
+function wc_get_base_location() {
+	return $GLOBALS['moda_interact_base_location'];
 }
 
 function get_option( $option, $default = false ) {

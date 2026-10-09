@@ -72,4 +72,26 @@ describe('MerchantBootstrapController', () => {
 		expect(controller.state.data.shop.onboardingCompleted).toBe(false);
 		expect(client.getMerchantBootstrap).toHaveBeenCalledTimes(2);
 	});
+
+	it('waits for an in-flight read before fetching the newly synchronized context', async () => {
+		const first = deferred();
+		const client = {
+			getMerchantBootstrap: vi
+				.fn()
+				.mockImplementationOnce(() => first.promise)
+				.mockResolvedValue({
+					internationalContext: { countryCode: 'GB' },
+				}),
+		};
+		const controller = new MerchantBootstrapController(client);
+		controller.setConnectionStatus('CONNECTED');
+		const refreshed = controller.refreshAfterCurrent();
+		expect(client.getMerchantBootstrap).toHaveBeenCalledTimes(1);
+		first.resolve({ internationalContext: { countryCode: null } });
+		await refreshed;
+		expect(client.getMerchantBootstrap).toHaveBeenCalledTimes(2);
+		expect(controller.state.data.internationalContext.countryCode).toBe(
+			'GB'
+		);
+	});
 });

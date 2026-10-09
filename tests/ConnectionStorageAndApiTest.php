@@ -76,7 +76,9 @@ final class ConnectionStorageAndApiTest extends TestCase {
 		);
 		$result = $client->connect( 'https://merchant.example', '550e8400-e29b-41d4-a716-446655440000', Base64Url::encode( str_repeat( "\x02", 32 ) ) );
 		self::assertSame( $payload, $result );
-		self::assertSame( 'https://api.example.test/v1/woocommerce/installations/connect', $requests[0][0] );		self::assertSame( 0, $requests[0][1]['redirection'] );
+		self::assertSame( 'https://api.example.test/v1/woocommerce/installations/connect', $requests[0][0] );
+		self::assertSame( 30, $requests[0][1]['timeout'] );
+		self::assertSame( 0, $requests[0][1]['redirection'] );
 		self::assertSame( true, $requests[0][1]['sslverify'] );
 		self::assertSame( array(), $requests[0][1]['cookies'] );
 		self::assertArrayNotHasKey( 'Authorization', $requests[0][1]['headers'] );
@@ -101,6 +103,7 @@ final class ConnectionStorageAndApiTest extends TestCase {
 		$record['credentialVersion'] = 3;
 		$probe_client->probe( $record );
 		$headers = $requests[1][1]['headers'];
+		self::assertSame( 5, $requests[1][1]['timeout'] );
 		self::assertSame( 'install_123', $headers['X-Moda-Installation-Id'] );
 		self::assertSame( 'Bearer ' . $record['credential'], $headers['Authorization'] );
 		self::assertArrayNotHasKey( 'X-Shop-Id', $headers );

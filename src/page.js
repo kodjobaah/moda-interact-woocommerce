@@ -5,6 +5,7 @@ import { BillingScreen } from './billing-screen';
 import { ConnectionController } from './connection-controller';
 import { MerchantBootstrapController } from './merchant-bootstrap-controller';
 import { OverviewScreen } from './overview-screen';
+import { StoreContextSyncController } from './store-context-sync-controller';
 
 function ConnectionPanel({ state, onConnect, onRetry }) {
 	const { connection, pendingAction, actionError } = state;
@@ -229,6 +230,7 @@ function ModaInteractPage() {
 	const controllerRef = useRef(null);
 	const merchantControllerRef = useRef(null);
 	const billingControllerRef = useRef(null);
+	const syncControllerRef = useRef(null);
 	const previousConnectionStatus = useRef('LOADING');
 	const [activeSurface, setActiveSurface] = useState(() =>
 		isBillingReturn(globalThis.location?.search ?? '')
@@ -242,19 +244,27 @@ function ModaInteractPage() {
 	});
 	const [merchantState, setMerchantState] = useState({ status: 'IDLE' });
 	const [billingState, setBillingState] = useState({ status: 'IDLE' });
+	const [syncState, setSyncState] = useState({ status: 'IDLE' });
 
 	useEffect(() => {
-		const controller = new ConnectionController();
 		const merchantController = new MerchantBootstrapController(
 			undefined,
-			() => controller.refresh()
+			() => controllerRef.current?.refresh()
+		);
+		const syncController = new StoreContextSyncController(undefined, () =>
+			merchantController.refreshAfterCurrent()
+		);
+		const controller = new ConnectionController(undefined, () =>
+			syncController.sync()
 		);
 		const billingController = new BillingController(undefined, () =>
-			controller.refresh()
+			controllerRef.current?.refresh()
 		);
 		controllerRef.current = controller;
 		merchantControllerRef.current = merchantController;
 		billingControllerRef.current = billingController;
+		syncControllerRef.current = syncController;
+		const unsubscribeSync = syncController.subscribe(setSyncState);
 		const unsubscribeMerchant =
 			merchantController.subscribe(setMerchantState);
 		const unsubscribeBilling = billingController.subscribe(setBillingState);
@@ -262,6 +272,7 @@ function ModaInteractPage() {
 			setState(nextState);
 			merchantController.setConnectionStatus(nextState.connection.status);
 			billingController.setConnectionStatus(nextState.connection.status);
+			syncController.setConnectionStatus(nextState.connection.status);
 			if (
 				previousConnectionStatus.current === 'CONNECTED' &&
 				nextState.connection.status !== 'CONNECTED'
@@ -275,12 +286,15 @@ function ModaInteractPage() {
 			controllerRef.current = null;
 			merchantControllerRef.current = null;
 			billingControllerRef.current = null;
+			syncControllerRef.current = null;
 			unsubscribe();
 			unsubscribeMerchant();
 			unsubscribeBilling();
+			unsubscribeSync();
 			controller.dispose();
 			merchantController.dispose();
 			billingController.dispose();
+			syncController.dispose();
 		};
 	}, []);
 
@@ -360,6 +374,8 @@ function ModaInteractPage() {
 								state: merchantState,
 								onRefresh: () =>
 									merchantControllerRef.current?.refresh(),
+								syncState,
+								onSync: () => syncControllerRef.current?.sync(),
 							})
 				)
 			)

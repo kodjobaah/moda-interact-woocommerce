@@ -158,4 +158,21 @@ describe('connection controller', () => {
 		await controller.connect();
 		expect(client.connect).not.toHaveBeenCalled();
 	});
+
+	it('starts one independent best-effort sync only after first Connect, never after reconnect', async () => {
+		const sync = vi.fn().mockRejectedValue(new Error('offline'));
+		const client = {
+			getStatus: vi.fn(),
+			connect: vi.fn().mockResolvedValue(connected),
+		};
+		const controller = new ConnectionController(client, sync);
+		controller.state.connection = { status: 'DISCONNECTED' };
+		await controller.connect();
+		expect(controller.state.connection.status).toBe('CONNECTED');
+		expect(controller.state.actionError).toBe(false);
+		expect(sync).toHaveBeenCalledTimes(1);
+		controller.state.connection = { status: 'RECONNECT_REQUIRED' };
+		await controller.connect();
+		expect(sync).toHaveBeenCalledTimes(1);
+	});
 });

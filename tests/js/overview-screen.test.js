@@ -107,7 +107,46 @@ describe('Overview screen', () => {
 		});
 		expect(textContent(element)).toContain('temporarily unavailable');
 		expect(textContent(element)).toContain('Refresh overview');
-		element.props.children[0].props.children[1].props.onClick();
+		element.props.children[0].props.children[1].props.children[1].props.onClick();
 		expect(onRefresh).toHaveBeenCalledTimes(1);
+	});
+
+	it('offers a real Sync store settings action and retryable errors without changing connection', () => {
+		const sync = vi.fn();
+		const element = OverviewScreen({
+			state: { status: 'READY', data: bootstrap() },
+			onRefresh: vi.fn(),
+			onSync: sync,
+			syncState: { status: 'ERROR' },
+		});
+		expect(textContent(element)).toContain('Sync store settings');
+		expect(textContent(element)).toContain('Your connection is unchanged');
+		const buttons = [];
+		function walk(node) {
+			if (Array.isArray(node)) {
+				return node.forEach(walk);
+			}
+			if (!node || typeof node !== 'object') {
+				return;
+			}
+			if (node.type === 'button') {
+				buttons.push(node);
+			}
+			walk(node.props?.children);
+		}
+		walk(element);
+		const syncButton = buttons.find(
+			(button) => textContent(button) === 'Sync store settings'
+		);
+		expect(syncButton).toBeDefined();
+		syncButton.props.onClick();
+		expect(sync).toHaveBeenCalledTimes(1);
+		const pending = OverviewScreen({
+			state: { status: 'READY', data: bootstrap() },
+			onRefresh: vi.fn(),
+			onSync: sync,
+			syncState: { status: 'SYNCING' },
+		});
+		expect(textContent(pending)).toContain('Syncing');
 	});
 });

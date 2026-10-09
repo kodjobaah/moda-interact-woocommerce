@@ -23,6 +23,21 @@ final class Plugin {
 		self::$runtime->boot();
 	}
 
+	/**
+	 * The current extension does not read or write WooCommerce order storage.
+	 */
+	public static function declare_hpos_compatibility(): void {
+		if ( ! class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			return;
+		}
+
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+			'custom_order_tables',
+			MODA_INTERACT_MAIN_PLUGIN_FILE,
+			true
+		);
+	}
+
 	public static function load_textdomain(): void {
 		load_plugin_textdomain(
 			'moda-interact',

@@ -8,6 +8,9 @@ use ModaInteract\WooCommerce\Connection\InstallationStore;
 use ModaInteract\WooCommerce\Security\Base64Url;
 
 final class ModaApiClient {
+	private const CONNECT_TIMEOUT_SECONDS = 30;
+	private const DEFAULT_TIMEOUT_SECONDS = 5;
+
 	private $transport;
 
 	public function __construct(
@@ -33,7 +36,8 @@ final class ModaApiClient {
 			'/v1/woocommerce/installations/connect',
 			'POST',
 			array( 'Content-Type' => 'application/json' ),
-			$body
+			$body,
+			self::CONNECT_TIMEOUT_SECONDS
 		);
 		$status   = wp_remote_retrieve_response_code( $response );
 		$payload  = $this->jsonBody( $response );
@@ -202,11 +206,50 @@ final class ModaApiClient {
 		}
 	}
 
-	private function request( string $path, string $method, array $headers, ?string $body = null ): mixed {
+	/** API-004: context-only update; never modifies installation, billing or credentials. */
+	public function putMerchantStoreContext( array $connection, array $snapshot ): void {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			! self::hasExactKeys( $snapshot, array( 'schemaVersion', 'storeLocale', 'languageTag', 'timeZone', 'countryCode' ) ) ||
+			1 !== $snapshot['schemaVersion'] ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		$body = wp_json_encode( $snapshot );
+		if ( ! is_string( $body ) || strlen( $body ) > 2048 ) {
+			throw new ModaApiClientException( 'remote_rejected' );
+		}
+		$response = $this->request(
+			'/v1/merchant/store-context',
+			'PUT',
+			array(
+				'Content-Type'           => 'application/json',
+				'X-Moda-Installation-Id' => $connection['installationId'],
+				'Authorization'         => 'Bearer ' . $connection['credential'],
+			),
+			$body
+		);
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) {
+			throw new ModaApiClientException( 'unauthorized', $status );
+		}
+		if ( 409 === $status ) {
+			throw new ModaApiClientException( 'tenant_conflict', $status );
+		}
+		if ( 400 === $status || 413 === $status ) {
+			throw new ModaApiClientException( 'remote_rejected', $status );
+		}
+		if ( 204 !== $status ) {
+			throw new ModaApiClientException( 'remote_unavailable', $status );
+		}
+		if ( '' !== wp_remote_retrieve_body( $response ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+	}
+
+	private function request( string $path, string $method, array $headers, ?string $body = null, int $timeout = self::DEFAULT_TIMEOUT_SECONDS ): mixed {
 		$url = $this->configuration->base_url . $path;
 		$args = array(
 			'method'              => $method,
-			'timeout'             => 5,
+			'timeout'             => $timeout,
 			'redirection'         => 0,
 			'blocking'            => true,
 			'headers'             => array_merge( array( 'Accept' => 'application/json' ), $headers ),

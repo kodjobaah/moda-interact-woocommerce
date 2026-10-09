@@ -136,7 +136,12 @@ function OverviewContent({ data }) {
 	);
 }
 
-export function OverviewScreen({ state, onRefresh }) {
+export function OverviewScreen({
+	state,
+	onRefresh,
+	syncState = { status: 'IDLE' },
+	onSync,
+}) {
 	let content;
 	switch (state.status) {
 		case 'IDLE':
@@ -197,18 +202,55 @@ export function OverviewScreen({ state, onRefresh }) {
 				__('Overview', 'moda-interact')
 			),
 			createElement(
-				'button',
-				{
-					type: 'button',
-					className: 'button',
-					disabled: state.status === 'LOADING',
-					onClick: onRefresh,
-				},
-				state.status === 'LOADING'
-					? __('Refreshing…', 'moda-interact')
-					: __('Refresh overview', 'moda-interact')
+				'div',
+				{ className: 'moda-interact-overview__actions' },
+				createElement(
+					'button',
+					{
+						type: 'button',
+						className: 'button',
+						disabled: syncState.status === 'SYNCING',
+						onClick: onSync,
+					},
+					syncState.status === 'SYNCING'
+						? __('Syncing…', 'moda-interact')
+						: __('Sync store settings', 'moda-interact')
+				),
+				createElement(
+					'button',
+					{
+						type: 'button',
+						className: 'button',
+						disabled: state.status === 'LOADING',
+						onClick: onRefresh,
+					},
+					state.status === 'LOADING'
+						? __('Refreshing…', 'moda-interact')
+						: __('Refresh overview', 'moda-interact')
+				)
 			)
 		),
+		syncState.status === 'ERROR'
+			? createElement(
+					'p',
+					{
+						className:
+							'moda-interact-message moda-interact-message--error',
+						role: 'alert',
+					},
+					__(
+						'Store settings could not be synchronized. Your connection is unchanged. Please retry.',
+						'moda-interact'
+					)
+				)
+			: null,
+		syncState.status === 'SYNCED'
+			? createElement(
+					'p',
+					{ className: 'moda-interact-message', role: 'status' },
+					__('Store settings synchronized.', 'moda-interact')
+				)
+			: null,
 		content
 	);
 }

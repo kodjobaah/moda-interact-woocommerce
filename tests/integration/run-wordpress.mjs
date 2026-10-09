@@ -5,11 +5,14 @@ import { createServer } from 'node:https';
 import { mkdtemp, readFile, rm, writeFile, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
+import { assertStoreContextWordPress } from './store-context-assertions.mjs';
+import { createWordPressFetch } from './wordpress-http.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
 const port = Number(process.env.WP_ENV_PORT ?? 8899);
 const siteUrl = `http://localhost:${port}`;
+const fetchWordPress = createWordPressFetch();
 const temporaryDirectory = await mkdtemp(
 	join(tmpdir(), 'moda-woo-api-fixture-')
 );
@@ -23,7 +26,11 @@ let plansReadCount = 0;
 let createCount = 0;
 let switchCount = 0;
 let cancelCount = 0;
+let contextSyncAttempts = 0;
+let savedContext = null;
 let wordpressStarted = false;
+let originalWpHome;
+let wpHomeOverrideApplied = false;
 
 function command(program, args, options = {}) {
 	return execFileSync(program, args, {
@@ -43,6 +50,16 @@ function wp(...args) {
 			env: { ...process.env, WP_ENV_PORT: String(port) },
 		}
 	);
+}
+
+function restoreWpHome() {
+	const args =
+		originalWpHome === null
+			? ['delete', 'WP_HOME']
+			: ['set', 'WP_HOME', originalWpHome, '--type=constant'];
+	command('npm', ['exec', '--', 'wp-env', 'run', 'cli', 'wp', 'config', ...args], {
+		env: { ...process.env, WP_ENV_PORT: String(port) },
+	});
 }
 
 function parseJsonOutput(output) {
@@ -151,7 +168,7 @@ async function verifyChallenge(body) {
 		attempt_id: body.attemptId,
 		nonce,
 	}).toString();
-	const response = await fetch(callback);
+	const response = await fetchWordPress(callback);
 	assert.equal(
 		response.status,
 		200,
@@ -305,6 +322,39 @@ const server = createServer(
 				return;
 			}
 			if (
+				url.pathname === '/v1/merchant/store-context' &&
+				request.method === 'PUT'
+			) {
+				assert.equal(url.search, '');
+				assert.equal(
+					request.headers['x-moda-installation-id'],
+					'install_wp_fixture'
+				);
+				assert.equal(
+					request.headers.authorization,
+					`Bearer ${Buffer.alloc(32, 2).toString('base64url')}`
+				);
+				assert.equal(request.headers.cookie, undefined);
+				assert.ok(bodyBytes.length <= 2048);
+				const snapshot = JSON.parse(bodyBytes.toString('utf8'));
+				assert.deepEqual(Object.keys(snapshot).sort(), [
+					'countryCode',
+					'languageTag',
+					'schemaVersion',
+					'storeLocale',
+					'timeZone',
+				]);
+				contextSyncAttempts += 1;
+				if (contextSyncAttempts === 1) {
+					sendJson(response, 503, { error: 'internal_error' });
+				} else {
+					savedContext = snapshot;
+					response.writeHead(204, { 'cache-control': 'no-store' });
+					response.end();
+				}
+				return;
+			}
+			if (
 				url.pathname === '/v1/merchant/bootstrap' &&
 				request.method === 'GET'
 			) {
@@ -334,7 +384,7 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: {
+						internationalContext: savedContext ?? {
 							storeLocale: 'pt_BR',
 							languageTag: null,
 							timeZone: 'Europe/Lisbon',
@@ -372,7 +422,7 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: {
+						internationalContext: savedContext ?? {
 							storeLocale: 'pt_BR',
 							languageTag: null,
 							timeZone: 'Europe/Lisbon',
@@ -512,6 +562,13 @@ try {
 	command('npm', ['run', 'env:start'], {
 		env: { ...process.env, WP_ENV_PORT: String(port) },
 	});
+	originalWpHome = parseJsonOutput(
+		wp('eval', 'echo wp_json_encode(defined("WP_HOME") ? WP_HOME : null);')
+	);
+	assert.ok(
+		originalWpHome === null || typeof originalWpHome === 'string',
+		'initial WP_HOME must be a string or undefined'
+	);
 	const hostBridgeIp = parseJsonOutput(
 		wp(
 			'eval',
@@ -630,7 +687,7 @@ try {
 		)
 	);
 	const request = (path, options = {}) =>
-		fetch(`${siteUrl}/wp-json/moda-interact/v1/connection${path}`, {
+		fetchWordPress(`${siteUrl}/wp-json/moda-interact/v1/connection${path}`, {
 			...options,
 			headers: {
 				...(options.headers ?? {}),
@@ -639,7 +696,7 @@ try {
 			},
 		});
 	const merchantBootstrapRequest = (query = '') =>
-		fetch(
+		fetchWordPress(
 			`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap${query}`,
 			{
 				headers: {
@@ -649,7 +706,7 @@ try {
 			}
 		);
 	const billingRequest = (path, options = {}) =>
-		fetch(`${siteUrl}/wp-json/moda-interact/v1/billing${path}`, {
+		fetchWordPress(`${siteUrl}/wp-json/moda-interact/v1/billing${path}`, {
 			...options,
 			headers: {
 				...(options.headers ?? {}),
@@ -658,7 +715,7 @@ try {
 			},
 		});
 
-	const noAuth = await fetch(
+	const noAuth = await fetchWordPress(
 		`${siteUrl}/wp-json/moda-interact/v1/connection`,
 		{
 			method: 'POST',
@@ -670,7 +727,7 @@ try {
 		noAuth.status === 401 || noAuth.status === 403,
 		`unauthenticated POST must be denied, got ${noAuth.status}`
 	);
-	const badNonce = await fetch(
+	const badNonce = await fetchWordPress(
 		`${siteUrl}/wp-json/moda-interact/v1/connection`,
 		{
 			method: 'POST',
@@ -686,7 +743,7 @@ try {
 		badNonce.status === 401 || badNonce.status === 403,
 		`invalid REST nonce must be denied, got ${badNonce.status}`
 	);
-	const unknownChallenge = await fetch(
+	const unknownChallenge = await fetchWordPress(
 		`${siteUrl}/wp-json/moda-interact/v1/connection/challenge?attempt_id=550e8400-e29b-41d4-a716-446655440000&nonce=${randomBytes(32).toString('base64url')}`
 	);
 	assert.equal(unknownChallenge.status, 404);
@@ -790,11 +847,11 @@ try {
 	assert.deepEqual(await invalidBootstrap.json(), {
 		error: 'REMOTE_RESPONSE_INVALID',
 	});
-	const deniedBootstrap = await fetch(
+	const deniedBootstrap = await fetchWordPress(
 		`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`
 	);
 	assert.ok(deniedBootstrap.status === 401 || deniedBootstrap.status === 403);
-	const badNonceBootstrap = await fetch(
+	const badNonceBootstrap = await fetchWordPress(
 		`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`,
 		{
 			headers: {
@@ -841,7 +898,7 @@ try {
 		},
 	};
 	for (const route of billingRoutes) {
-		const denied = await fetch(
+		const denied = await fetchWordPress(
 			`${siteUrl}/wp-json/moda-interact/v1/billing${route.path}`,
 			{ method: route.method }
 		);
@@ -849,7 +906,7 @@ try {
 			denied.status === 401 || denied.status === 403,
 			`unauthenticated billing ${route.method} ${route.path} must be denied`
 		);
-		const badNonceResponse = await fetch(
+		const badNonceResponse = await fetchWordPress(
 			`${siteUrl}/wp-json/moda-interact/v1/billing${route.path}`,
 			{
 				method: route.method,
@@ -968,6 +1025,7 @@ try {
 		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
 	);
 
+	wpHomeOverrideApplied = true;
 	command(
 		'npm',
 		[
@@ -985,24 +1043,17 @@ try {
 		],
 		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
 	);
-	assert.deepEqual(await (await request('')).json(), {
+	const siteUrlChangedResponse = await request('', { redirect: 'manual' });
+	assert.equal(
+		siteUrlChangedResponse.status,
+		200,
+		`SITE_URL_CHANGED must return 200 without a redirect (received ${siteUrlChangedResponse.status}, Location: ${siteUrlChangedResponse.headers.get('location') ?? 'none'})`
+	);
+	assert.deepEqual(await siteUrlChangedResponse.json(), {
 		status: 'SITE_URL_CHANGED',
 	});
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'config',
-			'delete',
-			'WP_HOME',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
+	restoreWpHome();
+	wpHomeOverrideApplied = false;
 	command(
 		'npm',
 		[
@@ -1054,6 +1105,19 @@ try {
 		)
 	);
 	assert.deepEqual(stored, ['install_wp_fixture', 2]);
+	await assertStoreContextWordPress({
+		siteUrl,
+		auth,
+		wp,
+		parseJsonOutput,
+		getFixtureState: () => ({
+			attempts: contextSyncAttempts,
+			saved: savedContext,
+		}),
+	});
+	process.stdout.write(
+		'WOO-007 WordPress store-context sync + readback integration passed.\n'
+	);
 	process.stdout.write(
 		'WOO-003 WordPress REST + HTTPS fixture integration passed.\n'
 	);
@@ -1096,32 +1160,14 @@ try {
 				);
 			}
 		}
-		try {
-			const wpHome = wp(
-				'eval',
-				'echo defined("WP_HOME") ? WP_HOME : "";'
-			).trim();
-			if (wpHome) {
-				command(
-					'npm',
-					[
-						'exec',
-						'--',
-						'wp-env',
-						'run',
-						'cli',
-						'wp',
-						'config',
-						'delete',
-						'WP_HOME',
-					],
-					{ env: { ...process.env, WP_ENV_PORT: String(port) } }
+		if (wpHomeOverrideApplied) {
+			try {
+				restoreWpHome();
+			} catch {
+				process.stderr.write(
+					'Could not restore the original WP_HOME configuration.\n'
 				);
 			}
-		} catch {
-			process.stderr.write(
-				'Could not verify temporary WP_HOME configuration cleanup.\n'
-			);
 		}
 		try {
 			command('npm', ['run', 'env:stop'], {
