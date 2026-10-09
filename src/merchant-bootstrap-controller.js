@@ -94,6 +94,14 @@ export class MerchantBootstrapController {
 		return request;
 	}
 
+	/** Wait out a concurrent initial GET, then fetch the freshly saved context. */
+	async refreshAfterCurrent() {
+		if (this.requestPromise) {
+			await this.requestPromise;
+		}
+		return this.refresh();
+	}
+
 	dispose() {
 		this.disposed = true;
 		this.revision += 1;

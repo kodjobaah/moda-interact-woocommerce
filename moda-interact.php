@@ -28,6 +28,8 @@ if ( ! defined( 'MODA_INTERACT_MAIN_PLUGIN_FILE' ) ) {
 require_once __DIR__ . '/vendor/autoload.php';
 
 
+add_action( 'before_woocommerce_init', array( Plugin::class, 'declare_hpos_compatibility' ) );
+
 register_activation_hook( __FILE__, array( Plugin::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Plugin::class, 'deactivate' ) );
 add_action( 'plugins_loaded', array( Plugin::class, 'boot' ), 20 );

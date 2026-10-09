@@ -5,6 +5,7 @@ import { createServer } from 'node:https';
 import { mkdtemp, readFile, rm, writeFile, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
+import { assertStoreContextWordPress } from './store-context-assertions.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -18,6 +19,8 @@ const certificatePath = join(temporaryDirectory, 'fixture-cert.pem');
 let probeCount = 0;
 let connectCount = 0;
 let bootstrapCount = 0;
+let contextSyncAttempts = 0;
+let savedContext = null;
 let wordpressStarted = false;
 
 function command(program, args, options = {}) {
@@ -233,6 +236,39 @@ const server = createServer(
 				return;
 			}
 			if (
+				url.pathname === '/v1/merchant/store-context' &&
+				request.method === 'PUT'
+			) {
+				assert.equal(url.search, '');
+				assert.equal(
+					request.headers['x-moda-installation-id'],
+					'install_wp_fixture'
+				);
+				assert.equal(
+					request.headers.authorization,
+					`Bearer ${Buffer.alloc(32, 2).toString('base64url')}`
+				);
+				assert.equal(request.headers.cookie, undefined);
+				assert.ok(bodyBytes.length <= 2048);
+				const snapshot = JSON.parse(bodyBytes.toString('utf8'));
+				assert.deepEqual(Object.keys(snapshot).sort(), [
+					'countryCode',
+					'languageTag',
+					'schemaVersion',
+					'storeLocale',
+					'timeZone',
+				]);
+				contextSyncAttempts += 1;
+				if (contextSyncAttempts === 1) {
+					sendJson(response, 503, { error: 'internal_error' });
+				} else {
+					savedContext = snapshot;
+					response.writeHead(204, { 'cache-control': 'no-store' });
+					response.end();
+				}
+				return;
+			}
+			if (
 				url.pathname === '/v1/merchant/bootstrap' &&
 				request.method === 'GET'
 			) {
@@ -262,7 +298,7 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: {
+						internationalContext: savedContext ?? {
 							storeLocale: 'pt_BR',
 							languageTag: null,
 							timeZone: 'Europe/Lisbon',
@@ -300,7 +336,7 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: {
+						internationalContext: savedContext ?? {
 							storeLocale: 'pt_BR',
 							languageTag: null,
 							timeZone: 'Europe/Lisbon',
@@ -758,6 +794,19 @@ try {
 		)
 	);
 	assert.deepEqual(stored, ['install_wp_fixture', 2]);
+	await assertStoreContextWordPress({
+		siteUrl,
+		auth,
+		wp,
+		parseJsonOutput,
+		getFixtureState: () => ({
+			attempts: contextSyncAttempts,
+			saved: savedContext,
+		}),
+	});
+	process.stdout.write(
+		'WOO-007 WordPress store-context sync + readback integration passed.\n'
+	);
 	process.stdout.write(
 		'WOO-003 WordPress REST + HTTPS fixture integration passed.\n'
 	);

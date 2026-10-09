@@ -16,7 +16,7 @@ addFilter('woocommerce_admin_pages_list', 'moda-interact', (pages) => {
 		path: '/moda-interact',
 		breadcrumbs: [__('Moda Interact', 'moda-interact')],
 		navArgs: {
-			id: 'moda_interact',
+			id: 'moda-interact',
 		},
 	});
 

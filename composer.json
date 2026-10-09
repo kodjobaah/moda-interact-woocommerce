@@ -18,6 +18,8 @@
 			"@php -l includes/Connection/InstallationStore.php",
 			"@php -l includes/Connection/SiteIdentity.php",
 			"@php -l includes/Rest/ConnectionController.php",
+			"@php -l includes/Rest/StoreContextController.php",
+			"@php -l includes/StoreContext/StoreContextResolver.php",
 			"@php -l includes/Security/Base64Url.php",
 			"@php -l includes/Security/HmacProof.php",
 			"@php -l includes/Admin/Setup.php",
@@ -26,7 +28,9 @@
 			"@php -l tests/ConnectionControllerTest.php",
 			"@php -l tests/ConnectionStorageAndApiTest.php",
 			"@php -l tests/ModaApiConfigurationTest.php",
-			"@php -l tests/SecurityAndSiteIdentityTest.php"
+			"@php -l tests/SecurityAndSiteIdentityTest.php",
+			"@php -l tests/StoreContextResolverTest.php",
+			"@php -l tests/StoreContextControllerTest.php"
 		],
 		"test": "@php vendor/bin/phpunit"
 	},

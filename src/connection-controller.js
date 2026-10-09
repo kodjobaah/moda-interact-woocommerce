@@ -1,7 +1,11 @@
 import { createConnectionClient } from './connection-client';
 
 export class ConnectionController {
-	constructor(client = createConnectionClient()) {
+	constructor(
+		client = createConnectionClient(),
+		onFirstConnected = () => {}
+	) {
+		this.onFirstConnected = onFirstConnected;
 		this.client = client;
 		this.listeners = new Set();
 		this.revision = 0;
@@ -86,6 +90,7 @@ export class ConnectionController {
 			return Promise.resolve(this.state);
 		}
 
+		const firstConnection = this.state.connection.status === 'DISCONNECTED';
 		const revision = ++this.revision;
 		this.publish({
 			...this.state,
@@ -102,6 +107,16 @@ export class ConnectionController {
 						pendingAction: null,
 						actionError: false,
 					});
+					if (firstConnection) {
+						try {
+							// Independent best-effort action; never fail a successful Connect.
+							Promise.resolve(this.onFirstConnected()).catch(
+								() => {}
+							);
+						} catch {
+							// Connection has already been persisted successfully.
+						}
+					}
 				}
 				return this.state;
 			})

@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { ConnectionController } from './connection-controller';
 import { MerchantBootstrapController } from './merchant-bootstrap-controller';
 import { OverviewScreen } from './overview-screen';
+import { StoreContextSyncController } from './store-context-sync-controller';
 
 function ConnectionPanel({ state, onConnect, onRetry }) {
 	const { connection, pendingAction, actionError } = state;
@@ -226,35 +227,48 @@ const applicationSections = [{ id: 'connection', component: ConnectionPanel }];
 function ModaInteractPage() {
 	const controllerRef = useRef(null);
 	const merchantControllerRef = useRef(null);
+	const syncControllerRef = useRef(null);
 	const [state, setState] = useState({
 		connection: { status: 'LOADING' },
 		pendingAction: null,
 		actionError: false,
 	});
 	const [merchantState, setMerchantState] = useState({ status: 'IDLE' });
+	const [syncState, setSyncState] = useState({ status: 'IDLE' });
 
 	useEffect(() => {
-		const controller = new ConnectionController();
 		const merchantController = new MerchantBootstrapController(
 			undefined,
 			() => controller.refresh()
 		);
+		const syncController = new StoreContextSyncController(undefined, () =>
+			merchantController.refreshAfterCurrent()
+		);
+		const controller = new ConnectionController(undefined, () =>
+			syncController.sync()
+		);
 		controllerRef.current = controller;
 		merchantControllerRef.current = merchantController;
+		syncControllerRef.current = syncController;
+		const unsubscribeSync = syncController.subscribe(setSyncState);
 		const unsubscribeMerchant =
 			merchantController.subscribe(setMerchantState);
 		const unsubscribe = controller.subscribe((nextState) => {
 			setState(nextState);
 			merchantController.setConnectionStatus(nextState.connection.status);
+			syncController.setConnectionStatus(nextState.connection.status);
 		});
 		controller.refresh();
 		return () => {
 			controllerRef.current = null;
 			merchantControllerRef.current = null;
+			syncControllerRef.current = null;
 			unsubscribe();
 			unsubscribeMerchant();
+			unsubscribeSync();
 			controller.dispose();
 			merchantController.dispose();
+			syncController.dispose();
 		};
 	}, []);
 
@@ -272,6 +286,8 @@ function ModaInteractPage() {
 				key: 'overview',
 				state: merchantState,
 				onRefresh: () => merchantControllerRef.current?.refresh(),
+				syncState,
+				onSync: () => syncControllerRef.current?.sync(),
 			})
 		);
 	}
