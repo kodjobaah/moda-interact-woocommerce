@@ -139,6 +139,10 @@ function get_locale() {
 	return $GLOBALS['moda_interact_store_locale'];
 }
 
+function get_user_locale() {
+	return $GLOBALS['moda_interact_admin_locale'] ?? $GLOBALS['moda_interact_store_locale'];
+}
+
 function wc_get_base_location() {
 	return $GLOBALS['moda_interact_base_location'];
 }

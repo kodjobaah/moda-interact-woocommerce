@@ -245,7 +245,109 @@ final class ModaApiClient {
 		}
 	}
 
-	private function request( string $path, string $method, array $headers, ?string $body = null, int $timeout = self::DEFAULT_TIMEOUT_SECONDS ): mixed {
+	/** API-005: read the canonical localized catalogue for this installation only. */
+	public function merchantStoreCategories( array $connection, string $locale ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			! preg_match( '/^[A-Za-z]{2,8}(?:[-_][A-Za-z0-9]{2,8})*$/D', $locale ) || strlen( $locale ) > 64 ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		$response = $this->request(
+			'/v1/merchant/store-categories?locale=' . rawurlencode( $locale ),
+			'GET',
+			self::installationHeaders( $connection ),
+			null,
+			self::DEFAULT_TIMEOUT_SECONDS,
+			2097153
+		);
+		$status = wp_remote_retrieve_response_code( $response );
+		self::assertCategoryStatus( $status );
+		if ( 200 !== $status ) {
+			throw new ModaApiClientException( 'remote_unavailable', $status );
+		}
+		try {
+			$payload = $this->jsonBody( $response, 2097152 );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		if ( ! StoreCategoryContracts::isRead( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return $payload;
+	}
+
+	/** API-006: explicit generation-checked publication; no implicit category defaults. */
+	public function selectMerchantStoreCategory( array $connection, array $selection ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			! self::hasExactKeys( $selection, array( 'schemaVersion', 'categoryId', 'selectedMappingIds', 'expectedPendingSelectionGeneration' ) ) ||
+			1 !== $selection['schemaVersion'] ||
+			! self::categoryId( $selection['categoryId'] ) ||
+			! is_array( $selection['selectedMappingIds'] ) || ! array_is_list( $selection['selectedMappingIds'] ) ||
+			count( $selection['selectedMappingIds'] ) > 50 ||
+			count( $selection['selectedMappingIds'] ) !== count( array_unique( $selection['selectedMappingIds'] ) ) ||
+			! is_int( $selection['expectedPendingSelectionGeneration'] ) ||
+			$selection['expectedPendingSelectionGeneration'] < 0 ||
+			$selection['expectedPendingSelectionGeneration'] > 9007199254740990 ) {
+			throw new ModaApiClientException( 'remote_rejected' );
+		}
+		foreach ( $selection['selectedMappingIds'] as $id ) {
+			if ( ! self::categoryId( $id ) ) {
+				throw new ModaApiClientException( 'remote_rejected' );
+			}
+		}
+		$body = wp_json_encode( $selection );
+		if ( ! is_string( $body ) || strlen( $body ) > 4096 ) {
+			throw new ModaApiClientException( 'remote_rejected' );
+		}
+		$response = $this->request(
+			'/v1/merchant/store-category',
+			'POST',
+			array_merge( array( 'Content-Type' => 'application/json' ), self::installationHeaders( $connection ) ),
+			$body
+		);
+		$status = wp_remote_retrieve_response_code( $response );
+		self::assertCategoryStatus( $status );
+		if ( 422 === $status ) {
+			throw new ModaApiClientException( 'category_unavailable', $status );
+		}
+		if ( 400 === $status || 413 === $status ) {
+			throw new ModaApiClientException( 'remote_rejected', $status );
+		}
+		if ( 200 !== $status ) {
+			throw new ModaApiClientException( 'remote_unavailable', $status );
+		}
+		try {
+			$payload = $this->jsonBody( $response );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		if ( ! StoreCategoryContracts::isSelection( $payload ) || $payload['activeCategoryId'] !== $selection['categoryId'] ||
+			$payload['pendingSelectionGeneration'] <= $selection['expectedPendingSelectionGeneration'] ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return $payload;
+	}
+
+	private static function categoryId( mixed $id ): bool {
+		return is_string( $id ) && strlen( $id ) <= 128 && 1 === preg_match( '/^[A-Za-z0-9_-]+$/D', $id );
+	}
+
+	private static function installationHeaders( array $connection ): array {
+		return array(
+			'X-Moda-Installation-Id' => $connection['installationId'],
+			'Authorization' => 'Bearer ' . $connection['credential'],
+		);
+	}
+
+	private static function assertCategoryStatus( int $status ): void {
+		if ( 401 === $status ) {
+			throw new ModaApiClientException( 'unauthorized', $status );
+		}
+		if ( 409 === $status ) {
+			throw new ModaApiClientException( 'tenant_conflict', $status );
+		}
+	}
+
+	private function request( string $path, string $method, array $headers, ?string $body = null, int $timeout = self::DEFAULT_TIMEOUT_SECONDS, int $response_limit = 8193 ): mixed {
 		$url = $this->configuration->base_url . $path;
 		$args = array(
 			'method'              => $method,
@@ -256,7 +358,7 @@ final class ModaApiClient {
 			'cookies'             => array(),
 			'sslverify'           => true,
 			'reject_unsafe_urls'  => ModaApiConfiguration::MODE_PUBLIC === $this->configuration->mode,
-			'limit_response_size' => 8193,
+			'limit_response_size' => $response_limit,
 		);
 		if ( null !== $this->configuration->ca_bundle ) {
 			$args['sslcertificates'] = $this->configuration->ca_bundle;
@@ -271,10 +373,10 @@ final class ModaApiClient {
 		return $response;
 	}
 
-	private function jsonBody( mixed $response ): array {
+	private function jsonBody( mixed $response, int $max_bytes = 8192 ): array {
 		$content_type = (string) wp_remote_retrieve_header( $response, 'content-type' );
 		$body         = wp_remote_retrieve_body( $response );
-		if ( ! preg_match( '#^application/json(?:\s*;|$)#i', trim( $content_type ) ) || ! is_string( $body ) || strlen( $body ) > 8192 ) {
+		if ( ! preg_match( '#^application/json(?:\s*;|$)#i', trim( $content_type ) ) || ! is_string( $body ) || strlen( $body ) > $max_bytes ) {
 			throw new ModaApiClientException( 'remote_unavailable' );
 		}
 		$payload = json_decode( $body, true );

@@ -11,6 +11,7 @@ use ModaInteract\WooCommerce\Connection\SiteIdentity;
 use ModaInteract\WooCommerce\Rest\BillingController;
 use ModaInteract\WooCommerce\Rest\ConnectionController;
 use ModaInteract\WooCommerce\Rest\StoreContextController;
+use ModaInteract\WooCommerce\Rest\StoreCategoryController;
 
 final class Runtime {
 	private const MINIMUM_WOOCOMMERCE_VERSION = '11.0';
@@ -68,6 +69,7 @@ final class Runtime {
 		( new ConnectionController( null, new SiteIdentity( $mode ) ) )->register();
 		( new BillingController( null, new SiteIdentity( $mode ) ) )->register();
 		( new StoreContextController( null, new SiteIdentity( $mode ) ) )->register();
+		( new StoreCategoryController( null, new SiteIdentity( $mode ) ) )->register();
 		if ( is_admin() ) {
 			new Setup();
 		}

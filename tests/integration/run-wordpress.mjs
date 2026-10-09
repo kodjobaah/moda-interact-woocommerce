@@ -8,6 +8,7 @@ import { basename, join, resolve } from 'node:path';
 import { assertStoreContextWordPress } from './store-context-assertions.mjs';
 import { createWordPressFetch } from './wordpress-http.mjs';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
+import { assertStoreCategoryWordPress } from './category-assertions.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -29,6 +30,9 @@ let switchCount = 0;
 let cancelCount = 0;
 let contextSyncAttempts = 0;
 let savedContext = null;
+let activeCategorySelection = null;
+let categoryGeneration = 0;
+let categorySelections = 0;
 let wordpressStarted = false;
 let originalWpHome;
 let wpHomeOverrideApplied = false;
@@ -358,6 +362,59 @@ const server = createServer(
 				return;
 			}
 			if (
+				url.pathname === '/v1/merchant/store-categories' &&
+				request.method === 'GET'
+			) {
+				assert.match(url.search, /^\?locale=[A-Za-z0-9_%\-]+$/);
+				assert.equal(bodyBytes.length, 0);
+				assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
+				assert.equal(request.headers.authorization, `Bearer ${Buffer.alloc(32, 2).toString('base64url')}`);
+				const category = {
+					id: 'fashion', slug: 'fashion', localizedDisplayName: 'Fashion',
+					localizedDescription: 'Clothing and accessories',
+				};
+				sendJson(response, 200, {
+					schemaVersion: 1, requestedLocale: 'en_GB', resolvedLocale: 'en',
+					categories: [{ ...category,
+						mappings: [{ id: 'clothing', conditionKey: 'is_clothing', localizedDisplayName: 'Clothing' }],
+						defaultTemplate: { id: 'template_1', key: 'fashion', displayName: 'Fashion', editVersion: 1 },
+					}],
+					storeProfile: {
+						activeCategory: activeCategorySelection ? category : null, pendingCategory: null,
+						activeMappingIds: activeCategorySelection?.selectedMappingIds ?? [], pendingMappingIds: [],
+						pendingSelectionGeneration: categoryGeneration, pendingSelectedAt: null,
+						pendingState: 'NONE', pendingTemplate: null,
+					},
+				});
+				return;
+			}
+			if (
+				url.pathname === '/v1/merchant/store-category' &&
+				request.method === 'POST'
+			) {
+				assert.equal(url.search, '');
+				assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
+				assert.equal(request.headers.authorization, `Bearer ${Buffer.alloc(32, 2).toString('base64url')}`);
+				const selection = JSON.parse(bodyBytes.toString('utf8'));
+				assert.deepEqual(Object.keys(selection).sort(), [
+					'categoryId', 'expectedPendingSelectionGeneration', 'schemaVersion', 'selectedMappingIds',
+				]);
+				if (selection.expectedPendingSelectionGeneration !== categoryGeneration) {
+					sendJson(response, 409, { error: 'store_category_conflict' });
+					return;
+				}
+				assert.equal(selection.categoryId, 'fashion');
+				categorySelections += 1;
+				categoryGeneration += 1;
+				activeCategorySelection = selection;
+				sendJson(response, 200, {
+					schemaVersion: 1, activeCategoryId: 'fashion', activePromptRevisionId: 'revision_1',
+					activeMappingIds: [...selection.selectedMappingIds],
+					pendingSelectionGeneration: categoryGeneration,
+				});
+				return;
+			}
+			if (
 				url.pathname === '/v1/merchant/bootstrap' &&
 				request.method === 'GET'
 			) {
@@ -389,7 +446,7 @@ const server = createServer(
 						},
 						internationalContext: bootstrapInternationalContext(savedContext),
 						storeProfile: {
-							activeCategory: null,
+							activeCategory: activeCategorySelection ? { id: 'fashion', slug: 'fashion', displayName: 'Fashion' } : null,
 							pendingCategory: {
 								id: 'category_1',
 								slug: 'apparel',
@@ -422,7 +479,7 @@ const server = createServer(
 						},
 						internationalContext: bootstrapInternationalContext(savedContext),
 						storeProfile: {
-							activeCategory: null,
+							activeCategory: activeCategorySelection ? { id: 'fashion', slug: 'fashion', displayName: 'Fashion' } : null,
 							pendingCategory: {
 								id: 'category_1',
 								slug: 'apparel',
@@ -1125,6 +1182,14 @@ try {
 			saved: savedContext,
 		}),
 	});
+	await assertStoreCategoryWordPress({
+		siteUrl,
+		auth,
+		wp,
+		parseJsonOutput,
+		getCategoryState: () => ({ selections: categorySelections, generation: categoryGeneration }),
+	});
+	process.stdout.write('WOO-008 WordPress category selection + active readback integration passed.\n');
 	process.stdout.write(
 		'WOO-007 WordPress store-context sync + readback integration passed.\n'
 	);

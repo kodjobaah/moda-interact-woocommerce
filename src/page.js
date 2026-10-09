@@ -6,6 +6,8 @@ import { ConnectionController } from './connection-controller';
 import { MerchantBootstrapController } from './merchant-bootstrap-controller';
 import { OverviewScreen } from './overview-screen';
 import { StoreContextSyncController } from './store-context-sync-controller';
+import { StoreCategoryController } from './store-category-controller';
+import { RecoverySettingsScreen } from './recovery-settings/recovery-settings-screen';
 
 function ConnectionPanel({ state, onConnect, onRetry }) {
 	const { connection, pendingAction, actionError } = state;
@@ -237,6 +239,7 @@ function ModaInteractPage() {
 			? 'BILLING'
 			: 'OVERVIEW'
 	);
+	const categoryControllerRef = useRef(null);
 	const [state, setState] = useState({
 		connection: { status: 'LOADING' },
 		pendingAction: null,
@@ -245,6 +248,12 @@ function ModaInteractPage() {
 	const [merchantState, setMerchantState] = useState({ status: 'IDLE' });
 	const [billingState, setBillingState] = useState({ status: 'IDLE' });
 	const [syncState, setSyncState] = useState({ status: 'IDLE' });
+	const [categoryState, setCategoryState] = useState({
+		status: 'IDLE',
+		data: null,
+		categoryId: '',
+		mappingIds: [],
+	});
 
 	useEffect(() => {
 		const merchantController = new MerchantBootstrapController(
@@ -260,10 +269,18 @@ function ModaInteractPage() {
 		const billingController = new BillingController(undefined, () =>
 			controllerRef.current?.refresh()
 		);
+		const categoryController = new StoreCategoryController(
+			undefined,
+			() => merchantController.refreshAfterCurrent(),
+			() => controller.refresh()
+		);
 		controllerRef.current = controller;
 		merchantControllerRef.current = merchantController;
 		billingControllerRef.current = billingController;
 		syncControllerRef.current = syncController;
+		categoryControllerRef.current = categoryController;
+		const unsubscribeCategory =
+			categoryController.subscribe(setCategoryState);
 		const unsubscribeSync = syncController.subscribe(setSyncState);
 		const unsubscribeMerchant =
 			merchantController.subscribe(setMerchantState);
@@ -280,6 +297,7 @@ function ModaInteractPage() {
 				setActiveSurface('OVERVIEW');
 			}
 			previousConnectionStatus.current = nextState.connection.status;
+			categoryController.setConnectionStatus(nextState.connection.status);
 		});
 		controller.refresh();
 		return () => {
@@ -287,14 +305,17 @@ function ModaInteractPage() {
 			merchantControllerRef.current = null;
 			billingControllerRef.current = null;
 			syncControllerRef.current = null;
+			categoryControllerRef.current = null;
 			unsubscribe();
 			unsubscribeMerchant();
 			unsubscribeBilling();
 			unsubscribeSync();
+			unsubscribeCategory();
 			controller.dispose();
 			merchantController.dispose();
 			billingController.dispose();
 			syncController.dispose();
+			categoryController.dispose();
 		};
 	}, []);
 
@@ -314,6 +335,39 @@ function ModaInteractPage() {
 		})
 	);
 	if (state.connection.status === 'CONNECTED') {
+		let activeContent;
+		if (activeSurface === 'BILLING') {
+			activeContent = createElement(BillingScreen, {
+				key: 'billing',
+				state: billingState,
+				onRefresh: () => billingControllerRef.current?.refresh(),
+				onLoadPlans: () => billingControllerRef.current?.loadPlans(),
+				onSelectPlan: (plan) =>
+					billingControllerRef.current?.createOrSwitch(plan),
+				onCancel: () => billingControllerRef.current?.cancel(),
+				onSetView: (view) =>
+					billingControllerRef.current?.setView(view),
+			});
+		} else if (activeSurface === 'RECOVERY') {
+			activeContent = createElement(RecoverySettingsScreen, {
+				key: 'recovery-settings',
+				state: categoryState,
+				onRefresh: () => categoryControllerRef.current?.refresh(),
+				onChoose: (categoryId) =>
+					categoryControllerRef.current?.chooseCategory(categoryId),
+				onToggleMapping: (mappingId) =>
+					categoryControllerRef.current?.toggleMapping(mappingId),
+				onSave: () => categoryControllerRef.current?.save(),
+			});
+		} else {
+			activeContent = createElement(OverviewScreen, {
+				key: 'overview',
+				state: merchantState,
+				onRefresh: () => merchantControllerRef.current?.refresh(),
+				syncState,
+				onSync: () => syncControllerRef.current?.sync(),
+			});
+		}
 		sections.push(
 			createElement(
 				'div',
@@ -330,6 +384,7 @@ function ModaInteractPage() {
 					...[
 						['OVERVIEW', __('Overview', 'moda-interact')],
 						['BILLING', __('Billing', 'moda-interact')],
+						['RECOVERY', __('Recovery Settings', 'moda-interact')],
 					].map(([surface, label]) =>
 						createElement(
 							'button',
@@ -347,36 +402,15 @@ function ModaInteractPage() {
 									billingControllerRef.current?.setActive(
 										surface === 'BILLING'
 									);
+									if (surface === 'RECOVERY') {
+										categoryControllerRef.current?.refresh();
+									}
 								},
 							},
 							label
 						)
 					),
-					activeSurface === 'BILLING'
-						? createElement(BillingScreen, {
-								key: 'billing',
-								state: billingState,
-								onRefresh: () =>
-									billingControllerRef.current?.refresh(),
-								onLoadPlans: () =>
-									billingControllerRef.current?.loadPlans(),
-								onSelectPlan: (plan) =>
-									billingControllerRef.current?.createOrSwitch(
-										plan
-									),
-								onCancel: () =>
-									billingControllerRef.current?.cancel(),
-								onSetView: (view) =>
-									billingControllerRef.current?.setView(view),
-							})
-						: createElement(OverviewScreen, {
-								key: 'overview',
-								state: merchantState,
-								onRefresh: () =>
-									merchantControllerRef.current?.refresh(),
-								syncState,
-								onSync: () => syncControllerRef.current?.sync(),
-							})
+					activeContent
 				)
 			)
 		);

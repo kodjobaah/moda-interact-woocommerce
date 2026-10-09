@@ -360,3 +360,78 @@
 	flex-wrap: wrap;
 	gap: 8px;
 }
+
+.moda-interact-recovery-nav {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin: 24px 0 16px;
+}
+
+.moda-interact-recovery {
+	margin-top: 16px;
+}
+
+.moda-interact-recovery h2 {
+	font-size: 20px;
+	margin: 0 0 14px;
+}
+
+.moda-interact-recovery__panel {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+}
+
+.moda-interact-recovery__panel summary {
+	cursor: pointer;
+	font-weight: 600;
+	padding: 16px 20px;
+}
+
+.moda-interact-recovery__body {
+	padding: 4px 20px 20px;
+}
+
+.moda-interact-recovery__profile {
+	border-bottom: 1px solid #dcdcde;
+	padding-bottom: 16px;
+	margin-bottom: 20px;
+}
+
+.moda-interact-recovery__selection {
+	display: grid;
+	gap: 12px;
+	max-width: 640px;
+}
+
+.moda-interact-recovery__selection > label {
+	font-weight: 600;
+}
+
+.moda-interact-recovery__selection select {
+	max-width: 100%;
+}
+
+.moda-interact-recovery__description {
+	color: #50575e;
+	margin: 0;
+}
+
+.moda-interact-recovery__mappings {
+	border: 0;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+}
+
+.moda-interact-recovery__mappings legend {
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.moda-interact-recovery__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 20px;
+}
