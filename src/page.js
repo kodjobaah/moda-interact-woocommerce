@@ -1,5 +1,7 @@
 import { createElement, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { BillingController, isBillingReturn } from './billing-controller';
+import { BillingScreen } from './billing-screen';
 import { ConnectionController } from './connection-controller';
 import { MerchantBootstrapController } from './merchant-bootstrap-controller';
 import { OverviewScreen } from './overview-screen';
@@ -226,12 +228,20 @@ const applicationSections = [{ id: 'connection', component: ConnectionPanel }];
 function ModaInteractPage() {
 	const controllerRef = useRef(null);
 	const merchantControllerRef = useRef(null);
+	const billingControllerRef = useRef(null);
+	const previousConnectionStatus = useRef('LOADING');
+	const [activeSurface, setActiveSurface] = useState(() =>
+		isBillingReturn(globalThis.location?.search ?? '')
+			? 'BILLING'
+			: 'OVERVIEW'
+	);
 	const [state, setState] = useState({
 		connection: { status: 'LOADING' },
 		pendingAction: null,
 		actionError: false,
 	});
 	const [merchantState, setMerchantState] = useState({ status: 'IDLE' });
+	const [billingState, setBillingState] = useState({ status: 'IDLE' });
 
 	useEffect(() => {
 		const controller = new ConnectionController();
@@ -239,24 +249,47 @@ function ModaInteractPage() {
 			undefined,
 			() => controller.refresh()
 		);
+		const billingController = new BillingController(undefined, () =>
+			controller.refresh()
+		);
 		controllerRef.current = controller;
 		merchantControllerRef.current = merchantController;
+		billingControllerRef.current = billingController;
 		const unsubscribeMerchant =
 			merchantController.subscribe(setMerchantState);
+		const unsubscribeBilling = billingController.subscribe(setBillingState);
 		const unsubscribe = controller.subscribe((nextState) => {
 			setState(nextState);
 			merchantController.setConnectionStatus(nextState.connection.status);
+			billingController.setConnectionStatus(nextState.connection.status);
+			if (
+				previousConnectionStatus.current === 'CONNECTED' &&
+				nextState.connection.status !== 'CONNECTED'
+			) {
+				setActiveSurface('OVERVIEW');
+			}
+			previousConnectionStatus.current = nextState.connection.status;
 		});
 		controller.refresh();
 		return () => {
 			controllerRef.current = null;
 			merchantControllerRef.current = null;
+			billingControllerRef.current = null;
 			unsubscribe();
 			unsubscribeMerchant();
+			unsubscribeBilling();
 			controller.dispose();
 			merchantController.dispose();
+			billingController.dispose();
 		};
 	}, []);
+
+	useEffect(() => {
+		billingControllerRef.current?.setActive(
+			state.connection.status === 'CONNECTED' &&
+				activeSurface === 'BILLING'
+		);
+	}, [activeSurface, state.connection.status]);
 
 	const sections = applicationSections.map(({ id, component: Section }) =>
 		createElement(Section, {
@@ -268,11 +301,68 @@ function ModaInteractPage() {
 	);
 	if (state.connection.status === 'CONNECTED') {
 		sections.push(
-			createElement(OverviewScreen, {
-				key: 'overview',
-				state: merchantState,
-				onRefresh: () => merchantControllerRef.current?.refresh(),
-			})
+			createElement(
+				'div',
+				{
+					key: 'surface-navigation',
+					className: 'moda-interact-surfaces',
+				},
+				createElement(
+					'div',
+					{
+						className: 'moda-interact-surfaces__tabs',
+						role: 'tablist',
+					},
+					...[
+						['OVERVIEW', __('Overview', 'moda-interact')],
+						['BILLING', __('Billing', 'moda-interact')],
+					].map(([surface, label]) =>
+						createElement(
+							'button',
+							{
+								key: surface,
+								type: 'button',
+								role: 'tab',
+								'aria-selected': activeSurface === surface,
+								className:
+									activeSurface === surface
+										? 'button moda-interact-surfaces__tab is-active'
+										: 'button moda-interact-surfaces__tab',
+								onClick: () => {
+									setActiveSurface(surface);
+									billingControllerRef.current?.setActive(
+										surface === 'BILLING'
+									);
+								},
+							},
+							label
+						)
+					),
+					activeSurface === 'BILLING'
+						? createElement(BillingScreen, {
+								key: 'billing',
+								state: billingState,
+								onRefresh: () =>
+									billingControllerRef.current?.refresh(),
+								onLoadPlans: () =>
+									billingControllerRef.current?.loadPlans(),
+								onSelectPlan: (plan) =>
+									billingControllerRef.current?.createOrSwitch(
+										plan
+									),
+								onCancel: () =>
+									billingControllerRef.current?.cancel(),
+								onSetView: (view) =>
+									billingControllerRef.current?.setView(view),
+							})
+						: createElement(OverviewScreen, {
+								key: 'overview',
+								state: merchantState,
+								onRefresh: () =>
+									merchantControllerRef.current?.refresh(),
+							})
+				)
+			)
 		);
 	}
 

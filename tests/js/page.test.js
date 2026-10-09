@@ -114,7 +114,7 @@ describe('Moda Interact connection presentation', () => {
 		}
 	});
 
-	it('shows only safe connection metadata and does not add locale storage or feature navigation', () => {
+	it('shows only safe connection metadata and keeps merchant state in memory', () => {
 		const element = ConnectionPanel({
 			state: {
 				connection: {
@@ -140,8 +140,12 @@ describe('Moda Interact connection presentation', () => {
 			/install_safe|shop_safe|credentialVersion/
 		);
 		expect(source).not.toMatch(
-			/localStorage|sessionStorage|currentLocale|localeAllowlist|Recoveries|Billing/
+			/localStorage|sessionStorage|currentLocale|localeAllowlist|Recoveries/
 		);
+		expect(source).toContain('new BillingController');
+		expect(source).toContain('isBillingReturn(globalThis.location?.search');
+		expect(source).toContain("state.connection.status === 'CONNECTED'");
+		expect(source).toContain("['BILLING', __('Billing', 'moda-interact')]");
 		expect(source).toMatch(/'moda-interact'/);
 	});
 });

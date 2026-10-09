@@ -55,6 +55,10 @@ function current_user_can( $capability ) {
 	return 'activate_plugins' === $capability && $GLOBALS['moda_interact_can_activate_plugins'];
 }
 
+function get_user_locale() {
+	return $GLOBALS['moda_interact_user_locale'] ?? 'en_US';
+}
+
 function home_url( $path = '/' ) {
 	return rtrim( $GLOBALS['moda_interact_home_url'], '/' ) . ( '/' === $path ? '' : '/' . ltrim( $path, '/' ) );
 }
