@@ -5,33 +5,38 @@ function categoryName(value) {
 	return value?.localizedDisplayName ?? __('Not selected', 'moda-interact');
 }
 
+function stat(label, value) {
+	return createElement(
+		'div',
+		{ className: 'moda-interact-recovery__profile-stat' },
+		createElement('dt', null, label),
+		createElement('dd', null, value)
+	);
+}
+
 export function CategoryProfileSummary({ profile }) {
 	return createElement(
 		'div',
 		{ className: 'moda-interact-recovery__profile' },
 		createElement(
 			'dl',
-			{ className: 'moda-interact-details' },
-			createElement('dt', null, __('Active category', 'moda-interact')),
-			createElement('dd', null, categoryName(profile.activeCategory)),
-			createElement('dt', null, __('Pending category', 'moda-interact')),
-			createElement('dd', null, categoryName(profile.pendingCategory)),
-			createElement(
-				'dt',
-				null,
-				__('Selection generation', 'moda-interact')
+			{ className: 'moda-interact-recovery__profile-grid' },
+			stat(
+				__('Active category', 'moda-interact'),
+				categoryName(profile.activeCategory)
 			),
-			createElement(
-				'dd',
-				null,
+			stat(
+				__('Pending category', 'moda-interact'),
+				categoryName(profile.pendingCategory)
+			),
+			stat(
+				__('Selection generation', 'moda-interact'),
 				String(profile.pendingSelectionGeneration)
 			),
-			createElement(
-				'dt',
-				null,
-				__('Active mapping count', 'moda-interact')
-			),
-			createElement('dd', null, String(profile.activeMappingIds.length))
+			stat(
+				__('Active mapping count', 'moda-interact'),
+				String(profile.activeMappingIds.length)
+			)
 		),
 		profile.pendingState === 'PENDING_PUBLICATION'
 			? createElement(

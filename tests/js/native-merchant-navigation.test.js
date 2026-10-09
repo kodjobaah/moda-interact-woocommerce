@@ -38,9 +38,9 @@ describe('native merchant navigation', () => {
 	);
 
 	it('keeps the legacy WooCommerce route and billing return behavior', () => {
-		expect(
-			isNativeMerchantPage('?page=wc-admin&path=/moda-interact')
-		).toBe(false);
+		expect(isNativeMerchantPage('?page=wc-admin&path=/moda-interact')).toBe(
+			false
+		);
 		expect(
 			initialMerchantSurface('?page=wc-admin&path=/moda-interact')
 		).toBe('OVERVIEW');

@@ -2,6 +2,7 @@ import { createElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { CategoryProfileSummary } from './category-profile-summary';
 import { CategorySelector } from './category-selector';
+import { RecoverySettingsHeader } from './recovery-settings-header';
 
 function Feedback({ status }) {
 	const messages = {
@@ -66,11 +67,7 @@ export function RecoverySettingsScreen({
 			'aria-labelledby': 'moda-interact-recovery-heading',
 			'aria-busy': loading || saving,
 		},
-		createElement(
-			'h2',
-			{ id: 'moda-interact-recovery-heading' },
-			__('Recovery Settings', 'moda-interact')
-		),
+		createElement(RecoverySettingsHeader),
 		createElement(
 			'details',
 			{ open: true, className: 'moda-interact-recovery__panel' },
@@ -86,14 +83,6 @@ export function RecoverySettingsScreen({
 					'h3',
 					null,
 					__('Store category', 'moda-interact')
-				),
-				createElement(
-					'p',
-					null,
-					__(
-						'Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active.',
-						'moda-interact'
-					)
 				),
 				loading
 					? createElement(

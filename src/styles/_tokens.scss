@@ -1,0 +1,30 @@
+// Shopify source: app/tailwind.css and RecoverySettingsRoute.css.
+// These tokens are scoped to the Moda UI, never to wp-admin or :root.
+.moda-interact-page {
+	--moda-forest-950: #102a24;
+	--moda-forest-900: #143d2c;
+	--moda-forest-800: #1f5744;
+	--moda-forest-700: #286b50;
+	--moda-forest-600: #3f7d61;
+	--moda-forest-300: #b9d2c2;
+	--moda-forest-200: #d6e6dc;
+	--moda-forest-100: #e3f0e8;
+	--moda-forest-50: #f4faf6;
+	--moda-ink: #1f2a24;
+	--moda-muted: #617067;
+	--moda-border: #d7e1da;
+	--moda-surface: #fff;
+	--moda-soft: #f6faf7;
+	--moda-shadow: 0 14px 36px rgb(20 61 44 / 8%);
+	--moda-focus-ring: 0 0 0 3px rgb(63 125 97 / 22%);
+	font-family: "Avenir Next", "Trebuchet MS", system-ui, sans-serif;
+	font-size: 14px;
+	line-height: 1.55;
+	color: var(--moda-ink);
+}
+
+.moda-interact-page *,
+.moda-interact-page *::before,
+.moda-interact-page *::after {
+	box-sizing: border-box;
+}

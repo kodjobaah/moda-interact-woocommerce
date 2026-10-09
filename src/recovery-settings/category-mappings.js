@@ -28,7 +28,10 @@ export function CategoryMappings({
 		mappings.map((mapping) =>
 			createElement(
 				'label',
-				{ key: mapping.id },
+				{
+					key: mapping.id,
+					className: 'moda-interact-recovery__mapping-option',
+				},
 				createElement('input', {
 					type: 'checkbox',
 					checked: selectedIds.includes(mapping.id),

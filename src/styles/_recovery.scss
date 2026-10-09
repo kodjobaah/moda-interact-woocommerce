@@ -1,0 +1,244 @@
+// Recovery Settings mirrors Shopify's hero, summary tiles, disclosures
+// and form cards.
+// Category publication and its state machine are unchanged.
+.moda-interact-recovery {
+	display: grid;
+	gap: 18px;
+	margin-top: 18px;
+}
+
+.moda-interact-recovery__hero {
+	padding: clamp(20px, 3vw, 28px);
+	border: 1px solid var(--moda-border);
+	border-radius: 22px;
+	background:
+		radial-gradient(circle at 94% 18%, rgb(185 210 194 / 58%), transparent 34%),
+		linear-gradient(135deg, #fff, var(--moda-forest-50));
+	box-shadow: var(--moda-shadow);
+}
+
+.moda-interact-recovery__eyebrow {
+	display: inline-flex;
+	margin: 0 0 9px;
+	padding: 5px 11px;
+	border: 1px solid var(--moda-forest-200);
+	border-radius: 999px;
+	background: var(--moda-forest-100);
+	color: var(--moda-forest-800);
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.moda-interact-recovery__hero h2 {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: clamp(25px, 3vw, 34px);
+	font-weight: 800;
+	line-height: 1.16;
+	letter-spacing: -0.035em;
+}
+
+.moda-interact-recovery__hero p {
+	max-width: 740px;
+	margin: 10px 0 0;
+	color: var(--moda-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.moda-interact-recovery__panel {
+	overflow: hidden;
+}
+
+.moda-interact-recovery__panel summary {
+	padding: 18px 24px;
+	border-bottom: 1px solid transparent;
+	color: var(--moda-forest-900);
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 800;
+}
+
+.moda-interact-recovery__panel summary::marker {
+	color: var(--moda-forest-700);
+}
+
+.moda-interact-recovery__panel[open] summary {
+	border-bottom-color: var(--moda-border);
+	background: var(--moda-soft);
+}
+
+.moda-interact-recovery__body {
+	padding: 22px 24px 24px;
+}
+
+.moda-interact-recovery__body h3 {
+	margin: 0 0 12px;
+	color: var(--moda-forest-900);
+	font-size: 20px;
+	font-weight: 750;
+	letter-spacing: -0.02em;
+}
+
+.moda-interact-recovery__profile {
+	margin: 18px 0 24px;
+	padding-bottom: 22px;
+	border-bottom: 1px solid var(--moda-border);
+}
+
+.moda-interact-recovery__profile-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	margin: 0;
+}
+
+.moda-interact-recovery__profile-stat {
+	min-width: 0;
+	min-height: 83px;
+	padding: 14px 16px;
+	border: 1px solid var(--moda-forest-200);
+	border-radius: 16px;
+	background: linear-gradient(180deg, #fff, #fbfdfc);
+}
+
+.moda-interact-recovery__profile-stat dt {
+	margin: 0 0 8px;
+	color: var(--moda-forest-700);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.035em;
+	text-transform: uppercase;
+}
+
+.moda-interact-recovery__profile-stat dd {
+	margin: 0;
+	color: var(--moda-forest-950);
+	font-size: 15px;
+	font-weight: 750;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-recovery__profile > p {
+	margin: 14px 0 0;
+	color: var(--moda-muted);
+}
+
+.moda-interact-recovery__selection {
+	display: grid;
+	gap: 12px;
+	max-width: 760px;
+	margin-top: 18px;
+}
+
+.moda-interact-recovery__selection > label {
+	color: var(--moda-forest-900);
+	font-size: 14px;
+	font-weight: 750;
+}
+
+.moda-interact-recovery__selection select {
+	width: 100%;
+	max-width: 100%;
+	min-height: 48px;
+	border-radius: 12px;
+}
+
+.moda-interact-recovery__description {
+	margin: 0;
+	padding: 12px 14px;
+	border: 1px solid var(--moda-forest-200);
+	border-radius: 12px;
+	background: var(--moda-forest-50);
+	color: var(--moda-muted);
+	line-height: 1.6;
+}
+
+.moda-interact-recovery__mappings {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	gap: 10px;
+	min-width: 0;
+	margin: 2px 0 0;
+	padding: 0;
+	border: 0;
+}
+
+.moda-interact-recovery__mappings legend {
+	margin-bottom: 10px;
+	padding: 0;
+	color: var(--moda-forest-900);
+	font-weight: 750;
+}
+
+.moda-interact-recovery__mapping-option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+	min-height: 46px;
+	padding: 10px 12px;
+	border: 1px solid var(--moda-border);
+	border-radius: 12px;
+	background: #fff;
+	color: var(--moda-ink);
+	font-weight: 650;
+	cursor: pointer;
+}
+
+.moda-interact-recovery__mapping-option:has(input:checked) {
+	border-color: var(--moda-forest-600);
+	background: var(--moda-forest-100);
+}
+
+.moda-interact-recovery__mapping-option input {
+	width: 17px;
+	height: 17px;
+	flex: 0 0 auto;
+	margin: 0;
+	accent-color: var(--moda-forest-700);
+}
+
+.moda-interact-recovery__mapping-option:has(input:disabled) {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.moda-interact-recovery__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 24px;
+	padding-top: 18px;
+	border-top: 1px solid var(--moda-border);
+}
+
+.moda-interact-recovery-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 20px 0 16px;
+}
+
+@media (max-width: 680px) {
+
+	.moda-interact-recovery__profile-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.moda-interact-recovery__body {
+		padding: 18px;
+	}
+
+	.moda-interact-recovery__panel summary {
+		padding: 16px 18px;
+	}
+
+	.moda-interact-recovery__actions {
+		justify-content: flex-start;
+	}
+}
