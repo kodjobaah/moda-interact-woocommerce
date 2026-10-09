@@ -123,6 +123,88 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+	public function billingPresentation( array $connection ): array {
+		$payload = $this->billingRequest( $connection, '/v1/billing', 'GET' );
+		if ( ! BillingResponseValidator::isPresentation( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $payload;
+	}
+
+	public function billingPlans( array $connection, ?string $locale = null ): array {
+		$path = '/v1/billing/plans';
+		if ( null !== $locale && '' !== $locale ) {
+			$path .= '?locale=' . rawurlencode( $locale );
+		}
+		$payload = $this->billingRequest( $connection, $path, 'GET' );
+		if ( ! BillingResponseValidator::isPlanCatalogue( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $payload;
+	}
+
+	public function createSubscription( array $connection, string $plan_id, string $action_id ): array {
+		return $this->recurringCommand( $connection, '/v1/billing/subscription', 'POST', $plan_id, $action_id );
+	}
+
+	public function switchSubscription( array $connection, string $plan_id, string $action_id ): array {
+		return $this->recurringCommand( $connection, '/v1/billing/subscription/switch', 'POST', $plan_id, $action_id );
+	}
+
+	public function cancelSubscription( array $connection, string $action_id ): array {
+		$payload = $this->billingRequest( $connection, '/v1/billing/subscription', 'DELETE', null, $action_id );
+		if ( ! BillingResponseValidator::isCancellation( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return array_intersect_key( $payload, array_flip( array( 'schemaVersion', 'operationId', 'state', 'confirmationUrl' ) ) );
+	}
+
+	private function recurringCommand( array $connection, string $path, string $method, string $plan_id, string $action_id ): array {
+		$payload = $this->billingRequest( $connection, $path, $method, array( 'merchantPricingPlanId' => $plan_id ), $action_id );
+		if ( ! BillingResponseValidator::isConfirmation( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return array_intersect_key( $payload, array_flip( array( 'schemaVersion', 'operationId', 'state', 'confirmationUrl' ) ) );
+	}
+
+	private function billingRequest( array $connection, string $path, string $method, ?array $payload = null, ?string $action_id = null ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		$headers = array(
+			'X-Moda-Installation-Id' => $connection['installationId'],
+			'Authorization' => 'Bearer ' . $connection['credential'],
+		);
+		$body = null;
+		if ( null !== $payload ) {
+			$body = wp_json_encode( $payload );
+			if ( ! is_string( $body ) || strlen( $body ) > 8192 ) {
+				throw new ModaApiClientException( 'remote_unavailable' );
+			}
+			$headers['Content-Type'] = 'application/json';
+		}
+		if ( null !== $action_id ) {
+			$headers['Idempotency-Key'] = $action_id;
+		}
+		$response = $this->request( $path, $method, $headers, $body );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) {
+			throw new ModaApiClientException( 'unauthorized', $status );
+		}
+		$expected = 'GET' === $method ? array( 200 ) : ( 'DELETE' === $method ? array( 200 ) : array( 200, 202 ) );
+		if ( ! in_array( $status, $expected, true ) ) {
+			throw new ModaApiClientException(
+				400 <= $status && $status < 500 ? 'remote_rejected' : 'remote_unavailable',
+				$status,
+				self::billingErrorCode( $response )
+			);
+		}
+		try {
+			return $this->jsonBody( $response );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+	}
 
 	/** API-004: context-only update; never modifies installation, billing or credentials. */
 	public function putMerchantStoreContext( array $connection, array $snapshot ): void {
@@ -206,6 +288,41 @@ final class ModaApiClient {
 		return $actual === $expected;
 	}
 
+	private static function billingErrorCode( mixed $response ): ?string {
+		try {
+			$payload = self::decodeErrorBody( $response );
+		} catch ( ModaApiClientException $error ) {
+			return null;
+		}
+		$codes = array(
+			'invalid_request', 'invalid_idempotency_key', 'request_too_large', 'unauthorized',
+			'billing_provider_unavailable', 'billing_shop_invalid', 'billing_not_initialized',
+			'billing_subscription_invalid', 'billing_plan_unavailable', 'billing_plan_materialization_invalid',
+			'billing_plan_materialization_conflict', 'billing_operation_conflict', 'idempotency_conflict',
+			'billing_operation_in_progress', 'billing_operation_failed', 'billing_provider_rejected',
+			'billing_provider_outcome_unknown', 'free_plan_uses_cancellation', 'subscription_create_not_allowed',
+			'subscription_switch_not_allowed', 'billing_catalogue_mapping_invalid', 'billing_plan_unchanged',
+			'no_recurring_subscription', 'billing_integrity_invalid', 'billing_catalogue_invalid',
+			'billing_catalogue_translation_unavailable', 'billing_locale_invalid', 'internal_error',
+		);
+		return isset( $payload['error'] ) && is_string( $payload['error'] ) && in_array( $payload['error'], $codes, true )
+			? $payload['error']
+			: null;
+	}
+
+	private static function decodeErrorBody( mixed $response ): array {
+		$content_type = (string) wp_remote_retrieve_header( $response, 'content-type' );
+		$body = wp_remote_retrieve_body( $response );
+		if ( ! preg_match( '#^application/json(?:\s*;|$)#i', trim( $content_type ) ) || ! is_string( $body ) || strlen( $body ) > 8192 ) {
+			throw new ModaApiClientException( 'remote_unavailable' );
+		}
+		$payload = json_decode( $body, true );
+		if ( ! is_array( $payload ) || array_is_list( $payload ) || ! isset( $payload['error'] ) ) {
+			throw new ModaApiClientException( 'remote_unavailable' );
+		}
+		return $payload;
+	}
+
 	private static function isMerchantBootstrap( array $payload ): bool {
 		if (
 			! self::hasExactKeys( $payload, array( 'schemaVersion', 'shop', 'internationalContext', 'storeProfile' ) ) ||
@@ -271,7 +388,7 @@ final class ModaApiClient {
 }
 
 final class ModaApiClientException extends \RuntimeException {
-	public function __construct( string $reason, public readonly ?int $http_status = null ) {
+	public function __construct( string $reason, public readonly ?int $http_status = null, public readonly ?string $remote_error = null ) {
 		parent::__construct( $reason );
 	}
 }

@@ -14,6 +14,7 @@ import {
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
+import { availableWpEnvHostPort } from './wp-env-host-port.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const baselineCommit = '98273e4ebdfa9a78146cb897fb905ef97a6814e7';
@@ -494,22 +495,24 @@ await copyFile(candidateArchive, stagedCandidateArchive);
 const configurations = [];
 
 try {
-	for (const [name, port, test] of [
-		['package-fresh', 8893, runFreshInstall],
-		['package-upgrade', 8894, runUpgrade],
+	for (const [name, test] of [
+		['package-fresh', runFreshInstall],
+		['package-upgrade', runUpgrade],
 	]) {
+		const port = await availableWpEnvHostPort();
 		const configPath = await writeEnvironmentConfig(name, port);
 		configurations.push(configPath);
-		run(
-			wpEnvCli,
-			[`--config=${configPath}`, 'start'],
-			wpEnvProjectDirectory,
-			{
-				...process.env,
-				WP_ENV_PORT: String(port),
-			}
-		);
+		process.stdout.write(`${name}: starting on host port ${port}.\n`);
 		try {
+			run(
+				wpEnvCli,
+				[`--config=${configPath}`, 'start'],
+				wpEnvProjectDirectory,
+				{
+					...process.env,
+					WP_ENV_PORT: String(port),
+				}
+			);
 			wp(configPath, port, 'plugin', 'activate', 'woocommerce');
 			wp(configPath, port, 'plugin', 'is-active', 'woocommerce');
 			let modaInstalled = true;
@@ -537,7 +540,7 @@ try {
 				);
 			} catch {
 				process.stderr.write(
-					`wp-env cleanup failed for ${name}; stop it manually with --config=${configPath} stop.\n`
+					`wp-env cleanup failed for ${name} (host port ${port}); inspect the containers created for this test run.\n`
 				);
 			}
 		}

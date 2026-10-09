@@ -8,6 +8,7 @@ use ModaInteract\WooCommerce\Admin\Setup;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Api\ModaApiConfigurationException;
 use ModaInteract\WooCommerce\Connection\SiteIdentity;
+use ModaInteract\WooCommerce\Rest\BillingController;
 use ModaInteract\WooCommerce\Rest\ConnectionController;
 use ModaInteract\WooCommerce\Rest\StoreContextController;
 
@@ -65,6 +66,7 @@ final class Runtime {
 			$mode = ModaApiConfiguration::MODE_PUBLIC;
 		}
 		( new ConnectionController( null, new SiteIdentity( $mode ) ) )->register();
+		( new BillingController( null, new SiteIdentity( $mode ) ) )->register();
 		( new StoreContextController( null, new SiteIdentity( $mode ) ) )->register();
 		if ( is_admin() ) {
 			new Setup();
