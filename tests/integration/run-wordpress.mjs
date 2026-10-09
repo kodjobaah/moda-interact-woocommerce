@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { assertStoreContextWordPress } from './store-context-assertions.mjs';
 import { createWordPressFetch } from './wordpress-http.mjs';
+import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -31,6 +32,8 @@ let savedContext = null;
 let wordpressStarted = false;
 let originalWpHome;
 let wpHomeOverrideApplied = false;
+let originalSiteLocale;
+let siteLocaleOverrideApplied = false;
 
 function command(program, args, options = {}) {
 	return execFileSync(program, args, {
@@ -384,12 +387,7 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: savedContext ?? {
-							storeLocale: 'pt_BR',
-							languageTag: null,
-							timeZone: 'Europe/Lisbon',
-							countryCode: 'PT',
-						},
+						internationalContext: bootstrapInternationalContext(savedContext),
 						storeProfile: {
 							activeCategory: null,
 							pendingCategory: {
@@ -422,12 +420,7 @@ const server = createServer(
 							onboardingCompleted: false,
 							installedAt: '2026-10-03T12:00:00.000Z',
 						},
-						internationalContext: savedContext ?? {
-							storeLocale: 'pt_BR',
-							languageTag: null,
-							timeZone: 'Europe/Lisbon',
-							countryCode: 'PT',
-						},
+						internationalContext: bootstrapInternationalContext(savedContext),
 						storeProfile: {
 							activeCategory: null,
 							pendingCategory: {
@@ -568,6 +561,23 @@ try {
 	assert.ok(
 		originalWpHome === null || typeof originalWpHome === 'string',
 		'initial WP_HOME must be a string or undefined'
+	);
+	// The administrator's locale does not configure the WordPress site locale.
+	// A fresh wp-env installation otherwise defaults to en_US.
+	originalSiteLocale = parseJsonOutput(
+		wp('eval', 'echo wp_json_encode(get_option("WPLANG", null));')
+	);
+	assert.ok(
+		originalSiteLocale === null || typeof originalSiteLocale === 'string',
+		'initial site locale must be a string or absent'
+	);
+	wp('language', 'core', 'install', 'en_GB');
+	siteLocaleOverrideApplied = true;
+	wp('site', 'switch-language', 'en_GB');
+	assert.equal(
+		parseJsonOutput(wp('eval', 'echo wp_json_encode(get_locale());')),
+		'en_GB',
+		'WordPress must use en_GB before store-context assertions'
 	);
 	const hostBridgeIp = parseJsonOutput(
 		wp(
@@ -1166,6 +1176,19 @@ try {
 			} catch {
 				process.stderr.write(
 					'Could not restore the original WP_HOME configuration.\n'
+				);
+			}
+		}
+		if (siteLocaleOverrideApplied) {
+			try {
+				if (originalSiteLocale === null) {
+					wp('option', 'delete', 'WPLANG');
+				} else {
+					wp('option', 'update', 'WPLANG', originalSiteLocale);
+				}
+			} catch {
+				process.stderr.write(
+					'Could not restore the original WordPress site locale.\n'
 				);
 			}
 		}
