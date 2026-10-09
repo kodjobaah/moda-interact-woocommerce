@@ -26,6 +26,43 @@ function formatDate(value) {
 	}).format(new Date(value));
 }
 
+function formatQuantity(value, locale) {
+	return new Intl.NumberFormat(locale).format(value);
+}
+
+function handleCancelDialogKeyDown(event, setCancelDialogOpen) {
+	if (event.key === 'Escape') {
+		event.preventDefault();
+		setCancelDialogOpen(false);
+		return;
+	}
+	if (event.key !== 'Tab') {
+		return;
+	}
+
+	const focusable = event.currentTarget.querySelectorAll(
+		'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+	);
+	if (!focusable.length) {
+		return;
+	}
+
+	const first = focusable[0];
+	const last = focusable[focusable.length - 1];
+	const activeElement = event.currentTarget.ownerDocument.activeElement;
+	if (event.shiftKey && activeElement === first) {
+		event.preventDefault();
+		last.focus();
+	} else if (!event.shiftKey && activeElement === last) {
+		event.preventDefault();
+		first.focus();
+	}
+}
+
+function restoreCancelDialogFocus(cancelTriggerRef) {
+	cancelTriggerRef.current?.focus();
+}
+
 function planStateLabel(state) {
 	const labels = {
 		INITIATING: __('Starting the plan change', 'moda-interact'),
@@ -87,8 +124,8 @@ function BillingSummary({ data, state, onCancel }) {
 	useEffect(() => {
 		if (cancelDialogOpen) {
 			keepPlanRef.current?.focus();
-		} else if (dialogWasOpen.current && cancelTriggerRef.current) {
-			cancelTriggerRef.current.focus();
+		} else if (dialogWasOpen.current) {
+			restoreCancelDialogFocus(cancelTriggerRef);
 		}
 		dialogWasOpen.current = cancelDialogOpen;
 	}, [cancelDialogOpen]);
@@ -114,6 +151,7 @@ function BillingSummaryView({
 	keepPlanRef,
 	dialogCancelRef,
 	cancelTriggerRef,
+	locale,
 }) {
 	const currentPlan = data.currentPlan;
 	const frozen = data.experienceState === 'FROZEN';
@@ -313,23 +351,11 @@ function BillingSummaryView({
 								'aria-labelledby': 'moda-interact-cancel-title',
 								'aria-describedby':
 									'moda-interact-cancel-description',
-								onKeyDown: (event) => {
-									if (event.key === 'Escape') {
-										event.preventDefault();
-										setCancelDialogOpen(false);
-									}
-									if (
-										event.key === 'Tab' &&
-										!event.shiftKey
-									) {
-										event.preventDefault();
-										dialogCancelRef.current?.focus();
-									}
-									if (event.key === 'Tab' && event.shiftKey) {
-										event.preventDefault();
-										keepPlanRef.current?.focus();
-									}
-								},
+								onKeyDown: (event) =>
+									handleCancelDialogKeyDown(
+										event,
+										setCancelDialogOpen
+									),
 							},
 							createElement(
 								'h3',
@@ -403,22 +429,33 @@ function BillingSummaryView({
 											'Temporarily unavailable',
 											'moda-interact'
 										)
-									: String(
-											data.capacity.paidIncluded.remaining
+									: formatQuantity(
+											data.capacity.paidIncluded
+												.remaining,
+											locale
 										)
 							)
 						: []),
 					...dataRow(
 						__('Lifetime Free credits remaining', 'moda-interact'),
-						String(data.capacity.freeLifetime.remaining)
+						formatQuantity(
+							data.capacity.freeLifetime.remaining,
+							locale
+						)
 					),
 					...dataRow(
 						__('Promotional credits remaining', 'moda-interact'),
-						String(data.capacity.promotional.remaining)
+						formatQuantity(
+							data.capacity.promotional.remaining,
+							locale
+						)
 					),
 					...dataRow(
 						__('Purchased credits available', 'moda-interact'),
-						String(data.capacity.purchased.available)
+						formatQuantity(
+							data.capacity.purchased.available,
+							locale
+						)
 					)
 				)
 			)
@@ -426,7 +463,7 @@ function BillingSummaryView({
 	);
 }
 
-function PlanCard({ plan, data, state, onSelect }) {
+function PlanCard({ plan, data, state, onSelect, locale }) {
 	const action = planActionFor(data, plan);
 	const isCurrent =
 		data.currentPlan?.merchantPricingPlanId === plan.merchantPricingPlanId;
@@ -482,7 +519,7 @@ function PlanCard({ plan, data, state, onSelect }) {
 				? __('Lifetime recovery credits', 'moda-interact')
 				: __('Recovery credits every 30 days', 'moda-interact'),
 			': ',
-			String(plan.includedRecoveryCredits)
+			formatQuantity(plan.includedRecoveryCredits, locale)
 		),
 		plan.highlights.length
 			? createElement(
@@ -738,4 +775,7 @@ export {
 	PlanCard,
 	formatDate,
 	formatMoney,
+	formatQuantity,
+	handleCancelDialogKeyDown,
+	restoreCancelDialogFocus,
 };

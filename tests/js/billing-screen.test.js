@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { BillingSummaryView, PlanCard } from '../../src/billing-screen';
+import {
+	BillingSummaryView,
+	PlanCard,
+	restoreCancelDialogFocus,
+} from '../../src/billing-screen';
 
 function textContent(node) {
 	if (node === null || node === undefined || typeof node === 'boolean') {
@@ -72,17 +76,31 @@ function presentation(overrides = {}) {
 	};
 }
 
-function summary(data, state) {
+function summary(data, state, options = {}) {
 	return BillingSummaryView({
 		data,
 		state,
-		onCancel: vi.fn(),
-		cancelDialogOpen: false,
-		setCancelDialogOpen: vi.fn(),
-		keepPlanRef: { current: null },
-		dialogCancelRef: { current: null },
-		cancelTriggerRef: { current: null },
+		onCancel: options.onCancel ?? vi.fn(),
+		cancelDialogOpen: options.cancelDialogOpen ?? false,
+		setCancelDialogOpen: options.setCancelDialogOpen ?? vi.fn(),
+		keepPlanRef: options.keepPlanRef ?? { current: null },
+		dialogCancelRef: options.dialogCancelRef ?? { current: null },
+		cancelTriggerRef: options.cancelTriggerRef ?? { current: null },
+		locale: options.locale,
 	});
+}
+
+function findElement(node, predicate) {
+	if (Array.isArray(node)) {
+		return node.map((child) => findElement(child, predicate)).find(Boolean);
+	}
+	if (!node || typeof node !== 'object' || !node.props) {
+		return undefined;
+	}
+	if (predicate(node)) {
+		return node;
+	}
+	return findElement(node.props.children, predicate);
 }
 
 function readyState(data, overrides = {}) {
@@ -172,6 +190,193 @@ describe('Billing screen', () => {
 		expect(content).toContain('Temporarily unavailable');
 		expect(content).toContain('3');
 		expect(content).toContain('9');
+	});
+
+	it.each(['en-US', 'de-DE'])(
+		'formats capacity and plan quantities for locale %s',
+		(locale) => {
+			const data = presentation({
+				currentPlan: {
+					...presentation().currentPlan,
+					merchantPricingPlanId: 'plan_paid',
+					planKind: 'PAID_METERED',
+				},
+				surfaces: {
+					...presentation().surfaces,
+					cancelSubscriptionAllowed: true,
+				},
+				capacity: {
+					paidIncluded: { remaining: 12345 },
+					freeLifetime: { remaining: 23456 },
+					promotional: { remaining: 34567 },
+					purchased: { available: 45678 },
+				},
+			});
+			const content = textContent(
+				summary(data, readyState(data), { locale })
+			);
+			for (const quantity of [12345, 23456, 34567, 45678]) {
+				expect(content).toContain(
+					new Intl.NumberFormat(locale).format(quantity)
+				);
+			}
+
+			const plan = {
+				merchantPricingPlanId: 'plan_paid',
+				displayName: 'Growth',
+				planKind: 'PAID_METERED',
+				cataloguePosition: 1,
+				featured: false,
+				localizedDescription: 'For busy stores.',
+				includedRecoveryCredits: 56789,
+				allowancePeriod: 'EVERY_30_DAYS',
+				billingPeriod: 'EVERY_30_DAYS',
+				recurringAmountMinor: 1200,
+				currency: 'USD',
+				highlights: [],
+			};
+			expect(
+				textContent(
+					PlanCard({
+						plan,
+						data,
+						state: readyState(data),
+						onSelect: vi.fn(),
+						locale,
+					})
+				)
+			).toContain(new Intl.NumberFormat(locale).format(56789));
+		}
+	);
+
+	it('cycles dialog focus at the edges and restores focus after dismissal', () => {
+		const data = presentation({
+			currentPlan: {
+				...presentation().currentPlan,
+				merchantPricingPlanId: 'plan_paid',
+				planKind: 'PAID_METERED',
+			},
+			surfaces: {
+				...presentation().surfaces,
+				cancelSubscriptionAllowed: true,
+			},
+		});
+		const setCancelDialogOpen = vi.fn();
+		const onCancel = vi.fn();
+		const tree = summary(data, readyState(data), {
+			cancelDialogOpen: true,
+			setCancelDialogOpen,
+			onCancel,
+		});
+		const dialog = findElement(
+			tree,
+			(node) => node.props.role === 'alertdialog'
+		);
+		const document = { activeElement: null };
+		const keepButton = {
+			focus() {
+				document.activeElement = keepButton;
+			},
+		};
+		const confirmButton = {
+			focus() {
+				document.activeElement = confirmButton;
+			},
+		};
+		const event = (key, shiftKey = false) => ({
+			key,
+			shiftKey,
+			currentTarget: {
+				ownerDocument: document,
+				querySelectorAll: () => [keepButton, confirmButton],
+			},
+			preventDefault: vi.fn(),
+		});
+
+		keepButton.focus();
+		const forwardInside = event('Tab');
+		dialog.props.onKeyDown(forwardInside);
+		expect(forwardInside.preventDefault).not.toHaveBeenCalled();
+		confirmButton.focus();
+
+		const reverseInside = event('Tab', true);
+		dialog.props.onKeyDown(reverseInside);
+		expect(reverseInside.preventDefault).not.toHaveBeenCalled();
+		keepButton.focus();
+
+		const reverseAtStart = event('Tab', true);
+		dialog.props.onKeyDown(reverseAtStart);
+		expect(reverseAtStart.preventDefault).toHaveBeenCalledOnce();
+		expect(document.activeElement).toBe(confirmButton);
+
+		const forwardAtEnd = event('Tab');
+		dialog.props.onKeyDown(forwardAtEnd);
+		expect(forwardAtEnd.preventDefault).toHaveBeenCalledOnce();
+		expect(document.activeElement).toBe(keepButton);
+
+		const escape = event('Escape');
+		dialog.props.onKeyDown(escape);
+		expect(escape.preventDefault).toHaveBeenCalledOnce();
+		expect(setCancelDialogOpen).toHaveBeenCalledWith(false);
+		expect(onCancel).not.toHaveBeenCalled();
+
+		const cancelTrigger = {
+			focus: vi.fn(() => {
+				document.activeElement = cancelTrigger;
+			}),
+		};
+		restoreCancelDialogFocus({ current: cancelTrigger });
+		expect(cancelTrigger.focus).toHaveBeenCalledOnce();
+		expect(document.activeElement).toBe(cancelTrigger);
+	});
+
+	it('requires the explicit confirmation button to submit cancellation', () => {
+		const data = presentation({
+			currentPlan: {
+				...presentation().currentPlan,
+				merchantPricingPlanId: 'plan_paid',
+				planKind: 'PAID_METERED',
+			},
+			surfaces: {
+				...presentation().surfaces,
+				cancelSubscriptionAllowed: true,
+			},
+		});
+		const onCancel = vi.fn();
+		const setCancelDialogOpen = vi.fn();
+		const tree = summary(data, readyState(data), {
+			cancelDialogOpen: true,
+			setCancelDialogOpen,
+			onCancel,
+		});
+		const dialog = findElement(
+			tree,
+			(node) => node.props.role === 'alertdialog'
+		);
+		const buttons = [];
+		const collectButtons = (node) => {
+			if (Array.isArray(node)) {
+				node.forEach(collectButtons);
+			} else if (node?.props) {
+				if (node.type === 'button') {
+					buttons.push(node);
+				}
+				collectButtons(node.props.children);
+			}
+		};
+		collectButtons(dialog);
+
+		buttons
+			.find((button) => textContent(button).includes('Keep current plan'))
+			.props.onClick();
+		expect(onCancel).not.toHaveBeenCalled();
+		buttons
+			.find((button) =>
+				textContent(button).includes('Confirm cancellation')
+			)
+			.props.onClick();
+		expect(setCancelDialogOpen).toHaveBeenCalledWith(false);
+		expect(onCancel).toHaveBeenCalledOnce();
 	});
 
 	it.each([
