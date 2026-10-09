@@ -19,7 +19,15 @@ function Feedback({ status }) {
 			'moda-interact'
 		),
 		ERROR: __(
-			'Category settings could not be loaded or saved. Your existing category is unchanged; please retry.',
+			'Category settings could not be loaded. Refresh categories to retry.',
+			'moda-interact'
+		),
+		SAVE_FAILED: __(
+			'The latest store settings do not show your change. Review the selection and try saving again.',
+			'moda-interact'
+		),
+		VERIFY_REQUIRED: __(
+			'We could not confirm whether your category was saved. Refresh categories before trying again.',
 			'moda-interact'
 		),
 		SAVED: __(
@@ -52,22 +60,31 @@ export function RecoverySettingsScreen({
 	onChoose,
 	onToggleMapping,
 	onSave,
+	summaryState,
+	onRefreshSummary,
 }) {
 	const loading = state.status === 'LOADING';
 	const saving = state.status === 'SAVING';
+	const verifying = state.status === 'VERIFYING';
 	const hasData = state.data !== null && state.data !== undefined;
-	const editable = ['READY', 'SAVED', 'CATEGORY_UNAVAILABLE'].includes(
-		state.status
-	);
+	const editable = [
+		'READY',
+		'SAVED',
+		'SAVE_FAILED',
+		'CATEGORY_UNAVAILABLE',
+	].includes(state.status);
 	const categories = state.data?.categories ?? [];
 	return createElement(
 		'section',
 		{
 			className: 'moda-interact-recovery',
 			'aria-labelledby': 'moda-interact-recovery-heading',
-			'aria-busy': loading || saving,
+			'aria-busy': loading || saving || verifying,
 		},
-		createElement(RecoverySettingsHeader),
+		createElement(RecoverySettingsHeader, {
+			summaryState,
+			onRefreshSummary,
+		}),
 		createElement(
 			'details',
 			{ open: true, className: 'moda-interact-recovery__panel' },
@@ -84,11 +101,27 @@ export function RecoverySettingsScreen({
 					null,
 					__('Store category', 'moda-interact')
 				),
-				loading
+				createElement(
+					'p',
+					{ className: 'moda-interact-recovery__category-intro' },
+					__(
+						'Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active.',
+						'moda-interact'
+					)
+				),
+				loading || verifying
 					? createElement(
 							'p',
 							{ role: 'status' },
-							__('Loading store categories…', 'moda-interact')
+							verifying
+								? __(
+										'Checking saved category…',
+										'moda-interact'
+									)
+								: __(
+										'Loading store categories…',
+										'moda-interact'
+									)
 						)
 					: null,
 				createElement(Feedback, { status: state.status }),
@@ -125,7 +158,7 @@ export function RecoverySettingsScreen({
 						{
 							type: 'button',
 							className: 'button',
-							disabled: loading || saving,
+							disabled: loading || saving || verifying,
 							onClick: onRefresh,
 						},
 						__('Refresh categories', 'moda-interact')

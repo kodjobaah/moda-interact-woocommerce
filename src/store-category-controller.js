@@ -1,4 +1,5 @@
 import { createStoreCategoryClient } from './store-category-client';
+import { verifyStoreCategorySave } from './store-category-save-reconciliation';
 
 /** Separate state machine: reading is harmless; saving is explicit and generation-checked. */
 export class StoreCategoryController {
@@ -170,7 +171,7 @@ export class StoreCategoryController {
 		return (
 			!this.disposed &&
 			this.connectionStatus === 'CONNECTED' &&
-			['READY', 'SAVED', 'CATEGORY_UNAVAILABLE'].includes(
+			['READY', 'SAVED', 'SAVE_FAILED', 'CATEGORY_UNAVAILABLE'].includes(
 				this.state.status
 			)
 		);
@@ -215,10 +216,26 @@ export class StoreCategoryController {
 				}
 				return this.state;
 			})
-			.catch((error) => {
-				if (this.isCurrent(revision)) {
-					this.failure(error);
+			.catch(async (error) => {
+				if (!this.isCurrent(revision)) {
+					return this.state;
 				}
+				if (
+					[
+						'RECONNECT_REQUIRED',
+						'SITE_URL_CHANGED',
+						'LOCAL_STATE_INVALID',
+						'STORE_CATEGORY_CONFLICT',
+						'CATEGORY_UNAVAILABLE',
+					].includes(error?.message)
+				) {
+					this.failure(error);
+					return this.state;
+				}
+				await verifyStoreCategorySave(this, revision, data, {
+					categoryId,
+					mappingIds,
+				});
 				return this.state;
 			})
 			.finally(() => {

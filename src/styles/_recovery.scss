@@ -8,7 +8,11 @@
 }
 
 .moda-interact-recovery__hero {
-	padding: clamp(20px, 3vw, 28px);
+	display: grid;
+	grid-template-columns: minmax(190px, 0.65fr) minmax(0, 1.35fr);
+	gap: 18px;
+	align-items: center;
+	padding: 20px;
 	border: 1px solid var(--moda-border);
 	border-radius: 22px;
 	background:
@@ -26,8 +30,8 @@
 	background: var(--moda-forest-100);
 	color: var(--moda-forest-800);
 	font-size: 12px;
-	font-weight: 800;
-	letter-spacing: 0.04em;
+	font-weight: 700;
+	letter-spacing: 0.035em;
 	text-transform: uppercase;
 }
 
@@ -35,9 +39,58 @@
 	margin: 0;
 	color: var(--moda-forest-900);
 	font-size: clamp(25px, 3vw, 34px);
-	font-weight: 800;
-	line-height: 1.16;
+	font-weight: 600;
+	line-height: 1.12;
 	letter-spacing: -0.035em;
+}
+
+// The three effective values match Shopify's hero, but are loaded from the
+// authenticated recovery-policy projection rather than inserted as defaults.
+.moda-interact-recovery__effective-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 11px;
+	min-width: 0;
+}
+
+.moda-interact-recovery__effective-card {
+	min-width: 0;
+	min-height: 88px;
+	padding: 14px;
+	border: 1px solid rgb(42 106 77 / 16%);
+	border-radius: 18px;
+	background: rgb(255 255 255 / 92%);
+	box-shadow: 0 12px 30px rgb(20 61 44 / 7%);
+}
+
+.moda-interact-recovery__effective-card span {
+	display: block;
+	margin-bottom: 7px;
+	color: var(--moda-forest-700);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.035em;
+	text-transform: uppercase;
+}
+
+.moda-interact-recovery__effective-card strong {
+	display: block;
+	color: var(--moda-forest-950);
+	font-size: 14px;
+	font-weight: 650;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-recovery__override {
+	grid-column: 1 / -1;
+	color: var(--moda-forest-700);
+	font-size: 12px;
+}
+
+.moda-interact-recovery__effective-grid > .button {
+	grid-column: 1 / -1;
+	justify-self: start;
 }
 
 .moda-interact-recovery__hero p {
@@ -58,7 +111,7 @@
 	color: var(--moda-forest-900);
 	cursor: pointer;
 	font-size: 16px;
-	font-weight: 800;
+	font-weight: 700;
 }
 
 .moda-interact-recovery__panel summary::marker {
@@ -78,8 +131,15 @@
 	margin: 0 0 12px;
 	color: var(--moda-forest-900);
 	font-size: 20px;
-	font-weight: 750;
+	font-weight: 650;
 	letter-spacing: -0.02em;
+}
+
+.moda-interact-recovery__category-intro {
+	margin: -4px 0 16px;
+	color: var(--moda-muted);
+	font-size: 14px;
+	line-height: 1.55;
 }
 
 .moda-interact-recovery__profile {
@@ -108,7 +168,7 @@
 	margin: 0 0 8px;
 	color: var(--moda-forest-700);
 	font-size: 11px;
-	font-weight: 800;
+	font-weight: 700;
 	letter-spacing: 0.035em;
 	text-transform: uppercase;
 }
@@ -117,7 +177,7 @@
 	margin: 0;
 	color: var(--moda-forest-950);
 	font-size: 15px;
-	font-weight: 750;
+	font-weight: 650;
 	line-height: 1.4;
 	overflow-wrap: anywhere;
 }
@@ -137,7 +197,7 @@
 .moda-interact-recovery__selection > label {
 	color: var(--moda-forest-900);
 	font-size: 14px;
-	font-weight: 750;
+	font-weight: 650;
 }
 
 .moda-interact-recovery__selection select {
@@ -171,7 +231,7 @@
 	margin-bottom: 10px;
 	padding: 0;
 	color: var(--moda-forest-900);
-	font-weight: 750;
+	font-weight: 650;
 }
 
 .moda-interact-recovery__mapping-option {
@@ -240,5 +300,19 @@
 
 	.moda-interact-recovery__actions {
 		justify-content: flex-start;
+	}
+}
+
+@media (max-width: 1020px) {
+
+	.moda-interact-recovery__hero {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 560px) {
+
+	.moda-interact-recovery__effective-grid {
+		grid-template-columns: 1fr;
 	}
 }

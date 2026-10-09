@@ -11,6 +11,7 @@ export function ConnectedWorkspace({
 	billingState,
 	syncState,
 	categoryState,
+	recoverySummaryState,
 	actions,
 	showSurfaceNavigation = true,
 }) {
@@ -33,6 +34,8 @@ export function ConnectedWorkspace({
 			onChoose: actions.chooseCategory,
 			onToggleMapping: actions.toggleMapping,
 			onSave: actions.saveCategory,
+			summaryState: recoverySummaryState,
+			onRefreshSummary: actions.refreshRecoverySummary,
 		});
 	} else {
 		activeContent = createElement(OverviewScreen, {

@@ -87,4 +87,50 @@ describe('Woo Recovery Settings category presentation', () => {
 			).props.disabled
 		).toBe(true);
 	});
+	it('offers retry after a verified failed Save without hiding the selected category', () => {
+		const view = RecoverySettingsScreen({
+			state: {
+				status: 'SAVE_FAILED',
+				data: categoriesFixture(),
+				categoryId: 'fashion',
+				mappingIds: [],
+			},
+			onRefresh: () => {},
+			onChoose: () => {},
+			onToggleMapping: () => {},
+			onSave: () => {},
+		});
+		expect(flatten(view)).toContain('latest store settings do not show');
+		expect(
+			buttons(view).find((item) =>
+				flatten(item).includes('Save category')
+			).props.disabled
+		).toBe(false);
+	});
+
+	it('requires Refresh when the result cannot be verified', () => {
+		const view = RecoverySettingsScreen({
+			state: {
+				status: 'VERIFY_REQUIRED',
+				data: categoriesFixture(),
+				categoryId: 'fashion',
+				mappingIds: [],
+			},
+			onRefresh: () => {},
+			onChoose: () => {},
+			onToggleMapping: () => {},
+			onSave: () => {},
+		});
+		expect(flatten(view)).toContain('could not confirm whether');
+		expect(
+			buttons(view).find((item) =>
+				flatten(item).includes('Save category')
+			).props.disabled
+		).toBe(true);
+		expect(
+			buttons(view).find((item) =>
+				flatten(item).includes('Refresh categories')
+			).props.disabled
+		).toBe(false);
+	});
 });

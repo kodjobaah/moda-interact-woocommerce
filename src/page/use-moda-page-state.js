@@ -29,6 +29,10 @@ export function useModaPageState() {
 	const [billingState, setBillingState] = useState({ status: 'IDLE' });
 	const [syncState, setSyncState] = useState({ status: 'IDLE' });
 	const [categoryState, setCategoryState] = useState(initialCategoryState);
+	const [recoverySummaryState, setRecoverySummaryState] = useState({
+		status: 'IDLE',
+		data: null,
+	});
 
 	useEffect(() => {
 		const session = createControllerSession(createPageControllers(), {
@@ -37,6 +41,7 @@ export function useModaPageState() {
 			onBilling: setBillingState,
 			onSync: setSyncState,
 			onCategory: setCategoryState,
+			onRecoverySummary: setRecoverySummaryState,
 			onConnectionLost: () => {
 				if (!isNativeMerchantPage(globalThis.location?.search ?? '')) {
 					setActiveSurface('OVERVIEW');
@@ -68,6 +73,13 @@ export function useModaPageState() {
 		}
 	}, [activeSurface, connectionState.connection.status]);
 
+	useEffect(() => {
+		sessionRef.current?.controllers.recoverySummary.setActive(
+			connectionState.connection.status === 'CONNECTED' &&
+				activeSurface === 'RECOVERY'
+		);
+	}, [activeSurface, connectionState.connection.status]);
+
 	const actions = createPageActions(sessionRef, setActiveSurface);
 
 	return {
@@ -77,6 +89,7 @@ export function useModaPageState() {
 		billingState,
 		syncState,
 		categoryState,
+		recoverySummaryState,
 		actions,
 	};
 }

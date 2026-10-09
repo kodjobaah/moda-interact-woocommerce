@@ -43,6 +43,7 @@ final class StoreCategoryControllerTest extends TestCase {
 		self::assertSame( self::readPayload(), $result->get_data() );
 		self::assertSame( 'https://api.example.test/v1/merchant/store-categories?locale=fr_FR', $sent[0][0] );
 		self::assertSame( 'GET', $sent[0][1]['method'] );
+		self::assertSame( 5, $sent[0][1]['timeout'] );
 		self::assertSame( 'Bearer ' . $record['credential'], $sent[0][1]['headers']['Authorization'] );
 		self::assertSame( $record, $store->read()['record'] );
 	}
@@ -59,6 +60,7 @@ final class StoreCategoryControllerTest extends TestCase {
 		self::assertSame( 200, $result->get_status() );
 		self::assertSame( 'https://api.example.test/v1/merchant/store-category', $sent[0][0] );
 		self::assertSame( 'POST', $sent[0][1]['method'] );
+		self::assertSame( 30, $sent[0][1]['timeout'] );
 		self::assertSame( self::selectionInput(), json_decode( $sent[0][1]['body'], true ) );
 		self::assertSame( $record, $store->read()['record'] );
 	}

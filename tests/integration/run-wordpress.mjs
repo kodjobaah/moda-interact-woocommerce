@@ -673,6 +673,13 @@ const apiPort = server.address().port;
 const apiOrigin = `https://host.docker.internal:${apiPort}`;
 
 try {
+	// wp-env mounts this checkout; classmap-authoritative Composer autoloading
+	// must include newly added PHP REST controllers before WordPress boots.
+	command('composer', [
+		'dump-autoload',
+		'--optimize',
+		'--classmap-authoritative',
+	]);
 	wordpressStarted = true;
 	command('npm', ['run', 'env:start'], {
 		env: { ...process.env, WP_ENV_PORT: String(port) },

@@ -2,6 +2,7 @@ import { BillingController } from '../billing-controller';
 import { ConnectionController } from '../connection-controller';
 import { MerchantBootstrapController } from '../merchant-bootstrap-controller';
 import { StoreCategoryController } from '../store-category-controller';
+import { RecoverySummaryController } from '../recovery-summary-controller';
 import { StoreContextSyncController } from '../store-context-sync-controller';
 
 /** Create controllers with the same cross-controller callbacks as the original page. */
@@ -22,5 +23,13 @@ export function createPageControllers() {
 		() => connection.refresh()
 	);
 
-	return { connection, merchant, billing, sync, category };
+	const recoverySummary = new RecoverySummaryController();
+	return {
+		connection,
+		merchant,
+		billing,
+		sync,
+		category,
+		recoverySummary,
+	};
 }

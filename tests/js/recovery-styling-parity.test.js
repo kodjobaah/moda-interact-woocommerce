@@ -33,7 +33,10 @@ function all(node, tag) {
 
 describe('Shopify-inspired Recovery Settings presentation', () => {
 	it('keeps the accessible heading and groups profile labels with their values', () => {
-		const heading = RecoverySettingsHeader();
+		const heading = RecoverySettingsHeader({
+			summaryState: { status: 'IDLE', data: null },
+			onRefreshSummary: () => {},
+		});
 		expect(all(heading, 'h2')[0].props.id).toBe(
 			'moda-interact-recovery-heading'
 		);

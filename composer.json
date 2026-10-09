@@ -13,6 +13,7 @@
 			"@php -l includes/Runtime.php",
 			"@php -l includes/Api/ModaApiClient.php",
 			"@php -l includes/Api/BillingResponseValidator.php",
+			"@php -l includes/Api/RecoverySummaryResponseValidator.php",
 			"@php -l includes/Api/StoreCategoryContracts.php",
 			"@php -l includes/Api/ModaApiConfiguration.php",
 			"@php -l includes/Connection/BootstrapAttemptStore.php",
@@ -23,6 +24,7 @@
 			"@php -l includes/Rest/BillingController.php",
 			"@php -l includes/Rest/StoreContextController.php",
 			"@php -l includes/Rest/StoreCategoryController.php",
+			"@php -l includes/Rest/RecoverySummaryController.php",
 			"@php -l includes/StoreCategory/SelectionInput.php",
 			"@php -l includes/StoreContext/StoreContextResolver.php",
 			"@php -l includes/Security/Base64Url.php",
@@ -39,7 +41,8 @@
 			"@php -l tests/SecurityAndSiteIdentityTest.php",
 			"@php -l tests/StoreContextResolverTest.php",
 			"@php -l tests/StoreContextControllerTest.php",
-			"@php -l tests/StoreCategoryControllerTest.php"
+			"@php -l tests/StoreCategoryControllerTest.php",
+			"@php -l tests/RecoverySummaryControllerTest.php"
 		],
 		"test": "@php vendor/bin/phpunit"
 	},

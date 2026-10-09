@@ -89,4 +89,119 @@ describe('modular Woo category state controller', () => {
 		controller.toggleMapping('foreign_mapping');
 		expect(controller.state.mappingIds).toEqual([]);
 	});
+
+	it('checks the server after a timed-out POST and recognizes an eventual successful publication', async () => {
+		const initial = categoriesFixture();
+		const published = categoriesFixture();
+		published.storeProfile.activeCategory = {
+			id: 'fashion',
+			slug: 'fashion',
+			localizedDisplayName: 'Fashion',
+			localizedDescription: 'Clothing',
+		};
+		published.storeProfile.activeMappingIds = ['clothing'];
+		published.storeProfile.pendingSelectionGeneration = 1;
+		const client = {
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(initial)
+				.mockResolvedValueOnce(published),
+			save: vi.fn().mockRejectedValue(new Error('REMOTE_UNAVAILABLE')),
+		};
+		const refreshOverview = vi.fn();
+		const controller = new StoreCategoryController(client, refreshOverview);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.refresh();
+		controller.chooseCategory('fashion');
+		controller.toggleMapping('clothing');
+		await controller.save();
+		expect(client.save).toHaveBeenCalledTimes(1);
+		expect(client.read).toHaveBeenCalledTimes(2);
+		expect(controller.state.status).toBe('SAVED');
+		expect(refreshOverview).toHaveBeenCalledTimes(1);
+	});
+
+	it('retains the attempted selection and permits retry only after an unchanged server readback', async () => {
+		const initial = categoriesFixture();
+		const published = categoriesFixture();
+		published.storeProfile.activeCategory = {
+			id: 'fashion',
+			slug: 'fashion',
+			localizedDisplayName: 'Fashion',
+			localizedDescription: 'Clothing',
+		};
+		published.storeProfile.pendingSelectionGeneration = 1;
+		const client = {
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(initial)
+				.mockResolvedValueOnce(initial)
+				.mockResolvedValueOnce(published),
+			save: vi
+				.fn()
+				.mockRejectedValueOnce(new Error('REMOTE_UNAVAILABLE'))
+				.mockResolvedValueOnce(selectedFixture()),
+		};
+		const controller = new StoreCategoryController(client);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.refresh();
+		controller.chooseCategory('fashion');
+		await controller.save();
+		expect(controller.state.status).toBe('SAVE_FAILED');
+		expect(controller.state.categoryId).toBe('fashion');
+		expect(controller.canEdit()).toBe(true);
+		expect(client.save).toHaveBeenCalledTimes(1);
+		await controller.save();
+		expect(client.save).toHaveBeenCalledTimes(2);
+		expect(controller.state.status).toBe('SAVED');
+	});
+
+	it('blocks a second Save when the first result cannot be verified', async () => {
+		const client = {
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(categoriesFixture())
+				.mockRejectedValueOnce(new Error('REMOTE_UNAVAILABLE'))
+				.mockResolvedValueOnce(categoriesFixture()),
+			save: vi.fn().mockRejectedValue(new Error('REMOTE_UNAVAILABLE')),
+		};
+		const controller = new StoreCategoryController(client);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.refresh();
+		controller.chooseCategory('fashion');
+		await controller.save();
+		expect(controller.state.status).toBe('VERIFY_REQUIRED');
+		expect(controller.canEdit()).toBe(false);
+		await controller.save();
+		expect(client.save).toHaveBeenCalledTimes(1);
+		await controller.refresh();
+		expect(client.read).toHaveBeenCalledTimes(3);
+		expect(controller.state.status).toBe('READY');
+	});
+
+	it('preserves generation-CAS after a failed Save when another administrator published', async () => {
+		const later = categoriesFixture();
+		later.storeProfile.activeCategory = {
+			id: 'electronics',
+			slug: 'electronics',
+			localizedDisplayName: 'Electronics',
+			localizedDescription: 'Devices',
+		};
+		later.storeProfile.pendingSelectionGeneration = 1;
+		const client = {
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(categoriesFixture())
+				.mockResolvedValueOnce(later),
+			save: vi.fn().mockRejectedValue(new Error('REMOTE_UNAVAILABLE')),
+		};
+		const controller = new StoreCategoryController(client);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.refresh();
+		controller.chooseCategory('fashion');
+		await controller.save();
+		expect(controller.state.status).toBe('CONFLICT');
+		expect(controller.canEdit()).toBe(false);
+		expect(client.save).toHaveBeenCalledTimes(1);
+	});
 });

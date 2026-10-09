@@ -37,6 +37,7 @@ function ModaInteractPage() {
 						billingState: page.billingState,
 						syncState: page.syncState,
 						categoryState: page.categoryState,
+						recoverySummaryState: page.recoverySummaryState,
 						actions: page.actions,
 						showSurfaceNavigation: !isNativeMerchantPage(
 							globalThis.location?.search ?? ''

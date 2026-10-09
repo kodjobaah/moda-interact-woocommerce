@@ -17,7 +17,8 @@
 	--moda-soft: #f6faf7;
 	--moda-shadow: 0 14px 36px rgb(20 61 44 / 8%);
 	--moda-focus-ring: 0 0 0 3px rgb(63 125 97 / 22%);
-	font-family: "Avenir Next", "Trebuchet MS", system-ui, sans-serif;
+	font-family: "Avenir Next", "Trebuchet MS", sans-serif;
+	-webkit-font-smoothing: antialiased;
 	font-size: 14px;
 	line-height: 1.55;
 	color: var(--moda-ink);

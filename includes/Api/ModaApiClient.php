@@ -9,6 +9,8 @@ use ModaInteract\WooCommerce\Security\Base64Url;
 
 final class ModaApiClient {
 	private const CONNECT_TIMEOUT_SECONDS = 30;
+	/** Publication may take longer than a read; only category POST receives this budget. */
+	private const CATEGORY_SELECTION_TIMEOUT_SECONDS = 30;
 	private const DEFAULT_TIMEOUT_SECONDS = 5;
 
 	private $transport;
@@ -120,6 +122,37 @@ final class ModaApiClient {
 			throw new ModaApiClientException( 'remote_response_invalid', $status );
 		}
 
+		return $payload;
+	}
+
+	/** Effective recovery policy projection for the current authenticated installation. */
+	public function merchantRecoverySummary( array $connection ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		$response = $this->request(
+			'/v1/merchant/recovery-summary',
+			'GET',
+			self::installationHeaders( $connection )
+		);
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) {
+			throw new ModaApiClientException( 'unauthorized', $status );
+		}
+		if ( 409 === $status ) {
+			throw new ModaApiClientException( 'tenant_conflict', $status );
+		}
+		if ( 200 !== $status ) {
+			throw new ModaApiClientException( 'remote_unavailable', $status );
+		}
+		try {
+			$payload = $this->jsonBody( $response );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		if ( ! RecoverySummaryResponseValidator::isValid( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
 		return $payload;
 	}
 
@@ -302,7 +335,8 @@ final class ModaApiClient {
 			'/v1/merchant/store-category',
 			'POST',
 			array_merge( array( 'Content-Type' => 'application/json' ), self::installationHeaders( $connection ) ),
-			$body
+			$body,
+			self::CATEGORY_SELECTION_TIMEOUT_SECONDS
 		);
 		$status = wp_remote_retrieve_response_code( $response );
 		self::assertCategoryStatus( $status );

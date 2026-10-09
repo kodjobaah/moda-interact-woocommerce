@@ -3,6 +3,7 @@ export function createControllerSession(controllers, listeners) {
 	let previousConnectionStatus = 'LOADING';
 	const unsubscriptions = [
 		controllers.category.subscribe(listeners.onCategory),
+		controllers.recoverySummary.subscribe(listeners.onRecoverySummary),
 		controllers.sync.subscribe(listeners.onSync),
 		controllers.merchant.subscribe(listeners.onMerchant),
 		controllers.billing.subscribe(listeners.onBilling),
@@ -20,6 +21,7 @@ export function createControllerSession(controllers, listeners) {
 			}
 			previousConnectionStatus = status;
 			controllers.category.setConnectionStatus(status);
+			controllers.recoverySummary.setConnectionStatus(status);
 		}),
 	];
 	let disposed = false;
@@ -45,6 +47,7 @@ export function createControllerSession(controllers, listeners) {
 				'billing',
 				'sync',
 				'category',
+				'recoverySummary',
 			]) {
 				controllers[name].dispose();
 			}

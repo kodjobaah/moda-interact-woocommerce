@@ -43,6 +43,7 @@ function controllers() {
 		billing: fakeController(),
 		sync: fakeController(),
 		category: fakeController(),
+		recoverySummary: fakeController(),
 	};
 }
 
@@ -57,12 +58,19 @@ describe('page controller session', () => {
 			onBilling: vi.fn(),
 			onSync: vi.fn(),
 			onCategory: vi.fn(),
+			onRecoverySummary: vi.fn(),
 			onConnectionLost,
 		});
 		session.start();
 		expect(items.connection.refresh).toHaveBeenCalledTimes(1);
 		items.connection.publish({ connection: { status: 'CONNECTED' } });
-		for (const name of ['merchant', 'billing', 'sync', 'category']) {
+		for (const name of [
+			'merchant',
+			'billing',
+			'sync',
+			'category',
+			'recoverySummary',
+		]) {
 			expect(items[name].setConnectionStatus).toHaveBeenLastCalledWith(
 				'CONNECTED'
 			);
@@ -81,6 +89,7 @@ describe('page controller session', () => {
 			onBilling: vi.fn(),
 			onSync: vi.fn(),
 			onCategory: vi.fn(),
+			onRecoverySummary: vi.fn(),
 			onConnectionLost,
 		});
 		items.connection.publish({
@@ -102,6 +111,7 @@ describe('page controller session', () => {
 			onBilling: vi.fn(),
 			onSync: vi.fn(),
 			onCategory: vi.fn(),
+			onRecoverySummary: vi.fn(),
 			onConnectionLost: vi.fn(),
 		});
 		session.dispose();
@@ -129,6 +139,7 @@ describe('page actions', () => {
 		actions.selectSurface('RECOVERY');
 		expect(items.billing.setActive).toHaveBeenLastCalledWith(false);
 		expect(items.category.refresh).toHaveBeenCalledTimes(1);
+		expect(items.recoverySummary.setActive).toHaveBeenLastCalledWith(true);
 		expect(setActiveSurface).toHaveBeenLastCalledWith('RECOVERY');
 	});
 
