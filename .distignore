@@ -17,3 +17,8 @@
 /composer.lock
 /webpack.config.js
 /vendor/bin
+/**/*.map
+/coverage
+/logs
+/cache
+/.DS_Store

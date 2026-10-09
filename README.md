@@ -1,8 +1,9 @@
 # Moda Interact for WooCommerce
 
-Moda Interact is an installable WordPress plugin with a minimal React page inside
-WooCommerce Admin. It does not run a separate Node server or connect to Moda
-services.
+Moda Interact is an installable WordPress plugin with a React application inside
+WooCommerce Admin. Its PHP runtime makes authenticated server-to-server requests
+to Moda Interact when an administrator connects the store or opens the connected
+merchant Overview. It does not run a separate Node server on the merchant site.
 
 The plugin uses the official WooCommerce `create-woo-extension` template and the
 WordPress Scripts build system. Production assets are generated into `build/` before
@@ -131,14 +132,21 @@ inside PHP and the server-side WordPress option.
 
 ## Plugin Package
 
-Create `moda-interact.zip` with:
+Create and audit `moda-interact.zip` with:
 
 ```sh
-npm run plugin-zip
+npm run package:production
 ```
 
 The command rebuilds production assets, installs only production Composer
-dependencies, and runs the official WordPress Scripts plugin packager. The ZIP
-contains the `moda-interact/` plugin root and excludes development sources, tests,
-local environment state, Node dependencies and Composer development dependencies.
-Run `npm run install:php` again to restore PHPUnit before further PHP tests.
+dependencies, and runs the official WordPress Scripts plugin packager. It checks
+version consistency, required runtime files, archive paths, production Composer
+contents and bounded runtime/API-origin disclosures. The ZIP uses the
+`moda-interact/` plugin root and excludes development sources, tests, local
+environment state, Node dependencies and Composer development executables.
+Because packaging materializes production-only Composer dependencies, run
+`npm run install:php` to restore PHPUnit before further PHP tests.
+
+Regenerate the WordPress translation template while the wp-env CLI container is
+available with `npm run i18n:makepot`; it extracts the `moda-interact` domain from
+the plugin source into `languages/moda-interact.pot`.

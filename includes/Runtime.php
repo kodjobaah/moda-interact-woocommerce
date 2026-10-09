@@ -83,6 +83,7 @@ final class Runtime {
 			);
 		} else {
 			$message = sprintf(
+				/* translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version. */
 				__(
 					'Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s.',
 					'moda-interact'

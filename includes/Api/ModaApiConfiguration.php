@@ -23,7 +23,7 @@ final class ModaApiConfiguration {
 		}
 
 		if ( false === $base_url || '' === $base_url || null === $base_url ) {
-			return null;
+			$base_url = 'https://api.modainteract.com';
 		}
 
 		$mode = self::serverMode( $mode );
