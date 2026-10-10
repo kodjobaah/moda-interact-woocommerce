@@ -15,6 +15,8 @@ import {
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { availableWpEnvHostPort } from './wp-env-host-port.mjs';
+import { assertReleaseLocales } from './release-locales.mjs';
+import { assertReleaseBrowserLocales } from './release-browser-locales.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const baselineCommit = '98273e4ebdfa9a78146cb897fb905ef97a6814e7';
@@ -386,6 +388,30 @@ async function runFreshInstall(configPath, port) {
 		'fresh package install and activation'
 	);
 	await assertAdminAssets(configPath, port, 'fresh candidate');
+	assertReleaseLocales({
+		wpEval: (php) => wp(configPath, port, 'eval', php),
+		parseJsonOutput,
+	});
+	assertNoExternalApiRequests(
+		configPath,
+		port,
+		'fresh installed locale matrix'
+	);
+	await assertReleaseBrowserLocales({
+		chromium,
+		wp: (...args) => wp(configPath, port, ...args),
+		parseJsonOutput,
+		siteUrl: `http://localhost:${port}`,
+		loginToken: adminRenderToken,
+	});
+	assertNoExternalApiRequests(
+		configPath,
+		port,
+		'fresh installed locale browser matrix'
+	);
+	process.stdout.write(
+		'WOO-014: all installed UI locales rendered in fresh package.\n'
+	);
 }
 
 async function runUpgrade(configPath, port) {
@@ -446,6 +472,15 @@ async function runUpgrade(configPath, port) {
 			{ method: 'GET', path: '/v1/woocommerce/installation' },
 			{ method: 'GET', path: '/v1/merchant/bootstrap' },
 		]
+	);
+	assertReleaseLocales({
+		wpEval: (php) => wp(configPath, port, 'eval', php),
+		parseJsonOutput,
+	});
+	assertNoExternalApiRequests(
+		configPath,
+		port,
+		'upgraded installed locale matrix'
 	);
 
 	wp(configPath, port, 'plugin', 'deactivate', 'moda-interact');

@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { verifyReleaseAssets } from './i18n/release-assets.mjs';
 
 const repository = resolve(import.meta.dirname, '..');
 const archivePath = resolve(repository, 'moda-interact.zip');
@@ -39,6 +40,12 @@ function trackedSnapshot() {
 
 function readArchiveFile(path) {
 	return capture('unzip', ['-p', archivePath, `moda-interact/${path}`]);
+}
+
+function readArchiveBytes(path) {
+	return execFileSync('unzip', ['-p', archivePath, path], {
+		cwd: repository,
+	});
 }
 
 function assertNoPattern(contents, pattern, description) {
@@ -132,23 +139,18 @@ function verifyPackage() {
 		'Composer vendor/bin must not enter the archive'
 	);
 
-	// Locale batches are optional until WOO-014, but every present PO must
-	// compile into both WordPress PHP and handle-specific JS assets.
-	for (const source of readdirSync(resolve(repository, 'languages'))) {
-		const match = source.match(/^moda-interact-([A-Za-z_]+)\.po$/);
-		if (!match) {
-			continue;
-		}
-		for (const extension of [
-			`moda-interact-${match[1]}.mo`,
-			`moda-interact-${match[1]}-moda-interact.json`,
-		]) {
-			assert.ok(
-				entries.includes(`moda-interact/languages/${extension}`),
-				`compiled translation missing from ZIP: ${extension}`
-			);
-		}
-	}
+	const release = verifyReleaseAssets({
+		entries,
+		readPackagedAsset: readArchiveBytes,
+		languagesDirectory: resolve(repository, 'languages'),
+	});
+	assert.equal(release.languages, 20);
+	assert.equal(release.assets, 38);
+	assert.match(
+		readArchiveFile('build/index.asset.php'),
+		/['"]wp-i18n['"]/,
+		'bundled React asset must declare its WordPress i18n dependency'
+	);
 	const pot = readArchiveFile('languages/moda-interact.pot');
 	assert.match(pot, /X-Domain: moda-interact/);
 	assert.match(pot, /Moda Interact/);
@@ -230,12 +232,12 @@ function verifyPackage() {
 	assert.ok(runtimePhp.length > 0 && runtimeJavaScript.length > 0);
 
 	capture('unzip', ['-tq', archivePath]);
-	return { entries, version };
+	return { entries, version, release };
 }
 
 const trackedBefore = trackedSnapshot();
 run('npm', ['run', 'build']);
-run('npm', ['run', 'i18n:compile']);
+run('npm', ['run', 'i18n:verify:20']);
 run('composer', [
 	'install',
 	'--no-dev',
@@ -243,7 +245,7 @@ run('composer', [
 	'--classmap-authoritative',
 ]);
 run('wp-scripts', ['plugin-zip']);
-const { entries, version } = verifyPackage();
+const { entries, version, release } = verifyPackage();
 assert.equal(
 	trackedSnapshot(),
 	trackedBefore,
@@ -252,6 +254,9 @@ assert.equal(
 const digest = createHash('sha256')
 	.update(readFileSync(archivePath))
 	.digest('hex');
+process.stdout.write(
+	`WOO-014 release manifest: ${release.messages} messages; ${release.languages}/20 languages; ${release.assets} compiled assets; ${release.manifest.map((entry) => `${entry.locale}:${entry.sourceMessages}`).join(' ')}.\n`
+);
 process.stdout.write(
 	`Production package verified: moda-interact.zip (${version}, ${entries.length} entries, SHA-256 ${digest}).\n`
 );

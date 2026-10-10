@@ -50,7 +50,7 @@ msgstr "Aktionen"
 
 #: includes/Admin/NativeNavigation.php:44
 msgid "Support"
-msgstr "Support"
+msgstr "Hilfe"
 
 #: includes/Admin/NativeNavigation.php:45
 #: src/recovery-settings/recovery-settings-header.js:16

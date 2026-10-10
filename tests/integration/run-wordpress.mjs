@@ -14,6 +14,7 @@ import { assertLocaleBatch010 } from './locale-batch-010.mjs';
 import { assertLocaleBatch011 } from './locale-batch-011.mjs';
 import { assertLocaleBatch012 } from './locale-batch-012.mjs';
 import { assertLocaleBatch013 } from './locale-batch-013.mjs';
+import { assertReleaseLocales } from './release-locales.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -1279,6 +1280,22 @@ try {
 			generation: categoryGeneration,
 		}),
 	});
+	assertReleaseLocales({
+		wpEval: (source) => wp('eval', source),
+		parseJsonOutput,
+		getRemoteState: () => ({
+			contextSyncAttempts,
+			savedContext,
+			categoryGeneration,
+			categorySelections,
+			createCount,
+			switchCount,
+			cancelCount,
+		}),
+	});
+	process.stdout.write(
+		'WOO-014 installed plugin 20-language PHP/JS and Shop-state checks passed.\n'
+	);
 	process.stdout.write(
 		'WOO-008 WordPress category selection + active readback integration passed.\n'
 	);

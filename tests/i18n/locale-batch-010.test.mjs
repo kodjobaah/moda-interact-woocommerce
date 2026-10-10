@@ -29,24 +29,28 @@ const locales = [
 		save: 'Enregistrer la catégorie',
 		php: 'Cette section n’est pas encore disponible pour WooCommerce.',
 		billing: 'Facturation',
+		support: 'Assistance',
 	},
 	{
 		code: 'de_DE',
 		save: 'Kategorie speichern',
 		php: 'Dieser Bereich ist für WooCommerce noch nicht verfügbar.',
 		billing: 'Abrechnung',
+		support: 'Hilfe',
 	},
 	{
 		code: 'it_IT',
 		save: 'Salva categoria',
 		php: 'Questa sezione non è ancora disponibile per WooCommerce.',
 		billing: 'Fatturazione',
+		support: 'Assistenza',
 	},
 	{
 		code: 'es_ES',
 		save: 'Guardar categoría',
 		php: 'Esta sección todavía no está disponible para WooCommerce.',
 		billing: 'Facturación',
+		support: 'Soporte',
 	},
 ];
 
@@ -82,15 +86,12 @@ function moEntries(buffer) {
 
 test('WOO-010 covers every current gettext key without untranslated English fallbacks', () => {
 	assert.equal(sourceKeys.size, 169);
-	const sharedWords = new Set([
-		'Moda Interact',
-		'WooCommerce',
-		'Free',
-		'%1$s: %2$s',
-		'Promotions',
-		'Support',
-		'Name',
-		'Plan',
+	const unchangedNames = new Set(['Moda Interact', 'WooCommerce', 'Free']);
+	const validSharedTerms = new Map([
+		['fr_FR', new Set(['Promotions'])],
+		['de_DE', new Set(['%1$s: %2$s', 'Name'])],
+		['it_IT', new Set(['%1$s: %2$s'])],
+		['es_ES', new Set(['%1$s: %2$s', 'Plan'])],
 	]);
 	for (const { code } of locales) {
 		const entries = poFromFile(
@@ -106,7 +107,9 @@ test('WOO-010 covers every current gettext key without untranslated English fall
 			assert.ok(entry.translations[0], `${code}: untranslated ${key}`);
 			assert.ok(!entry.fuzzy, `${code}: unreviewed ${key}`);
 			assert.ok(
-				sharedWords.has(entry.id) || entry.id !== entry.translations[0],
+				unchangedNames.has(entry.id) ||
+					validSharedTerms.get(code)?.has(entry.id) ||
+					entry.id !== entry.translations[0],
 				`${code}: English fallback ${key}`
 			);
 		}
@@ -131,7 +134,7 @@ test('WOO-010 emits complete PHP gettext and WordPress JavaScript catalogues', (
 			compiled.assets.length,
 			compiled.translatedLanguages.length * 2
 		);
-		for (const { code, save, php, billing } of locales) {
+		for (const { code, save, php, billing, support } of locales) {
 			const mo = moEntries(
 				readFileSync(join(output, `moda-interact-${code}.mo`))
 			);
@@ -141,6 +144,7 @@ test('WOO-010 emits complete PHP gettext and WordPress JavaScript catalogues', (
 			);
 			assert.equal(mo.get('Save category'), save);
 			assert.equal(mo.get('Billing'), billing);
+			assert.equal(mo.get('Support'), support);
 			const json = JSON.parse(
 				readFileSync(
 					join(output, `moda-interact-${code}-moda-interact.json`),
@@ -149,6 +153,11 @@ test('WOO-010 emits complete PHP gettext and WordPress JavaScript catalogues', (
 			);
 			assert.equal(json.locale_data.messages['Save category'][0], save);
 			assert.equal(json.locale_data.messages.Billing[0], billing);
+			assert.equal(
+				json.locale_data.messages.Support,
+				undefined,
+				'PHP-only navigation labels must not appear in JavaScript assets'
+			);
 			assert.match(
 				json.locale_data.messages['Effective value: %d minutes'][0],
 				/%d/

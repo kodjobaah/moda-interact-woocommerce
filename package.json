@@ -15,7 +15,7 @@
 		"CHANGELOG.md"
 	],
 	"scripts": {
-		"build": "wp-scripts build",
+		"build": "npm run i18n:verify:20 && wp-scripts build",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
@@ -25,7 +25,7 @@
 		"package:production": "node scripts/package-production.mjs",
 		"i18n:makepot": "node scripts/make-pot.mjs",
 		"i18n:compile": "node scripts/i18n/compile.mjs",
-		"i18n:verify:20": "node scripts/i18n/compile.mjs --strict",
+		"i18n:verify:20": "node scripts/i18n/verify-source.mjs && node scripts/i18n/compile.mjs --strict",
 		"test:i18n": "node --test tests/i18n/*.test.mjs",
 		"test:js": "wp-scripts test-unit-js tests/js && node --test tests/integration/*.test.mjs tests/i18n/*.test.mjs",
 		"test:php": "composer test",
