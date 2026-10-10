@@ -413,8 +413,12 @@ msgid "Plan type"
 msgstr "Tipo de plan"
 
 #: src/billing/hero.js:38
-msgid "Plans"
-msgstr "Planes"
+msgid "Add top-up"
+msgstr "Añadir recarga"
+
+#: src/billing/hero.js:39
+msgid "Change plan"
+msgstr "Cambiar plan"
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"

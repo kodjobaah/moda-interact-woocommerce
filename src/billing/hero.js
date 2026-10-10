@@ -35,7 +35,8 @@ export function BillingHero({ state, onRefresh, onSetView }) {
 				},
 				...[
 					['SUMMARY', __('Summary', 'moda-interact')],
-					['PLANS', __('Plans', 'moda-interact')],
+					['TOP_UPS', __('Add top-up', 'moda-interact')],
+					['PLANS', __('Change plan', 'moda-interact')],
 				].map(([view, label]) =>
 					createElement(
 						'button',

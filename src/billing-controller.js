@@ -150,7 +150,7 @@ export class BillingController {
 	}
 
 	setView(view) {
-		if (!['SUMMARY', 'PLANS'].includes(view) || this.disposed) {
+		if (!['SUMMARY', 'TOP_UPS', 'PLANS'].includes(view) || this.disposed) {
 			return Promise.resolve(this.state);
 		}
 		this.publish({

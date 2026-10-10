@@ -2,7 +2,6 @@ import { createElement, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { CapacitySummary } from './capacity-summary';
 import { billingNotices } from './notices';
-import { TopUpSection } from './top-up-section';
 import {
 	CancelDialog,
 	handleCancelDialogKeyDown,
@@ -36,7 +35,6 @@ export function BillingSummary({
 	data,
 	state,
 	onCancel,
-	onPurchaseTopUp,
 	locale = resolveBillingLocale(),
 }) {
 	const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -56,7 +54,6 @@ export function BillingSummary({
 		data,
 		state,
 		onCancel,
-		onPurchaseTopUp,
 		locale,
 		cancelDialogOpen,
 		setCancelDialogOpen,
@@ -70,7 +67,6 @@ export function BillingSummaryView({
 	data,
 	state,
 	onCancel,
-	onPurchaseTopUp = () => {},
 	locale = resolveBillingLocale(),
 	cancelDialogOpen = false,
 	setCancelDialogOpen = () => {},
@@ -194,12 +190,6 @@ export function BillingSummaryView({
 					: null
 			),
 			createElement(CapacitySummary, { data, frozen, locale })
-		),
-		createElement(TopUpSection, {
-			data,
-			state,
-			onPurchase: onPurchaseTopUp,
-			locale,
-		})
+		)
 	);
 }

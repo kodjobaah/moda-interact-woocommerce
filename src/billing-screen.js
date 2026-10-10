@@ -2,6 +2,7 @@ import { createElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { PlansView } from './billing/plan-catalogue';
 import { BillingSummary } from './billing/summary';
+import { TopUpSection } from './billing/top-up-section';
 import { BillingHero } from './billing/hero';
 import { billingNotices } from './billing/notices';
 import { resolveBillingLocale } from './billing/presentation-formatters';
@@ -101,12 +102,18 @@ export function BillingScreen({
 			onRetry: onLoadPlans,
 			locale,
 		});
+	} else if (state.view === 'TOP_UPS') {
+		content = createElement(TopUpSection, {
+			data: state.data,
+			state,
+			onPurchase: onPurchaseTopUp,
+			locale,
+		});
 	} else {
 		content = createElement(BillingSummary, {
 			data: state.data,
 			state,
 			onCancel,
-			onPurchaseTopUp,
 			locale,
 		});
 	}

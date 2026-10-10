@@ -180,7 +180,11 @@ msgid "Summary"
 msgstr ""
 
 #: src/billing/hero.js:38
-msgid "Plans"
+msgid "Add top-up"
+msgstr ""
+
+#: src/billing/hero.js:39
+msgid "Change plan"
 msgstr ""
 
 #: src/billing/notices.js:19

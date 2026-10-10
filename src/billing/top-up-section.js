@@ -86,14 +86,13 @@ function offerStatus(offer, unresolved, topUps, state) {
  */
 export function TopUpSection({ data, state, onPurchase, locale }) {
 	const topUps = data.topUps;
-	if (!topUps.configured || topUps.offers.length === 0) {
-		return null;
-	}
 	const notice =
 		state.feedbackContext === 'TOP_UP'
 			? (NOTICE_COPY[state.notice ?? ''] ??
 				NOTICE_COPY[state.error ?? ''])
 			: undefined;
+	const offers = topUps.configured ? topUps.offers : [];
+
 	return createElement(
 		'section',
 		{
@@ -105,25 +104,21 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 			'header',
 			{ className: 'moda-interact-top-ups__heading' },
 			createElement(
-				'div',
-				null,
-				createElement(
-					'p',
-					{ className: 'moda-interact-top-ups__eyebrow' },
-					__('Recovery capacity', 'moda-interact')
-				),
-				createElement(
-					'h3',
-					{ id: 'moda-interact-top-ups-heading' },
-					__('Predefined credit bundles', 'moda-interact')
-				),
-				createElement(
-					'p',
-					{ className: 'moda-interact-top-ups__description' },
-					__(
-						'Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation.',
-						'moda-interact'
-					)
+				'p',
+				{ className: 'moda-interact-top-ups__eyebrow' },
+				__('Recovery capacity', 'moda-interact')
+			),
+			createElement(
+				'h3',
+				{ id: 'moda-interact-top-ups-heading' },
+				__('Predefined credit bundles', 'moda-interact')
+			),
+			createElement(
+				'p',
+				{ className: 'moda-interact-top-ups__description' },
+				__(
+					'Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation.',
+					'moda-interact'
 				)
 			)
 		),
@@ -137,89 +132,111 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 					notice
 				)
 			: null,
-		createElement(
-			'div',
-			{ className: 'moda-interact-top-ups__grid' },
-			...topUps.offers.map((offer) => {
-				const unresolved = topUps.unresolvedPurchases.find(
-					(purchase) =>
-						purchase.merchantPricingUsageEventId ===
-						offer.merchantPricingUsageEventId
-				);
-				const status = offerStatus(offer, unresolved, topUps, state);
-				const pending = Boolean(
-					unresolved || offer.unavailableReason === 'PENDING_PURCHASE'
-				);
-				const disabled = Boolean(
-					status || state.command !== null || state.status !== 'READY'
-				);
-				return createElement(
-					'article',
-					{
-						className: `moda-interact-top-up${
-							status ? ' moda-interact-top-up--unavailable' : ''
-						}`,
-						key: offer.merchantPricingUsageEventId,
-					},
-					createElement('h4', null, offer.label),
-					createElement(
-						'p',
-						{ className: 'moda-interact-top-up__price' },
-						formatMoney(offer.amountMinor, offer.currency, locale)
-					),
-					pending
-						? createElement(
+		offers.length > 0
+			? createElement(
+					'div',
+					{ className: 'moda-interact-top-ups__grid' },
+					...offers.map((offer) => {
+						const unresolved = topUps.unresolvedPurchases.find(
+							(purchase) =>
+								purchase.merchantPricingUsageEventId ===
+								offer.merchantPricingUsageEventId
+						);
+						const status = offerStatus(
+							offer,
+							unresolved,
+							topUps,
+							state
+						);
+						const pending = Boolean(
+							unresolved ||
+								offer.unavailableReason === 'PENDING_PURCHASE'
+						);
+						const disabled = Boolean(
+							status ||
+							state.command !== null ||
+							state.status !== 'READY'
+						);
+
+						return createElement(
+							'article',
+							{
+								className: `moda-interact-top-up${
+									status
+										? ' moda-interact-top-up--unavailable'
+										: ''
+								}`,
+								key: offer.merchantPricingUsageEventId,
+							},
+							createElement('h4', null, offer.label),
+							createElement(
 								'p',
-								{
-									className: 'moda-interact-top-up__status',
-									role: 'status',
-								},
-								status
-							)
-						: createElement(
-								'div',
-								{ className: 'moda-interact-top-up__actions' },
-								status
-									? createElement(
-											'p',
-											{
-												className:
-													'moda-interact-top-up__status',
-												role: 'status',
-											},
-											status
-										)
-									: null,
-								createElement(
-									'button',
-									{
-										type: 'button',
-										className: 'button button-primary',
-										disabled,
-										'aria-busy':
-											state.command === 'SUBMITTING',
-										onClick: () =>
-											onPurchase(
-												offer.merchantPricingUsageEventId
-											),
-									},
-									state.command === 'SUBMITTING'
-										? __('Submitting…', 'moda-interact')
-										: sprintf(
-												/* translators: %s: recovery-credit quantity. */
-												__(
-													'Buy %s credits',
-													'moda-interact'
-												),
-												formatQuantity(
-													offer.creditsGranted,
-													locale
-												)
-											)
+								{ className: 'moda-interact-top-up__price' },
+								formatMoney(
+									offer.amountMinor,
+									offer.currency,
+									locale
 								)
-							)
-				);
-			})
-		)
+							),
+							pending
+								? createElement(
+										'p',
+										{
+											className:
+												'moda-interact-top-up__status',
+											role: 'status',
+										},
+										status
+									)
+								: createElement(
+										'div',
+										{ className: 'moda-interact-top-up__actions' },
+										status
+											? createElement(
+												'p',
+												{
+													className:
+														'moda-interact-top-up__status',
+													role: 'status',
+												},
+												status
+											)
+										: null,
+										createElement(
+											'button',
+											{
+												type: 'button',
+												className: 'button button-primary',
+												disabled,
+												'aria-busy':
+													state.command === 'SUBMITTING',
+												onClick: () =>
+													onPurchase(
+														offer.merchantPricingUsageEventId
+													),
+											},
+											state.command === 'SUBMITTING'
+												? __('Submitting…', 'moda-interact')
+												: sprintf(
+														/* translators: %s: recovery-credit quantity. */
+														__(
+															'Buy %s credits',
+															'moda-interact'
+														),
+														formatQuantity(
+															offer.creditsGranted,
+															locale
+														)
+													)
+										)
+								)
+						);
+					})
+				)
+			: createElement(
+					'p',
+					{ className: 'moda-interact-top-ups__notice', role: 'status' },
+					__('Unavailable', 'moda-interact')
+				)
 	);
 }
