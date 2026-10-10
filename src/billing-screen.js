@@ -125,7 +125,11 @@ export function BillingScreen({
 		...(state.status === 'READY' && state.view === 'PLANS'
 			? billingNotices(state.data, state)
 			: []),
-		state.error
+		state.error &&
+			!(
+				state.feedbackContext === 'TOP_UP' &&
+				state.error === 'billing_operation_failed'
+			)
 			? createElement(
 					'p',
 					{

@@ -412,6 +412,95 @@ describe('BillingController', () => {
 		expect(controller.state.notice).toBe('CANCEL_ACCEPTED');
 	});
 
+	it.each([
+		['plan change', 'PLAN_CHANGE'],
+		['cancellation', 'CANCELLATION'],
+	])(
+		'tags %s failures without attributing them to top-ups',
+		async (label, feedbackContext) => {
+			const current = billing({
+				topUps: topUps(),
+				...(feedbackContext === 'CANCELLATION'
+					? {
+							currentPlan: {
+								merchantPricingPlanId: 'paid_1',
+								planKind: 'PAID_METERED',
+								cancelAtPeriodEnd: false,
+							},
+						}
+					: {}),
+			});
+			const client = {
+				getBilling: vi.fn().mockResolvedValue(current),
+				createSubscription: vi
+					.fn()
+					.mockRejectedValue(new Error('billing_operation_failed')),
+				cancelSubscription: vi
+					.fn()
+					.mockRejectedValue(new Error('billing_operation_failed')),
+			};
+			const controller = new BillingController(client);
+			controller.setActive(true);
+			controller.setConnectionStatus('CONNECTED');
+			await controller.billingPromise;
+
+			if (feedbackContext === 'PLAN_CHANGE') {
+				await controller.createOrSwitch(plan('paid_2'));
+			} else {
+				await controller.cancel();
+			}
+
+			expect(client.getBilling).toHaveBeenCalledTimes(1);
+			expect(controller.state).toMatchObject({
+				feedbackContext,
+				error: 'billing_operation_failed',
+				status: 'READY',
+			});
+		}
+	);
+
+	it('tags top-up failures and retires stale feedback on refresh and view changes', async () => {
+		const client = {
+			getBilling: vi
+				.fn()
+				.mockResolvedValue(billing({ topUps: topUps() })),
+			createSubscription: vi
+				.fn()
+				.mockRejectedValue(new Error('billing_operation_failed')),
+			purchaseRecoveryCredits: vi
+				.fn()
+				.mockRejectedValue(new Error('billing_operation_failed')),
+			getPlans: vi.fn().mockResolvedValue({ plans: [plan()] }),
+		};
+		const controller = new BillingController(client);
+		controller.setActive(true);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.billingPromise;
+
+		await controller.purchaseRecoveryCredits('usage_bronze');
+		expect(controller.state.feedbackContext).toBe('TOP_UP');
+		await controller.createOrSwitch(plan('paid_2'));
+		expect(controller.state).toMatchObject({
+			feedbackContext: 'PLAN_CHANGE',
+			error: 'billing_operation_failed',
+		});
+		await controller.refresh();
+		expect(controller.state).toMatchObject({
+			feedbackContext: null,
+			notice: null,
+			error: null,
+		});
+
+		await controller.purchaseRecoveryCredits('usage_bronze');
+		expect(controller.state.feedbackContext).toBe('TOP_UP');
+		await controller.setView('PLANS');
+		expect(controller.state).toMatchObject({
+			feedbackContext: null,
+			notice: null,
+			error: null,
+		});
+	});
+
 	it('treats the Woo return marker as a bounded boolean signal', () => {
 		expect(isBillingReturn('?moda_billing_return=1&operation=opaque')).toBe(
 			true

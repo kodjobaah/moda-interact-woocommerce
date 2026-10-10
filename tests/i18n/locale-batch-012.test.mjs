@@ -105,7 +105,7 @@ test('WOO-012 covers exactly 195 keys and locale plural rules', () => {
 		const entries = poFromFile(
 			join(languagesDirectory, `moda-interact-${locale}.po`)
 		);
-			assert.equal(entries.length, 196, locale);
+		assert.equal(entries.length, 196, locale);
 		assert.deepEqual(
 			new Set(entries.filter((item) => item.id).map(originalKey)),
 			sourceKeys,

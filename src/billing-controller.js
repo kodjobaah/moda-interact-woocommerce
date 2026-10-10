@@ -73,6 +73,7 @@ function initialState() {
 		plans: null,
 		view: 'SUMMARY',
 		command: null,
+		feedbackContext: null,
 		notice: null,
 		blockedTopUpEventId: null,
 		error: null,
@@ -137,6 +138,12 @@ export class BillingController {
 			this.plansRevision += 1;
 			this.billingPromise = null;
 			this.plansPromise = null;
+			this.publish({
+				...this.state,
+				feedbackContext: null,
+				notice: null,
+				error: null,
+			});
 			return Promise.resolve(this.state);
 		}
 		return this.refresh();
@@ -146,7 +153,13 @@ export class BillingController {
 		if (!['SUMMARY', 'PLANS'].includes(view) || this.disposed) {
 			return Promise.resolve(this.state);
 		}
-		this.publish({ ...this.state, view });
+		this.publish({
+			...this.state,
+			view,
+			feedbackContext: null,
+			notice: null,
+			error: null,
+		});
 		if (
 			view === 'PLANS' &&
 			this.connectionStatus === 'CONNECTED' &&
@@ -181,7 +194,11 @@ export class BillingController {
 			error: null,
 			...(afterCommand
 				? {}
-				: { notice: null, blockedTopUpEventId: null }),
+				: {
+						feedbackContext: null,
+						notice: null,
+						blockedTopUpEventId: null,
+					}),
 		});
 		const operation = this.client
 			.getBilling()
@@ -303,11 +320,14 @@ export class BillingController {
 		}
 		const method =
 			action === 'CREATE' ? 'createSubscription' : 'switchSubscription';
-		return this.submitCommand(() =>
-			this.client[method](
-				plan.merchantPricingPlanId,
-				createBillingActionId()
-			)
+		return this.submitCommand(
+			() =>
+				this.client[method](
+					plan.merchantPricingPlanId,
+					createBillingActionId()
+				),
+			false,
+			{ feedbackContext: 'PLAN_CHANGE' }
 		);
 	}
 
@@ -334,6 +354,7 @@ export class BillingController {
 					'top_up_bundle_not_found',
 					'top_up_purchase_unavailable',
 				]),
+				feedbackContext: 'TOP_UP',
 				usageEventId,
 			}
 		);
@@ -354,7 +375,8 @@ export class BillingController {
 		}
 		return this.submitCommand(
 			() => this.client.cancelSubscription(createBillingActionId()),
-			true
+			true,
+			{ feedbackContext: 'CANCELLATION' }
 		);
 	}
 
@@ -372,6 +394,7 @@ export class BillingController {
 		this.publish({
 			...this.state,
 			command: 'SUBMITTING',
+			feedbackContext: null,
 			notice: null,
 			error: null,
 		});
@@ -385,11 +408,16 @@ export class BillingController {
 					this.publish({
 						...this.state,
 						command: null,
+						feedbackContext: options.feedbackContext ?? null,
 						notice: 'CANCEL_ACCEPTED',
 					});
 					return this.refreshAfterCommand();
 				}
-				this.publish({ ...this.state, command: 'REDIRECTING' });
+				this.publish({
+					...this.state,
+					command: 'REDIRECTING',
+					feedbackContext: null,
+				});
 				this.navigate(result.confirmationUrl);
 				return this.state;
 			})
@@ -400,6 +428,7 @@ export class BillingController {
 					this.publish({
 						...this.state,
 						command: null,
+						feedbackContext: options.feedbackContext ?? null,
 						notice: refresh ? code : null,
 						blockedTopUpEventId:
 							options.usageEventId &&

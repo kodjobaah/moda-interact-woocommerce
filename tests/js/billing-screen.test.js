@@ -663,6 +663,76 @@ describe('Billing screen', () => {
 	});
 
 	it.each([
+		['plan change', 'PLAN_CHANGE'],
+		['cancellation', 'CANCELLATION'],
+	])(
+		'does not show purchase failure copy for a %s failure when offers are visible',
+		(_label, feedbackContext) => {
+			const data = topUpData();
+			const state = readyState(data, {
+				error: 'billing_operation_failed',
+				feedbackContext,
+			});
+			const tree = BillingScreen({
+				state,
+				onRefresh: vi.fn(),
+				onLoadPlans: vi.fn(),
+				onSelectPlan: vi.fn(),
+				onCancel: vi.fn(),
+				onPurchaseTopUp: vi.fn(),
+				onSetView: vi.fn(),
+			});
+			const content = textContent(tree);
+			const topUpContent = textContent(
+				TopUpSection({
+					data,
+					state,
+					onPurchase: vi.fn(),
+					locale: 'en-US',
+				})
+			);
+
+			expect(topUpContent).toContain('Bronze');
+			expect(topUpContent).toContain('Silver');
+			expect(content).toContain('Your current plan remains unchanged.');
+			expect(topUpContent).not.toContain(
+				'The purchase could not be started.'
+			);
+		}
+	);
+
+	it('shows top-up failure copy without recurring-plan failure copy', () => {
+		const data = topUpData();
+		const state = readyState(data, {
+			error: 'billing_operation_failed',
+			feedbackContext: 'TOP_UP',
+		});
+		const tree = BillingScreen({
+			state,
+			onRefresh: vi.fn(),
+			onLoadPlans: vi.fn(),
+			onSelectPlan: vi.fn(),
+			onCancel: vi.fn(),
+			onPurchaseTopUp: vi.fn(),
+			onSetView: vi.fn(),
+		});
+		const content = textContent(tree);
+		const topUpContent = textContent(
+			TopUpSection({
+				data,
+				state,
+				onPurchase: vi.fn(),
+				locale: 'en-US',
+			})
+		);
+
+		expect(topUpContent).toContain('Bronze');
+		expect(topUpContent).toContain('Silver');
+		expect(topUpContent).toContain('The purchase could not be started.');
+		expect(content).not.toContain('Your current plan remains unchanged.');
+	});
+
+	it.each([
 		['INITIATING', 'Starting the plan change'],
 		['AWAITING_CONFIRMATION', 'Waiting for Woo confirmation'],
 		['OUTCOME_UNKNOWN', 'Do not retry it automatically'],

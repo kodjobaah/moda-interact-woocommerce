@@ -5,7 +5,7 @@ import { formatMoney, formatQuantity } from './presentation-formatters';
 /** @typedef {{ merchantPricingUsageEventId: string, label: string, creditsGranted: number, amountMinor: number, currency: string, purchaseEligible: boolean, unavailableReason: string | null }} TopUpOffer */
 /** @typedef {{ merchantPricingUsageEventId: string, operationState: 'INITIATING' | 'AWAITING_CONFIRMATION' | 'OUTCOME_UNKNOWN' | 'CONFIRMED' }} UnresolvedPurchase */
 /** @typedef {{ configured: boolean, purchaseEligible: boolean, offers: TopUpOffer[], unresolvedPurchases: UnresolvedPurchase[] }} TopUps */
-/** @typedef {{ status: string, command: string | null, notice?: string | null, error?: string | null, blockedTopUpEventId?: string | null }} BillingState */
+/** @typedef {{ status: string, command: string | null, feedbackContext?: string | null, notice?: string | null, error?: string | null, blockedTopUpEventId?: string | null }} BillingState */
 
 /** @type {Record<string, string>} */
 const PURCHASE_STATUS = {
@@ -90,7 +90,10 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 		return null;
 	}
 	const notice =
-		NOTICE_COPY[state.notice ?? ''] ?? NOTICE_COPY[state.error ?? ''];
+		state.feedbackContext === 'TOP_UP'
+			? (NOTICE_COPY[state.notice ?? ''] ??
+				NOTICE_COPY[state.error ?? ''])
+			: undefined;
 	return createElement(
 		'section',
 		{
