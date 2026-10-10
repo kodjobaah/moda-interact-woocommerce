@@ -1,0 +1,41 @@
+// Consent is part of the connected merchant workspace and uses existing Moda tokens.
+.moda-interact-read-access {
+	margin-top: 20px;
+	padding: clamp(18px, 2vw, 24px);
+	min-width: 0;
+	border: 1px solid var(--moda-border);
+	border-left: 4px solid var(--moda-forest-700);
+	border-radius: 18px;
+	background: var(--moda-surface);
+	box-shadow: var(--moda-shadow);
+}
+
+.moda-interact-read-access__header,
+.moda-interact-read-access__actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.moda-interact-read-access__header h2 {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: 20px;
+	font-weight: 650;
+}
+
+.moda-interact-read-access__actions {
+	justify-content: flex-start;
+}
+
+.moda-interact-read-access__hint {
+	color: var(--moda-muted);
+	line-height: 1.5;
+}
+
+.moda-interact-read-access a.button {
+	display: inline-flex;
+	align-items: center;
+}

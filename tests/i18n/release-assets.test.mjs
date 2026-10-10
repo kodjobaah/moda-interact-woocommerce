@@ -50,7 +50,7 @@ test('WOO-014 release manifest covers all 20 languages and source keys', () => {
 			languagesDirectory: directory,
 		});
 		assert.equal(release.languages, 20);
-		assert.equal(release.messages, 180);
+			assert.equal(release.messages, 195);
 		assert.equal(release.assets, 38);
 		assert.equal(release.manifest.length, 19);
 	});

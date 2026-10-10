@@ -14,14 +14,14 @@ msgstr ""
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: moda-interact\n"
 
-#. Plugin Name of the plugin
-#: moda-interact.php
-#: includes/Admin/NativeNavigation.php:21
-#: includes/Admin/NativeNavigation.php:22
-#: includes/Admin/Setup.php:96
-#: src/index.js:18
-#: src/page.js:23
-msgid "Moda Interact"
+#. translators: 1: recurring plan price.
+#: src/billing/plan-catalogue.js:63
+msgid "%1$s / every 30 days"
+msgstr ""
+
+#. translators: 1: plan name, 2: pending plan operation state.
+#: src/billing/notices.js:65
+msgid "%1$s: %2$s"
 msgstr ""
 
 #. Description of the plugin
@@ -29,334 +29,335 @@ msgstr ""
 msgid "A WooCommerce Admin extension foundation for Moda Interact."
 msgstr ""
 
-#: includes/Admin/NativeNavigation.php:34
-#: includes/Admin/NativeNavigation.php:35
-#: src/overview-screen.js:202
-#: src/page/surface-navigation.js:5
-#: src/recovery-settings/recovery-navigation.js:12
-msgid "Overview"
+#: src/billing-screen.js:23 src/billing-screen.js:27
+msgid ""
+"A billing change is already in progress. Refresh the billing summary before "
+"trying again."
 msgstr ""
 
-#: includes/Admin/NativeNavigation.php:41
-msgid "Recoveries"
+#: src/recovery-settings/category-profile-summary.js:45
+msgid "A category change is pending publication."
 msgstr ""
 
-#: includes/Admin/NativeNavigation.php:42
-#: src/billing/hero.js:14
-#: src/billing/hero.js:34
-#: src/page/surface-navigation.js:6
+#: src/recovery-settings/recovery-effective-summary.js:11
+msgid "AI-selected applicable discount"
+msgstr ""
+
+#: src/overview-screen.js:59
+msgid "Account setup"
+msgstr ""
+
+#: src/overview-screen.js:85
+#: src/recovery-settings/category-profile-summary.js:25
+msgid "Active category"
+msgstr ""
+
+#: src/recovery-settings/category-profile-summary.js:37
+msgid "Active mapping count"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:35
+msgid ""
+"Allow Moda Interact to read store data. WooCommerce will ask you to approve "
+"read-only access."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:9
+msgid ""
+"Another administrator changed the store category. Refresh the categories, "
+"review the latest selection, then save again."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr ""
+
+#: includes/Admin/NativeNavigation.php:42 src/billing/hero.js:14
+#: src/billing/hero.js:34 src/page/surface-navigation.js:6
 msgid "Billing"
-msgstr ""
-
-#: includes/Admin/NativeNavigation.php:43
-msgid "Promotions"
-msgstr ""
-
-#: includes/Admin/NativeNavigation.php:44
-msgid "Support"
-msgstr ""
-
-#: includes/Admin/NativeNavigation.php:45
-#: src/recovery-settings/recovery-settings-header.js:16
-msgid "Recovery settings"
-msgstr ""
-
-#: includes/Admin/NativeNavigation.php:85
-msgid "This section is not yet available for WooCommerce."
-msgstr ""
-
-#: includes/Runtime.php:86
-msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
-msgstr ""
-
-#. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
-#: includes/Runtime.php:93
-#, php-format
-msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
-msgstr ""
-
-#: src/billing-screen.js:11
-msgid "Billing is temporarily unavailable. Your current billing state has not changed."
-msgstr ""
-
-#: src/billing-screen.js:15
-msgid "Billing data could not be verified. Try again later."
-msgstr ""
-
-#: src/billing-screen.js:19
-msgid "Billing setup is not complete for this store."
-msgstr ""
-
-#: src/billing-screen.js:23
-#: src/billing-screen.js:27
-msgid "A billing change is already in progress. Refresh the billing summary before trying again."
-msgstr ""
-
-#: src/billing-screen.js:31
-msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
-msgstr ""
-
-#: src/billing-screen.js:35
-msgid "The billing change could not be completed. Your current plan remains unchanged."
-msgstr ""
-
-#: src/billing-screen.js:39
-msgid "This plan is no longer available. Refresh the plan catalogue."
-msgstr ""
-
-#: src/billing-screen.js:46
-msgid "The billing request failed. Try again."
-msgstr ""
-
-#: src/billing-screen.js:64
-msgid "Loading billing summary…"
-msgstr ""
-
-#: src/billing-screen.js:76
-msgid "The Moda Interact connection needs attention before billing can be loaded."
-msgstr ""
-
-#: src/billing-screen.js:93
-#: src/billing/hero.js:70
-msgid "Refresh billing"
-msgstr ""
-
-#: src/billing/cancel-dialog.js:55
-msgid "Cancel recurring plan?"
-msgstr ""
-
-#: src/billing/cancel-dialog.js:60
-msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
-msgstr ""
-
-#: src/billing/cancel-dialog.js:76
-msgid "Keep current plan"
-msgstr ""
-
-#: src/billing/cancel-dialog.js:92
-#: src/billing/plan-catalogue.js:32
-msgid "Submitting…"
-msgstr ""
-
-#: src/billing/cancel-dialog.js:93
-msgid "Confirm cancellation"
-msgstr ""
-
-#: src/billing/capacity-summary.js:16
-msgid "Paid included credits remaining"
-msgstr ""
-
-#: src/billing/capacity-summary.js:18
-msgid "Temporarily unavailable"
-msgstr ""
-
-#: src/billing/capacity-summary.js:28
-msgid "Lifetime Free credits remaining"
-msgstr ""
-
-#: src/billing/capacity-summary.js:33
-msgid "Promotional credits remaining"
-msgstr ""
-
-#: src/billing/capacity-summary.js:38
-msgid "Purchased credits available"
-msgstr ""
-
-#: src/billing/capacity-summary.js:49
-msgid "Recovery capacity"
-msgstr ""
-
-#: src/billing/hero.js:23
-#: src/billing/plan-catalogue.js:28
-#: src/billing/summary.js:146
-msgid "Current plan"
-msgstr ""
-
-#: src/billing/hero.js:37
-msgid "Summary"
-msgstr ""
-
-#: src/billing/hero.js:38
-msgid "Plans"
-msgstr ""
-
-#: src/billing/notices.js:19
-msgid "Recurring billing recovery is required."
-msgstr ""
-
-#: src/billing/notices.js:21
-msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
-msgstr ""
-
-#: src/billing/notices.js:30
-msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
-msgstr ""
-
-#: src/billing/notices.js:38
-msgid "No recurring billing contract is available for this store."
-msgstr ""
-
-#: src/billing/notices.js:46
-msgid "Cancellation request accepted."
-msgstr ""
-
-#: src/billing/notices.js:52
-msgid "Starting the plan change"
-msgstr ""
-
-#: src/billing/notices.js:53
-msgid "Waiting for Woo confirmation"
-msgstr ""
-
-#: src/billing/notices.js:57
-msgid "The plan change needs reconciliation. Do not retry it automatically."
-msgstr ""
-
-#. translators: 1: plan name, 2: pending plan operation state.
-#: src/billing/notices.js:65
-#, js-format
-msgid "%1$s: %2$s"
-msgstr ""
-
-#: src/billing/notices.js:68
-msgid "Plan status unavailable"
-msgstr ""
-
-#: src/billing/notices.js:74
-msgid "Starting the cancellation request"
-msgstr ""
-
-#: src/billing/notices.js:78
-msgid "Waiting for Woo cancellation confirmation"
-msgstr ""
-
-#: src/billing/notices.js:82
-msgid "The cancellation needs reconciliation. Do not retry it automatically."
-msgstr ""
-
-#: src/billing/notices.js:86
-msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
-msgstr ""
-
-#: src/billing/notices.js:93
-msgid "Cancellation status unavailable"
-msgstr ""
-
-#: src/billing/plan-catalogue.js:26
-#: src/recovery-settings/recovery-effective-summary.js:13
-#: src/recovery-settings/recovery-effective-summary.js:38
-msgid "Unavailable"
 msgstr ""
 
 #: src/billing/plan-catalogue.js:30
 msgid "Billing change in progress"
 msgstr ""
 
-#: src/billing/plan-catalogue.js:34
-msgid "Choose plan"
+#: src/billing-screen.js:15
+msgid "Billing data could not be verified. Try again later."
 msgstr ""
 
-#: src/billing/plan-catalogue.js:36
-msgid "Switch to plan"
+#: src/billing-screen.js:11
+msgid ""
+"Billing is temporarily unavailable. Your current billing state has not "
+"changed."
 msgstr ""
 
-#: src/billing/plan-catalogue.js:48
-msgid "Featured"
-msgstr ""
-
-#: src/billing/plan-catalogue.js:61
-#: src/billing/summary.js:97
-msgid "Free"
-msgstr ""
-
-#. translators: 1: recurring plan price.
-#: src/billing/plan-catalogue.js:63
-#, js-format
-msgid "%1$s / every 30 days"
-msgstr ""
-
-#: src/billing/plan-catalogue.js:78
-msgid "Lifetime recovery credits"
-msgstr ""
-
-#: src/billing/plan-catalogue.js:79
-msgid "Recovery credits every 30 days"
-msgstr ""
-
-#: src/billing/plan-catalogue.js:122
-msgid "Plan management is unavailable for the current billing state."
-msgstr ""
-
-#: src/billing/plan-catalogue.js:132
-msgid "Loading available plans…"
-msgstr ""
-
-#: src/billing/plan-catalogue.js:142
-msgid "The plan catalogue could not be loaded."
-msgstr ""
-
-#: src/billing/plan-catalogue.js:147
-msgid "Retry plan catalogue"
-msgstr ""
-
-#: src/billing/presentation-formatters.js:42
-msgid "Not applicable"
-msgstr ""
-
-#: src/billing/summary.js:91
-msgid "Plan"
-msgstr ""
-
-#: src/billing/summary.js:95
-msgid "Plan type"
-msgstr ""
-
-#: src/billing/summary.js:98
-msgid "Paid recurring"
-msgstr ""
-
-#: src/billing/summary.js:101
-msgid "Recurring amount"
-msgstr ""
-
-#: src/billing/summary.js:103
-msgid "No recurring charge"
+#: src/billing/notices.js:30
+msgid ""
+"Billing needs attention. Plan changes are unavailable while Moda verifies "
+"billing status."
 msgstr ""
 
 #: src/billing/summary.js:111
 msgid "Billing period"
 msgstr ""
 
+#: src/billing-screen.js:19
+msgid "Billing setup is not complete for this store."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr ""
+
+#: src/billing/cancel-dialog.js:55
+msgid "Cancel recurring plan?"
+msgstr ""
+
+#: src/billing/summary.js:179
+msgid "Cancel subscription"
+msgstr ""
+
+#: src/billing/notices.js:46
+msgid "Cancellation request accepted."
+msgstr ""
+
+#: src/billing/notices.js:93
+msgid "Cancellation status unavailable"
+msgstr ""
+
+#: src/overview-screen.js:33
+msgid "Category ID"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:21
+msgid "Category settings could not be loaded. Refresh categories to retry."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:117
+msgid "Checking saved category…"
+msgstr ""
+
+#: src/page/connection-panel.js:18
+msgid "Checking the connection to Moda Interact…"
+msgstr ""
+
+#: src/page/connection-panel.js:108 src/page/connection-panel.js:164
+msgid "Checking…"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid ""
+"Choose one bundle. WooCommerce will show the final charge and any applicable "
+"tax for confirmation."
+msgstr ""
+
+#: src/billing/plan-catalogue.js:34
+msgid "Choose plan"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:107
+msgid ""
+"Choose the type of store to personalize your CommerceAgent assistant. Your "
+"Free plan stays active."
+msgstr ""
+
+#: src/billing/cancel-dialog.js:93
+msgid "Confirm cancellation"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr ""
+
+#: src/page/connection-panel.js:43
+msgid "Connect Moda Interact"
+msgstr ""
+
+#: src/page/connection-panel.js:78 src/page/connection-panel.js:199
+msgid "Connected"
+msgstr ""
+
+#: src/page/connection-panel.js:42
+msgid "Connecting…"
+msgstr ""
+
+#: src/page/connection-panel.js:77 src/page/connection-panel.js:193
+msgid "Connection"
+msgstr ""
+
+#: src/overview-screen.js:131
+msgid "Country code"
+msgstr ""
+
+#: src/billing/hero.js:23 src/billing/plan-catalogue.js:28
+#: src/billing/summary.js:146
+msgid "Current plan"
+msgstr ""
+
+#. translators: %s: effective offer setting.
+#: src/recovery-settings/recovery-effective-summary.js:55
+msgid "Currently active: %s"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:7
+msgid "Do not offer a discount"
+msgstr ""
+
+#. translators: %d: minutes until automatic follow-up.
+#: src/recovery-settings/recovery-effective-summary.js:26
+msgid "Effective follow-up: %d minutes"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:22
+msgid "Effective follow-up: disabled"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:94
+msgid "Effective recovery settings"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:74
+msgid "Effective settings include an administrator override"
+msgstr ""
+
+#. translators: %d: number of minutes before recovery starts.
+#: src/recovery-settings/recovery-effective-summary.js:45
+msgid "Effective value: %d minutes"
+msgstr ""
+
 #: src/billing/summary.js:112
 msgid "Every 30 days"
+msgstr ""
+
+#: src/billing/plan-catalogue.js:48
+msgid "Featured"
+msgstr ""
+
+#: src/billing/plan-catalogue.js:61 src/billing/summary.js:97
+msgid "Free"
+msgstr ""
+
+#: src/billing/cancel-dialog.js:76
+msgid "Keep current plan"
+msgstr ""
+
+#: src/overview-screen.js:123
+msgid "Language tag"
+msgstr ""
+
+#: src/billing/capacity-summary.js:28
+msgid "Lifetime Free credits remaining"
+msgstr ""
+
+#: src/billing/plan-catalogue.js:78
+msgid "Lifetime recovery credits"
+msgstr ""
+
+#: src/billing/plan-catalogue.js:132
+msgid "Loading available plans…"
+msgstr ""
+
+#: src/billing-screen.js:64
+msgid "Loading billing summary…"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:121
+msgid "Loading store categories…"
+msgstr ""
+
+#: src/overview-screen.js:152
+msgid "Loading store overview…"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:37
+msgid "Loading…"
+msgstr ""
+
+#. Plugin Name of the plugin
+#: moda-interact.php includes/Admin/NativeNavigation.php:21
+#: includes/Admin/NativeNavigation.php:22 includes/Admin/Setup.php:96
+#: src/index.js:18 src/page.js:23
+msgid "Moda Interact"
+msgstr ""
+
+#: src/page/connection-panel.js:94
+msgid ""
+"Moda Interact cannot be reached right now. The local connection has not been "
+"removed."
+msgstr ""
+
+#. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
+#: includes/Runtime.php:93
+#, php-format
+msgid ""
+"Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr ""
+
+#: includes/Runtime.php:86
+msgid ""
+"Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr ""
+
+#: src/recovery-settings/recovery-navigation.js:9
+msgid "Moda Interact sections"
+msgstr ""
+
+#: src/page/connection-panel.js:127
+msgid ""
+"Moda Interact service connectivity is not configured for this plugin "
+"installation. Contact your site administrator."
+msgstr ""
+
+#: src/overview-screen.js:32
+msgid "Name"
 msgstr ""
 
 #: src/billing/summary.js:115
 msgid "Next included allowance reset"
 msgstr ""
 
-#: src/billing/summary.js:120
-msgid "Paid subscription ends"
-msgstr ""
-
-#: src/billing/summary.js:130
-msgid "Subscription status"
-msgstr ""
-
-#: src/billing/summary.js:131
-msgid "Scheduled to end"
-msgstr ""
-
 #: src/billing/summary.js:158
 msgid "No current plan details are available."
 msgstr ""
 
-#: src/billing/summary.js:175
-msgid "Submitting cancellation…"
+#: src/recovery-settings/category-mappings.js:14
+msgid "No optional taxonomy mappings are available for this category."
 msgstr ""
 
-#: src/billing/summary.js:179
-msgid "Cancel subscription"
+#: src/billing/notices.js:38
+msgid "No recurring billing contract is available for this store."
+msgstr ""
+
+#: src/billing/summary.js:103
+msgid "No recurring charge"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:61
+msgid "No-response follow-up"
+msgstr ""
+
+#: src/billing/presentation-formatters.js:42
+msgid "Not applicable"
+msgstr ""
+
+#: src/overview-screen.js:49
+msgid "Not available"
 msgstr ""
 
 #: src/overview-screen.js:25
@@ -364,28 +365,213 @@ msgstr ""
 msgid "Not selected"
 msgstr ""
 
-#: src/overview-screen.js:32
-msgid "Name"
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
 msgstr ""
 
-#: src/overview-screen.js:33
-msgid "Category ID"
+#: src/recovery-settings/category-mappings.js:26
+msgid "Optional taxonomy mappings"
 msgstr ""
 
-#: src/overview-screen.js:34
-msgid "Slug"
+#: includes/Admin/NativeNavigation.php:34
+#: includes/Admin/NativeNavigation.php:35 src/overview-screen.js:202
+#: src/page/surface-navigation.js:5
+#: src/recovery-settings/recovery-navigation.js:12
+msgid "Overview"
 msgstr ""
 
-#: src/overview-screen.js:49
-msgid "Not available"
+#: src/billing/cancel-dialog.js:60
+msgid ""
+"Paid access remains available until cancellation is verified and the prepaid "
+"term ends. This request does not immediately change your current plan."
 msgstr ""
 
-#: src/overview-screen.js:59
-msgid "Account setup"
+#: src/billing/notices.js:21
+msgid ""
+"Paid included credits are temporarily unavailable. Purchased credits and "
+"remaining lifetime Free credits remain usable; promotional credits follow "
+"their existing eligibility."
 msgstr ""
 
-#: src/overview-screen.js:64
-msgid "Setup status"
+#: src/billing/capacity-summary.js:16
+msgid "Paid included credits remaining"
+msgstr ""
+
+#: src/billing/summary.js:98
+msgid "Paid recurring"
+msgstr ""
+
+#: src/billing/summary.js:120
+msgid "Paid subscription ends"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr ""
+
+#: src/overview-screen.js:95
+#: src/recovery-settings/category-profile-summary.js:29
+msgid "Pending category"
+msgstr ""
+
+#: src/recovery-settings/category-profile-summary.js:55
+msgid "Pending prompt template:"
+msgstr ""
+
+#: src/overview-screen.js:107
+msgid "Pending selection date"
+msgstr ""
+
+#: src/billing/summary.js:91
+msgid "Plan"
+msgstr ""
+
+#: src/billing/plan-catalogue.js:122
+msgid "Plan management is unavailable for the current billing state."
+msgstr ""
+
+#: src/billing/notices.js:68
+msgid "Plan status unavailable"
+msgstr ""
+
+#: src/billing/summary.js:95
+msgid "Plan type"
+msgstr ""
+
+#: src/billing/hero.js:38
+msgid "Plans"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr ""
+
+#: src/billing/capacity-summary.js:33
+msgid "Promotional credits remaining"
+msgstr ""
+
+#: includes/Admin/NativeNavigation.php:43
+msgid "Promotions"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr ""
+
+#: src/billing/capacity-summary.js:38
+msgid "Purchased credits available"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr ""
+
+#: src/page/connection-panel.js:69
+msgid "Reconnect Moda Interact"
+msgstr ""
+
+#: src/page/connection-panel.js:68
+msgid "Reconnecting…"
+msgstr ""
+
+#: includes/Admin/NativeNavigation.php:41
+msgid "Recoveries"
+msgstr ""
+
+#: src/page/surface-navigation.js:7
+#: src/recovery-settings/recovery-navigation.js:15
+#: src/recovery-settings/recovery-settings-header.js:21
+msgid "Recovery Settings"
+msgstr ""
+
+#: src/billing/capacity-summary.js:49
+msgid "Recovery capacity"
+msgstr ""
+
+#: src/billing/plan-catalogue.js:79
+msgid "Recovery credits every 30 days"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:51
+msgid "Recovery offer"
+msgstr ""
+
+#: includes/Admin/NativeNavigation.php:45
+#: src/recovery-settings/recovery-settings-header.js:16
+msgid "Recovery settings"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:41
+msgid "Recovery start"
+msgstr ""
+
+#: src/billing/summary.js:101
+msgid "Recurring amount"
+msgstr ""
+
+#: src/billing/notices.js:19
+msgid "Recurring billing recovery is required."
+msgstr ""
+
+#: src/billing-screen.js:93 src/billing/hero.js:70
+msgid "Refresh billing"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:164
+msgid "Refresh categories"
+msgstr ""
+
+#: src/overview-screen.js:229
+msgid "Refresh overview"
+msgstr ""
+
+#: src/overview-screen.js:228
+msgid "Refreshing…"
+msgstr ""
+
+#: src/page/connection-panel.js:109 src/page/connection-panel.js:165
+msgid "Retry"
+msgstr ""
+
+#: src/billing/plan-catalogue.js:147
+msgid "Retry plan catalogue"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:86
+msgid "Retry recovery summary"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:176
+msgid "Save category"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:175
+msgid "Saving…"
+msgstr ""
+
+#: src/billing/summary.js:131
+msgid "Scheduled to end"
+msgstr ""
+
+#: src/recovery-settings/category-selector.js:33
+msgid "Select a store category"
+msgstr ""
+
+#: src/overview-screen.js:103
+#: src/recovery-settings/category-profile-summary.js:33
+msgid "Selection generation"
 msgstr ""
 
 #: src/overview-screen.js:66
@@ -396,35 +582,63 @@ msgstr ""
 msgid "Setup not completed"
 msgstr ""
 
+#: src/overview-screen.js:64
+msgid "Setup status"
+msgstr ""
+
+#: src/overview-screen.js:34
+msgid "Slug"
+msgstr ""
+
+#: src/recovery-settings/recovery-effective-summary.js:9
+msgid "Specific discount"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr ""
+
+#: src/billing/notices.js:74
+msgid "Starting the cancellation request"
+msgstr ""
+
+#: src/billing/notices.js:52
+msgid "Starting the plan change"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr ""
+
 #: src/overview-screen.js:69
 msgid "Store"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:94
+msgid "Store & assistant context"
 msgstr ""
 
 #: src/overview-screen.js:71
 msgid "Store added"
 msgstr ""
 
-#: src/overview-screen.js:78
-msgid "Store profile"
+#: src/recovery-settings/category-selector.js:20
+#: src/recovery-settings/recovery-settings-screen.js:102
+msgid "Store category"
 msgstr ""
 
-#: src/overview-screen.js:85
-#: src/recovery-settings/category-profile-summary.js:25
-msgid "Active category"
+#: src/recovery-settings/recovery-settings-screen.js:33
+msgid "Store category and assistant prompt activated."
 msgstr ""
 
-#: src/overview-screen.js:95
-#: src/recovery-settings/category-profile-summary.js:29
-msgid "Pending category"
-msgstr ""
-
-#: src/overview-screen.js:103
-#: src/recovery-settings/category-profile-summary.js:33
-msgid "Selection generation"
-msgstr ""
-
-#: src/overview-screen.js:107
-msgid "Pending selection date"
+#: src/recovery-settings/recovery-settings-screen.js:37
+msgid ""
+"Store category saved, but the updated settings could not be loaded. Refresh "
+"to confirm the active category."
 msgstr ""
 
 #: src/overview-screen.js:114
@@ -435,128 +649,93 @@ msgstr ""
 msgid "Store locale"
 msgstr ""
 
-#: src/overview-screen.js:123
-msgid "Language tag"
+#: src/overview-screen.js:78
+msgid "Store profile"
 msgstr ""
 
-#: src/overview-screen.js:127
-msgid "Time zone"
-msgstr ""
-
-#: src/overview-screen.js:131
-msgid "Country code"
-msgstr ""
-
-#: src/overview-screen.js:152
-msgid "Loading store overview…"
-msgstr ""
-
-#: src/overview-screen.js:162
-msgid "The Moda Interact connection needs attention before store data can be loaded."
-msgstr ""
-
-#: src/overview-screen.js:172
-msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
-msgstr ""
-
-#: src/overview-screen.js:182
-msgid "The store overview could not be verified. Try again."
-msgstr ""
-
-#: src/overview-screen.js:216
-msgid "Syncing…"
-msgstr ""
-
-#: src/overview-screen.js:217
-msgid "Sync store settings"
-msgstr ""
-
-#: src/overview-screen.js:228
-msgid "Refreshing…"
-msgstr ""
-
-#: src/overview-screen.js:229
-msgid "Refresh overview"
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
 msgstr ""
 
 #: src/overview-screen.js:241
-msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
+msgid ""
+"Store settings could not be synchronized. Your connection is unchanged. "
+"Please retry."
 msgstr ""
 
 #: src/overview-screen.js:251
 msgid "Store settings synchronized."
 msgstr ""
 
-#: src/page.js:21
-msgid "WooCommerce"
+#: src/billing/summary.js:175
+msgid "Submitting cancellation…"
 msgstr ""
 
-#: src/page/connection-panel.js:18
-msgid "Checking the connection to Moda Interact…"
+#: src/billing/cancel-dialog.js:92 src/billing/plan-catalogue.js:32
+msgid "Submitting…"
 msgstr ""
 
-#: src/page/connection-panel.js:28
-msgid "This store is not connected to Moda Interact."
+#: src/billing/summary.js:130
+msgid "Subscription status"
 msgstr ""
 
-#: src/page/connection-panel.js:42
-msgid "Connecting…"
+#: src/billing/hero.js:37
+msgid "Summary"
 msgstr ""
 
-#: src/page/connection-panel.js:43
-msgid "Connect Moda Interact"
+#: includes/Admin/NativeNavigation.php:44
+msgid "Support"
 msgstr ""
 
-#: src/page/connection-panel.js:54
-msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
+#: src/billing/plan-catalogue.js:36
+msgid "Switch to plan"
 msgstr ""
 
-#: src/page/connection-panel.js:68
-msgid "Reconnecting…"
+#: src/overview-screen.js:217
+msgid "Sync store settings"
 msgstr ""
 
-#: src/page/connection-panel.js:69
-msgid "Reconnect Moda Interact"
+#: src/overview-screen.js:216
+msgid "Syncing…"
 msgstr ""
 
-#: src/page/connection-panel.js:77
-#: src/page/connection-panel.js:193
-msgid "Connection"
+#: src/billing/capacity-summary.js:18
+msgid "Temporarily unavailable"
 msgstr ""
 
-#: src/page/connection-panel.js:78
-#: src/page/connection-panel.js:199
-msgid "Connected"
+#: src/billing-screen.js:76
+msgid ""
+"The Moda Interact connection needs attention before billing can be loaded."
 msgstr ""
 
-#: src/page/connection-panel.js:82
-msgid "WordPress site"
+#: src/recovery-settings/recovery-settings-screen.js:17
+msgid ""
+"The Moda Interact connection needs attention before categories can be "
+"updated."
 msgstr ""
 
-#: src/page/connection-panel.js:94
-msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
+#: src/overview-screen.js:162
+msgid ""
+"The Moda Interact connection needs attention before store data can be loaded."
 msgstr ""
 
-#: src/page/connection-panel.js:108
-#: src/page/connection-panel.js:164
-msgid "Checking…"
+#: src/billing-screen.js:35
+msgid ""
+"The billing change could not be completed. Your current plan remains "
+"unchanged."
 msgstr ""
 
-#: src/page/connection-panel.js:109
-#: src/page/connection-panel.js:165
-msgid "Retry"
+#: src/billing-screen.js:46
+msgid "The billing request failed. Try again."
 msgstr ""
 
-#: src/page/connection-panel.js:117
-msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
+#: src/billing/notices.js:82
+msgid "The cancellation needs reconciliation. Do not retry it automatically."
 msgstr ""
 
-#: src/page/connection-panel.js:127
-msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
-msgstr ""
-
-#: src/page/connection-panel.js:137
-msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
+#: src/page/connection-panel.js:211
+msgid ""
+"The connection could not be completed. Check your connection and try again."
 msgstr ""
 
 #: src/page/connection-panel.js:150
@@ -567,215 +746,135 @@ msgstr ""
 msgid "The connection status is unavailable. Contact support for help."
 msgstr ""
 
-#: src/page/connection-panel.js:211
-msgid "The connection could not be completed. Check your connection and try again."
-msgstr ""
-
-#: src/page/surface-navigation.js:7
-#: src/recovery-settings/recovery-navigation.js:15
-#: src/recovery-settings/recovery-settings-header.js:21
-msgid "Recovery Settings"
-msgstr ""
-
-#: src/recovery-settings/category-mappings.js:14
-msgid "No optional taxonomy mappings are available for this category."
-msgstr ""
-
-#: src/recovery-settings/category-mappings.js:26
-msgid "Optional taxonomy mappings"
-msgstr ""
-
-#: src/recovery-settings/category-profile-summary.js:37
-msgid "Active mapping count"
-msgstr ""
-
-#: src/recovery-settings/category-profile-summary.js:45
-msgid "A category change is pending publication."
-msgstr ""
-
-#: src/recovery-settings/category-profile-summary.js:55
-msgid "Pending prompt template:"
-msgstr ""
-
-#: src/recovery-settings/category-selector.js:20
-#: src/recovery-settings/recovery-settings-screen.js:102
-msgid "Store category"
-msgstr ""
-
-#: src/recovery-settings/category-selector.js:33
-msgid "Select a store category"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:7
-msgid "Do not offer a discount"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:9
-msgid "Specific discount"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:11
-msgid "AI-selected applicable discount"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:22
-msgid "Effective follow-up: disabled"
-msgstr ""
-
-#. translators: %d: minutes until automatic follow-up.
-#: src/recovery-settings/recovery-effective-summary.js:26
-#, js-format
-msgid "Effective follow-up: %d minutes"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:37
-msgid "Loading…"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:41
-msgid "Recovery start"
-msgstr ""
-
-#. translators: %d: number of minutes before recovery starts.
-#: src/recovery-settings/recovery-effective-summary.js:45
-#, js-format
-msgid "Effective value: %d minutes"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:51
-msgid "Recovery offer"
-msgstr ""
-
-#. translators: %s: effective offer setting.
-#: src/recovery-settings/recovery-effective-summary.js:55
-#, js-format
-msgid "Currently active: %s"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:61
-msgid "No-response follow-up"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:74
-msgid "Effective settings include an administrator override"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:86
-msgid "Retry recovery summary"
-msgstr ""
-
-#: src/recovery-settings/recovery-effective-summary.js:94
-msgid "Effective recovery settings"
-msgstr ""
-
-#: src/recovery-settings/recovery-navigation.js:9
-msgid "Moda Interact sections"
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:9
-msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:13
-msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:17
-msgid "The Moda Interact connection needs attention before categories can be updated."
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:21
-msgid "Category settings could not be loaded. Refresh categories to retry."
-msgstr ""
-
 #: src/recovery-settings/recovery-settings-screen.js:25
-msgid "The latest store settings do not show your change. Review the selection and try saving again."
+msgid ""
+"The latest store settings do not show your change. Review the selection and "
+"try saving again."
 msgstr ""
 
-#: src/recovery-settings/recovery-settings-screen.js:29
-msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
+#: src/page/connection-panel.js:54
+msgid ""
+"The local connection needs to be re-established. Your Moda account and store "
+"data have not been removed."
 msgstr ""
 
-#: src/recovery-settings/recovery-settings-screen.js:33
-msgid "Store category and assistant prompt activated."
+#: src/billing/plan-catalogue.js:142
+msgid "The plan catalogue could not be loaded."
 msgstr ""
 
-#: src/recovery-settings/recovery-settings-screen.js:37
-msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
+#: src/billing/notices.js:57
+msgid "The plan change needs reconciliation. Do not retry it automatically."
 msgstr ""
 
-#: src/recovery-settings/recovery-settings-screen.js:94
-msgid "Store & assistant context"
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:107
-msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:117
-msgid "Checking saved category…"
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:121
-msgid "Loading store categories…"
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:137
-msgid "There are currently no selectable store categories."
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:164
-msgid "Refresh categories"
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:175
-msgid "Saving…"
-msgstr ""
-
-#: src/recovery-settings/recovery-settings-screen.js:176
-msgid "Save category"
-msgstr ""
-
-#: src/billing/top-up-section.js
-msgid "Starting purchase"
-msgstr ""
-
-#: src/billing/top-up-section.js
-msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
-msgstr ""
-
-#: src/billing/top-up-section.js
-msgid "Payment confirmed. Credits are being activated."
-msgstr ""
-
-#: src/billing/top-up-section.js
-msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+#: src/billing-screen.js:31
+msgid ""
+"The provider result is not yet known. Refresh the billing summary or contact "
+"support; do not retry automatically."
 msgstr ""
 
 #: src/billing/top-up-section.js
 msgid "The purchase could not be started."
 msgstr ""
 
+#: src/page/connection-panel.js:137
+msgid ""
+"The saved local connection could not be verified. Contact support for help "
+"restoring the connection."
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:13
+msgid ""
+"The selected category or prompt is no longer available. Refresh the "
+"catalogue and choose an available category."
+msgstr ""
+
+#: src/overview-screen.js:182
+msgid "The store overview could not be verified. Try again."
+msgstr ""
+
+#: src/overview-screen.js:172
+msgid ""
+"The store overview is temporarily unavailable. Your connection and store "
+"data have not been changed."
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:137
+msgid "There are currently no selectable store categories."
+msgstr ""
+
+#: src/page/connection-panel.js:117
+msgid ""
+"This WordPress site address differs from the address used for the Moda "
+"Interact connection. Contact support before changing the connection."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid ""
+"This bundle already has a pending purchase. Refresh the billing summary "
+"before trying again."
+msgstr ""
+
 #: src/billing/top-up-section.js
 msgid "This bundle is no longer available."
 msgstr ""
 
-#: src/billing/top-up-section.js
-msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+#: src/billing-screen.js:39
+msgid "This plan is no longer available. Refresh the plan catalogue."
 msgstr ""
 
 #: src/billing/top-up-section.js
-msgid "Purchase pending"
+msgid ""
+"This purchase attempt could not be verified. Refresh the billing summary "
+"before trying again."
 msgstr ""
 
-#: src/billing/top-up-section.js
-msgid "Predefined credit bundles"
+#: includes/Admin/NativeNavigation.php:85
+msgid "This section is not yet available for WooCommerce."
 msgstr ""
 
-#: src/billing/top-up-section.js
-msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+#: src/page/connection-panel.js:28
+msgid "This store is not connected to Moda Interact."
 msgstr ""
 
-#: src/billing/top-up-section.js
-msgid "Buy %s credits"
+#: src/overview-screen.js:127
+msgid "Time zone"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:46
+msgid ""
+"To revoke the key at the store, open WooCommerce > Settings > Advanced > "
+"REST API."
+msgstr ""
+
+#: src/billing/plan-catalogue.js:26
+#: src/recovery-settings/recovery-effective-summary.js:13
+#: src/recovery-settings/recovery-effective-summary.js:38
+msgid "Unavailable"
+msgstr ""
+
+#: src/billing/notices.js:78
+msgid "Waiting for Woo cancellation confirmation"
+msgstr ""
+
+#: src/billing/notices.js:53
+msgid "Waiting for Woo confirmation"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:29
+msgid ""
+"We could not confirm whether your category was saved. Refresh categories "
+"before trying again."
+msgstr ""
+
+#: src/billing/notices.js:86
+msgid ""
+"Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr ""
+
+#: src/page.js:21
+msgid "WooCommerce"
+msgstr ""
+
+#: src/page/connection-panel.js:82
+msgid "WordPress site"
 msgstr ""
