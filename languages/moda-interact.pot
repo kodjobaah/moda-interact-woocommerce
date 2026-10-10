@@ -18,7 +18,7 @@ msgstr ""
 #: moda-interact.php
 #: includes/Admin/NativeNavigation.php:21
 #: includes/Admin/NativeNavigation.php:22
-#: includes/Admin/Setup.php:87
+#: includes/Admin/Setup.php:96
 #: src/index.js:18
 #: src/page.js:23
 msgid "Moda Interact"
@@ -42,7 +42,8 @@ msgid "Recoveries"
 msgstr ""
 
 #: includes/Admin/NativeNavigation.php:42
-#: src/billing-screen.js:718
+#: src/billing/hero.js:14
+#: src/billing/hero.js:34
 #: src/page/surface-navigation.js:6
 msgid "Billing"
 msgstr ""
@@ -74,293 +75,288 @@ msgstr ""
 msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
 msgstr ""
 
-#: src/billing-screen.js:21
-msgid "Not applicable"
+#: src/billing-screen.js:11
+msgid "Billing is temporarily unavailable. Your current billing state has not changed."
 msgstr ""
 
-#: src/billing-screen.js:68
-msgid "Starting the plan change"
+#: src/billing-screen.js:15
+msgid "Billing data could not be verified. Try again later."
 msgstr ""
 
-#: src/billing-screen.js:69
-msgid "Waiting for Woo confirmation"
+#: src/billing-screen.js:19
+msgid "Billing setup is not complete for this store."
 msgstr ""
 
-#: src/billing-screen.js:73
-msgid "The plan change needs reconciliation. Do not retry it automatically."
+#: src/billing-screen.js:23
+#: src/billing-screen.js:27
+msgid "A billing change is already in progress. Refresh the billing summary before trying again."
 msgstr ""
 
-#: src/billing-screen.js:78
-msgid "Plan status unavailable"
+#: src/billing-screen.js:31
+msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
 msgstr ""
 
-#: src/billing-screen.js:83
-msgid "Starting the cancellation request"
+#: src/billing-screen.js:35
+msgid "The billing change could not be completed. Your current plan remains unchanged."
 msgstr ""
 
-#: src/billing-screen.js:84
-msgid "Waiting for Woo cancellation confirmation"
+#: src/billing-screen.js:39
+msgid "This plan is no longer available. Refresh the plan catalogue."
 msgstr ""
 
-#: src/billing-screen.js:88
-msgid "The cancellation needs reconciliation. Do not retry it automatically."
+#: src/billing-screen.js:46
+msgid "The billing request failed. Try again."
 msgstr ""
 
-#: src/billing-screen.js:92
-msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
+#: src/billing-screen.js:64
+msgid "Loading billing summary…"
 msgstr ""
 
-#: src/billing-screen.js:98
-msgid "Cancellation status unavailable"
+#: src/billing-screen.js:76
+msgid "The Moda Interact connection needs attention before billing can be loaded."
 msgstr ""
 
-#: src/billing-screen.js:171
-#: src/billing-screen.js:174
-#: src/overview-screen.js:49
-msgid "Not available"
+#: src/billing-screen.js:93
+#: src/billing/hero.js:70
+msgid "Refresh billing"
 msgstr ""
 
-#: src/billing-screen.js:186
+#: src/billing/cancel-dialog.js:55
+msgid "Cancel recurring plan?"
+msgstr ""
+
+#: src/billing/cancel-dialog.js:60
+msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
+msgstr ""
+
+#: src/billing/cancel-dialog.js:76
+msgid "Keep current plan"
+msgstr ""
+
+#: src/billing/cancel-dialog.js:92
+#: src/billing/plan-catalogue.js:32
+msgid "Submitting…"
+msgstr ""
+
+#: src/billing/cancel-dialog.js:93
+msgid "Confirm cancellation"
+msgstr ""
+
+#: src/billing/capacity-summary.js:16
+msgid "Paid included credits remaining"
+msgstr ""
+
+#: src/billing/capacity-summary.js:18
+msgid "Temporarily unavailable"
+msgstr ""
+
+#: src/billing/capacity-summary.js:28
+msgid "Lifetime Free credits remaining"
+msgstr ""
+
+#: src/billing/capacity-summary.js:33
+msgid "Promotional credits remaining"
+msgstr ""
+
+#: src/billing/capacity-summary.js:38
+msgid "Purchased credits available"
+msgstr ""
+
+#: src/billing/capacity-summary.js:49
+msgid "Recovery capacity"
+msgstr ""
+
+#: src/billing/hero.js:23
+#: src/billing/plan-catalogue.js:28
+#: src/billing/summary.js:146
+msgid "Current plan"
+msgstr ""
+
+#: src/billing/hero.js:37
+msgid "Summary"
+msgstr ""
+
+#: src/billing/hero.js:38
+msgid "Plans"
+msgstr ""
+
+#: src/billing/notices.js:19
 msgid "Recurring billing recovery is required."
 msgstr ""
 
-#: src/billing-screen.js:191
+#: src/billing/notices.js:21
 msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
 msgstr ""
 
-#: src/billing-screen.js:204
+#: src/billing/notices.js:30
 msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
 msgstr ""
 
-#: src/billing-screen.js:217
+#: src/billing/notices.js:38
 msgid "No recurring billing contract is available for this store."
 msgstr ""
 
-#: src/billing-screen.js:230
+#: src/billing/notices.js:46
 msgid "Cancellation request accepted."
 msgstr ""
 
+#: src/billing/notices.js:52
+msgid "Starting the plan change"
+msgstr ""
+
+#: src/billing/notices.js:53
+msgid "Waiting for Woo confirmation"
+msgstr ""
+
+#: src/billing/notices.js:57
+msgid "The plan change needs reconciliation. Do not retry it automatically."
+msgstr ""
+
 #. translators: 1: plan name, 2: pending plan operation state.
-#: src/billing-screen.js:242
+#: src/billing/notices.js:65
 #, js-format
 msgid "%1$s: %2$s"
 msgstr ""
 
-#: src/billing-screen.js:263
-#: src/billing-screen.js:478
-msgid "Current plan"
+#: src/billing/notices.js:68
+msgid "Plan status unavailable"
 msgstr ""
 
-#: src/billing-screen.js:269
-msgid "Plan"
+#: src/billing/notices.js:74
+msgid "Starting the cancellation request"
 msgstr ""
 
-#: src/billing-screen.js:273
-msgid "Plan type"
+#: src/billing/notices.js:78
+msgid "Waiting for Woo cancellation confirmation"
 msgstr ""
 
-#: src/billing-screen.js:275
-#: src/billing-screen.js:508
-msgid "Free"
+#: src/billing/notices.js:82
+msgid "The cancellation needs reconciliation. Do not retry it automatically."
 msgstr ""
 
-#: src/billing-screen.js:276
-msgid "Paid recurring"
+#: src/billing/notices.js:86
+msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
 msgstr ""
 
-#: src/billing-screen.js:279
-msgid "Recurring amount"
+#: src/billing/notices.js:93
+msgid "Cancellation status unavailable"
 msgstr ""
 
-#: src/billing-screen.js:281
-msgid "No recurring charge"
-msgstr ""
-
-#: src/billing-screen.js:285
-msgid "Billing period"
-msgstr ""
-
-#: src/billing-screen.js:286
-msgid "Every 30 days"
-msgstr ""
-
-#: src/billing-screen.js:289
-msgid "Next included allowance reset"
-msgstr ""
-
-#: src/billing-screen.js:297
-msgid "Paid subscription ends"
-msgstr ""
-
-#: src/billing-screen.js:309
-msgid "Subscription status"
-msgstr ""
-
-#: src/billing-screen.js:313
-msgid "Scheduled to end"
-msgstr ""
-
-#: src/billing-screen.js:320
-msgid "No current plan details are available."
-msgstr ""
-
-#: src/billing-screen.js:337
-msgid "Submitting cancellation…"
-msgstr ""
-
-#: src/billing-screen.js:341
-msgid "Cancel subscription"
-msgstr ""
-
-#: src/billing-screen.js:363
-msgid "Cancel recurring plan?"
-msgstr ""
-
-#: src/billing-screen.js:368
-msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
-msgstr ""
-
-#: src/billing-screen.js:388
-msgid "Keep current plan"
-msgstr ""
-
-#: src/billing-screen.js:405
-#: src/billing-screen.js:482
-msgid "Submitting…"
-msgstr ""
-
-#: src/billing-screen.js:406
-msgid "Confirm cancellation"
-msgstr ""
-
-#: src/billing-screen.js:417
-msgid "Recovery capacity"
-msgstr ""
-
-#: src/billing-screen.js:423
-msgid "Paid included credits remaining"
-msgstr ""
-
-#: src/billing-screen.js:428
-msgid "Temporarily unavailable"
-msgstr ""
-
-#: src/billing-screen.js:440
-msgid "Lifetime Free credits remaining"
-msgstr ""
-
-#: src/billing-screen.js:447
-msgid "Promotional credits remaining"
-msgstr ""
-
-#: src/billing-screen.js:454
-msgid "Purchased credits available"
-msgstr ""
-
-#: src/billing-screen.js:476
+#: src/billing/plan-catalogue.js:26
 #: src/recovery-settings/recovery-effective-summary.js:13
 #: src/recovery-settings/recovery-effective-summary.js:38
 msgid "Unavailable"
 msgstr ""
 
-#: src/billing-screen.js:480
+#: src/billing/plan-catalogue.js:30
 msgid "Billing change in progress"
 msgstr ""
 
-#: src/billing-screen.js:484
+#: src/billing/plan-catalogue.js:34
 msgid "Choose plan"
 msgstr ""
 
-#: src/billing-screen.js:486
+#: src/billing/plan-catalogue.js:36
 msgid "Switch to plan"
 msgstr ""
 
-#: src/billing-screen.js:499
+#: src/billing/plan-catalogue.js:48
 msgid "Featured"
 msgstr ""
 
+#: src/billing/plan-catalogue.js:61
+#: src/billing/summary.js:97
+msgid "Free"
+msgstr ""
+
 #. translators: 1: recurring plan price.
-#: src/billing-screen.js:511
+#: src/billing/plan-catalogue.js:63
 #, js-format
 msgid "%1$s / every 30 days"
 msgstr ""
 
-#: src/billing-screen.js:519
+#: src/billing/plan-catalogue.js:78
 msgid "Lifetime recovery credits"
 msgstr ""
 
-#: src/billing-screen.js:520
+#: src/billing/plan-catalogue.js:79
 msgid "Recovery credits every 30 days"
 msgstr ""
 
-#: src/billing-screen.js:558
+#: src/billing/plan-catalogue.js:122
 msgid "Plan management is unavailable for the current billing state."
 msgstr ""
 
-#: src/billing-screen.js:568
+#: src/billing/plan-catalogue.js:132
 msgid "Loading available plans…"
 msgstr ""
 
-#: src/billing-screen.js:578
+#: src/billing/plan-catalogue.js:142
 msgid "The plan catalogue could not be loaded."
 msgstr ""
 
-#: src/billing-screen.js:583
+#: src/billing/plan-catalogue.js:147
 msgid "Retry plan catalogue"
 msgstr ""
 
-#: src/billing-screen.js:604
-msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+#: src/billing/presentation-formatters.js:42
+msgid "Not applicable"
 msgstr ""
 
-#: src/billing-screen.js:608
-msgid "Billing data could not be verified. Try again later."
+#: src/billing/summary.js:91
+msgid "Plan"
 msgstr ""
 
-#: src/billing-screen.js:612
-msgid "Billing setup is not complete for this store."
+#: src/billing/summary.js:95
+msgid "Plan type"
 msgstr ""
 
-#: src/billing-screen.js:616
-#: src/billing-screen.js:620
-msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+#: src/billing/summary.js:98
+msgid "Paid recurring"
 msgstr ""
 
-#: src/billing-screen.js:624
-msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
+#: src/billing/summary.js:101
+msgid "Recurring amount"
 msgstr ""
 
-#: src/billing-screen.js:628
-msgid "The billing change could not be completed. Your current plan remains unchanged."
+#: src/billing/summary.js:103
+msgid "No recurring charge"
 msgstr ""
 
-#: src/billing-screen.js:632
-msgid "This plan is no longer available. Refresh the plan catalogue."
+#: src/billing/summary.js:111
+msgid "Billing period"
 msgstr ""
 
-#: src/billing-screen.js:639
-msgid "The billing request failed. Try again."
+#: src/billing/summary.js:112
+msgid "Every 30 days"
 msgstr ""
 
-#: src/billing-screen.js:656
-msgid "Loading billing summary…"
+#: src/billing/summary.js:115
+msgid "Next included allowance reset"
 msgstr ""
 
-#: src/billing-screen.js:668
-msgid "The Moda Interact connection needs attention before billing can be loaded."
+#: src/billing/summary.js:120
+msgid "Paid subscription ends"
 msgstr ""
 
-#: src/billing-screen.js:685
-#: src/billing-screen.js:728
-msgid "Refresh billing"
+#: src/billing/summary.js:130
+msgid "Subscription status"
 msgstr ""
 
-#: src/billing-screen.js:745
-msgid "Summary"
+#: src/billing/summary.js:131
+msgid "Scheduled to end"
 msgstr ""
 
-#: src/billing-screen.js:746
-msgid "Plans"
+#: src/billing/summary.js:158
+msgid "No current plan details are available."
+msgstr ""
+
+#: src/billing/summary.js:175
+msgid "Submitting cancellation…"
+msgstr ""
+
+#: src/billing/summary.js:179
+msgid "Cancel subscription"
 msgstr ""
 
 #: src/overview-screen.js:25
@@ -378,6 +374,10 @@ msgstr ""
 
 #: src/overview-screen.js:34
 msgid "Slug"
+msgstr ""
+
+#: src/overview-screen.js:49
+msgid "Not available"
 msgstr ""
 
 #: src/overview-screen.js:59

@@ -55,6 +55,15 @@ class Setup {
 			(string) filemtime( $plugin_path . $script_path ),
 			true
 		);
+		$presentation_locales = array(
+			'user' => function_exists( 'get_user_locale' ) ? get_user_locale() : '',
+			'site' => function_exists( 'get_locale' ) ? get_locale() : '',
+		);
+		wp_add_inline_script(
+			'moda-interact',
+			'window.modaInteractLocale = ' . wp_json_encode( $presentation_locales, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT ) . ';',
+			'before'
+		);
 		wp_set_script_translations( 'moda-interact', 'moda-interact', $plugin_path . '/languages' );
 
 		wp_register_style(
