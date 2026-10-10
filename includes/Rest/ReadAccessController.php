@@ -97,7 +97,7 @@ final class ReadAccessController {
 				return self::respond( array( 'status' => 'SITE_URL_CHANGED' ), 409 );
 			}
 			if ( 'start' === $action ) {
-				$result = $this->api_client->beginRestReadAuthorization( $record );
+				$result = $this->api_client->beginRestReadAuthorization( $record, self::adminLocale() );
 			} elseif ( 'revoke' === $action ) {
 				$result = $this->api_client->revokeRestReadAuthorization( $record );
 			} else {
@@ -123,6 +123,14 @@ final class ReadAccessController {
 		} catch ( \Throwable $error ) {
 			return self::respond( array( 'status' => 'REMOTE_UNAVAILABLE' ), 503 );
 		}
+	}
+
+	/** Administrator presentation language only; never change the shop's persisted locale. */
+	private static function adminLocale(): ?string {
+		$locale = function_exists( 'get_user_locale' ) ? get_user_locale() : null;
+		return is_string( $locale ) && strlen( $locale ) <= 64 &&
+			1 === preg_match( '/^[A-Za-z]{2,8}(?:[-_][A-Za-z0-9]{2,8})*$/D', $locale )
+			? $locale : null;
 	}
 
 	private static function respond( array $body, int $code ): \WP_REST_Response {

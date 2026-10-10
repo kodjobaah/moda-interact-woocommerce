@@ -55,6 +55,17 @@ final class RestReadResponseValidator {
 		}
 		$return = parse_url( $parameters['return_url'] );
 		$callback = parse_url( $parameters['callback_url'] );
+		$return_query_valid = is_array( $return ) && ! isset( $return['query'] );
+		if ( is_array( $return ) && isset( $return['query'] ) ) {
+			$parts = explode( '&', $return['query'] );
+			parse_str( $return['query'], $presentation );
+			$return_query_valid = 2 === count( $parts ) &&
+				self::hasKeys( $presentation, array( 'display_locale', 'display_proof' ) ) &&
+				is_string( $presentation['display_locale'] ) &&
+				1 === preg_match( '/^[a-z]{2}(?:-[A-Za-z]{2,4})?$/D', $presentation['display_locale'] ) &&
+				is_string( $presentation['display_proof'] ) &&
+				1 === preg_match( '/^[A-Za-z0-9_-]{43}$/D', $presentation['display_proof'] );
+		}
 		$scheme = is_array( $return ) ? ( $return['scheme'] ?? null ) : null;
 		$host = is_array( $return ) ? strtolower( trim( (string) ( $return['host'] ?? '' ), '[]' ) ) : '';
 		$approved_origin = 'https' === $scheme ||
@@ -67,7 +78,7 @@ final class RestReadResponseValidator {
 			( $return['port'] ?? null ) === ( $callback['port'] ?? null ) &&
 			! isset( $return['user'] ) && ! isset( $callback['user'] ) && ! isset( $return['pass'] ) && ! isset( $callback['pass'] ) &&
 			! isset( $return['fragment'] ) && ! isset( $callback['fragment'] ) &&
-			! isset( $return['query'] ) && ! isset( $callback['query'] ) &&
+			$return_query_valid && ! isset( $callback['query'] ) &&
 			( $return['path'] ?? '' ) === '/v1/woocommerce/read-authorizations/return' &&
 			1 === preg_match( '#^/v1/woocommerce/read-authorizations/callback/[A-Za-z0-9_-]{43}$#', $callback['path'] ?? '' );
 	}

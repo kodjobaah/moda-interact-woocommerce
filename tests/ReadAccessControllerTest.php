@@ -15,6 +15,7 @@ final class ReadAccessControllerTest extends TestCase {
 		$GLOBALS['moda_interact_home_url'] = 'http://woocommerce-sandbox.local:8080';
 		$GLOBALS['moda_interact_can_manage_woocommerce'] = true;
 		$GLOBALS['moda_interact_valid_rest_nonce'] = true;
+		$GLOBALS['moda_interact_user_locale'] = 'en_US';
 		$GLOBALS['moda_interact_registered_rest_routes'] = array();
 	}
 
@@ -37,6 +38,7 @@ final class ReadAccessControllerTest extends TestCase {
 
 	public function test_start_uses_read_only_native_url_and_never_exposes_credentials(): void {
 		$seen = array();
+		$GLOBALS['moda_interact_user_locale'] = 'de_DE';
 		$controller = $this->controller( static function ( $url, $args ) use ( &$seen ) {
 			$seen = array( $url, $args );
 			return self::response( 201, self::start() );
@@ -47,8 +49,32 @@ final class ReadAccessControllerTest extends TestCase {
 		self::assertSame( 'https://api.example.test/v1/woocommerce/read-authorizations', $seen[0] );
 		self::assertSame( 'POST', $seen[1]['method'] );
 		self::assertSame( 'Bearer ' . self::record()['credential'], $seen[1]['headers']['Authorization'] );
+		self::assertSame( 'de_DE', $seen[1]['headers']['X-Moda-Admin-Locale'] );
 		self::assertStringNotContainsString( 'credential', json_encode( $result->get_data() ) );
 		self::assertSame( 'private, no-store', $result->get_headers()['Cache-Control'] );
+	}
+
+	public function test_invalid_wordpress_administrator_locale_falls_back_to_shop_language(): void {
+		$GLOBALS['moda_interact_user_locale'] = '../../invalid';
+		$seen_headers = array();
+		$controller = $this->controller( static function ( $url, $args ) use ( &$seen_headers ) {
+			$seen_headers = $args['headers'];
+			return self::response( 201, self::start() );
+		} );
+		self::assertSame( 201, $controller->start( new \WP_REST_Request( 'POST' ) )->get_status() );
+		self::assertArrayNotHasKey( 'X-Moda-Admin-Locale', $seen_headers );
+	}
+
+	public function test_accepts_signed_return_locale_in_approved_native_consent_url(): void {
+		$start = self::start();
+		$parts = explode( '?', $start['authorizationUrl'], 2 );
+		parse_str( $parts[1], $parameters );
+		$parameters['return_url'] .= '?display_locale=en&display_proof=' . str_repeat( 'a', 43 );
+		$start['authorizationUrl'] = $parts[0] . '?' . http_build_query( $parameters );
+		self::assertTrue( RestReadResponseValidator::start( $start, self::record()['canonicalSiteUrl'], ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT ) );
+		$parameters['return_url'] = str_replace( 'display_proof=', 'proof=', $parameters['return_url'] );
+		$start['authorizationUrl'] = $parts[0] . '?' . http_build_query( $parameters );
+		self::assertFalse( RestReadResponseValidator::start( $start, self::record()['canonicalSiteUrl'], ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT ) );
 	}
 
 	public function test_status_and_revoke_stay_distinct_from_inbound_installation(): void {

@@ -193,8 +193,8 @@ final class ModaApiClient {
 	}
 
 	/** WooCommerce read-only consent: the browser receives a bounded native approval URL only. */
-	public function beginRestReadAuthorization( array $connection ): array {
-		$payload = $this->restReadRequest( $connection, '/v1/woocommerce/read-authorizations', 'POST', 201 );
+	public function beginRestReadAuthorization( array $connection, ?string $admin_locale = null ): array {
+		$payload = $this->restReadRequest( $connection, '/v1/woocommerce/read-authorizations', 'POST', 201, $admin_locale );
 		if ( ! RestReadResponseValidator::start( $payload, $connection['canonicalSiteUrl'], $this->configuration->mode ) ) {
 			throw new ModaApiClientException( 'remote_response_invalid', 201 );
 		}
@@ -217,11 +217,15 @@ final class ModaApiClient {
 		return $payload;
 	}
 
-	private function restReadRequest( array $connection, string $path, string $method, int $expected_status ): array {
+	private function restReadRequest( array $connection, string $path, string $method, int $expected_status, ?string $admin_locale = null ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) {
 			throw new ModaApiClientException( 'local_state_invalid' );
 		}
-		$response = $this->request( $path, $method, self::installationHeaders( $connection ) );
+		$headers = self::installationHeaders( $connection );
+		if ( null !== $admin_locale ) {
+			$headers['X-Moda-Admin-Locale'] = $admin_locale;
+		}
+		$response = $this->request( $path, $method, $headers );
 		$status = wp_remote_retrieve_response_code( $response );
 		if ( 401 === $status ) {
 			throw new ModaApiClientException( 'unauthorized', $status );
