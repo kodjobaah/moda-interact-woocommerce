@@ -1,0 +1,735 @@
+# Moda Interact WooCommerce merchant Admin translations.
+# Review source: languages/moda-interact.pot
+msgid ""
+msgstr ""
+"Project-Id-Version: Moda Interact 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"Language-Team: Thai\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: moda-interact\n"
+
+#. Plugin Name of the plugin
+#: moda-interact.php
+#: includes/Admin/NativeNavigation.php:21
+#: includes/Admin/NativeNavigation.php:22
+#: includes/Admin/Setup.php:87
+#: src/index.js:18
+#: src/page.js:23
+msgid "Moda Interact"
+msgstr "Moda Interact"
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "ส่วนขยายสำหรับหน้าผู้ดูแล WooCommerce ของ Moda Interact ในขั้นพื้นฐาน"
+
+#: includes/Admin/NativeNavigation.php:34
+#: includes/Admin/NativeNavigation.php:35
+#: src/overview-screen.js:202
+#: src/page/surface-navigation.js:5
+#: src/recovery-settings/recovery-navigation.js:12
+msgid "Overview"
+msgstr "ภาพรวม"
+
+#: includes/Admin/NativeNavigation.php:41
+msgid "Recoveries"
+msgstr "การกู้คืนการสั่งซื้อ"
+
+#: includes/Admin/NativeNavigation.php:42
+#: src/billing-screen.js:718
+#: src/page/surface-navigation.js:6
+msgid "Billing"
+msgstr "การเรียกเก็บเงิน"
+
+#: includes/Admin/NativeNavigation.php:43
+msgid "Promotions"
+msgstr "โปรโมชัน"
+
+#: includes/Admin/NativeNavigation.php:44
+msgid "Support"
+msgstr "ฝ่ายสนับสนุน"
+
+#: includes/Admin/NativeNavigation.php:45
+#: src/recovery-settings/recovery-settings-header.js:16
+msgid "Recovery settings"
+msgstr "การตั้งค่าการกู้คืน"
+
+#: includes/Admin/NativeNavigation.php:85
+msgid "This section is not yet available for WooCommerce."
+msgstr "ส่วนนี้ยังไม่พร้อมใช้งานสำหรับ WooCommerce"
+
+#: includes/Runtime.php:86
+msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr "Moda Interact ต้องติดตั้งและเปิดใช้งาน WooCommerce เวอร์ชัน 11.0 หรือใหม่กว่า"
+
+#. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
+#: includes/Runtime.php:93
+#, php-format
+msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr "Moda Interact ต้องใช้ WooCommerce เวอร์ชัน %1$s หรือใหม่กว่า เวอร์ชันที่ตรวจพบ: %2$s"
+
+#: src/billing-screen.js:21
+msgid "Not applicable"
+msgstr "ไม่เกี่ยวข้อง"
+
+#: src/billing-screen.js:68
+msgid "Starting the plan change"
+msgstr "กำลังเริ่มเปลี่ยนแผน"
+
+#: src/billing-screen.js:69
+msgid "Waiting for Woo confirmation"
+msgstr "กำลังรอการยืนยันจาก Woo"
+
+#: src/billing-screen.js:73
+msgid "The plan change needs reconciliation. Do not retry it automatically."
+msgstr "ต้องตรวจสอบสถานะการเปลี่ยนแผนให้ตรงกัน อย่าลองส่งคำขอใหม่โดยอัตโนมัติ"
+
+#: src/billing-screen.js:78
+msgid "Plan status unavailable"
+msgstr "ไม่สามารถตรวจสอบสถานะแผนได้"
+
+#: src/billing-screen.js:83
+msgid "Starting the cancellation request"
+msgstr "กำลังเริ่มส่งคำขอยกเลิก"
+
+#: src/billing-screen.js:84
+msgid "Waiting for Woo cancellation confirmation"
+msgstr "กำลังรอการยืนยันการยกเลิกจาก Woo"
+
+#: src/billing-screen.js:88
+msgid "The cancellation needs reconciliation. Do not retry it automatically."
+msgstr "ต้องตรวจสอบสถานะการยกเลิกให้ตรงกัน อย่าลองส่งคำขอใหม่โดยอัตโนมัติ"
+
+#: src/billing-screen.js:92
+msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr "Woo รับคำขอแล้ว Moda กำลังรอรายละเอียดการยกเลิกที่ผ่านการตรวจสอบยืนยัน"
+
+#: src/billing-screen.js:98
+msgid "Cancellation status unavailable"
+msgstr "ไม่สามารถตรวจสอบสถานะการยกเลิกได้"
+
+#: src/billing-screen.js:171
+#: src/billing-screen.js:174
+#: src/overview-screen.js:49
+msgid "Not available"
+msgstr "ไม่พร้อมใช้งาน"
+
+#: src/billing-screen.js:186
+msgid "Recurring billing recovery is required."
+msgstr "ต้องดำเนินการกู้คืนการเรียกเก็บเงินแบบประจำ"
+
+#: src/billing-screen.js:191
+msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
+msgstr "เครดิตที่รวมอยู่ในแผนแบบชำระเงินไม่พร้อมใช้งานชั่วคราว เครดิตที่ซื้อและเครดิต Free แบบตลอดอายุการใช้งานที่เหลือยังใช้ได้ ส่วนเครดิตโปรโมชันยังเป็นไปตามเงื่อนไขเดิม"
+
+#: src/billing-screen.js:204
+msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
+msgstr "ต้องตรวจสอบการเรียกเก็บเงิน ขณะ Moda ตรวจสอบสถานะการเรียกเก็บเงิน จะไม่สามารถเปลี่ยนแผนได้"
+
+#: src/billing-screen.js:217
+msgid "No recurring billing contract is available for this store."
+msgstr "ไม่มีสัญญาเรียกเก็บเงินแบบประจำสำหรับร้านค้านี้"
+
+#: src/billing-screen.js:230
+msgid "Cancellation request accepted."
+msgstr "รับคำขอยกเลิกแล้ว"
+
+#. translators: 1: plan name, 2: pending plan operation state.
+#: src/billing-screen.js:242
+#, js-format
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: src/billing-screen.js:263
+#: src/billing-screen.js:478
+msgid "Current plan"
+msgstr "แผนปัจจุบัน"
+
+#: src/billing-screen.js:269
+msgid "Plan"
+msgstr "แผน"
+
+#: src/billing-screen.js:273
+msgid "Plan type"
+msgstr "ประเภทแผน"
+
+#: src/billing-screen.js:275
+#: src/billing-screen.js:508
+msgid "Free"
+msgstr "Free"
+
+#: src/billing-screen.js:276
+msgid "Paid recurring"
+msgstr "แผนชำระเงินแบบประจำ"
+
+#: src/billing-screen.js:279
+msgid "Recurring amount"
+msgstr "ยอดเรียกเก็บเงินแบบประจำ"
+
+#: src/billing-screen.js:281
+msgid "No recurring charge"
+msgstr "ไม่มีค่าบริการแบบประจำ"
+
+#: src/billing-screen.js:285
+msgid "Billing period"
+msgstr "รอบการเรียกเก็บเงิน"
+
+#: src/billing-screen.js:286
+msgid "Every 30 days"
+msgstr "ทุก 30 วัน"
+
+#: src/billing-screen.js:289
+msgid "Next included allowance reset"
+msgstr "การรีเซ็ตสิทธิ์ที่รวมในแผนครั้งถัดไป"
+
+#: src/billing-screen.js:297
+msgid "Paid subscription ends"
+msgstr "การสมัครสมาชิกแบบชำระเงินสิ้นสุด"
+
+#: src/billing-screen.js:309
+msgid "Subscription status"
+msgstr "สถานะการสมัครสมาชิก"
+
+#: src/billing-screen.js:313
+msgid "Scheduled to end"
+msgstr "มีกำหนดสิ้นสุด"
+
+#: src/billing-screen.js:320
+msgid "No current plan details are available."
+msgstr "ไม่มีรายละเอียดแผนปัจจุบัน"
+
+#: src/billing-screen.js:337
+msgid "Submitting cancellation…"
+msgstr "กำลังส่งคำขอยกเลิก…"
+
+#: src/billing-screen.js:341
+msgid "Cancel subscription"
+msgstr "ยกเลิกการสมัครสมาชิก"
+
+#: src/billing-screen.js:363
+msgid "Cancel recurring plan?"
+msgstr "ยกเลิกแผนแบบประจำหรือไม่?"
+
+#: src/billing-screen.js:368
+msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
+msgstr "คุณยังใช้บริการแบบชำระเงินได้จนกว่าจะยืนยันการยกเลิกและสิ้นสุดระยะเวลาที่ชำระเงินล่วงหน้า คำขอนี้จะไม่เปลี่ยนแผนปัจจุบันทันที"
+
+#: src/billing-screen.js:388
+msgid "Keep current plan"
+msgstr "ใช้แผนปัจจุบันต่อ"
+
+#: src/billing-screen.js:405
+#: src/billing-screen.js:482
+msgid "Submitting…"
+msgstr "กำลังส่ง…"
+
+#: src/billing-screen.js:406
+msgid "Confirm cancellation"
+msgstr "ยืนยันการยกเลิก"
+
+#: src/billing-screen.js:417
+msgid "Recovery capacity"
+msgstr "สิทธิ์เครดิตการกู้คืน"
+
+#: src/billing-screen.js:423
+msgid "Paid included credits remaining"
+msgstr "เครดิตที่รวมอยู่ในแผนชำระเงินคงเหลือ"
+
+#: src/billing-screen.js:428
+msgid "Temporarily unavailable"
+msgstr "ไม่พร้อมใช้งานชั่วคราว"
+
+#: src/billing-screen.js:440
+msgid "Lifetime Free credits remaining"
+msgstr "เครดิต Free แบบตลอดอายุการใช้งานคงเหลือ"
+
+#: src/billing-screen.js:447
+msgid "Promotional credits remaining"
+msgstr "เครดิตโปรโมชันคงเหลือ"
+
+#: src/billing-screen.js:454
+msgid "Purchased credits available"
+msgstr "เครดิตที่ซื้อซึ่งพร้อมใช้งาน"
+
+#: src/billing-screen.js:476
+#: src/recovery-settings/recovery-effective-summary.js:13
+#: src/recovery-settings/recovery-effective-summary.js:38
+msgid "Unavailable"
+msgstr "ไม่พร้อมใช้งาน"
+
+#: src/billing-screen.js:480
+msgid "Billing change in progress"
+msgstr "กำลังเปลี่ยนแปลงการเรียกเก็บเงิน"
+
+#: src/billing-screen.js:484
+msgid "Choose plan"
+msgstr "เลือกแผน"
+
+#: src/billing-screen.js:486
+msgid "Switch to plan"
+msgstr "เปลี่ยนไปใช้แผนนี้"
+
+#: src/billing-screen.js:499
+msgid "Featured"
+msgstr "แนะนำ"
+
+#. translators: 1: recurring plan price.
+#: src/billing-screen.js:511
+#, js-format
+msgid "%1$s / every 30 days"
+msgstr "%1$s / ทุก 30 วัน"
+
+#: src/billing-screen.js:519
+msgid "Lifetime recovery credits"
+msgstr "เครดิตการกู้คืนแบบตลอดอายุการใช้งาน"
+
+#: src/billing-screen.js:520
+msgid "Recovery credits every 30 days"
+msgstr "เครดิตการกู้คืนทุก 30 วัน"
+
+#: src/billing-screen.js:558
+msgid "Plan management is unavailable for the current billing state."
+msgstr "ไม่สามารถจัดการแผนได้ในสถานะการเรียกเก็บเงินปัจจุบัน"
+
+#: src/billing-screen.js:568
+msgid "Loading available plans…"
+msgstr "กำลังโหลดแผนที่มีให้เลือก…"
+
+#: src/billing-screen.js:578
+msgid "The plan catalogue could not be loaded."
+msgstr "ไม่สามารถโหลดรายการแผนได้"
+
+#: src/billing-screen.js:583
+msgid "Retry plan catalogue"
+msgstr "โหลดรายการแผนอีกครั้ง"
+
+#: src/billing-screen.js:604
+msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+msgstr "ระบบเรียกเก็บเงินไม่พร้อมใช้งานชั่วคราว สถานะการเรียกเก็บเงินปัจจุบันของคุณไม่เปลี่ยนแปลง"
+
+#: src/billing-screen.js:608
+msgid "Billing data could not be verified. Try again later."
+msgstr "ไม่สามารถยืนยันข้อมูลการเรียกเก็บเงินได้ โปรดลองอีกครั้งภายหลัง"
+
+#: src/billing-screen.js:612
+msgid "Billing setup is not complete for this store."
+msgstr "การตั้งค่าการเรียกเก็บเงินของร้านค้านี้ยังไม่เสร็จสมบูรณ์"
+
+#: src/billing-screen.js:616
+#: src/billing-screen.js:620
+msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+msgstr "มีการเปลี่ยนแปลงการเรียกเก็บเงินอยู่แล้ว โปรดรีเฟรชสรุปการเรียกเก็บเงินก่อนลองอีกครั้ง"
+
+#: src/billing-screen.js:624
+msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
+msgstr "ยังไม่ทราบผลจากผู้ให้บริการ โปรดรีเฟรชสรุปการเรียกเก็บเงินหรือติดต่อฝ่ายสนับสนุน อย่าลองส่งคำขอใหม่โดยอัตโนมัติ"
+
+#: src/billing-screen.js:628
+msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgstr "ไม่สามารถดำเนินการเปลี่ยนแปลงการเรียกเก็บเงินให้เสร็จได้ แผนปัจจุบันของคุณยังเหมือนเดิม"
+
+#: src/billing-screen.js:632
+msgid "This plan is no longer available. Refresh the plan catalogue."
+msgstr "แผนนี้ไม่พร้อมให้บริการแล้ว โปรดรีเฟรชรายการแผน"
+
+#: src/billing-screen.js:639
+msgid "The billing request failed. Try again."
+msgstr "คำขอเกี่ยวกับการเรียกเก็บเงินล้มเหลว โปรดลองอีกครั้ง"
+
+#: src/billing-screen.js:656
+msgid "Loading billing summary…"
+msgstr "กำลังโหลดสรุปการเรียกเก็บเงิน…"
+
+#: src/billing-screen.js:668
+msgid "The Moda Interact connection needs attention before billing can be loaded."
+msgstr "ต้องตรวจสอบการเชื่อมต่อ Moda Interact ก่อนจึงจะโหลดข้อมูลการเรียกเก็บเงินได้"
+
+#: src/billing-screen.js:685
+#: src/billing-screen.js:728
+msgid "Refresh billing"
+msgstr "รีเฟรชข้อมูลการเรียกเก็บเงิน"
+
+#: src/billing-screen.js:745
+msgid "Summary"
+msgstr "สรุป"
+
+#: src/billing-screen.js:746
+msgid "Plans"
+msgstr "แผน"
+
+#: src/overview-screen.js:25
+#: src/recovery-settings/category-profile-summary.js:5
+msgid "Not selected"
+msgstr "ยังไม่ได้เลือก"
+
+#: src/overview-screen.js:32
+msgid "Name"
+msgstr "ชื่อ"
+
+#: src/overview-screen.js:33
+msgid "Category ID"
+msgstr "รหัสหมวดหมู่"
+
+#: src/overview-screen.js:34
+msgid "Slug"
+msgstr "สลัก URL"
+
+#: src/overview-screen.js:59
+msgid "Account setup"
+msgstr "การตั้งค่าบัญชี"
+
+#: src/overview-screen.js:64
+msgid "Setup status"
+msgstr "สถานะการตั้งค่า"
+
+#: src/overview-screen.js:66
+msgid "Setup completed"
+msgstr "ตั้งค่าเสร็จแล้ว"
+
+#: src/overview-screen.js:67
+msgid "Setup not completed"
+msgstr "ยังตั้งค่าไม่เสร็จ"
+
+#: src/overview-screen.js:69
+msgid "Store"
+msgstr "ร้านค้า"
+
+#: src/overview-screen.js:71
+msgid "Store added"
+msgstr "เพิ่มร้านค้าเมื่อ"
+
+#: src/overview-screen.js:78
+msgid "Store profile"
+msgstr "โปรไฟล์ร้านค้า"
+
+#: src/overview-screen.js:85
+#: src/recovery-settings/category-profile-summary.js:25
+msgid "Active category"
+msgstr "หมวดหมู่ที่ใช้งานอยู่"
+
+#: src/overview-screen.js:95
+#: src/recovery-settings/category-profile-summary.js:29
+msgid "Pending category"
+msgstr "หมวดหมู่ที่รอดำเนินการ"
+
+#: src/overview-screen.js:103
+#: src/recovery-settings/category-profile-summary.js:33
+msgid "Selection generation"
+msgstr "รุ่นของการเลือก"
+
+#: src/overview-screen.js:107
+msgid "Pending selection date"
+msgstr "วันที่เลือกที่รอดำเนินการ"
+
+#: src/overview-screen.js:114
+msgid "Store context"
+msgstr "บริบทของร้านค้า"
+
+#: src/overview-screen.js:119
+msgid "Store locale"
+msgstr "ภาษาท้องถิ่นของร้านค้า"
+
+#: src/overview-screen.js:123
+msgid "Language tag"
+msgstr "แท็กภาษา"
+
+#: src/overview-screen.js:127
+msgid "Time zone"
+msgstr "เขตเวลา"
+
+#: src/overview-screen.js:131
+msgid "Country code"
+msgstr "รหัสประเทศ"
+
+#: src/overview-screen.js:152
+msgid "Loading store overview…"
+msgstr "กำลังโหลดภาพรวมร้านค้า…"
+
+#: src/overview-screen.js:162
+msgid "The Moda Interact connection needs attention before store data can be loaded."
+msgstr "ต้องตรวจสอบการเชื่อมต่อ Moda Interact ก่อนจึงจะโหลดข้อมูลร้านค้าได้"
+
+#: src/overview-screen.js:172
+msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
+msgstr "ภาพรวมร้านค้าไม่พร้อมใช้งานชั่วคราว การเชื่อมต่อและข้อมูลร้านค้าของคุณไม่ได้เปลี่ยนแปลง"
+
+#: src/overview-screen.js:182
+msgid "The store overview could not be verified. Try again."
+msgstr "ไม่สามารถยืนยันข้อมูลภาพรวมร้านค้าได้ โปรดลองอีกครั้ง"
+
+#: src/overview-screen.js:216
+msgid "Syncing…"
+msgstr "กำลังซิงค์…"
+
+#: src/overview-screen.js:217
+msgid "Sync store settings"
+msgstr "ซิงค์การตั้งค่าร้านค้า"
+
+#: src/overview-screen.js:228
+msgid "Refreshing…"
+msgstr "กำลังรีเฟรช…"
+
+#: src/overview-screen.js:229
+msgid "Refresh overview"
+msgstr "รีเฟรชภาพรวม"
+
+#: src/overview-screen.js:241
+msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
+msgstr "ไม่สามารถซิงค์การตั้งค่าร้านค้าได้ การเชื่อมต่อของคุณไม่เปลี่ยนแปลง โปรดลองอีกครั้ง"
+
+#: src/overview-screen.js:251
+msgid "Store settings synchronized."
+msgstr "ซิงค์การตั้งค่าร้านค้าแล้ว"
+
+#: src/page.js:21
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: src/page/connection-panel.js:18
+msgid "Checking the connection to Moda Interact…"
+msgstr "กำลังตรวจสอบการเชื่อมต่อกับ Moda Interact…"
+
+#: src/page/connection-panel.js:28
+msgid "This store is not connected to Moda Interact."
+msgstr "ร้านค้านี้ยังไม่ได้เชื่อมต่อกับ Moda Interact"
+
+#: src/page/connection-panel.js:42
+msgid "Connecting…"
+msgstr "กำลังเชื่อมต่อ…"
+
+#: src/page/connection-panel.js:43
+msgid "Connect Moda Interact"
+msgstr "เชื่อมต่อ Moda Interact"
+
+#: src/page/connection-panel.js:54
+msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
+msgstr "ต้องตั้งค่าการเชื่อมต่อภายในใหม่ บัญชี Moda และข้อมูลร้านค้าของคุณไม่ได้ถูกลบ"
+
+#: src/page/connection-panel.js:68
+msgid "Reconnecting…"
+msgstr "กำลังเชื่อมต่ออีกครั้ง…"
+
+#: src/page/connection-panel.js:69
+msgid "Reconnect Moda Interact"
+msgstr "เชื่อมต่อ Moda Interact อีกครั้ง"
+
+#: src/page/connection-panel.js:77
+#: src/page/connection-panel.js:193
+msgid "Connection"
+msgstr "การเชื่อมต่อ"
+
+#: src/page/connection-panel.js:78
+#: src/page/connection-panel.js:199
+msgid "Connected"
+msgstr "เชื่อมต่อแล้ว"
+
+#: src/page/connection-panel.js:82
+msgid "WordPress site"
+msgstr "เว็บไซต์ WordPress"
+
+#: src/page/connection-panel.js:94
+msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
+msgstr "ขณะนี้ไม่สามารถติดต่อ Moda Interact ได้ การเชื่อมต่อภายในยังไม่ถูกลบ"
+
+#: src/page/connection-panel.js:108
+#: src/page/connection-panel.js:164
+msgid "Checking…"
+msgstr "กำลังตรวจสอบ…"
+
+#: src/page/connection-panel.js:109
+#: src/page/connection-panel.js:165
+msgid "Retry"
+msgstr "ลองอีกครั้ง"
+
+#: src/page/connection-panel.js:117
+msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
+msgstr "ที่อยู่เว็บไซต์ WordPress นี้ต่างจากที่อยู่ที่ใช้เชื่อมต่อ Moda Interact โปรดติดต่อฝ่ายสนับสนุนก่อนเปลี่ยนการเชื่อมต่อ"
+
+#: src/page/connection-panel.js:127
+msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
+msgstr "ยังไม่ได้กำหนดค่าการเชื่อมต่อบริการ Moda Interact สำหรับการติดตั้งปลั๊กอินนี้ โปรดติดต่อผู้ดูแลเว็บไซต์"
+
+#: src/page/connection-panel.js:137
+msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
+msgstr "ไม่สามารถยืนยันการเชื่อมต่อภายในที่บันทึกไว้ได้ โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือในการกู้คืนการเชื่อมต่อ"
+
+#: src/page/connection-panel.js:150
+msgid "The connection status could not be checked. Try again."
+msgstr "ไม่สามารถตรวจสอบสถานะการเชื่อมต่อได้ โปรดลองอีกครั้ง"
+
+#: src/page/connection-panel.js:173
+msgid "The connection status is unavailable. Contact support for help."
+msgstr "ไม่สามารถดูสถานะการเชื่อมต่อได้ โปรดติดต่อฝ่ายสนับสนุน"
+
+#: src/page/connection-panel.js:211
+msgid "The connection could not be completed. Check your connection and try again."
+msgstr "ไม่สามารถเชื่อมต่อให้เสร็จสมบูรณ์ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+
+#: src/page/surface-navigation.js:7
+#: src/recovery-settings/recovery-navigation.js:15
+#: src/recovery-settings/recovery-settings-header.js:21
+msgid "Recovery Settings"
+msgstr "การตั้งค่าการกู้คืน"
+
+#: src/recovery-settings/category-mappings.js:14
+msgid "No optional taxonomy mappings are available for this category."
+msgstr "ไม่มีการแมปอนุกรมวิธานเพิ่มเติมสำหรับหมวดหมู่นี้"
+
+#: src/recovery-settings/category-mappings.js:26
+msgid "Optional taxonomy mappings"
+msgstr "การแมปอนุกรมวิธานเพิ่มเติม"
+
+#: src/recovery-settings/category-profile-summary.js:37
+msgid "Active mapping count"
+msgstr "จำนวนการแมปที่ใช้งานอยู่"
+
+#: src/recovery-settings/category-profile-summary.js:45
+msgid "A category change is pending publication."
+msgstr "การเปลี่ยนหมวดหมู่กำลังรอเผยแพร่"
+
+#: src/recovery-settings/category-profile-summary.js:55
+msgid "Pending prompt template:"
+msgstr "เทมเพลตพรอมป์ต์ที่รอดำเนินการ:"
+
+#: src/recovery-settings/category-selector.js:20
+#: src/recovery-settings/recovery-settings-screen.js:102
+msgid "Store category"
+msgstr "หมวดหมู่ร้านค้า"
+
+#: src/recovery-settings/category-selector.js:33
+msgid "Select a store category"
+msgstr "เลือกหมวดหมู่ร้านค้า"
+
+#: src/recovery-settings/recovery-effective-summary.js:7
+msgid "Do not offer a discount"
+msgstr "ไม่เสนอส่วนลด"
+
+#: src/recovery-settings/recovery-effective-summary.js:9
+msgid "Specific discount"
+msgstr "ส่วนลดที่ระบุ"
+
+#: src/recovery-settings/recovery-effective-summary.js:11
+msgid "AI-selected applicable discount"
+msgstr "ส่วนลดที่ใช้ได้ซึ่ง AI เลือก"
+
+#: src/recovery-settings/recovery-effective-summary.js:22
+msgid "Effective follow-up: disabled"
+msgstr "การติดตามผลที่มีผลจริง: ปิดใช้งาน"
+
+#. translators: %d: minutes until automatic follow-up.
+#: src/recovery-settings/recovery-effective-summary.js:26
+#, js-format
+msgid "Effective follow-up: %d minutes"
+msgstr "การติดตามผลที่มีผลจริง: %d นาที"
+
+#: src/recovery-settings/recovery-effective-summary.js:37
+msgid "Loading…"
+msgstr "กำลังโหลด…"
+
+#: src/recovery-settings/recovery-effective-summary.js:41
+msgid "Recovery start"
+msgstr "เริ่มการกู้คืน"
+
+#. translators: %d: number of minutes before recovery starts.
+#: src/recovery-settings/recovery-effective-summary.js:45
+#, js-format
+msgid "Effective value: %d minutes"
+msgstr "ค่าที่มีผลจริง: %d นาที"
+
+#: src/recovery-settings/recovery-effective-summary.js:51
+msgid "Recovery offer"
+msgstr "ข้อเสนอสำหรับการกู้คืน"
+
+#. translators: %s: effective offer setting.
+#: src/recovery-settings/recovery-effective-summary.js:55
+#, js-format
+msgid "Currently active: %s"
+msgstr "กำลังใช้งาน: %s"
+
+#: src/recovery-settings/recovery-effective-summary.js:61
+msgid "No-response follow-up"
+msgstr "ติดตามผลเมื่อไม่มีการตอบกลับ"
+
+#: src/recovery-settings/recovery-effective-summary.js:74
+msgid "Effective settings include an administrator override"
+msgstr "การตั้งค่าที่มีผลจริงรวมค่าที่ผู้ดูแลกำหนดทับ"
+
+#: src/recovery-settings/recovery-effective-summary.js:86
+msgid "Retry recovery summary"
+msgstr "โหลดสรุปการกู้คืนอีกครั้ง"
+
+#: src/recovery-settings/recovery-effective-summary.js:94
+msgid "Effective recovery settings"
+msgstr "การตั้งค่าการกู้คืนที่มีผลจริง"
+
+#: src/recovery-settings/recovery-navigation.js:9
+msgid "Moda Interact sections"
+msgstr "ส่วนต่าง ๆ ของ Moda Interact"
+
+#: src/recovery-settings/recovery-settings-screen.js:9
+msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
+msgstr "ผู้ดูแลรายอื่นเปลี่ยนหมวดหมู่ร้านค้าแล้ว โปรดรีเฟรชหมวดหมู่ ตรวจสอบตัวเลือกล่าสุด แล้วบันทึกอีกครั้ง"
+
+#: src/recovery-settings/recovery-settings-screen.js:13
+msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
+msgstr "หมวดหมู่หรือพรอมป์ต์ที่เลือกไม่พร้อมใช้งานแล้ว โปรดรีเฟรชรายการและเลือกหมวดหมู่ที่พร้อมใช้งาน"
+
+#: src/recovery-settings/recovery-settings-screen.js:17
+msgid "The Moda Interact connection needs attention before categories can be updated."
+msgstr "ต้องตรวจสอบการเชื่อมต่อ Moda Interact ก่อนจึงจะอัปเดตหมวดหมู่ได้"
+
+#: src/recovery-settings/recovery-settings-screen.js:21
+msgid "Category settings could not be loaded. Refresh categories to retry."
+msgstr "ไม่สามารถโหลดการตั้งค่าหมวดหมู่ได้ โปรดรีเฟรชหมวดหมู่เพื่อลองอีกครั้ง"
+
+#: src/recovery-settings/recovery-settings-screen.js:25
+msgid "The latest store settings do not show your change. Review the selection and try saving again."
+msgstr "การตั้งค่าร้านค้าล่าสุดไม่แสดงการเปลี่ยนแปลงของคุณ โปรดตรวจสอบตัวเลือกแล้วลองบันทึกอีกครั้ง"
+
+#: src/recovery-settings/recovery-settings-screen.js:29
+msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
+msgstr "เราไม่สามารถยืนยันได้ว่าบันทึกหมวดหมู่ของคุณแล้วหรือยัง โปรดรีเฟรชหมวดหมู่ก่อนลองอีกครั้ง"
+
+#: src/recovery-settings/recovery-settings-screen.js:33
+msgid "Store category and assistant prompt activated."
+msgstr "เปิดใช้งานหมวดหมู่ร้านค้าและพรอมป์ต์ของผู้ช่วยแล้ว"
+
+#: src/recovery-settings/recovery-settings-screen.js:37
+msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
+msgstr "บันทึกหมวดหมู่ร้านค้าแล้ว แต่ไม่สามารถโหลดการตั้งค่าที่อัปเดตได้ โปรดรีเฟรชเพื่อยืนยันหมวดหมู่ที่ใช้งานอยู่"
+
+#: src/recovery-settings/recovery-settings-screen.js:94
+msgid "Store & assistant context"
+msgstr "บริบทของร้านค้าและผู้ช่วย"
+
+#: src/recovery-settings/recovery-settings-screen.js:107
+msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
+msgstr "เลือกประเภทร้านค้าเพื่อปรับแต่งผู้ช่วย CommerceAgent ของคุณ แผน Free ของคุณยังคงใช้งานอยู่"
+
+#: src/recovery-settings/recovery-settings-screen.js:117
+msgid "Checking saved category…"
+msgstr "กำลังตรวจสอบหมวดหมู่ที่บันทึกไว้…"
+
+#: src/recovery-settings/recovery-settings-screen.js:121
+msgid "Loading store categories…"
+msgstr "กำลังโหลดหมวดหมู่ร้านค้า…"
+
+#: src/recovery-settings/recovery-settings-screen.js:137
+msgid "There are currently no selectable store categories."
+msgstr "ขณะนี้ไม่มีหมวดหมู่ร้านค้าที่สามารถเลือกได้"
+
+#: src/recovery-settings/recovery-settings-screen.js:164
+msgid "Refresh categories"
+msgstr "รีเฟรชหมวดหมู่"
+
+#: src/recovery-settings/recovery-settings-screen.js:175
+msgid "Saving…"
+msgstr "กำลังบันทึก…"
+
+#: src/recovery-settings/recovery-settings-screen.js:176
+msgid "Save category"
+msgstr "บันทึกหมวดหมู่"

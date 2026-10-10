@@ -12,6 +12,8 @@ import { assertStoreCategoryWordPress } from './category-assertions.mjs';
 import { assertLocaleWordPress } from './locale-wordpress.mjs';
 import { assertLocaleBatch010 } from './locale-batch-010.mjs';
 import { assertLocaleBatch011 } from './locale-batch-011.mjs';
+import { assertLocaleBatch012 } from './locale-batch-012.mjs';
+import { assertLocaleBatch013 } from './locale-batch-013.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -775,6 +777,8 @@ try {
 	assertLocaleWordPress({ wp, parseJsonOutput, repository });
 	assertLocaleBatch010({ wp, parseJsonOutput, repository });
 	assertLocaleBatch011({ wp, parseJsonOutput, repository });
+	assertLocaleBatch012({ wp, parseJsonOutput, repository });
+	assertLocaleBatch013({ wp, parseJsonOutput, repository });
 	const caPathInContainer = `${pluginDir}/tests/integration/.fixture-ca.pem`;
 	command(
 		'npm',

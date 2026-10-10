@@ -1,0 +1,735 @@
+# Moda Interact WooCommerce merchant Admin translations.
+# Review source: languages/moda-interact.pot
+msgid ""
+msgstr ""
+"Project-Id-Version: Moda Interact 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: tr_TR\n"
+"Language-Team: Turkish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: moda-interact\n"
+
+#. Plugin Name of the plugin
+#: moda-interact.php
+#: includes/Admin/NativeNavigation.php:21
+#: includes/Admin/NativeNavigation.php:22
+#: includes/Admin/Setup.php:87
+#: src/index.js:18
+#: src/page.js:23
+msgid "Moda Interact"
+msgstr "Moda Interact"
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Moda Interact için WooCommerce yönetim paneli eklentisinin temel yapısı."
+
+#: includes/Admin/NativeNavigation.php:34
+#: includes/Admin/NativeNavigation.php:35
+#: src/overview-screen.js:202
+#: src/page/surface-navigation.js:5
+#: src/recovery-settings/recovery-navigation.js:12
+msgid "Overview"
+msgstr "Genel bakış"
+
+#: includes/Admin/NativeNavigation.php:41
+msgid "Recoveries"
+msgstr "Sepet kurtarma işlemleri"
+
+#: includes/Admin/NativeNavigation.php:42
+#: src/billing-screen.js:718
+#: src/page/surface-navigation.js:6
+msgid "Billing"
+msgstr "Faturalandırma"
+
+#: includes/Admin/NativeNavigation.php:43
+msgid "Promotions"
+msgstr "Promosyonlar"
+
+#: includes/Admin/NativeNavigation.php:44
+msgid "Support"
+msgstr "Destek"
+
+#: includes/Admin/NativeNavigation.php:45
+#: src/recovery-settings/recovery-settings-header.js:16
+msgid "Recovery settings"
+msgstr "Kurtarma ayarları"
+
+#: includes/Admin/NativeNavigation.php:85
+msgid "This section is not yet available for WooCommerce."
+msgstr "Bu bölüm henüz WooCommerce için kullanılamıyor."
+
+#: includes/Runtime.php:86
+msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr "Moda Interact, WooCommerce 11.0 veya daha yeni bir sürümün kurulu ve etkin olmasını gerektirir."
+
+#. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
+#: includes/Runtime.php:93
+#, php-format
+msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr "Moda Interact, WooCommerce %1$s veya daha yeni bir sürüm gerektirir. Algılanan sürüm: %2$s."
+
+#: src/billing-screen.js:21
+msgid "Not applicable"
+msgstr "Uygulanamaz"
+
+#: src/billing-screen.js:68
+msgid "Starting the plan change"
+msgstr "Plan değişikliği başlatılıyor"
+
+#: src/billing-screen.js:69
+msgid "Waiting for Woo confirmation"
+msgstr "WooCommerce onayı bekleniyor"
+
+#: src/billing-screen.js:73
+msgid "The plan change needs reconciliation. Do not retry it automatically."
+msgstr "Plan değişikliğinin durumu doğrulanmalıdır. İşlemi otomatik olarak yeniden denemeyin."
+
+#: src/billing-screen.js:78
+msgid "Plan status unavailable"
+msgstr "Plan durumu kullanılamıyor"
+
+#: src/billing-screen.js:83
+msgid "Starting the cancellation request"
+msgstr "İptal isteği başlatılıyor"
+
+#: src/billing-screen.js:84
+msgid "Waiting for Woo cancellation confirmation"
+msgstr "WooCommerce iptal onayı bekleniyor"
+
+#: src/billing-screen.js:88
+msgid "The cancellation needs reconciliation. Do not retry it automatically."
+msgstr "İptalin durumu doğrulanmalıdır. İşlemi otomatik olarak yeniden denemeyin."
+
+#: src/billing-screen.js:92
+msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr "WooCommerce isteği kabul etti. Moda, doğrulanmış iptal ayrıntılarını bekliyor."
+
+#: src/billing-screen.js:98
+msgid "Cancellation status unavailable"
+msgstr "İptal durumu kullanılamıyor"
+
+#: src/billing-screen.js:171
+#: src/billing-screen.js:174
+#: src/overview-screen.js:49
+msgid "Not available"
+msgstr "Kullanılamıyor"
+
+#: src/billing-screen.js:186
+msgid "Recurring billing recovery is required."
+msgstr "Yinelenen faturalandırmanın düzeltilmesi gerekiyor."
+
+#: src/billing-screen.js:191
+msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
+msgstr "Ücretli plana dahil krediler geçici olarak kullanılamıyor. Satın alınan krediler ve Free planından kalan ömür boyu krediler kullanılmaya devam edilebilir; promosyon kredileri mevcut uygunluk koşullarına tabidir."
+
+#: src/billing-screen.js:204
+msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
+msgstr "Faturalandırma durumunun incelenmesi gerekiyor. Moda faturalandırma durumunu doğrularken plan değişiklikleri kullanılamaz."
+
+#: src/billing-screen.js:217
+msgid "No recurring billing contract is available for this store."
+msgstr "Bu mağaza için yinelenen faturalandırma sözleşmesi bulunmuyor."
+
+#: src/billing-screen.js:230
+msgid "Cancellation request accepted."
+msgstr "İptal isteği kabul edildi."
+
+#. translators: 1: plan name, 2: pending plan operation state.
+#: src/billing-screen.js:242
+#, js-format
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: src/billing-screen.js:263
+#: src/billing-screen.js:478
+msgid "Current plan"
+msgstr "Mevcut plan"
+
+#: src/billing-screen.js:269
+msgid "Plan"
+msgstr "Plan"
+
+#: src/billing-screen.js:273
+msgid "Plan type"
+msgstr "Plan türü"
+
+#: src/billing-screen.js:275
+#: src/billing-screen.js:508
+msgid "Free"
+msgstr "Free"
+
+#: src/billing-screen.js:276
+msgid "Paid recurring"
+msgstr "Yinelenen ücretli plan"
+
+#: src/billing-screen.js:279
+msgid "Recurring amount"
+msgstr "Yinelenen tutar"
+
+#: src/billing-screen.js:281
+msgid "No recurring charge"
+msgstr "Yinelenen ücret yok"
+
+#: src/billing-screen.js:285
+msgid "Billing period"
+msgstr "Faturalandırma dönemi"
+
+#: src/billing-screen.js:286
+msgid "Every 30 days"
+msgstr "Her 30 günde bir"
+
+#: src/billing-screen.js:289
+msgid "Next included allowance reset"
+msgstr "Dahil edilen kredilerin sonraki yenilenme zamanı"
+
+#: src/billing-screen.js:297
+msgid "Paid subscription ends"
+msgstr "Ücretli abonelik sona eriyor"
+
+#: src/billing-screen.js:309
+msgid "Subscription status"
+msgstr "Abonelik durumu"
+
+#: src/billing-screen.js:313
+msgid "Scheduled to end"
+msgstr "Sona ermesi planlandı"
+
+#: src/billing-screen.js:320
+msgid "No current plan details are available."
+msgstr "Mevcut plan ayrıntıları kullanılamıyor."
+
+#: src/billing-screen.js:337
+msgid "Submitting cancellation…"
+msgstr "İptal isteği gönderiliyor…"
+
+#: src/billing-screen.js:341
+msgid "Cancel subscription"
+msgstr "Aboneliği iptal et"
+
+#: src/billing-screen.js:363
+msgid "Cancel recurring plan?"
+msgstr "Yinelenen plan iptal edilsin mi?"
+
+#: src/billing-screen.js:368
+msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
+msgstr "Ücretli erişim, iptal doğrulanana ve ön ödemeli dönem sona erene kadar devam eder. Bu istek mevcut planınızı hemen değiştirmez."
+
+#: src/billing-screen.js:388
+msgid "Keep current plan"
+msgstr "Mevcut planı koru"
+
+#: src/billing-screen.js:405
+#: src/billing-screen.js:482
+msgid "Submitting…"
+msgstr "Gönderiliyor…"
+
+#: src/billing-screen.js:406
+msgid "Confirm cancellation"
+msgstr "İptali onayla"
+
+#: src/billing-screen.js:417
+msgid "Recovery capacity"
+msgstr "Kurtarma kapasitesi"
+
+#: src/billing-screen.js:423
+msgid "Paid included credits remaining"
+msgstr "Ücretli plana dahil kalan krediler"
+
+#: src/billing-screen.js:428
+msgid "Temporarily unavailable"
+msgstr "Geçici olarak kullanılamıyor"
+
+#: src/billing-screen.js:440
+msgid "Lifetime Free credits remaining"
+msgstr "Kalan ömür boyu Free kredileri"
+
+#: src/billing-screen.js:447
+msgid "Promotional credits remaining"
+msgstr "Kalan promosyon kredileri"
+
+#: src/billing-screen.js:454
+msgid "Purchased credits available"
+msgstr "Kullanılabilir satın alınmış krediler"
+
+#: src/billing-screen.js:476
+#: src/recovery-settings/recovery-effective-summary.js:13
+#: src/recovery-settings/recovery-effective-summary.js:38
+msgid "Unavailable"
+msgstr "Kullanılamıyor"
+
+#: src/billing-screen.js:480
+msgid "Billing change in progress"
+msgstr "Faturalandırma değişikliği sürüyor"
+
+#: src/billing-screen.js:484
+msgid "Choose plan"
+msgstr "Plan seç"
+
+#: src/billing-screen.js:486
+msgid "Switch to plan"
+msgstr "Plana geç"
+
+#: src/billing-screen.js:499
+msgid "Featured"
+msgstr "Öne çıkan"
+
+#. translators: 1: recurring plan price.
+#: src/billing-screen.js:511
+#, js-format
+msgid "%1$s / every 30 days"
+msgstr "%1$s / her 30 günde bir"
+
+#: src/billing-screen.js:519
+msgid "Lifetime recovery credits"
+msgstr "Ömür boyu kurtarma kredileri"
+
+#: src/billing-screen.js:520
+msgid "Recovery credits every 30 days"
+msgstr "Her 30 günde bir kurtarma kredileri"
+
+#: src/billing-screen.js:558
+msgid "Plan management is unavailable for the current billing state."
+msgstr "Mevcut faturalandırma durumunda plan yönetimi kullanılamaz."
+
+#: src/billing-screen.js:568
+msgid "Loading available plans…"
+msgstr "Kullanılabilir planlar yükleniyor…"
+
+#: src/billing-screen.js:578
+msgid "The plan catalogue could not be loaded."
+msgstr "Plan kataloğu yüklenemedi."
+
+#: src/billing-screen.js:583
+msgid "Retry plan catalogue"
+msgstr "Plan kataloğunu yeniden dene"
+
+#: src/billing-screen.js:604
+msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+msgstr "Faturalandırma geçici olarak kullanılamıyor. Mevcut faturalandırma durumunuz değişmedi."
+
+#: src/billing-screen.js:608
+msgid "Billing data could not be verified. Try again later."
+msgstr "Faturalandırma verileri doğrulanamadı. Daha sonra tekrar deneyin."
+
+#: src/billing-screen.js:612
+msgid "Billing setup is not complete for this store."
+msgstr "Bu mağazanın faturalandırma kurulumu tamamlanmadı."
+
+#: src/billing-screen.js:616
+#: src/billing-screen.js:620
+msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+msgstr "Başka bir faturalandırma değişikliği zaten sürüyor. Yeniden denemeden önce faturalandırma özetini yenileyin."
+
+#: src/billing-screen.js:624
+msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
+msgstr "Sağlayıcıdan gelen sonuç henüz bilinmiyor. Faturalandırma özetini yenileyin veya destekle iletişime geçin; işlemi otomatik olarak yeniden denemeyin."
+
+#: src/billing-screen.js:628
+msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgstr "Faturalandırma değişikliği tamamlanamadı. Mevcut planınız değişmedi."
+
+#: src/billing-screen.js:632
+msgid "This plan is no longer available. Refresh the plan catalogue."
+msgstr "Bu plan artık kullanılamıyor. Plan kataloğunu yenileyin."
+
+#: src/billing-screen.js:639
+msgid "The billing request failed. Try again."
+msgstr "Faturalandırma isteği başarısız oldu. Tekrar deneyin."
+
+#: src/billing-screen.js:656
+msgid "Loading billing summary…"
+msgstr "Faturalandırma özeti yükleniyor…"
+
+#: src/billing-screen.js:668
+msgid "The Moda Interact connection needs attention before billing can be loaded."
+msgstr "Faturalandırma yüklenmeden önce Moda Interact bağlantısıyla ilgili sorun çözülmelidir."
+
+#: src/billing-screen.js:685
+#: src/billing-screen.js:728
+msgid "Refresh billing"
+msgstr "Faturalandırmayı yenile"
+
+#: src/billing-screen.js:745
+msgid "Summary"
+msgstr "Özet"
+
+#: src/billing-screen.js:746
+msgid "Plans"
+msgstr "Planlar"
+
+#: src/overview-screen.js:25
+#: src/recovery-settings/category-profile-summary.js:5
+msgid "Not selected"
+msgstr "Seçilmedi"
+
+#: src/overview-screen.js:32
+msgid "Name"
+msgstr "Ad"
+
+#: src/overview-screen.js:33
+msgid "Category ID"
+msgstr "Kategori kimliği"
+
+#: src/overview-screen.js:34
+msgid "Slug"
+msgstr "URL kısa adı"
+
+#: src/overview-screen.js:59
+msgid "Account setup"
+msgstr "Hesap kurulumu"
+
+#: src/overview-screen.js:64
+msgid "Setup status"
+msgstr "Kurulum durumu"
+
+#: src/overview-screen.js:66
+msgid "Setup completed"
+msgstr "Kurulum tamamlandı"
+
+#: src/overview-screen.js:67
+msgid "Setup not completed"
+msgstr "Kurulum tamamlanmadı"
+
+#: src/overview-screen.js:69
+msgid "Store"
+msgstr "Mağaza"
+
+#: src/overview-screen.js:71
+msgid "Store added"
+msgstr "Mağaza eklendi"
+
+#: src/overview-screen.js:78
+msgid "Store profile"
+msgstr "Mağaza profili"
+
+#: src/overview-screen.js:85
+#: src/recovery-settings/category-profile-summary.js:25
+msgid "Active category"
+msgstr "Etkin kategori"
+
+#: src/overview-screen.js:95
+#: src/recovery-settings/category-profile-summary.js:29
+msgid "Pending category"
+msgstr "Bekleyen kategori"
+
+#: src/overview-screen.js:103
+#: src/recovery-settings/category-profile-summary.js:33
+msgid "Selection generation"
+msgstr "Seçim sürümü"
+
+#: src/overview-screen.js:107
+msgid "Pending selection date"
+msgstr "Bekleyen seçimin tarihi"
+
+#: src/overview-screen.js:114
+msgid "Store context"
+msgstr "Mağaza bağlamı"
+
+#: src/overview-screen.js:119
+msgid "Store locale"
+msgstr "Mağaza yerel ayarı"
+
+#: src/overview-screen.js:123
+msgid "Language tag"
+msgstr "Dil etiketi"
+
+#: src/overview-screen.js:127
+msgid "Time zone"
+msgstr "Saat dilimi"
+
+#: src/overview-screen.js:131
+msgid "Country code"
+msgstr "Ülke kodu"
+
+#: src/overview-screen.js:152
+msgid "Loading store overview…"
+msgstr "Mağaza genel bakışı yükleniyor…"
+
+#: src/overview-screen.js:162
+msgid "The Moda Interact connection needs attention before store data can be loaded."
+msgstr "Mağaza verileri yüklenmeden önce Moda Interact bağlantısıyla ilgili sorun çözülmelidir."
+
+#: src/overview-screen.js:172
+msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
+msgstr "Mağaza genel bakışı geçici olarak kullanılamıyor. Bağlantınız ve mağaza verileriniz değişmedi."
+
+#: src/overview-screen.js:182
+msgid "The store overview could not be verified. Try again."
+msgstr "Mağaza genel bakışı doğrulanamadı. Tekrar deneyin."
+
+#: src/overview-screen.js:216
+msgid "Syncing…"
+msgstr "Eşitleniyor…"
+
+#: src/overview-screen.js:217
+msgid "Sync store settings"
+msgstr "Mağaza ayarlarını eşitle"
+
+#: src/overview-screen.js:228
+msgid "Refreshing…"
+msgstr "Yenileniyor…"
+
+#: src/overview-screen.js:229
+msgid "Refresh overview"
+msgstr "Genel bakışı yenile"
+
+#: src/overview-screen.js:241
+msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
+msgstr "Mağaza ayarları eşitlenemedi. Bağlantınız değişmedi. Lütfen tekrar deneyin."
+
+#: src/overview-screen.js:251
+msgid "Store settings synchronized."
+msgstr "Mağaza ayarları eşitlendi."
+
+#: src/page.js:21
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: src/page/connection-panel.js:18
+msgid "Checking the connection to Moda Interact…"
+msgstr "Moda Interact bağlantısı kontrol ediliyor…"
+
+#: src/page/connection-panel.js:28
+msgid "This store is not connected to Moda Interact."
+msgstr "Bu mağaza Moda Interact'e bağlı değil."
+
+#: src/page/connection-panel.js:42
+msgid "Connecting…"
+msgstr "Bağlanılıyor…"
+
+#: src/page/connection-panel.js:43
+msgid "Connect Moda Interact"
+msgstr "Moda Interact'e bağlan"
+
+#: src/page/connection-panel.js:54
+msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
+msgstr "Yerel bağlantının yeniden kurulması gerekiyor. Moda hesabınız ve mağaza verileriniz silinmedi."
+
+#: src/page/connection-panel.js:68
+msgid "Reconnecting…"
+msgstr "Yeniden bağlanılıyor…"
+
+#: src/page/connection-panel.js:69
+msgid "Reconnect Moda Interact"
+msgstr "Moda Interact'e yeniden bağlan"
+
+#: src/page/connection-panel.js:77
+#: src/page/connection-panel.js:193
+msgid "Connection"
+msgstr "Bağlantı"
+
+#: src/page/connection-panel.js:78
+#: src/page/connection-panel.js:199
+msgid "Connected"
+msgstr "Bağlandı"
+
+#: src/page/connection-panel.js:82
+msgid "WordPress site"
+msgstr "WordPress sitesi"
+
+#: src/page/connection-panel.js:94
+msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
+msgstr "Şu anda Moda Interact'e ulaşılamıyor. Yerel bağlantı kaldırılmadı."
+
+#: src/page/connection-panel.js:108
+#: src/page/connection-panel.js:164
+msgid "Checking…"
+msgstr "Kontrol ediliyor…"
+
+#: src/page/connection-panel.js:109
+#: src/page/connection-panel.js:165
+msgid "Retry"
+msgstr "Tekrar dene"
+
+#: src/page/connection-panel.js:117
+msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
+msgstr "Bu WordPress sitesinin adresi, Moda Interact bağlantısı için kullanılan adresten farklı. Bağlantıyı değiştirmeden önce destekle iletişime geçin."
+
+#: src/page/connection-panel.js:127
+msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
+msgstr "Bu eklenti kurulumunda Moda Interact hizmet bağlantısı yapılandırılmamış. Site yöneticinizle iletişime geçin."
+
+#: src/page/connection-panel.js:137
+msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
+msgstr "Kaydedilen yerel bağlantı doğrulanamadı. Bağlantıyı geri yüklemek için destekten yardım isteyin."
+
+#: src/page/connection-panel.js:150
+msgid "The connection status could not be checked. Try again."
+msgstr "Bağlantı durumu kontrol edilemedi. Tekrar deneyin."
+
+#: src/page/connection-panel.js:173
+msgid "The connection status is unavailable. Contact support for help."
+msgstr "Bağlantı durumu kullanılamıyor. Yardım için destekle iletişime geçin."
+
+#: src/page/connection-panel.js:211
+msgid "The connection could not be completed. Check your connection and try again."
+msgstr "Bağlantı tamamlanamadı. Bağlantınızı kontrol edip yeniden deneyin."
+
+#: src/page/surface-navigation.js:7
+#: src/recovery-settings/recovery-navigation.js:15
+#: src/recovery-settings/recovery-settings-header.js:21
+msgid "Recovery Settings"
+msgstr "Kurtarma Ayarları"
+
+#: src/recovery-settings/category-mappings.js:14
+msgid "No optional taxonomy mappings are available for this category."
+msgstr "Bu kategori için isteğe bağlı taksonomi eşleştirmesi bulunmuyor."
+
+#: src/recovery-settings/category-mappings.js:26
+msgid "Optional taxonomy mappings"
+msgstr "İsteğe bağlı taksonomi eşleştirmeleri"
+
+#: src/recovery-settings/category-profile-summary.js:37
+msgid "Active mapping count"
+msgstr "Etkin eşleştirme sayısı"
+
+#: src/recovery-settings/category-profile-summary.js:45
+msgid "A category change is pending publication."
+msgstr "Kategori değişikliği yayımlanmayı bekliyor."
+
+#: src/recovery-settings/category-profile-summary.js:55
+msgid "Pending prompt template:"
+msgstr "Bekleyen istem şablonu:"
+
+#: src/recovery-settings/category-selector.js:20
+#: src/recovery-settings/recovery-settings-screen.js:102
+msgid "Store category"
+msgstr "Mağaza kategorisi"
+
+#: src/recovery-settings/category-selector.js:33
+msgid "Select a store category"
+msgstr "Bir mağaza kategorisi seçin"
+
+#: src/recovery-settings/recovery-effective-summary.js:7
+msgid "Do not offer a discount"
+msgstr "İndirim sunma"
+
+#: src/recovery-settings/recovery-effective-summary.js:9
+msgid "Specific discount"
+msgstr "Belirli bir indirim"
+
+#: src/recovery-settings/recovery-effective-summary.js:11
+msgid "AI-selected applicable discount"
+msgstr "Yapay zekânın seçtiği uygun indirim"
+
+#: src/recovery-settings/recovery-effective-summary.js:22
+msgid "Effective follow-up: disabled"
+msgstr "Geçerli takip mesajı: devre dışı"
+
+#. translators: %d: minutes until automatic follow-up.
+#: src/recovery-settings/recovery-effective-summary.js:26
+#, js-format
+msgid "Effective follow-up: %d minutes"
+msgstr "Geçerli takip mesajı: %d dakika"
+
+#: src/recovery-settings/recovery-effective-summary.js:37
+msgid "Loading…"
+msgstr "Yükleniyor…"
+
+#: src/recovery-settings/recovery-effective-summary.js:41
+msgid "Recovery start"
+msgstr "Kurtarmanın başlaması"
+
+#. translators: %d: number of minutes before recovery starts.
+#: src/recovery-settings/recovery-effective-summary.js:45
+#, js-format
+msgid "Effective value: %d minutes"
+msgstr "Geçerli değer: %d dakika"
+
+#: src/recovery-settings/recovery-effective-summary.js:51
+msgid "Recovery offer"
+msgstr "Kurtarma teklifi"
+
+#. translators: %s: effective offer setting.
+#: src/recovery-settings/recovery-effective-summary.js:55
+#, js-format
+msgid "Currently active: %s"
+msgstr "Şu anda etkin: %s"
+
+#: src/recovery-settings/recovery-effective-summary.js:61
+msgid "No-response follow-up"
+msgstr "Yanıt gelmediğinde takip mesajı"
+
+#: src/recovery-settings/recovery-effective-summary.js:74
+msgid "Effective settings include an administrator override"
+msgstr "Geçerli ayarlarda yönetici tarafından yapılan geçersiz kılma bulunuyor"
+
+#: src/recovery-settings/recovery-effective-summary.js:86
+msgid "Retry recovery summary"
+msgstr "Kurtarma özetini yeniden yükle"
+
+#: src/recovery-settings/recovery-effective-summary.js:94
+msgid "Effective recovery settings"
+msgstr "Geçerli kurtarma ayarları"
+
+#: src/recovery-settings/recovery-navigation.js:9
+msgid "Moda Interact sections"
+msgstr "Moda Interact bölümleri"
+
+#: src/recovery-settings/recovery-settings-screen.js:9
+msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
+msgstr "Başka bir yönetici mağaza kategorisini değiştirdi. Kategorileri yenileyin, en son seçimi inceleyin ve yeniden kaydedin."
+
+#: src/recovery-settings/recovery-settings-screen.js:13
+msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
+msgstr "Seçilen kategori veya istem artık kullanılamıyor. Kataloğu yenileyin ve kullanılabilir bir kategori seçin."
+
+#: src/recovery-settings/recovery-settings-screen.js:17
+msgid "The Moda Interact connection needs attention before categories can be updated."
+msgstr "Kategoriler güncellenmeden önce Moda Interact bağlantısıyla ilgili sorun çözülmelidir."
+
+#: src/recovery-settings/recovery-settings-screen.js:21
+msgid "Category settings could not be loaded. Refresh categories to retry."
+msgstr "Kategori ayarları yüklenemedi. Yeniden denemek için kategorileri yenileyin."
+
+#: src/recovery-settings/recovery-settings-screen.js:25
+msgid "The latest store settings do not show your change. Review the selection and try saving again."
+msgstr "En son mağaza ayarlarında değişikliğiniz görünmüyor. Seçimi gözden geçirip yeniden kaydedin."
+
+#: src/recovery-settings/recovery-settings-screen.js:29
+msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
+msgstr "Kategorinizin kaydedilip kaydedilmediği doğrulanamadı. Yeniden denemeden önce kategorileri yenileyin."
+
+#: src/recovery-settings/recovery-settings-screen.js:33
+msgid "Store category and assistant prompt activated."
+msgstr "Mağaza kategorisi ve asistan istemi etkinleştirildi."
+
+#: src/recovery-settings/recovery-settings-screen.js:37
+msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
+msgstr "Mağaza kategorisi kaydedildi ancak güncellenen ayarlar yüklenemedi. Etkin kategoriyi doğrulamak için yenileyin."
+
+#: src/recovery-settings/recovery-settings-screen.js:94
+msgid "Store & assistant context"
+msgstr "Mağaza ve asistan bağlamı"
+
+#: src/recovery-settings/recovery-settings-screen.js:107
+msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
+msgstr "CommerceAgent asistanınızı kişiselleştirmek için mağaza türünü seçin. Free planınız etkin kalır."
+
+#: src/recovery-settings/recovery-settings-screen.js:117
+msgid "Checking saved category…"
+msgstr "Kaydedilmiş kategori kontrol ediliyor…"
+
+#: src/recovery-settings/recovery-settings-screen.js:121
+msgid "Loading store categories…"
+msgstr "Mağaza kategorileri yükleniyor…"
+
+#: src/recovery-settings/recovery-settings-screen.js:137
+msgid "There are currently no selectable store categories."
+msgstr "Şu anda seçilebilecek mağaza kategorisi bulunmuyor."
+
+#: src/recovery-settings/recovery-settings-screen.js:164
+msgid "Refresh categories"
+msgstr "Kategorileri yenile"
+
+#: src/recovery-settings/recovery-settings-screen.js:175
+msgid "Saving…"
+msgstr "Kaydediliyor…"
+
+#: src/recovery-settings/recovery-settings-screen.js:176
+msgid "Save category"
+msgstr "Kategoriyi kaydet"

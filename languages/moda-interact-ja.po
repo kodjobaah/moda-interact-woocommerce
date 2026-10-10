@@ -1,0 +1,735 @@
+# Moda Interact WooCommerce merchant Admin translations.
+# Review source: languages/moda-interact.pot
+msgid ""
+msgstr ""
+"Project-Id-Version: Moda Interact 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: moda-interact\n"
+
+#. Plugin Name of the plugin
+#: moda-interact.php
+#: includes/Admin/NativeNavigation.php:21
+#: includes/Admin/NativeNavigation.php:22
+#: includes/Admin/Setup.php:87
+#: src/index.js:18
+#: src/page.js:23
+msgid "Moda Interact"
+msgstr "Moda Interact"
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Moda Interact 用の WooCommerce 管理画面拡張機能の基盤です。"
+
+#: includes/Admin/NativeNavigation.php:34
+#: includes/Admin/NativeNavigation.php:35
+#: src/overview-screen.js:202
+#: src/page/surface-navigation.js:5
+#: src/recovery-settings/recovery-navigation.js:12
+msgid "Overview"
+msgstr "概要"
+
+#: includes/Admin/NativeNavigation.php:41
+msgid "Recoveries"
+msgstr "購入復旧"
+
+#: includes/Admin/NativeNavigation.php:42
+#: src/billing-screen.js:718
+#: src/page/surface-navigation.js:6
+msgid "Billing"
+msgstr "請求"
+
+#: includes/Admin/NativeNavigation.php:43
+msgid "Promotions"
+msgstr "プロモーション"
+
+#: includes/Admin/NativeNavigation.php:44
+msgid "Support"
+msgstr "サポート"
+
+#: includes/Admin/NativeNavigation.php:45
+#: src/recovery-settings/recovery-settings-header.js:16
+msgid "Recovery settings"
+msgstr "復旧設定"
+
+#: includes/Admin/NativeNavigation.php:85
+msgid "This section is not yet available for WooCommerce."
+msgstr "このセクションはまだ WooCommerce では利用できません。"
+
+#: includes/Runtime.php:86
+msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr "Moda Interact を利用するには、WooCommerce 11.0 以降をインストールして有効化する必要があります。"
+
+#. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
+#: includes/Runtime.php:93
+#, php-format
+msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr "Moda Interact には WooCommerce %1$s 以降が必要です。検出されたバージョン: %2$s。"
+
+#: src/billing-screen.js:21
+msgid "Not applicable"
+msgstr "該当なし"
+
+#: src/billing-screen.js:68
+msgid "Starting the plan change"
+msgstr "プラン変更を開始しています"
+
+#: src/billing-screen.js:69
+msgid "Waiting for Woo confirmation"
+msgstr "Woo からの確認を待っています"
+
+#: src/billing-screen.js:73
+msgid "The plan change needs reconciliation. Do not retry it automatically."
+msgstr "プラン変更の照合が必要です。自動的に再試行しないでください。"
+
+#: src/billing-screen.js:78
+msgid "Plan status unavailable"
+msgstr "プランの状態を取得できません"
+
+#: src/billing-screen.js:83
+msgid "Starting the cancellation request"
+msgstr "解約リクエストを開始しています"
+
+#: src/billing-screen.js:84
+msgid "Waiting for Woo cancellation confirmation"
+msgstr "Woo からの解約確認を待っています"
+
+#: src/billing-screen.js:88
+msgid "The cancellation needs reconciliation. Do not retry it automatically."
+msgstr "解約の照合が必要です。自動的に再試行しないでください。"
+
+#: src/billing-screen.js:92
+msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr "Woo がリクエストを受け付けました。Moda は確認済みの解約詳細を待っています。"
+
+#: src/billing-screen.js:98
+msgid "Cancellation status unavailable"
+msgstr "解約の状態を取得できません"
+
+#: src/billing-screen.js:171
+#: src/billing-screen.js:174
+#: src/overview-screen.js:49
+msgid "Not available"
+msgstr "利用できません"
+
+#: src/billing-screen.js:186
+msgid "Recurring billing recovery is required."
+msgstr "定期請求の復旧手続きが必要です。"
+
+#: src/billing-screen.js:191
+msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
+msgstr "有料プランに含まれるクレジットは一時的に利用できません。購入済みクレジットと残りの生涯 Free クレジットは引き続き利用できます。プロモーションクレジットには既存の利用条件が適用されます。"
+
+#: src/billing-screen.js:204
+msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
+msgstr "請求状況の確認が必要です。Moda が請求状態を検証している間、プランは変更できません。"
+
+#: src/billing-screen.js:217
+msgid "No recurring billing contract is available for this store."
+msgstr "このストアには定期請求契約がありません。"
+
+#: src/billing-screen.js:230
+msgid "Cancellation request accepted."
+msgstr "解約リクエストを受け付けました。"
+
+#. translators: 1: plan name, 2: pending plan operation state.
+#: src/billing-screen.js:242
+#, js-format
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: src/billing-screen.js:263
+#: src/billing-screen.js:478
+msgid "Current plan"
+msgstr "現在のプラン"
+
+#: src/billing-screen.js:269
+msgid "Plan"
+msgstr "プラン"
+
+#: src/billing-screen.js:273
+msgid "Plan type"
+msgstr "プランの種類"
+
+#: src/billing-screen.js:275
+#: src/billing-screen.js:508
+msgid "Free"
+msgstr "Free"
+
+#: src/billing-screen.js:276
+msgid "Paid recurring"
+msgstr "有料の定期プラン"
+
+#: src/billing-screen.js:279
+msgid "Recurring amount"
+msgstr "定期請求額"
+
+#: src/billing-screen.js:281
+msgid "No recurring charge"
+msgstr "定期的な請求なし"
+
+#: src/billing-screen.js:285
+msgid "Billing period"
+msgstr "請求期間"
+
+#: src/billing-screen.js:286
+msgid "Every 30 days"
+msgstr "30 日ごと"
+
+#: src/billing-screen.js:289
+msgid "Next included allowance reset"
+msgstr "次回の付与枠リセット"
+
+#: src/billing-screen.js:297
+msgid "Paid subscription ends"
+msgstr "有料サブスクリプションの終了日"
+
+#: src/billing-screen.js:309
+msgid "Subscription status"
+msgstr "サブスクリプションの状態"
+
+#: src/billing-screen.js:313
+msgid "Scheduled to end"
+msgstr "終了予定"
+
+#: src/billing-screen.js:320
+msgid "No current plan details are available."
+msgstr "現在のプランの詳細を取得できません。"
+
+#: src/billing-screen.js:337
+msgid "Submitting cancellation…"
+msgstr "解約リクエストを送信中…"
+
+#: src/billing-screen.js:341
+msgid "Cancel subscription"
+msgstr "サブスクリプションを解約"
+
+#: src/billing-screen.js:363
+msgid "Cancel recurring plan?"
+msgstr "定期プランを解約しますか？"
+
+#: src/billing-screen.js:368
+msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
+msgstr "解約が確認され、前払い期間が終了するまで有料機能を利用できます。このリクエストによって現在のプランが直ちに変更されることはありません。"
+
+#: src/billing-screen.js:388
+msgid "Keep current plan"
+msgstr "現在のプランを維持"
+
+#: src/billing-screen.js:405
+#: src/billing-screen.js:482
+msgid "Submitting…"
+msgstr "送信中…"
+
+#: src/billing-screen.js:406
+msgid "Confirm cancellation"
+msgstr "解約を確定"
+
+#: src/billing-screen.js:417
+msgid "Recovery capacity"
+msgstr "復旧クレジットの利用枠"
+
+#: src/billing-screen.js:423
+msgid "Paid included credits remaining"
+msgstr "有料プランの付与クレジット残数"
+
+#: src/billing-screen.js:428
+msgid "Temporarily unavailable"
+msgstr "一時的に利用できません"
+
+#: src/billing-screen.js:440
+msgid "Lifetime Free credits remaining"
+msgstr "生涯 Free クレジット残数"
+
+#: src/billing-screen.js:447
+msgid "Promotional credits remaining"
+msgstr "プロモーションクレジット残数"
+
+#: src/billing-screen.js:454
+msgid "Purchased credits available"
+msgstr "利用可能な購入済みクレジット"
+
+#: src/billing-screen.js:476
+#: src/recovery-settings/recovery-effective-summary.js:13
+#: src/recovery-settings/recovery-effective-summary.js:38
+msgid "Unavailable"
+msgstr "利用不可"
+
+#: src/billing-screen.js:480
+msgid "Billing change in progress"
+msgstr "請求の変更処理中"
+
+#: src/billing-screen.js:484
+msgid "Choose plan"
+msgstr "プランを選択"
+
+#: src/billing-screen.js:486
+msgid "Switch to plan"
+msgstr "プランを切り替え"
+
+#: src/billing-screen.js:499
+msgid "Featured"
+msgstr "おすすめ"
+
+#. translators: 1: recurring plan price.
+#: src/billing-screen.js:511
+#, js-format
+msgid "%1$s / every 30 days"
+msgstr "%1$s / 30 日ごと"
+
+#: src/billing-screen.js:519
+msgid "Lifetime recovery credits"
+msgstr "生涯復旧クレジット"
+
+#: src/billing-screen.js:520
+msgid "Recovery credits every 30 days"
+msgstr "30 日ごとの復旧クレジット"
+
+#: src/billing-screen.js:558
+msgid "Plan management is unavailable for the current billing state."
+msgstr "現在の請求状態ではプランを管理できません。"
+
+#: src/billing-screen.js:568
+msgid "Loading available plans…"
+msgstr "利用可能なプランを読み込み中…"
+
+#: src/billing-screen.js:578
+msgid "The plan catalogue could not be loaded."
+msgstr "プラン一覧を読み込めませんでした。"
+
+#: src/billing-screen.js:583
+msgid "Retry plan catalogue"
+msgstr "プラン一覧を再読み込み"
+
+#: src/billing-screen.js:604
+msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+msgstr "請求機能は一時的に利用できません。現在の請求状態は変更されていません。"
+
+#: src/billing-screen.js:608
+msgid "Billing data could not be verified. Try again later."
+msgstr "請求データを検証できませんでした。後ほどもう一度お試しください。"
+
+#: src/billing-screen.js:612
+msgid "Billing setup is not complete for this store."
+msgstr "このストアの請求設定は完了していません。"
+
+#: src/billing-screen.js:616
+#: src/billing-screen.js:620
+msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+msgstr "すでに請求変更が進行中です。再試行する前に請求概要を更新してください。"
+
+#: src/billing-screen.js:624
+msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
+msgstr "プロバイダー側の結果はまだ不明です。請求概要を更新するか、サポートにお問い合わせください。自動的に再試行しないでください。"
+
+#: src/billing-screen.js:628
+msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgstr "請求の変更を完了できませんでした。現在のプランは変更されていません。"
+
+#: src/billing-screen.js:632
+msgid "This plan is no longer available. Refresh the plan catalogue."
+msgstr "このプランは利用できなくなりました。プラン一覧を更新してください。"
+
+#: src/billing-screen.js:639
+msgid "The billing request failed. Try again."
+msgstr "請求リクエストに失敗しました。もう一度お試しください。"
+
+#: src/billing-screen.js:656
+msgid "Loading billing summary…"
+msgstr "請求概要を読み込み中…"
+
+#: src/billing-screen.js:668
+msgid "The Moda Interact connection needs attention before billing can be loaded."
+msgstr "請求情報を読み込むには、Moda Interact への接続を確認する必要があります。"
+
+#: src/billing-screen.js:685
+#: src/billing-screen.js:728
+msgid "Refresh billing"
+msgstr "請求情報を更新"
+
+#: src/billing-screen.js:745
+msgid "Summary"
+msgstr "概要"
+
+#: src/billing-screen.js:746
+msgid "Plans"
+msgstr "プラン"
+
+#: src/overview-screen.js:25
+#: src/recovery-settings/category-profile-summary.js:5
+msgid "Not selected"
+msgstr "未選択"
+
+#: src/overview-screen.js:32
+msgid "Name"
+msgstr "名前"
+
+#: src/overview-screen.js:33
+msgid "Category ID"
+msgstr "カテゴリ ID"
+
+#: src/overview-screen.js:34
+msgid "Slug"
+msgstr "スラッグ"
+
+#: src/overview-screen.js:59
+msgid "Account setup"
+msgstr "アカウント設定"
+
+#: src/overview-screen.js:64
+msgid "Setup status"
+msgstr "設定状況"
+
+#: src/overview-screen.js:66
+msgid "Setup completed"
+msgstr "設定完了"
+
+#: src/overview-screen.js:67
+msgid "Setup not completed"
+msgstr "設定未完了"
+
+#: src/overview-screen.js:69
+msgid "Store"
+msgstr "ストア"
+
+#: src/overview-screen.js:71
+msgid "Store added"
+msgstr "ストアの追加日"
+
+#: src/overview-screen.js:78
+msgid "Store profile"
+msgstr "ストアプロフィール"
+
+#: src/overview-screen.js:85
+#: src/recovery-settings/category-profile-summary.js:25
+msgid "Active category"
+msgstr "有効なカテゴリ"
+
+#: src/overview-screen.js:95
+#: src/recovery-settings/category-profile-summary.js:29
+msgid "Pending category"
+msgstr "保留中のカテゴリ"
+
+#: src/overview-screen.js:103
+#: src/recovery-settings/category-profile-summary.js:33
+msgid "Selection generation"
+msgstr "選択世代番号"
+
+#: src/overview-screen.js:107
+msgid "Pending selection date"
+msgstr "保留中の選択日時"
+
+#: src/overview-screen.js:114
+msgid "Store context"
+msgstr "ストアのコンテキスト"
+
+#: src/overview-screen.js:119
+msgid "Store locale"
+msgstr "ストアのロケール"
+
+#: src/overview-screen.js:123
+msgid "Language tag"
+msgstr "言語タグ"
+
+#: src/overview-screen.js:127
+msgid "Time zone"
+msgstr "タイムゾーン"
+
+#: src/overview-screen.js:131
+msgid "Country code"
+msgstr "国コード"
+
+#: src/overview-screen.js:152
+msgid "Loading store overview…"
+msgstr "ストアの概要を読み込み中…"
+
+#: src/overview-screen.js:162
+msgid "The Moda Interact connection needs attention before store data can be loaded."
+msgstr "ストアデータを読み込むには、Moda Interact への接続を確認する必要があります。"
+
+#: src/overview-screen.js:172
+msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
+msgstr "ストアの概要は一時的に利用できません。接続やストアデータは変更されていません。"
+
+#: src/overview-screen.js:182
+msgid "The store overview could not be verified. Try again."
+msgstr "ストアの概要を検証できませんでした。もう一度お試しください。"
+
+#: src/overview-screen.js:216
+msgid "Syncing…"
+msgstr "同期中…"
+
+#: src/overview-screen.js:217
+msgid "Sync store settings"
+msgstr "ストア設定を同期"
+
+#: src/overview-screen.js:228
+msgid "Refreshing…"
+msgstr "更新中…"
+
+#: src/overview-screen.js:229
+msgid "Refresh overview"
+msgstr "概要を更新"
+
+#: src/overview-screen.js:241
+msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
+msgstr "ストア設定を同期できませんでした。接続は変更されていません。再試行してください。"
+
+#: src/overview-screen.js:251
+msgid "Store settings synchronized."
+msgstr "ストア設定を同期しました。"
+
+#: src/page.js:21
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: src/page/connection-panel.js:18
+msgid "Checking the connection to Moda Interact…"
+msgstr "Moda Interact への接続を確認中…"
+
+#: src/page/connection-panel.js:28
+msgid "This store is not connected to Moda Interact."
+msgstr "このストアは Moda Interact に接続されていません。"
+
+#: src/page/connection-panel.js:42
+msgid "Connecting…"
+msgstr "接続中…"
+
+#: src/page/connection-panel.js:43
+msgid "Connect Moda Interact"
+msgstr "Moda Interact に接続"
+
+#: src/page/connection-panel.js:54
+msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
+msgstr "ローカル接続を再確立する必要があります。Moda アカウントとストアデータは削除されていません。"
+
+#: src/page/connection-panel.js:68
+msgid "Reconnecting…"
+msgstr "再接続中…"
+
+#: src/page/connection-panel.js:69
+msgid "Reconnect Moda Interact"
+msgstr "Moda Interact に再接続"
+
+#: src/page/connection-panel.js:77
+#: src/page/connection-panel.js:193
+msgid "Connection"
+msgstr "接続"
+
+#: src/page/connection-panel.js:78
+#: src/page/connection-panel.js:199
+msgid "Connected"
+msgstr "接続済み"
+
+#: src/page/connection-panel.js:82
+msgid "WordPress site"
+msgstr "WordPress サイト"
+
+#: src/page/connection-panel.js:94
+msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
+msgstr "現在 Moda Interact にアクセスできません。ローカル接続は削除されていません。"
+
+#: src/page/connection-panel.js:108
+#: src/page/connection-panel.js:164
+msgid "Checking…"
+msgstr "確認中…"
+
+#: src/page/connection-panel.js:109
+#: src/page/connection-panel.js:165
+msgid "Retry"
+msgstr "再試行"
+
+#: src/page/connection-panel.js:117
+msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
+msgstr "この WordPress サイトのアドレスは、Moda Interact の接続時に使用したアドレスと異なります。接続を変更する前にサポートにお問い合わせください。"
+
+#: src/page/connection-panel.js:127
+msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
+msgstr "このプラグインのインストールには、Moda Interact サービスへの接続設定がありません。サイト管理者にお問い合わせください。"
+
+#: src/page/connection-panel.js:137
+msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
+msgstr "保存済みのローカル接続を検証できませんでした。接続を復元するにはサポートにお問い合わせください。"
+
+#: src/page/connection-panel.js:150
+msgid "The connection status could not be checked. Try again."
+msgstr "接続状態を確認できませんでした。もう一度お試しください。"
+
+#: src/page/connection-panel.js:173
+msgid "The connection status is unavailable. Contact support for help."
+msgstr "接続状態を取得できません。サポートにお問い合わせください。"
+
+#: src/page/connection-panel.js:211
+msgid "The connection could not be completed. Check your connection and try again."
+msgstr "接続を完了できませんでした。接続環境を確認して再試行してください。"
+
+#: src/page/surface-navigation.js:7
+#: src/recovery-settings/recovery-navigation.js:15
+#: src/recovery-settings/recovery-settings-header.js:21
+msgid "Recovery Settings"
+msgstr "復旧設定"
+
+#: src/recovery-settings/category-mappings.js:14
+msgid "No optional taxonomy mappings are available for this category."
+msgstr "このカテゴリには任意のタクソノミーマッピングがありません。"
+
+#: src/recovery-settings/category-mappings.js:26
+msgid "Optional taxonomy mappings"
+msgstr "任意のタクソノミーマッピング"
+
+#: src/recovery-settings/category-profile-summary.js:37
+msgid "Active mapping count"
+msgstr "有効なマッピング数"
+
+#: src/recovery-settings/category-profile-summary.js:45
+msgid "A category change is pending publication."
+msgstr "カテゴリの変更は公開待ちです。"
+
+#: src/recovery-settings/category-profile-summary.js:55
+msgid "Pending prompt template:"
+msgstr "保留中のプロンプトテンプレート:"
+
+#: src/recovery-settings/category-selector.js:20
+#: src/recovery-settings/recovery-settings-screen.js:102
+msgid "Store category"
+msgstr "ストアのカテゴリ"
+
+#: src/recovery-settings/category-selector.js:33
+msgid "Select a store category"
+msgstr "ストアのカテゴリを選択"
+
+#: src/recovery-settings/recovery-effective-summary.js:7
+msgid "Do not offer a discount"
+msgstr "割引を提供しない"
+
+#: src/recovery-settings/recovery-effective-summary.js:9
+msgid "Specific discount"
+msgstr "指定した割引"
+
+#: src/recovery-settings/recovery-effective-summary.js:11
+msgid "AI-selected applicable discount"
+msgstr "AI が選択した適用可能な割引"
+
+#: src/recovery-settings/recovery-effective-summary.js:22
+msgid "Effective follow-up: disabled"
+msgstr "実効フォローアップ: 無効"
+
+#. translators: %d: minutes until automatic follow-up.
+#: src/recovery-settings/recovery-effective-summary.js:26
+#, js-format
+msgid "Effective follow-up: %d minutes"
+msgstr "実効フォローアップ: %d 分"
+
+#: src/recovery-settings/recovery-effective-summary.js:37
+msgid "Loading…"
+msgstr "読み込み中…"
+
+#: src/recovery-settings/recovery-effective-summary.js:41
+msgid "Recovery start"
+msgstr "復旧の開始"
+
+#. translators: %d: number of minutes before recovery starts.
+#: src/recovery-settings/recovery-effective-summary.js:45
+#, js-format
+msgid "Effective value: %d minutes"
+msgstr "実効値: %d 分"
+
+#: src/recovery-settings/recovery-effective-summary.js:51
+msgid "Recovery offer"
+msgstr "復旧オファー"
+
+#. translators: %s: effective offer setting.
+#: src/recovery-settings/recovery-effective-summary.js:55
+#, js-format
+msgid "Currently active: %s"
+msgstr "現在有効: %s"
+
+#: src/recovery-settings/recovery-effective-summary.js:61
+msgid "No-response follow-up"
+msgstr "応答がない場合のフォローアップ"
+
+#: src/recovery-settings/recovery-effective-summary.js:74
+msgid "Effective settings include an administrator override"
+msgstr "実効設定には管理者による上書きが含まれます"
+
+#: src/recovery-settings/recovery-effective-summary.js:86
+msgid "Retry recovery summary"
+msgstr "復旧概要を再読み込み"
+
+#: src/recovery-settings/recovery-effective-summary.js:94
+msgid "Effective recovery settings"
+msgstr "実効復旧設定"
+
+#: src/recovery-settings/recovery-navigation.js:9
+msgid "Moda Interact sections"
+msgstr "Moda Interact のセクション"
+
+#: src/recovery-settings/recovery-settings-screen.js:9
+msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
+msgstr "別の管理者がストアのカテゴリを変更しました。カテゴリを更新し、最新の選択内容を確認してから、もう一度保存してください。"
+
+#: src/recovery-settings/recovery-settings-screen.js:13
+msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
+msgstr "選択したカテゴリまたはプロンプトは利用できなくなりました。一覧を更新して、利用可能なカテゴリを選んでください。"
+
+#: src/recovery-settings/recovery-settings-screen.js:17
+msgid "The Moda Interact connection needs attention before categories can be updated."
+msgstr "カテゴリを更新する前に、Moda Interact への接続を確認する必要があります。"
+
+#: src/recovery-settings/recovery-settings-screen.js:21
+msgid "Category settings could not be loaded. Refresh categories to retry."
+msgstr "カテゴリ設定を読み込めませんでした。カテゴリを更新して再試行してください。"
+
+#: src/recovery-settings/recovery-settings-screen.js:25
+msgid "The latest store settings do not show your change. Review the selection and try saving again."
+msgstr "最新のストア設定に変更が反映されていません。選択内容を確認して、もう一度保存してください。"
+
+#: src/recovery-settings/recovery-settings-screen.js:29
+msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
+msgstr "カテゴリが保存されたかどうかを確認できませんでした。再試行する前にカテゴリを更新してください。"
+
+#: src/recovery-settings/recovery-settings-screen.js:33
+msgid "Store category and assistant prompt activated."
+msgstr "ストアのカテゴリとアシスタントのプロンプトを有効化しました。"
+
+#: src/recovery-settings/recovery-settings-screen.js:37
+msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
+msgstr "ストアのカテゴリは保存されましたが、更新後の設定を読み込めませんでした。有効なカテゴリを確認するには更新してください。"
+
+#: src/recovery-settings/recovery-settings-screen.js:94
+msgid "Store & assistant context"
+msgstr "ストアとアシスタントのコンテキスト"
+
+#: src/recovery-settings/recovery-settings-screen.js:107
+msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
+msgstr "ストアの種類を選択すると、CommerceAgent アシスタントをカスタマイズできます。Free プランはそのまま有効です。"
+
+#: src/recovery-settings/recovery-settings-screen.js:117
+msgid "Checking saved category…"
+msgstr "保存済みのカテゴリを確認中…"
+
+#: src/recovery-settings/recovery-settings-screen.js:121
+msgid "Loading store categories…"
+msgstr "ストアのカテゴリを読み込み中…"
+
+#: src/recovery-settings/recovery-settings-screen.js:137
+msgid "There are currently no selectable store categories."
+msgstr "現在選択できるストアカテゴリはありません。"
+
+#: src/recovery-settings/recovery-settings-screen.js:164
+msgid "Refresh categories"
+msgstr "カテゴリを更新"
+
+#: src/recovery-settings/recovery-settings-screen.js:175
+msgid "Saving…"
+msgstr "保存中…"
+
+#: src/recovery-settings/recovery-settings-screen.js:176
+msgid "Save category"
+msgstr "カテゴリを保存"

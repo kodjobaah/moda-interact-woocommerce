@@ -100,3 +100,72 @@ assets; `npm run test:integration:wordpress` switches the signed-in WordPress
 administrator through all five locales while verifying the unchanged site
 locale (`en_GB`). The missing WOO-012 and WOO-013 packs remain deliberately
 permitted until WOO-014's strict twenty-language release gate.
+
+## ARCH-026-WOOCOMMERCE-012 — Central Europe and Portuguese translation batch
+
+Czech (`cs_CZ`), Polish (`pl_PL`), Turkish (`tr_TR`), Brazilian Portuguese
+(`pt_BR`) and European Portuguese (`pt_PT`) each cover the unchanged 169-message
+WooCommerce gettext template. The five source `.po` files are the reviewable
+translation inputs; PHP `.mo` and WordPress script translations are generated
+by the existing WOO-009 pipeline during packaging.
+
+| Source | Czech | Polish | Turkish | Portuguese (Brazil) | Portuguese (Portugal) |
+| --- | --- | --- | --- | --- | --- |
+| Billing | Fakturace | Rozliczenia | Faturalandırma | Cobrança | Faturação |
+| Recovery settings | Nastavení obnovy | Ustawienia odzyskiwania | Kurtarma ayarları | Configurações de recuperação | Definições de recuperação |
+| Store category | Kategorie obchodu | Kategoria sklepu | Mağaza kategorisi | Categoria da loja | Categoria da loja |
+| Save category | Uložit kategorii | Zapisz kategorię | Kategoriyi kaydet | Salvar categoria | Guardar categoria |
+| Free (named plan) | Free | Free | Free | Free | Free |
+
+The two Portuguese catalogues are **different regional translations**, not
+aliases. The PHP, script and locale-map tests verify the distinction. Product
+names **Moda Interact**, **WooCommerce**, **CommerceAgent** and the plan name
+**Free** stay unchanged. The identical Polish/Turkish word **Plan** is a valid
+translation, not an unreviewed English fallback.
+
+The PO headers retain the locale-specific gettext plural rules (including
+three-form Czech and Polish). The current template has no plural message keys;
+existing `%1$s`, `%2$s`, `%s` and `%d` placeholders remain unchanged. The
+WOO-012 tests reject a missing key, empty value or placeholder mismatch.
+WordPress integration checks each administrator locale while the site language
+stays `en_GB`. A native-speaker quality review is advisable before publication.
+
+The missing WOO-013 pack remains allowed until WOO-014 runs
+`npm run i18n:verify:20`; no other runtime feature or language-preference
+behaviour changes in this batch.
+
+## ARCH-026-WOOCOMMERCE-013 — East Asian and Thai translation batch
+
+Japanese (`ja`), Korean (`ko_KR`), Thai (`th`), Simplified Chinese (`zh_CN`)
+and Traditional Chinese (`zh_TW`) each have all 169 current merchant-facing
+gettext messages translated. These are reviewed-source candidates in native
+WordPress `.po` files; the WOO-009 compiler generates PHP `.mo` and
+WordPress script translation JSON assets from them during packaging.
+
+| Source | Japanese | Korean | Thai | Chinese (Simplified) | Chinese (Traditional) |
+| --- | --- | --- | --- | --- | --- |
+| Billing | 請求 | 청구 | การเรียกเก็บเงิน | 账单 | 帳務 |
+| Recovery settings | 復旧設定 | 복구 설정 | การตั้งค่าการกู้คืน | 挽回设置 | 恢復設定 |
+| Store category | ストアのカテゴリ | 스토어 카테고리 | หมวดหมู่ร้านค้า | 店铺类别 | 商店類別 |
+| Save category | カテゴリを保存 | 카테고리 저장 | บันทึกหมวดหมู่ | 保存类别 | 儲存類別 |
+| Free (named plan) | Free | Free | Free | Free | Free |
+
+The two Chinese catalogues are distinct regional/script translations, not
+aliases or an automatic script conversion: the WordPress `zh_CN` and `zh_TW`
+locales resolve to separate reviewed values. Proper names **Moda Interact**,
+**WooCommerce**, **CommerceAgent** and the named plan **Free** remain unchanged.
+The catalogs use the WordPress gettext one-form plural expression
+`nplurals=1; plural=0;`. The current source has no plural entries; `%1$s`,
+`%2$s`, `%s` and `%d` substitution markers are preserved in the messages that
+contain them.
+
+`npm run test:i18n` checks exact source-key coverage, nonempty values, safety
+of formatting placeholders and compiled PHP/JS assets. Integration tests
+switch the signed-in WordPress administrator through the five UI languages
+while checking that the site locale remains `en_GB`. With all four translation
+batches applied, `npm run i18n:verify:20` now requires the complete set of
+nineteen translated catalogues and builds 38 language assets. This is
+translation completeness, **not** WOO-014 production or native-speaker signoff.
+
+Language selection and runtime behavior for billing, store category, shop
+language, CommerceAgent conversations and subscriptions remain unchanged.

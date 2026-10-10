@@ -1,0 +1,735 @@
+# Moda Interact WooCommerce merchant Admin translations.
+# Review source: languages/moda-interact.pot
+msgid ""
+msgstr ""
+"Project-Id-Version: Moda Interact 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: cs_CZ\n"
+"Language-Team: Czech\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Domain: moda-interact\n"
+
+#. Plugin Name of the plugin
+#: moda-interact.php
+#: includes/Admin/NativeNavigation.php:21
+#: includes/Admin/NativeNavigation.php:22
+#: includes/Admin/Setup.php:87
+#: src/index.js:18
+#: src/page.js:23
+msgid "Moda Interact"
+msgstr "Moda Interact"
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Základ rozšíření administrace WooCommerce pro Moda Interact."
+
+#: includes/Admin/NativeNavigation.php:34
+#: includes/Admin/NativeNavigation.php:35
+#: src/overview-screen.js:202
+#: src/page/surface-navigation.js:5
+#: src/recovery-settings/recovery-navigation.js:12
+msgid "Overview"
+msgstr "Přehled"
+
+#: includes/Admin/NativeNavigation.php:41
+msgid "Recoveries"
+msgstr "Obnova košíků"
+
+#: includes/Admin/NativeNavigation.php:42
+#: src/billing-screen.js:718
+#: src/page/surface-navigation.js:6
+msgid "Billing"
+msgstr "Fakturace"
+
+#: includes/Admin/NativeNavigation.php:43
+msgid "Promotions"
+msgstr "Propagační akce"
+
+#: includes/Admin/NativeNavigation.php:44
+msgid "Support"
+msgstr "Podpora"
+
+#: includes/Admin/NativeNavigation.php:45
+#: src/recovery-settings/recovery-settings-header.js:16
+msgid "Recovery settings"
+msgstr "Nastavení obnovy"
+
+#: includes/Admin/NativeNavigation.php:85
+msgid "This section is not yet available for WooCommerce."
+msgstr "Tato část zatím není pro WooCommerce dostupná."
+
+#: includes/Runtime.php:86
+msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr "Moda Interact vyžaduje nainstalovaný a aktivní WooCommerce ve verzi 11.0 nebo novější."
+
+#. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
+#: includes/Runtime.php:93
+#, php-format
+msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr "Moda Interact vyžaduje WooCommerce %1$s nebo novější. Zjištěná verze: %2$s."
+
+#: src/billing-screen.js:21
+msgid "Not applicable"
+msgstr "Nelze použít"
+
+#: src/billing-screen.js:68
+msgid "Starting the plan change"
+msgstr "Zahajování změny tarifu"
+
+#: src/billing-screen.js:69
+msgid "Waiting for Woo confirmation"
+msgstr "Čeká se na potvrzení od WooCommerce"
+
+#: src/billing-screen.js:73
+msgid "The plan change needs reconciliation. Do not retry it automatically."
+msgstr "Změnu tarifu je nutné ověřit. Nepokoušejte se ji automaticky zopakovat."
+
+#: src/billing-screen.js:78
+msgid "Plan status unavailable"
+msgstr "Stav tarifu není dostupný"
+
+#: src/billing-screen.js:83
+msgid "Starting the cancellation request"
+msgstr "Zahajování žádosti o zrušení"
+
+#: src/billing-screen.js:84
+msgid "Waiting for Woo cancellation confirmation"
+msgstr "Čeká se na potvrzení zrušení od WooCommerce"
+
+#: src/billing-screen.js:88
+msgid "The cancellation needs reconciliation. Do not retry it automatically."
+msgstr "Zrušení je nutné ověřit. Nepokoušejte se je automaticky zopakovat."
+
+#: src/billing-screen.js:92
+msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr "WooCommerce žádost přijal. Moda čeká na ověřené údaje o zrušení."
+
+#: src/billing-screen.js:98
+msgid "Cancellation status unavailable"
+msgstr "Stav zrušení není dostupný"
+
+#: src/billing-screen.js:171
+#: src/billing-screen.js:174
+#: src/overview-screen.js:49
+msgid "Not available"
+msgstr "Není dostupné"
+
+#: src/billing-screen.js:186
+msgid "Recurring billing recovery is required."
+msgstr "Je nutné obnovit opakované platby."
+
+#: src/billing-screen.js:191
+msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
+msgstr "Kredity zahrnuté v placeném tarifu jsou dočasně nedostupné. Zakoupené kredity a zbývající doživotní kredity tarifu Free lze nadále využívat; propagační kredity podléhají stávajícím podmínkám."
+
+#: src/billing-screen.js:204
+msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
+msgstr "Fakturace vyžaduje pozornost. Dokud Moda ověřuje stav plateb, nelze měnit tarif."
+
+#: src/billing-screen.js:217
+msgid "No recurring billing contract is available for this store."
+msgstr "Pro tento obchod není k dispozici smlouva o opakovaných platbách."
+
+#: src/billing-screen.js:230
+msgid "Cancellation request accepted."
+msgstr "Žádost o zrušení byla přijata."
+
+#. translators: 1: plan name, 2: pending plan operation state.
+#: src/billing-screen.js:242
+#, js-format
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: src/billing-screen.js:263
+#: src/billing-screen.js:478
+msgid "Current plan"
+msgstr "Aktuální tarif"
+
+#: src/billing-screen.js:269
+msgid "Plan"
+msgstr "Tarif"
+
+#: src/billing-screen.js:273
+msgid "Plan type"
+msgstr "Typ tarifu"
+
+#: src/billing-screen.js:275
+#: src/billing-screen.js:508
+msgid "Free"
+msgstr "Free"
+
+#: src/billing-screen.js:276
+msgid "Paid recurring"
+msgstr "Placený opakovaný tarif"
+
+#: src/billing-screen.js:279
+msgid "Recurring amount"
+msgstr "Opakovaná částka"
+
+#: src/billing-screen.js:281
+msgid "No recurring charge"
+msgstr "Bez opakovaného poplatku"
+
+#: src/billing-screen.js:285
+msgid "Billing period"
+msgstr "Fakturační období"
+
+#: src/billing-screen.js:286
+msgid "Every 30 days"
+msgstr "Každých 30 dní"
+
+#: src/billing-screen.js:289
+msgid "Next included allowance reset"
+msgstr "Další obnovení zahrnutých kreditů"
+
+#: src/billing-screen.js:297
+msgid "Paid subscription ends"
+msgstr "Placené předplatné skončí"
+
+#: src/billing-screen.js:309
+msgid "Subscription status"
+msgstr "Stav předplatného"
+
+#: src/billing-screen.js:313
+msgid "Scheduled to end"
+msgstr "Naplánováno ukončení"
+
+#: src/billing-screen.js:320
+msgid "No current plan details are available."
+msgstr "Podrobnosti o aktuálním tarifu nejsou dostupné."
+
+#: src/billing-screen.js:337
+msgid "Submitting cancellation…"
+msgstr "Odesílání žádosti o zrušení…"
+
+#: src/billing-screen.js:341
+msgid "Cancel subscription"
+msgstr "Zrušit předplatné"
+
+#: src/billing-screen.js:363
+msgid "Cancel recurring plan?"
+msgstr "Zrušit opakovaný tarif?"
+
+#: src/billing-screen.js:368
+msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
+msgstr "Placený přístup zůstane dostupný, dokud nebude zrušení ověřeno a neuplyne předplacené období. Tato žádost váš aktuální tarif ihned nezmění."
+
+#: src/billing-screen.js:388
+msgid "Keep current plan"
+msgstr "Ponechat aktuální tarif"
+
+#: src/billing-screen.js:405
+#: src/billing-screen.js:482
+msgid "Submitting…"
+msgstr "Odesílání…"
+
+#: src/billing-screen.js:406
+msgid "Confirm cancellation"
+msgstr "Potvrdit zrušení"
+
+#: src/billing-screen.js:417
+msgid "Recovery capacity"
+msgstr "Kapacita obnovy"
+
+#: src/billing-screen.js:423
+msgid "Paid included credits remaining"
+msgstr "Zbývající kredity z placeného tarifu"
+
+#: src/billing-screen.js:428
+msgid "Temporarily unavailable"
+msgstr "Dočasně nedostupné"
+
+#: src/billing-screen.js:440
+msgid "Lifetime Free credits remaining"
+msgstr "Zbývající doživotní kredity Free"
+
+#: src/billing-screen.js:447
+msgid "Promotional credits remaining"
+msgstr "Zbývající propagační kredity"
+
+#: src/billing-screen.js:454
+msgid "Purchased credits available"
+msgstr "Dostupné zakoupené kredity"
+
+#: src/billing-screen.js:476
+#: src/recovery-settings/recovery-effective-summary.js:13
+#: src/recovery-settings/recovery-effective-summary.js:38
+msgid "Unavailable"
+msgstr "Nedostupné"
+
+#: src/billing-screen.js:480
+msgid "Billing change in progress"
+msgstr "Probíhá změna fakturace"
+
+#: src/billing-screen.js:484
+msgid "Choose plan"
+msgstr "Vybrat tarif"
+
+#: src/billing-screen.js:486
+msgid "Switch to plan"
+msgstr "Přejít na tarif"
+
+#: src/billing-screen.js:499
+msgid "Featured"
+msgstr "Doporučené"
+
+#. translators: 1: recurring plan price.
+#: src/billing-screen.js:511
+#, js-format
+msgid "%1$s / every 30 days"
+msgstr "%1$s / každých 30 dní"
+
+#: src/billing-screen.js:519
+msgid "Lifetime recovery credits"
+msgstr "Doživotní kredity na obnovu"
+
+#: src/billing-screen.js:520
+msgid "Recovery credits every 30 days"
+msgstr "Kredity na obnovu každých 30 dní"
+
+#: src/billing-screen.js:558
+msgid "Plan management is unavailable for the current billing state."
+msgstr "Správa tarifů není při aktuálním stavu fakturace dostupná."
+
+#: src/billing-screen.js:568
+msgid "Loading available plans…"
+msgstr "Načítání dostupných tarifů…"
+
+#: src/billing-screen.js:578
+msgid "The plan catalogue could not be loaded."
+msgstr "Nabídku tarifů se nepodařilo načíst."
+
+#: src/billing-screen.js:583
+msgid "Retry plan catalogue"
+msgstr "Znovu načíst nabídku tarifů"
+
+#: src/billing-screen.js:604
+msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+msgstr "Fakturace je dočasně nedostupná. Aktuální stav fakturace se nezměnil."
+
+#: src/billing-screen.js:608
+msgid "Billing data could not be verified. Try again later."
+msgstr "Údaje o fakturaci se nepodařilo ověřit. Zkuste to později."
+
+#: src/billing-screen.js:612
+msgid "Billing setup is not complete for this store."
+msgstr "Nastavení fakturace pro tento obchod není dokončeno."
+
+#: src/billing-screen.js:616
+#: src/billing-screen.js:620
+msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+msgstr "Již probíhá jiná změna fakturace. Před dalším pokusem obnovte přehled fakturace."
+
+#: src/billing-screen.js:624
+msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
+msgstr "Výsledek u poskytovatele zatím není znám. Obnovte přehled fakturace nebo kontaktujte podporu; žádost automaticky neopakujte."
+
+#: src/billing-screen.js:628
+msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgstr "Změnu fakturace se nepodařilo dokončit. Váš aktuální tarif se nezměnil."
+
+#: src/billing-screen.js:632
+msgid "This plan is no longer available. Refresh the plan catalogue."
+msgstr "Tento tarif už není dostupný. Obnovte nabídku tarifů."
+
+#: src/billing-screen.js:639
+msgid "The billing request failed. Try again."
+msgstr "Požadavek na fakturaci selhal. Zkuste to znovu."
+
+#: src/billing-screen.js:656
+msgid "Loading billing summary…"
+msgstr "Načítání přehledu fakturace…"
+
+#: src/billing-screen.js:668
+msgid "The Moda Interact connection needs attention before billing can be loaded."
+msgstr "Před načtením fakturace je nutné vyřešit problém s připojením k Moda Interact."
+
+#: src/billing-screen.js:685
+#: src/billing-screen.js:728
+msgid "Refresh billing"
+msgstr "Obnovit fakturaci"
+
+#: src/billing-screen.js:745
+msgid "Summary"
+msgstr "Souhrn"
+
+#: src/billing-screen.js:746
+msgid "Plans"
+msgstr "Tarify"
+
+#: src/overview-screen.js:25
+#: src/recovery-settings/category-profile-summary.js:5
+msgid "Not selected"
+msgstr "Nevybráno"
+
+#: src/overview-screen.js:32
+msgid "Name"
+msgstr "Název"
+
+#: src/overview-screen.js:33
+msgid "Category ID"
+msgstr "ID kategorie"
+
+#: src/overview-screen.js:34
+msgid "Slug"
+msgstr "Identifikátor v URL"
+
+#: src/overview-screen.js:59
+msgid "Account setup"
+msgstr "Nastavení účtu"
+
+#: src/overview-screen.js:64
+msgid "Setup status"
+msgstr "Stav nastavení"
+
+#: src/overview-screen.js:66
+msgid "Setup completed"
+msgstr "Nastavení dokončeno"
+
+#: src/overview-screen.js:67
+msgid "Setup not completed"
+msgstr "Nastavení není dokončeno"
+
+#: src/overview-screen.js:69
+msgid "Store"
+msgstr "Obchod"
+
+#: src/overview-screen.js:71
+msgid "Store added"
+msgstr "Obchod přidán"
+
+#: src/overview-screen.js:78
+msgid "Store profile"
+msgstr "Profil obchodu"
+
+#: src/overview-screen.js:85
+#: src/recovery-settings/category-profile-summary.js:25
+msgid "Active category"
+msgstr "Aktivní kategorie"
+
+#: src/overview-screen.js:95
+#: src/recovery-settings/category-profile-summary.js:29
+msgid "Pending category"
+msgstr "Čekající kategorie"
+
+#: src/overview-screen.js:103
+#: src/recovery-settings/category-profile-summary.js:33
+msgid "Selection generation"
+msgstr "Verze výběru"
+
+#: src/overview-screen.js:107
+msgid "Pending selection date"
+msgstr "Datum čekajícího výběru"
+
+#: src/overview-screen.js:114
+msgid "Store context"
+msgstr "Kontext obchodu"
+
+#: src/overview-screen.js:119
+msgid "Store locale"
+msgstr "Jazykové nastavení obchodu"
+
+#: src/overview-screen.js:123
+msgid "Language tag"
+msgstr "Jazyková značka"
+
+#: src/overview-screen.js:127
+msgid "Time zone"
+msgstr "Časové pásmo"
+
+#: src/overview-screen.js:131
+msgid "Country code"
+msgstr "Kód země"
+
+#: src/overview-screen.js:152
+msgid "Loading store overview…"
+msgstr "Načítání přehledu obchodu…"
+
+#: src/overview-screen.js:162
+msgid "The Moda Interact connection needs attention before store data can be loaded."
+msgstr "Před načtením údajů obchodu je nutné vyřešit problém s připojením k Moda Interact."
+
+#: src/overview-screen.js:172
+msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
+msgstr "Přehled obchodu je dočasně nedostupný. Připojení ani údaje obchodu se nezměnily."
+
+#: src/overview-screen.js:182
+msgid "The store overview could not be verified. Try again."
+msgstr "Přehled obchodu se nepodařilo ověřit. Zkuste to znovu."
+
+#: src/overview-screen.js:216
+msgid "Syncing…"
+msgstr "Synchronizace…"
+
+#: src/overview-screen.js:217
+msgid "Sync store settings"
+msgstr "Synchronizovat nastavení obchodu"
+
+#: src/overview-screen.js:228
+msgid "Refreshing…"
+msgstr "Obnovování…"
+
+#: src/overview-screen.js:229
+msgid "Refresh overview"
+msgstr "Obnovit přehled"
+
+#: src/overview-screen.js:241
+msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
+msgstr "Nastavení obchodu se nepodařilo synchronizovat. Připojení se nezměnilo. Zkuste to znovu."
+
+#: src/overview-screen.js:251
+msgid "Store settings synchronized."
+msgstr "Nastavení obchodu bylo synchronizováno."
+
+#: src/page.js:21
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: src/page/connection-panel.js:18
+msgid "Checking the connection to Moda Interact…"
+msgstr "Kontrola připojení k Moda Interact…"
+
+#: src/page/connection-panel.js:28
+msgid "This store is not connected to Moda Interact."
+msgstr "Tento obchod není připojen k Moda Interact."
+
+#: src/page/connection-panel.js:42
+msgid "Connecting…"
+msgstr "Připojování…"
+
+#: src/page/connection-panel.js:43
+msgid "Connect Moda Interact"
+msgstr "Připojit Moda Interact"
+
+#: src/page/connection-panel.js:54
+msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
+msgstr "Místní připojení je nutné znovu navázat. Váš účet Moda ani údaje obchodu nebyly odstraněny."
+
+#: src/page/connection-panel.js:68
+msgid "Reconnecting…"
+msgstr "Opětovné připojování…"
+
+#: src/page/connection-panel.js:69
+msgid "Reconnect Moda Interact"
+msgstr "Znovu připojit Moda Interact"
+
+#: src/page/connection-panel.js:77
+#: src/page/connection-panel.js:193
+msgid "Connection"
+msgstr "Připojení"
+
+#: src/page/connection-panel.js:78
+#: src/page/connection-panel.js:199
+msgid "Connected"
+msgstr "Připojeno"
+
+#: src/page/connection-panel.js:82
+msgid "WordPress site"
+msgstr "Web WordPress"
+
+#: src/page/connection-panel.js:94
+msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
+msgstr "Moda Interact je nyní nedostupná. Místní připojení nebylo odebráno."
+
+#: src/page/connection-panel.js:108
+#: src/page/connection-panel.js:164
+msgid "Checking…"
+msgstr "Kontrola…"
+
+#: src/page/connection-panel.js:109
+#: src/page/connection-panel.js:165
+msgid "Retry"
+msgstr "Zkusit znovu"
+
+#: src/page/connection-panel.js:117
+msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
+msgstr "Adresa tohoto webu WordPress se liší od adresy použité pro připojení k Moda Interact. Před změnou připojení kontaktujte podporu."
+
+#: src/page/connection-panel.js:127
+msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
+msgstr "Pro tuto instalaci pluginu není nakonfigurováno spojení se službou Moda Interact. Kontaktujte správce webu."
+
+#: src/page/connection-panel.js:137
+msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
+msgstr "Uložené místní připojení se nepodařilo ověřit. Požádejte podporu o pomoc s jeho obnovením."
+
+#: src/page/connection-panel.js:150
+msgid "The connection status could not be checked. Try again."
+msgstr "Stav připojení se nepodařilo zkontrolovat. Zkuste to znovu."
+
+#: src/page/connection-panel.js:173
+msgid "The connection status is unavailable. Contact support for help."
+msgstr "Stav připojení není dostupný. Požádejte o pomoc podporu."
+
+#: src/page/connection-panel.js:211
+msgid "The connection could not be completed. Check your connection and try again."
+msgstr "Připojení se nepodařilo dokončit. Zkontrolujte připojení a zkuste to znovu."
+
+#: src/page/surface-navigation.js:7
+#: src/recovery-settings/recovery-navigation.js:15
+#: src/recovery-settings/recovery-settings-header.js:21
+msgid "Recovery Settings"
+msgstr "Nastavení obnovy"
+
+#: src/recovery-settings/category-mappings.js:14
+msgid "No optional taxonomy mappings are available for this category."
+msgstr "Pro tuto kategorii nejsou dostupná žádná volitelná přiřazení taxonomií."
+
+#: src/recovery-settings/category-mappings.js:26
+msgid "Optional taxonomy mappings"
+msgstr "Volitelná přiřazení taxonomií"
+
+#: src/recovery-settings/category-profile-summary.js:37
+msgid "Active mapping count"
+msgstr "Počet aktivních přiřazení"
+
+#: src/recovery-settings/category-profile-summary.js:45
+msgid "A category change is pending publication."
+msgstr "Změna kategorie čeká na zveřejnění."
+
+#: src/recovery-settings/category-profile-summary.js:55
+msgid "Pending prompt template:"
+msgstr "Čekající šablona pokynů:"
+
+#: src/recovery-settings/category-selector.js:20
+#: src/recovery-settings/recovery-settings-screen.js:102
+msgid "Store category"
+msgstr "Kategorie obchodu"
+
+#: src/recovery-settings/category-selector.js:33
+msgid "Select a store category"
+msgstr "Vyberte kategorii obchodu"
+
+#: src/recovery-settings/recovery-effective-summary.js:7
+msgid "Do not offer a discount"
+msgstr "Nenabízet slevu"
+
+#: src/recovery-settings/recovery-effective-summary.js:9
+msgid "Specific discount"
+msgstr "Konkrétní sleva"
+
+#: src/recovery-settings/recovery-effective-summary.js:11
+msgid "AI-selected applicable discount"
+msgstr "Sleva vybraná AI podle použitelnosti"
+
+#: src/recovery-settings/recovery-effective-summary.js:22
+msgid "Effective follow-up: disabled"
+msgstr "Platné následné připomenutí: vypnuto"
+
+#. translators: %d: minutes until automatic follow-up.
+#: src/recovery-settings/recovery-effective-summary.js:26
+#, js-format
+msgid "Effective follow-up: %d minutes"
+msgstr "Platné následné připomenutí: %d min"
+
+#: src/recovery-settings/recovery-effective-summary.js:37
+msgid "Loading…"
+msgstr "Načítání…"
+
+#: src/recovery-settings/recovery-effective-summary.js:41
+msgid "Recovery start"
+msgstr "Zahájení obnovy"
+
+#. translators: %d: number of minutes before recovery starts.
+#: src/recovery-settings/recovery-effective-summary.js:45
+#, js-format
+msgid "Effective value: %d minutes"
+msgstr "Platná hodnota: %d min"
+
+#: src/recovery-settings/recovery-effective-summary.js:51
+msgid "Recovery offer"
+msgstr "Nabídka při obnově"
+
+#. translators: %s: effective offer setting.
+#: src/recovery-settings/recovery-effective-summary.js:55
+#, js-format
+msgid "Currently active: %s"
+msgstr "Aktuálně aktivní: %s"
+
+#: src/recovery-settings/recovery-effective-summary.js:61
+msgid "No-response follow-up"
+msgstr "Následné připomenutí bez odpovědi"
+
+#: src/recovery-settings/recovery-effective-summary.js:74
+msgid "Effective settings include an administrator override"
+msgstr "Platná nastavení obsahují přepsání správcem"
+
+#: src/recovery-settings/recovery-effective-summary.js:86
+msgid "Retry recovery summary"
+msgstr "Znovu načíst souhrn obnovy"
+
+#: src/recovery-settings/recovery-effective-summary.js:94
+msgid "Effective recovery settings"
+msgstr "Platná nastavení obnovy"
+
+#: src/recovery-settings/recovery-navigation.js:9
+msgid "Moda Interact sections"
+msgstr "Sekce Moda Interact"
+
+#: src/recovery-settings/recovery-settings-screen.js:9
+msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
+msgstr "Jiný správce změnil kategorii obchodu. Obnovte seznam kategorií, zkontrolujte nejnovější výběr a znovu jej uložte."
+
+#: src/recovery-settings/recovery-settings-screen.js:13
+msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
+msgstr "Vybraná kategorie nebo šablona pokynů již není dostupná. Obnovte katalog a vyberte dostupnou kategorii."
+
+#: src/recovery-settings/recovery-settings-screen.js:17
+msgid "The Moda Interact connection needs attention before categories can be updated."
+msgstr "Před aktualizací kategorií je nutné vyřešit problém s připojením k Moda Interact."
+
+#: src/recovery-settings/recovery-settings-screen.js:21
+msgid "Category settings could not be loaded. Refresh categories to retry."
+msgstr "Nastavení kategorií se nepodařilo načíst. Obnovte kategorie a zkuste to znovu."
+
+#: src/recovery-settings/recovery-settings-screen.js:25
+msgid "The latest store settings do not show your change. Review the selection and try saving again."
+msgstr "Nejnovější nastavení obchodu neobsahuje vaši změnu. Zkontrolujte výběr a zkuste jej znovu uložit."
+
+#: src/recovery-settings/recovery-settings-screen.js:29
+msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
+msgstr "Nepodařilo se potvrdit, zda byla kategorie uložena. Před dalším pokusem obnovte kategorie."
+
+#: src/recovery-settings/recovery-settings-screen.js:33
+msgid "Store category and assistant prompt activated."
+msgstr "Kategorie obchodu a pokyny asistenta byly aktivovány."
+
+#: src/recovery-settings/recovery-settings-screen.js:37
+msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
+msgstr "Kategorie obchodu byla uložena, ale aktualizovaná nastavení se nepodařilo načíst. Obnovte je a ověřte aktivní kategorii."
+
+#: src/recovery-settings/recovery-settings-screen.js:94
+msgid "Store & assistant context"
+msgstr "Kontext obchodu a asistenta"
+
+#: src/recovery-settings/recovery-settings-screen.js:107
+msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
+msgstr "Vyberte typ obchodu a přizpůsobte svého asistenta CommerceAgent. Váš tarif Free zůstane aktivní."
+
+#: src/recovery-settings/recovery-settings-screen.js:117
+msgid "Checking saved category…"
+msgstr "Kontrola uložené kategorie…"
+
+#: src/recovery-settings/recovery-settings-screen.js:121
+msgid "Loading store categories…"
+msgstr "Načítání kategorií obchodu…"
+
+#: src/recovery-settings/recovery-settings-screen.js:137
+msgid "There are currently no selectable store categories."
+msgstr "Momentálně nejsou dostupné žádné kategorie k výběru."
+
+#: src/recovery-settings/recovery-settings-screen.js:164
+msgid "Refresh categories"
+msgstr "Obnovit kategorie"
+
+#: src/recovery-settings/recovery-settings-screen.js:175
+msgid "Saving…"
+msgstr "Ukládání…"
+
+#: src/recovery-settings/recovery-settings-screen.js:176
+msgid "Save category"
+msgstr "Uložit kategorii"

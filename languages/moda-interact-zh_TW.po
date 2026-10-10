@@ -1,0 +1,735 @@
+# Moda Interact WooCommerce merchant Admin translations.
+# Review source: languages/moda-interact.pot
+msgid ""
+msgstr ""
+"Project-Id-Version: Moda Interact 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: zh_TW\n"
+"Language-Team: Traditional Chinese (Taiwan)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: moda-interact\n"
+
+#. Plugin Name of the plugin
+#: moda-interact.php
+#: includes/Admin/NativeNavigation.php:21
+#: includes/Admin/NativeNavigation.php:22
+#: includes/Admin/Setup.php:87
+#: src/index.js:18
+#: src/page.js:23
+msgid "Moda Interact"
+msgstr "Moda Interact"
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Moda Interact 的 WooCommerce 管理介面擴充功能基礎元件。"
+
+#: includes/Admin/NativeNavigation.php:34
+#: includes/Admin/NativeNavigation.php:35
+#: src/overview-screen.js:202
+#: src/page/surface-navigation.js:5
+#: src/recovery-settings/recovery-navigation.js:12
+msgid "Overview"
+msgstr "總覽"
+
+#: includes/Admin/NativeNavigation.php:41
+msgid "Recoveries"
+msgstr "訂單挽回"
+
+#: includes/Admin/NativeNavigation.php:42
+#: src/billing-screen.js:718
+#: src/page/surface-navigation.js:6
+msgid "Billing"
+msgstr "帳務"
+
+#: includes/Admin/NativeNavigation.php:43
+msgid "Promotions"
+msgstr "促銷活動"
+
+#: includes/Admin/NativeNavigation.php:44
+msgid "Support"
+msgstr "支援服務"
+
+#: includes/Admin/NativeNavigation.php:45
+#: src/recovery-settings/recovery-settings-header.js:16
+msgid "Recovery settings"
+msgstr "恢復設定"
+
+#: includes/Admin/NativeNavigation.php:85
+msgid "This section is not yet available for WooCommerce."
+msgstr "此區段尚未支援 WooCommerce。"
+
+#: includes/Runtime.php:86
+msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr "Moda Interact 需要安裝並啟用 WooCommerce 11.0 或更新版本。"
+
+#. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
+#: includes/Runtime.php:93
+#, php-format
+msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr "Moda Interact 需要 WooCommerce %1$s 或更新版本。偵測到的版本：%2$s。"
+
+#: src/billing-screen.js:21
+msgid "Not applicable"
+msgstr "不適用"
+
+#: src/billing-screen.js:68
+msgid "Starting the plan change"
+msgstr "正在啟動方案變更"
+
+#: src/billing-screen.js:69
+msgid "Waiting for Woo confirmation"
+msgstr "正在等待 Woo 確認"
+
+#: src/billing-screen.js:73
+msgid "The plan change needs reconciliation. Do not retry it automatically."
+msgstr "方案變更需要核對狀態。請勿自動重試。"
+
+#: src/billing-screen.js:78
+msgid "Plan status unavailable"
+msgstr "無法取得方案狀態"
+
+#: src/billing-screen.js:83
+msgid "Starting the cancellation request"
+msgstr "正在提出取消要求"
+
+#: src/billing-screen.js:84
+msgid "Waiting for Woo cancellation confirmation"
+msgstr "正在等待 Woo 確認取消"
+
+#: src/billing-screen.js:88
+msgid "The cancellation needs reconciliation. Do not retry it automatically."
+msgstr "取消作業需要核對狀態。請勿自動重試。"
+
+#: src/billing-screen.js:92
+msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr "Woo 已接受要求。Moda 正在等待經過驗證的取消詳細資訊。"
+
+#: src/billing-screen.js:98
+msgid "Cancellation status unavailable"
+msgstr "無法取得取消狀態"
+
+#: src/billing-screen.js:171
+#: src/billing-screen.js:174
+#: src/overview-screen.js:49
+msgid "Not available"
+msgstr "無法使用"
+
+#: src/billing-screen.js:186
+msgid "Recurring billing recovery is required."
+msgstr "需要恢復定期收費。"
+
+#: src/billing-screen.js:191
+msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
+msgstr "付費方案包含的額度暫時無法使用。已購買的額度和剩餘的終身 Free 額度仍可使用；促銷額度則依既有資格條件使用。"
+
+#: src/billing-screen.js:204
+msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
+msgstr "帳務狀態需要處理。Moda 驗證帳務狀態期間無法變更方案。"
+
+#: src/billing-screen.js:217
+msgid "No recurring billing contract is available for this store."
+msgstr "此商店沒有可用的定期收費合約。"
+
+#: src/billing-screen.js:230
+msgid "Cancellation request accepted."
+msgstr "已接受取消要求。"
+
+#. translators: 1: plan name, 2: pending plan operation state.
+#: src/billing-screen.js:242
+#, js-format
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: src/billing-screen.js:263
+#: src/billing-screen.js:478
+msgid "Current plan"
+msgstr "目前方案"
+
+#: src/billing-screen.js:269
+msgid "Plan"
+msgstr "方案"
+
+#: src/billing-screen.js:273
+msgid "Plan type"
+msgstr "方案類型"
+
+#: src/billing-screen.js:275
+#: src/billing-screen.js:508
+msgid "Free"
+msgstr "Free"
+
+#: src/billing-screen.js:276
+msgid "Paid recurring"
+msgstr "定期付費方案"
+
+#: src/billing-screen.js:279
+msgid "Recurring amount"
+msgstr "定期收費金額"
+
+#: src/billing-screen.js:281
+msgid "No recurring charge"
+msgstr "沒有定期費用"
+
+#: src/billing-screen.js:285
+msgid "Billing period"
+msgstr "帳單週期"
+
+#: src/billing-screen.js:286
+msgid "Every 30 days"
+msgstr "每 30 天"
+
+#: src/billing-screen.js:289
+msgid "Next included allowance reset"
+msgstr "下次重設方案內額度"
+
+#: src/billing-screen.js:297
+msgid "Paid subscription ends"
+msgstr "付費訂閱結束時間"
+
+#: src/billing-screen.js:309
+msgid "Subscription status"
+msgstr "訂閱狀態"
+
+#: src/billing-screen.js:313
+msgid "Scheduled to end"
+msgstr "已排定結束"
+
+#: src/billing-screen.js:320
+msgid "No current plan details are available."
+msgstr "無法取得目前方案的詳細資訊。"
+
+#: src/billing-screen.js:337
+msgid "Submitting cancellation…"
+msgstr "正在送出取消要求…"
+
+#: src/billing-screen.js:341
+msgid "Cancel subscription"
+msgstr "取消訂閱"
+
+#: src/billing-screen.js:363
+msgid "Cancel recurring plan?"
+msgstr "確定要取消定期付費方案嗎？"
+
+#: src/billing-screen.js:368
+msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
+msgstr "在取消作業通過驗證且預付期間結束前，您仍可使用付費服務。此要求不會立即變更目前方案。"
+
+#: src/billing-screen.js:388
+msgid "Keep current plan"
+msgstr "保留目前方案"
+
+#: src/billing-screen.js:405
+#: src/billing-screen.js:482
+msgid "Submitting…"
+msgstr "正在送出…"
+
+#: src/billing-screen.js:406
+msgid "Confirm cancellation"
+msgstr "確認取消"
+
+#: src/billing-screen.js:417
+msgid "Recovery capacity"
+msgstr "恢復額度"
+
+#: src/billing-screen.js:423
+msgid "Paid included credits remaining"
+msgstr "剩餘的付費方案內額度"
+
+#: src/billing-screen.js:428
+msgid "Temporarily unavailable"
+msgstr "暫時無法使用"
+
+#: src/billing-screen.js:440
+msgid "Lifetime Free credits remaining"
+msgstr "剩餘的終身 Free 額度"
+
+#: src/billing-screen.js:447
+msgid "Promotional credits remaining"
+msgstr "剩餘的促銷額度"
+
+#: src/billing-screen.js:454
+msgid "Purchased credits available"
+msgstr "可使用的已購額度"
+
+#: src/billing-screen.js:476
+#: src/recovery-settings/recovery-effective-summary.js:13
+#: src/recovery-settings/recovery-effective-summary.js:38
+msgid "Unavailable"
+msgstr "無法使用"
+
+#: src/billing-screen.js:480
+msgid "Billing change in progress"
+msgstr "帳務變更進行中"
+
+#: src/billing-screen.js:484
+msgid "Choose plan"
+msgstr "選擇方案"
+
+#: src/billing-screen.js:486
+msgid "Switch to plan"
+msgstr "切換至方案"
+
+#: src/billing-screen.js:499
+msgid "Featured"
+msgstr "精選"
+
+#. translators: 1: recurring plan price.
+#: src/billing-screen.js:511
+#, js-format
+msgid "%1$s / every 30 days"
+msgstr "%1$s / 每 30 天"
+
+#: src/billing-screen.js:519
+msgid "Lifetime recovery credits"
+msgstr "終身恢復額度"
+
+#: src/billing-screen.js:520
+msgid "Recovery credits every 30 days"
+msgstr "每 30 天的恢復額度"
+
+#: src/billing-screen.js:558
+msgid "Plan management is unavailable for the current billing state."
+msgstr "目前的帳務狀態無法管理方案。"
+
+#: src/billing-screen.js:568
+msgid "Loading available plans…"
+msgstr "正在載入可選方案…"
+
+#: src/billing-screen.js:578
+msgid "The plan catalogue could not be loaded."
+msgstr "無法載入方案清單。"
+
+#: src/billing-screen.js:583
+msgid "Retry plan catalogue"
+msgstr "重新整理方案清單"
+
+#: src/billing-screen.js:604
+msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+msgstr "帳務服務暫時無法使用。您目前的帳務狀態並未變更。"
+
+#: src/billing-screen.js:608
+msgid "Billing data could not be verified. Try again later."
+msgstr "無法驗證帳務資料。請稍後再試。"
+
+#: src/billing-screen.js:612
+msgid "Billing setup is not complete for this store."
+msgstr "此商店的帳務設定尚未完成。"
+
+#: src/billing-screen.js:616
+#: src/billing-screen.js:620
+msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+msgstr "已有帳務變更正在進行。再次嘗試前，請重新整理帳務摘要。"
+
+#: src/billing-screen.js:624
+msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
+msgstr "服務提供者的處理結果尚未確定。請重新整理帳務摘要或聯絡支援團隊；請勿自動重試。"
+
+#: src/billing-screen.js:628
+msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgstr "無法完成帳務變更。您目前的方案維持不變。"
+
+#: src/billing-screen.js:632
+msgid "This plan is no longer available. Refresh the plan catalogue."
+msgstr "此方案已不再提供。請重新整理方案清單。"
+
+#: src/billing-screen.js:639
+msgid "The billing request failed. Try again."
+msgstr "帳務要求失敗。請再試一次。"
+
+#: src/billing-screen.js:656
+msgid "Loading billing summary…"
+msgstr "正在載入帳務摘要…"
+
+#: src/billing-screen.js:668
+msgid "The Moda Interact connection needs attention before billing can be loaded."
+msgstr "載入帳務資訊前，需要先確認 Moda Interact 的連線。"
+
+#: src/billing-screen.js:685
+#: src/billing-screen.js:728
+msgid "Refresh billing"
+msgstr "重新整理帳務資訊"
+
+#: src/billing-screen.js:745
+msgid "Summary"
+msgstr "摘要"
+
+#: src/billing-screen.js:746
+msgid "Plans"
+msgstr "方案"
+
+#: src/overview-screen.js:25
+#: src/recovery-settings/category-profile-summary.js:5
+msgid "Not selected"
+msgstr "尚未選擇"
+
+#: src/overview-screen.js:32
+msgid "Name"
+msgstr "名稱"
+
+#: src/overview-screen.js:33
+msgid "Category ID"
+msgstr "類別 ID"
+
+#: src/overview-screen.js:34
+msgid "Slug"
+msgstr "代稱"
+
+#: src/overview-screen.js:59
+msgid "Account setup"
+msgstr "帳戶設定"
+
+#: src/overview-screen.js:64
+msgid "Setup status"
+msgstr "設定狀態"
+
+#: src/overview-screen.js:66
+msgid "Setup completed"
+msgstr "設定完成"
+
+#: src/overview-screen.js:67
+msgid "Setup not completed"
+msgstr "設定尚未完成"
+
+#: src/overview-screen.js:69
+msgid "Store"
+msgstr "商店"
+
+#: src/overview-screen.js:71
+msgid "Store added"
+msgstr "商店新增日期"
+
+#: src/overview-screen.js:78
+msgid "Store profile"
+msgstr "商店資料"
+
+#: src/overview-screen.js:85
+#: src/recovery-settings/category-profile-summary.js:25
+msgid "Active category"
+msgstr "目前啟用的類別"
+
+#: src/overview-screen.js:95
+#: src/recovery-settings/category-profile-summary.js:29
+msgid "Pending category"
+msgstr "待啟用的類別"
+
+#: src/overview-screen.js:103
+#: src/recovery-settings/category-profile-summary.js:33
+msgid "Selection generation"
+msgstr "選取版本編號"
+
+#: src/overview-screen.js:107
+msgid "Pending selection date"
+msgstr "待處理選取日期"
+
+#: src/overview-screen.js:114
+msgid "Store context"
+msgstr "商店情境資訊"
+
+#: src/overview-screen.js:119
+msgid "Store locale"
+msgstr "商店語系"
+
+#: src/overview-screen.js:123
+msgid "Language tag"
+msgstr "語言標籤"
+
+#: src/overview-screen.js:127
+msgid "Time zone"
+msgstr "時區"
+
+#: src/overview-screen.js:131
+msgid "Country code"
+msgstr "國家代碼"
+
+#: src/overview-screen.js:152
+msgid "Loading store overview…"
+msgstr "正在載入商店總覽…"
+
+#: src/overview-screen.js:162
+msgid "The Moda Interact connection needs attention before store data can be loaded."
+msgstr "載入商店資料前，需要先確認 Moda Interact 的連線。"
+
+#: src/overview-screen.js:172
+msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
+msgstr "商店總覽暫時無法使用。您的連線與商店資料均未變更。"
+
+#: src/overview-screen.js:182
+msgid "The store overview could not be verified. Try again."
+msgstr "無法驗證商店總覽。請再試一次。"
+
+#: src/overview-screen.js:216
+msgid "Syncing…"
+msgstr "正在同步…"
+
+#: src/overview-screen.js:217
+msgid "Sync store settings"
+msgstr "同步商店設定"
+
+#: src/overview-screen.js:228
+msgid "Refreshing…"
+msgstr "正在重新整理…"
+
+#: src/overview-screen.js:229
+msgid "Refresh overview"
+msgstr "重新整理總覽"
+
+#: src/overview-screen.js:241
+msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
+msgstr "無法同步商店設定。您的連線並未變更。請再試一次。"
+
+#: src/overview-screen.js:251
+msgid "Store settings synchronized."
+msgstr "商店設定已同步。"
+
+#: src/page.js:21
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: src/page/connection-panel.js:18
+msgid "Checking the connection to Moda Interact…"
+msgstr "正在檢查與 Moda Interact 的連線…"
+
+#: src/page/connection-panel.js:28
+msgid "This store is not connected to Moda Interact."
+msgstr "此商店尚未連結至 Moda Interact。"
+
+#: src/page/connection-panel.js:42
+msgid "Connecting…"
+msgstr "正在連線…"
+
+#: src/page/connection-panel.js:43
+msgid "Connect Moda Interact"
+msgstr "連結 Moda Interact"
+
+#: src/page/connection-panel.js:54
+msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
+msgstr "需要重新建立本機連線。您的 Moda 帳戶與商店資料均未刪除。"
+
+#: src/page/connection-panel.js:68
+msgid "Reconnecting…"
+msgstr "正在重新連線…"
+
+#: src/page/connection-panel.js:69
+msgid "Reconnect Moda Interact"
+msgstr "重新連結 Moda Interact"
+
+#: src/page/connection-panel.js:77
+#: src/page/connection-panel.js:193
+msgid "Connection"
+msgstr "連線"
+
+#: src/page/connection-panel.js:78
+#: src/page/connection-panel.js:199
+msgid "Connected"
+msgstr "已連線"
+
+#: src/page/connection-panel.js:82
+msgid "WordPress site"
+msgstr "WordPress 網站"
+
+#: src/page/connection-panel.js:94
+msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
+msgstr "目前無法連線至 Moda Interact。本機連線尚未移除。"
+
+#: src/page/connection-panel.js:108
+#: src/page/connection-panel.js:164
+msgid "Checking…"
+msgstr "正在檢查…"
+
+#: src/page/connection-panel.js:109
+#: src/page/connection-panel.js:165
+msgid "Retry"
+msgstr "重試"
+
+#: src/page/connection-panel.js:117
+msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
+msgstr "此 WordPress 網站網址與連結 Moda Interact 時使用的網址不同。變更連線前，請先聯絡支援團隊。"
+
+#: src/page/connection-panel.js:127
+msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
+msgstr "此外掛安裝尚未設定 Moda Interact 服務連線。請聯絡網站管理員。"
+
+#: src/page/connection-panel.js:137
+msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
+msgstr "無法驗證已儲存的本機連線。請聯絡支援團隊協助還原連線。"
+
+#: src/page/connection-panel.js:150
+msgid "The connection status could not be checked. Try again."
+msgstr "無法檢查連線狀態。請再試一次。"
+
+#: src/page/connection-panel.js:173
+msgid "The connection status is unavailable. Contact support for help."
+msgstr "無法取得連線狀態。請聯絡支援團隊尋求協助。"
+
+#: src/page/connection-panel.js:211
+msgid "The connection could not be completed. Check your connection and try again."
+msgstr "無法完成連線。請檢查連線後再試一次。"
+
+#: src/page/surface-navigation.js:7
+#: src/recovery-settings/recovery-navigation.js:15
+#: src/recovery-settings/recovery-settings-header.js:21
+msgid "Recovery Settings"
+msgstr "恢復設定"
+
+#: src/recovery-settings/category-mappings.js:14
+msgid "No optional taxonomy mappings are available for this category."
+msgstr "此類別沒有可選的分類法對應。"
+
+#: src/recovery-settings/category-mappings.js:26
+msgid "Optional taxonomy mappings"
+msgstr "可選的分類法對應"
+
+#: src/recovery-settings/category-profile-summary.js:37
+msgid "Active mapping count"
+msgstr "已啟用的對應數量"
+
+#: src/recovery-settings/category-profile-summary.js:45
+msgid "A category change is pending publication."
+msgstr "類別變更正在等待發佈。"
+
+#: src/recovery-settings/category-profile-summary.js:55
+msgid "Pending prompt template:"
+msgstr "待發佈的提示詞範本："
+
+#: src/recovery-settings/category-selector.js:20
+#: src/recovery-settings/recovery-settings-screen.js:102
+msgid "Store category"
+msgstr "商店類別"
+
+#: src/recovery-settings/category-selector.js:33
+msgid "Select a store category"
+msgstr "選擇商店類別"
+
+#: src/recovery-settings/recovery-effective-summary.js:7
+msgid "Do not offer a discount"
+msgstr "不提供折扣"
+
+#: src/recovery-settings/recovery-effective-summary.js:9
+msgid "Specific discount"
+msgstr "指定折扣"
+
+#: src/recovery-settings/recovery-effective-summary.js:11
+msgid "AI-selected applicable discount"
+msgstr "AI 選擇的適用折扣"
+
+#: src/recovery-settings/recovery-effective-summary.js:22
+msgid "Effective follow-up: disabled"
+msgstr "實際生效的後續追蹤：已停用"
+
+#. translators: %d: minutes until automatic follow-up.
+#: src/recovery-settings/recovery-effective-summary.js:26
+#, js-format
+msgid "Effective follow-up: %d minutes"
+msgstr "實際生效的後續追蹤：%d 分鐘"
+
+#: src/recovery-settings/recovery-effective-summary.js:37
+msgid "Loading…"
+msgstr "正在載入…"
+
+#: src/recovery-settings/recovery-effective-summary.js:41
+msgid "Recovery start"
+msgstr "開始恢復"
+
+#. translators: %d: number of minutes before recovery starts.
+#: src/recovery-settings/recovery-effective-summary.js:45
+#, js-format
+msgid "Effective value: %d minutes"
+msgstr "實際生效值：%d 分鐘"
+
+#: src/recovery-settings/recovery-effective-summary.js:51
+msgid "Recovery offer"
+msgstr "恢復優惠"
+
+#. translators: %s: effective offer setting.
+#: src/recovery-settings/recovery-effective-summary.js:55
+#, js-format
+msgid "Currently active: %s"
+msgstr "目前生效：%s"
+
+#: src/recovery-settings/recovery-effective-summary.js:61
+msgid "No-response follow-up"
+msgstr "未回覆時的後續追蹤"
+
+#: src/recovery-settings/recovery-effective-summary.js:74
+msgid "Effective settings include an administrator override"
+msgstr "實際生效設定包含管理員覆寫值"
+
+#: src/recovery-settings/recovery-effective-summary.js:86
+msgid "Retry recovery summary"
+msgstr "重新載入恢復摘要"
+
+#: src/recovery-settings/recovery-effective-summary.js:94
+msgid "Effective recovery settings"
+msgstr "實際生效的恢復設定"
+
+#: src/recovery-settings/recovery-navigation.js:9
+msgid "Moda Interact sections"
+msgstr "Moda Interact 區段"
+
+#: src/recovery-settings/recovery-settings-screen.js:9
+msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
+msgstr "另一位管理員已變更商店類別。請重新整理類別、確認最新選擇，然後再次儲存。"
+
+#: src/recovery-settings/recovery-settings-screen.js:13
+msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
+msgstr "所選類別或提示詞已無法使用。請重新整理清單，並選擇可用的類別。"
+
+#: src/recovery-settings/recovery-settings-screen.js:17
+msgid "The Moda Interact connection needs attention before categories can be updated."
+msgstr "更新類別前，需要先確認 Moda Interact 的連線。"
+
+#: src/recovery-settings/recovery-settings-screen.js:21
+msgid "Category settings could not be loaded. Refresh categories to retry."
+msgstr "無法載入類別設定。請重新整理類別後再試一次。"
+
+#: src/recovery-settings/recovery-settings-screen.js:25
+msgid "The latest store settings do not show your change. Review the selection and try saving again."
+msgstr "最新的商店設定未顯示您的變更。請檢查選擇內容，然後再次儲存。"
+
+#: src/recovery-settings/recovery-settings-screen.js:29
+msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
+msgstr "無法確認您的類別是否已儲存。再次嘗試前，請先重新整理類別。"
+
+#: src/recovery-settings/recovery-settings-screen.js:33
+msgid "Store category and assistant prompt activated."
+msgstr "商店類別與助理提示詞已啟用。"
+
+#: src/recovery-settings/recovery-settings-screen.js:37
+msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
+msgstr "商店類別已儲存，但無法載入更新後的設定。請重新整理以確認目前啟用的類別。"
+
+#: src/recovery-settings/recovery-settings-screen.js:94
+msgid "Store & assistant context"
+msgstr "商店與助理情境資訊"
+
+#: src/recovery-settings/recovery-settings-screen.js:107
+msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
+msgstr "選擇商店類型，以自訂您的 CommerceAgent 助理。您的 Free 方案仍維持啟用。"
+
+#: src/recovery-settings/recovery-settings-screen.js:117
+msgid "Checking saved category…"
+msgstr "正在檢查已儲存的類別…"
+
+#: src/recovery-settings/recovery-settings-screen.js:121
+msgid "Loading store categories…"
+msgstr "正在載入商店類別…"
+
+#: src/recovery-settings/recovery-settings-screen.js:137
+msgid "There are currently no selectable store categories."
+msgstr "目前沒有可選擇的商店類別。"
+
+#: src/recovery-settings/recovery-settings-screen.js:164
+msgid "Refresh categories"
+msgstr "重新整理類別"
+
+#: src/recovery-settings/recovery-settings-screen.js:175
+msgid "Saving…"
+msgstr "正在儲存…"
+
+#: src/recovery-settings/recovery-settings-screen.js:176
+msgid "Save category"
+msgstr "儲存類別"
