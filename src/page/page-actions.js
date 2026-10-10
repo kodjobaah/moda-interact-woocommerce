@@ -10,6 +10,8 @@ export function createPageActions(sessionRef, setActiveSurface) {
 		loadPlans: () => controllers()?.billing.loadPlans(),
 		selectPlan: (plan) => controllers()?.billing.createOrSwitch(plan),
 		cancelPlan: () => controllers()?.billing.cancel(),
+		purchaseRecoveryCredits: (usageEventId) =>
+			controllers()?.billing.purchaseRecoveryCredits(usageEventId),
 		setBillingView: (view) => controllers()?.billing.setView(view),
 		refreshCategory: () => controllers()?.category.refresh(),
 		refreshRecoverySummary: () => controllers()?.recoverySummary.refresh(),

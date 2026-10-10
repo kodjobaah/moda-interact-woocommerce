@@ -93,8 +93,8 @@ function getMoTranslation(buffer, key) {
 	return undefined;
 }
 
-test('WOO-012 covers exactly 169 keys and locale plural rules', () => {
-	assert.equal(sourceKeys.size, 169);
+test('WOO-012 covers exactly 180 keys and locale plural rules', () => {
+	assert.equal(sourceKeys.size, 180);
 	const unchangedNames = new Set([
 		'Moda Interact',
 		'WooCommerce',
@@ -105,7 +105,7 @@ test('WOO-012 covers exactly 169 keys and locale plural rules', () => {
 		const entries = poFromFile(
 			join(languagesDirectory, `moda-interact-${locale}.po`)
 		);
-		assert.equal(entries.length, 170, locale);
+		assert.equal(entries.length, 181, locale);
 		assert.deepEqual(
 			new Set(entries.filter((item) => item.id).map(originalKey)),
 			sourceKeys,

@@ -733,3 +733,47 @@ msgstr "Ukládání…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Uložit kategorii"
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr "Rozpoczynanie zakupu"
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr "Potvrzení je třeba prověřit. Tento balíček zatím nezkoušejte znovu."
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr "Platba potvrzena. Kredity se aktivují."
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr "Tento balíček již čeká na zpracování nákupu. Před dalším pokusem obnovte přehled fakturace."
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr "Nákup se nepodařilo zahájit."
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr "Tento balíček již není dostupný."
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr "Tento pokus o nákup se nepodařilo ověřit. Před dalším pokusem obnovte přehled fakturace."
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr "Nákup čeká na zpracování"
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr "Předdefinované balíčky kreditů"
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr "Vyberte jeden balíček. WooCommerce před potvrzením zobrazí konečnou částku a případnou daň."
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr "Koupit %s kreditů"

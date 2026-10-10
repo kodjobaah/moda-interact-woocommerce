@@ -360,6 +360,123 @@
 	border-radius: 8px;
 }
 
+.moda-interact-page {
+
+	.moda-interact-top-ups {
+		display: grid;
+		gap: 16px;
+		min-width: 0;
+		padding-top: 8px;
+	}
+
+	.moda-interact-top-ups__heading h3 {
+		margin: 0 0 6px;
+		color: var(--moda-forest-900);
+		font-size: 18px;
+		line-height: 1.35;
+		overflow-wrap: anywhere;
+	}
+
+	.moda-interact-top-ups__eyebrow {
+		margin: 0 0 4px;
+		color: var(--moda-muted);
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.moda-interact-top-ups__description {
+		max-width: 720px;
+		margin: 0;
+		color: var(--moda-muted);
+		overflow-wrap: anywhere;
+	}
+
+	.moda-interact-top-ups__notice {
+		margin: 0;
+		padding: 12px 14px;
+		border-left: 4px solid #b26200;
+		background: #fff8eb;
+		color: #5c3b08;
+		line-height: 1.5;
+		overflow-wrap: anywhere;
+	}
+
+	.moda-interact-top-ups__grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+		align-items: stretch;
+		gap: 14px;
+	}
+
+	.moda-interact-top-up {
+		display: flex;
+		min-width: 0;
+		min-height: 220px;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+		padding: 18px;
+		border: 1px solid var(--moda-border);
+		border-top: 3px solid var(--moda-forest-600);
+		border-radius: 8px;
+		background: var(--moda-surface);
+		box-shadow: 0 3px 12px rgb(20 61 44 / 5%);
+	}
+
+	.moda-interact-top-up--unavailable {
+		border-top-color: #9a6b21;
+		background: var(--moda-soft);
+	}
+
+	.moda-interact-top-up h4 {
+		margin: 0;
+		color: var(--moda-forest-900);
+		font-size: 16px;
+		line-height: 1.35;
+		overflow-wrap: anywhere;
+	}
+
+	.moda-interact-top-up__price,
+	.moda-interact-top-up__status {
+		margin: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.moda-interact-top-up__price {
+		color: var(--moda-ink);
+		font-size: 18px;
+		font-weight: 700;
+	}
+
+	.moda-interact-top-up__status {
+		margin-top: auto;
+		color: var(--moda-muted);
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.moda-interact-top-up__actions {
+		display: flex;
+		width: 100%;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: auto;
+	}
+
+	.moda-interact-top-up .button {
+		width: 100%;
+		min-height: 44px;
+		margin-top: 0;
+		white-space: normal;
+	}
+
+	.moda-interact-top-ups :is(button, a):focus-visible {
+		outline: 3px solid var(--moda-forest-600);
+		outline-offset: 3px;
+		box-shadow: var(--moda-focus-ring);
+	}
+}
+
 @media (max-width: 900px) {
 
 	.moda-interact-plan-grid {

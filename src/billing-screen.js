@@ -53,6 +53,7 @@ export function BillingScreen({
 	onLoadPlans,
 	onSelectPlan,
 	onCancel,
+	onPurchaseTopUp,
 	onSetView,
 }) {
 	const locale = resolveBillingLocale();
@@ -105,6 +106,7 @@ export function BillingScreen({
 			data: state.data,
 			state,
 			onCancel,
+			onPurchaseTopUp,
 			locale,
 		});
 	}
@@ -144,6 +146,7 @@ export {
 	restoreCancelDialogFocus,
 } from './billing/summary';
 export { PlanCard, PlansView } from './billing/plan-catalogue';
+export { TopUpSection } from './billing/top-up-section';
 export { BillingHero } from './billing/hero';
 export {
 	formatDate,

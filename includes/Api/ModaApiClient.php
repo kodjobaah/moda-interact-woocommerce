@@ -192,6 +192,14 @@ final class ModaApiClient {
 		return array_intersect_key( $payload, array_flip( array( 'schemaVersion', 'operationId', 'state', 'confirmationUrl' ) ) );
 	}
 
+	public function purchaseRecoveryCredits( array $connection, string $usage_event_id, string $action_id ): array {
+		$payload = $this->billingRequest( $connection, '/v1/billing/recovery-credit-purchases', 'POST', array( 'merchantPricingUsageEventId' => $usage_event_id ), $action_id );
+		if ( ! BillingResponseValidator::isRecoveryCreditPurchase( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return array_intersect_key( $payload, array_flip( array( 'schemaVersion', 'purchaseId', 'operationId', 'state', 'confirmationUrl' ) ) );
+	}
+
 	private function recurringCommand( array $connection, string $path, string $method, string $plan_id, string $action_id ): array {
 		$payload = $this->billingRequest( $connection, $path, $method, array( 'merchantPricingPlanId' => $plan_id ), $action_id );
 		if ( ! BillingResponseValidator::isConfirmation( $payload ) ) {
@@ -437,6 +445,7 @@ final class ModaApiClient {
 			'billing_plan_materialization_conflict', 'billing_operation_conflict', 'idempotency_conflict',
 			'billing_operation_in_progress', 'billing_operation_failed', 'billing_provider_rejected',
 			'billing_provider_outcome_unknown', 'free_plan_uses_cancellation', 'subscription_create_not_allowed',
+			'top_up_purchase_pending', 'top_up_bundle_not_found', 'top_up_purchase_unavailable',
 			'subscription_switch_not_allowed', 'billing_catalogue_mapping_invalid', 'billing_plan_unchanged',
 			'no_recurring_subscription', 'billing_integrity_invalid', 'billing_catalogue_invalid',
 			'billing_catalogue_translation_unavailable', 'billing_locale_invalid', 'internal_error',

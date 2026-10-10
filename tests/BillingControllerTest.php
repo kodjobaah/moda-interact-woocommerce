@@ -32,7 +32,7 @@ final class BillingControllerTest extends TestCase {
 	}
 	public function test_registers_exact_privileged_routes_and_maps_only_bounded_request_fields(): void {
 		$requests = array();
-		$responses = array( self::billing(), self::plans(), self::confirmation(), self::cancellation() );
+		$responses = array( self::billing(), self::plans(), self::confirmation(), self::cancellation(), self::purchase() );
 		$controller = $this->controller( $requests, $responses );
 		$controller->registerRoutes();
 		$routes = $GLOBALS['moda_interact_registered_rest_routes'];
@@ -42,6 +42,7 @@ final class BillingControllerTest extends TestCase {
 			'moda-interact/v1/billing/subscription',
 			'moda-interact/v1/billing/subscription/switch',
 			'moda-interact/v1/billing/subscription/cancel',
+			'moda-interact/v1/billing/recovery-credit-purchases',
 		), array_keys( $routes ) );
 		foreach ( $routes as $route ) {
 			self::assertSame( array( $controller, 'authorizeAdministrator' ), $route['permission_callback'] );
@@ -56,6 +57,7 @@ final class BillingControllerTest extends TestCase {
 		$action_id = '550e8400-e29b-41d4-a716-446655440000';
 		self::assertSame( 'AWAITING_CONFIRMATION', $controller->postSubscription( new WP_REST_Request( 'POST', array( '_locale' => 'user' ), array( 'merchantPricingPlanId' => 'plan_1', 'actionId' => $action_id ) ) )->get_data()['state'] );
 		self::assertSame( 'CONFIRMED', $controller->postSubscriptionCancel( new WP_REST_Request( 'POST', array(), array( 'actionId' => $action_id ) ) )->get_data()['state'] );
+		self::assertSame( self::purchase(), $controller->postRecoveryCreditPurchase( new WP_REST_Request( 'POST', array(), array( 'merchantPricingUsageEventId' => 'usage_bronze', 'actionId' => $action_id ) ) )->get_data() );
 
 		self::assertSame( 'https://api.example.test/v1/billing', $requests[0][0] );
 		self::assertSame( 'https://api.example.test/v1/billing/plans?locale=en-GB', $requests[1][0] );
@@ -64,6 +66,10 @@ final class BillingControllerTest extends TestCase {
 		self::assertArrayNotHasKey( 'actionId', json_decode( $requests[2][1]['body'], true ) );
 		self::assertSame( 'DELETE', $requests[3][1]['method'] );
 		self::assertArrayNotHasKey( 'body', $requests[3][1] );
+		self::assertSame( 'https://api.example.test/v1/billing/recovery-credit-purchases', $requests[4][0] );
+		self::assertSame( $action_id, $requests[4][1]['headers']['Idempotency-Key'] );
+		self::assertSame( array( 'merchantPricingUsageEventId' => 'usage_bronze' ), json_decode( $requests[4][1]['body'], true ) );
+		self::assertArrayNotHasKey( 'actionId', json_decode( $requests[4][1]['body'], true ) );
 		foreach ( $requests as $request ) {
 			self::assertArrayNotHasKey( 'shopId', $request[1]['headers'] );
 			self::assertArrayNotHasKey( 'domain', $request[1]['headers'] );
@@ -75,10 +81,14 @@ final class BillingControllerTest extends TestCase {
 		$controller = $this->controller( $requests, array() );
 		$tenant = $controller->getBilling( new WP_REST_Request( 'GET', array( 'shopId' => 'attacker' ) ) );
 		$bad_action = $controller->postSubscription( new WP_REST_Request( 'POST', array(), array( 'merchantPricingPlanId' => 'plan_1', 'actionId' => 'not-a-uuid' ) ) );
+		$bad_purchase = $controller->postRecoveryCreditPurchase( new WP_REST_Request( 'POST', array(), array( 'merchantPricingUsageEventId' => 'usage_1', 'actionId' => 'bad' ) ) );
+		$unknown_purchase_field = $controller->postRecoveryCreditPurchase( new WP_REST_Request( 'POST', array(), array( 'merchantPricingUsageEventId' => 'usage_1', 'actionId' => '550e8400-e29b-41d4-a716-446655440000', 'quantity' => 2 ) ) );
 		self::assertSame( 400, $tenant->get_status() );
 		self::assertSame( array( 'error' => 'invalid_request' ), $tenant->get_data() );
 		self::assertSame( 'private, no-store', $tenant->get_headers()['Cache-Control'] );
 		self::assertSame( 400, $bad_action->get_status() );
+		self::assertSame( 400, $bad_purchase->get_status() );
+		self::assertSame( 400, $unknown_purchase_field->get_status() );
 		self::assertSame( array(), $requests );
 	}
 
@@ -89,6 +99,21 @@ final class BillingControllerTest extends TestCase {
 		self::assertSame( 409, $response->get_status() );
 		self::assertSame( array( 'error' => 'billing_operation_in_progress' ), $response->get_data() );
 		self::assertSame( 'private, no-store', $response->get_headers()['Cache-Control'] );
+	}
+
+	public function test_preserves_only_bounded_top_up_error_codes(): void {
+		$requests = array();
+		foreach ( array(
+			array( 409, 'top_up_purchase_pending', 409 ),
+			array( 409, 'idempotency_conflict', 409 ),
+			array( 404, 'top_up_bundle_not_found', 404 ),
+			array( 409, 'top_up_purchase_unavailable', 409 ),
+		) as $case ) {
+			$controller = $this->controller( $requests, array(), $case[0], array( 'error' => $case[1], 'message' => 'provider details must not escape' ) );
+			$response = $controller->postRecoveryCreditPurchase( new WP_REST_Request( 'POST', array(), array( 'merchantPricingUsageEventId' => 'usage_bronze', 'actionId' => '550e8400-e29b-41d4-a716-446655440000' ) ) );
+			self::assertSame( $case[2], $response->get_status() );
+			self::assertSame( array( 'error' => $case[1] ), $response->get_data() );
+		}
 	}
 
 	public function test_requires_valid_local_connection_and_matching_site_before_hosted_call(): void {
@@ -147,5 +172,9 @@ final class BillingControllerTest extends TestCase {
 
 	private static function cancellation(): array {
 		return array( 'schemaVersion' => 1, 'operationId' => 'op_2', 'kind' => 'CANCEL', 'state' => 'CONFIRMED', 'confirmationUrl' => null );
+	}
+
+	private static function purchase(): array {
+		return array( 'schemaVersion' => 1, 'purchaseId' => 'purchase_1', 'operationId' => 'operation_1', 'state' => 'AWAITING_CONFIRMATION', 'confirmationUrl' => 'https://woocommerce.com/confirm/1' );
 	}
 }

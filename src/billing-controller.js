@@ -46,6 +46,25 @@ export function planActionFor(data, plan) {
 	return null;
 }
 
+export function canPurchaseRecoveryCredits(data, usageEventId) {
+	if (
+		!data?.topUps?.configured ||
+		!data.topUps.purchaseEligible ||
+		typeof usageEventId !== 'string'
+	) {
+		return false;
+	}
+	const offer = data.topUps.offers.find(
+		(entry) => entry.merchantPricingUsageEventId === usageEventId
+	);
+	return Boolean(
+		offer?.purchaseEligible &&
+		!data.topUps.unresolvedPurchases.some(
+			(purchase) => purchase.merchantPricingUsageEventId === usageEventId
+		)
+	);
+}
+
 function initialState() {
 	return {
 		status: 'IDLE',
@@ -55,6 +74,7 @@ function initialState() {
 		view: 'SUMMARY',
 		command: null,
 		notice: null,
+		blockedTopUpEventId: null,
 		error: null,
 	};
 }
@@ -155,7 +175,14 @@ export class BillingController {
 
 		const revision = ++this.billingRevision;
 		const connectionRevision = this.connectionRevision;
-		this.publish({ ...this.state, status: 'LOADING', error: null });
+		this.publish({
+			...this.state,
+			status: 'LOADING',
+			error: null,
+			...(afterCommand
+				? {}
+				: { notice: null, blockedTopUpEventId: null }),
+		});
 		const operation = this.client
 			.getBilling()
 			.then((data) => {
@@ -284,6 +311,34 @@ export class BillingController {
 		);
 	}
 
+	purchaseRecoveryCredits(usageEventId) {
+		if (
+			this.state.status !== 'READY' ||
+			!canPurchaseRecoveryCredits(this.state.data, usageEventId) ||
+			this.state.blockedTopUpEventId === usageEventId
+		) {
+			return Promise.resolve(this.state);
+		}
+		return this.submitCommand(
+			() =>
+				this.client.purchaseRecoveryCredits(
+					usageEventId,
+					createBillingActionId()
+				),
+			false,
+			{
+				refreshErrors: new Set([
+					'top_up_purchase_pending',
+					'billing_provider_outcome_unknown',
+					'billing_operation_in_progress',
+					'top_up_bundle_not_found',
+					'top_up_purchase_unavailable',
+				]),
+				usageEventId,
+			}
+		);
+	}
+
 	cancel() {
 		const data = this.state.data;
 		if (
@@ -303,7 +358,7 @@ export class BillingController {
 		);
 	}
 
-	submitCommand(command, cancellation = false) {
+	submitCommand(command, cancellation = false, options = {}) {
 		if (
 			this.disposed ||
 			!this.active ||
@@ -340,14 +395,36 @@ export class BillingController {
 			})
 			.catch((error) => {
 				if (this.isCurrentConnection(connectionRevision)) {
+					const code = error?.message ?? 'remote_unavailable';
+					const refresh = options.refreshErrors?.has(code) ?? false;
 					this.publish({
 						...this.state,
 						command: null,
-						error: error?.message ?? 'remote_unavailable',
+						notice: refresh ? code : null,
+						blockedTopUpEventId:
+							options.usageEventId &&
+							[
+								'top_up_purchase_pending',
+								'billing_provider_outcome_unknown',
+								'billing_operation_in_progress',
+								'top_up_bundle_not_found',
+								'idempotency_conflict',
+							].includes(code)
+								? options.usageEventId
+								: this.state.blockedTopUpEventId,
+						error: refresh ? null : code,
 					});
+					if (refresh) {
+						return this.refreshAfterCommand().then(() => {
+							if (this.isCurrentConnection(connectionRevision)) {
+								this.publish({ ...this.state, notice: code });
+							}
+							return this.state;
+						});
+					}
 					if (
-						error?.message === 'RECONNECT_REQUIRED' ||
-						error?.message === 'remote_authentication_failed'
+						code === 'RECONNECT_REQUIRED' ||
+						code === 'remote_authentication_failed'
 					) {
 						this.onConnectionAttention();
 					}

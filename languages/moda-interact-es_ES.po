@@ -726,3 +726,47 @@ msgstr "Guardando…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Guardar categoría"
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr "Iniciando la compra"
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr "La confirmación debe revisarse. No vuelvas a intentar este paquete todavía."
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr "Pago confirmado. Se están activando los créditos."
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr "Ya hay una compra pendiente de este paquete. Actualiza el resumen de facturación antes de volver a intentarlo."
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr "No se pudo iniciar la compra."
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr "Este paquete ya no está disponible."
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr "No se pudo verificar este intento de compra. Actualiza el resumen de facturación antes de volver a intentarlo."
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr "Compra pendiente"
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr "Paquetes de créditos predefinidos"
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr "Elige un paquete. WooCommerce mostrará el importe final y los impuestos aplicables para que los confirmes."
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr "Comprar %s créditos"

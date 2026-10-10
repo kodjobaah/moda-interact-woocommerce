@@ -733,3 +733,47 @@ msgstr "Tallennetaan…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Tallenna luokka"
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr "Ostosta aloitetaan"
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr "Vahvistus on selvitettävä. Älä yritä tätä pakettia vielä uudelleen."
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr "Maksu vahvistettu. Krediittejä otetaan käyttöön."
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr "Tämän paketin ostos on jo kesken. Päivitä laskutusyhteenveto ennen uutta yritystä."
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr "Ostoa ei voitu aloittaa."
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr "Tämä paketti ei ole enää saatavilla."
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr "Tätä ostoyritystä ei voitu vahvistaa. Päivitä laskutusyhteenveto ennen uutta yritystä."
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr "Osto odottaa"
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr "Ennalta määritetyt krediittipaketit"
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr "Valitse yksi paketti. WooCommerce näyttää vahvistettavan loppusumman ja mahdolliset verot."
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr "Osta %s krediittiä"

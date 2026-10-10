@@ -735,3 +735,47 @@ msgstr ""
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr ""
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr ""

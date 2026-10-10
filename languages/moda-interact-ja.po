@@ -733,3 +733,47 @@ msgstr "保存中…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "カテゴリを保存"
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr "購入を開始しています"
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr "確認の照合が必要です。このバンドルをまだ再試行しないでください。"
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr "お支払いが確認されました。クレジットを有効化しています。"
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr "このバンドルはすでに購入処理中です。再試行する前に請求概要を更新してください。"
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr "購入を開始できませんでした。"
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr "このバンドルは利用できなくなりました。"
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr "この購入試行を確認できませんでした。再試行する前に請求概要を更新してください。"
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr "購入保留中"
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr "定義済みクレジットバンドル"
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr "バンドルを1つ選択してください。WooCommerceで最終金額と適用される税金を確認できます。"
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr "%s クレジットを購入"

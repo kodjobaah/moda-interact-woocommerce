@@ -2,6 +2,8 @@ import apiFetch from '@wordpress/api-fetch';
 
 export const BILLING_PATH = '/moda-interact/v1/billing';
 export const BILLING_PLANS_PATH = '/moda-interact/v1/billing/plans';
+export const BILLING_TOP_UP_PURCHASE_PATH =
+	'/moda-interact/v1/billing/recovery-credit-purchases';
 
 const ERROR_CODES = new Set([
 	'RECONNECT_REQUIRED',
@@ -16,6 +18,10 @@ const ERROR_CODES = new Set([
 	'billing_provider_outcome_unknown',
 	'billing_operation_failed',
 	'invalid_plan_selection',
+	'top_up_purchase_pending',
+	'top_up_bundle_not_found',
+	'top_up_purchase_unavailable',
+	'idempotency_conflict',
 	'invalid_request',
 ]);
 
@@ -384,6 +390,28 @@ function parseCommand(payload, cancellation = false) {
 	return payload;
 }
 
+function parseTopUpPurchaseCommand(payload) {
+	if (
+		!hasExactKeys(payload, [
+			'schemaVersion',
+			'purchaseId',
+			'operationId',
+			'state',
+			'confirmationUrl',
+		]) ||
+		payload.schemaVersion !== 1 ||
+		!isText(payload.purchaseId, 128) ||
+		!payload.purchaseId.trim() ||
+		!isText(payload.operationId, 128) ||
+		!payload.operationId.trim() ||
+		payload.state !== 'AWAITING_CONFIRMATION' ||
+		!isWooConfirmationUrl(payload.confirmationUrl)
+	) {
+		throw new Error('remote_response_invalid');
+	}
+	return payload;
+}
+
 function readErrorCode(error) {
 	if (!isRecord(error)) {
 		return null;
@@ -437,6 +465,15 @@ export function createBillingClient(request = apiFetch) {
 		},
 		cancelSubscription(actionId) {
 			return this.command('/subscription/cancel', { actionId }, true);
+		},
+		purchaseRecoveryCredits(merchantPricingUsageEventId, actionId) {
+			return withBoundedErrors(
+				request({
+					path: BILLING_TOP_UP_PURCHASE_PATH,
+					method: 'POST',
+					data: { merchantPricingUsageEventId, actionId },
+				}).then(parseTopUpPurchaseCommand)
+			);
 		},
 		command(suffix, data, cancellation) {
 			return withBoundedErrors(

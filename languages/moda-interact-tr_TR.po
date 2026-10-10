@@ -733,3 +733,47 @@ msgstr "Kaydediliyor…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Kategoriyi kaydet"
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr "Satın alma başlatılıyor"
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr "Onay sonucunun uzlaştırılması gerekiyor. Bu paketi henüz tekrar denemeyin."
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr "Ödeme onaylandı. Krediler etkinleştiriliyor."
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr "Bu paket için bekleyen bir satın alma zaten var. Yeniden denemeden önce faturalandırma özetini yenileyin."
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr "Satın alma başlatılamadı."
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr "Bu paket artık kullanılamıyor."
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr "Bu satın alma girişimi doğrulanamadı. Yeniden denemeden önce faturalandırma özetini yenileyin."
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr "Satın alma beklemede"
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr "Önceden belirlenmiş kredi paketleri"
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr "Bir paket seçin. WooCommerce, onaylamanız için nihai tutarı ve varsa vergileri gösterir."
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr "%s kredi satın al"

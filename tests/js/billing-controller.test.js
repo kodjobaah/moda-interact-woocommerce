@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
 	BillingController,
+	canPurchaseRecoveryCredits,
 	createBillingActionId,
 	isBillingReturn,
 	planActionFor,
@@ -31,6 +32,25 @@ function billing(overrides = {}) {
 	};
 }
 
+function topUps(overrides = {}) {
+	return {
+		configured: true,
+		purchaseEligible: true,
+		offers: [
+			{
+				merchantPricingUsageEventId: 'usage_bronze',
+				purchaseEligible: true,
+			},
+			{
+				merchantPricingUsageEventId: 'usage_silver',
+				purchaseEligible: true,
+			},
+		],
+		unresolvedPurchases: [],
+		...overrides,
+	};
+}
+
 function deferred() {
 	let resolve;
 	let reject;
@@ -42,6 +62,39 @@ function deferred() {
 }
 
 describe('BillingController', () => {
+	it('applies global and offer eligibility independently and blocks only unresolved bundles', () => {
+		const data = billing({
+			topUps: topUps({
+				unresolvedPurchases: [
+					{ merchantPricingUsageEventId: 'usage_bronze' },
+				],
+			}),
+		});
+		expect(canPurchaseRecoveryCredits(data, 'usage_bronze')).toBe(false);
+		expect(canPurchaseRecoveryCredits(data, 'usage_silver')).toBe(true);
+		expect(
+			canPurchaseRecoveryCredits(
+				billing({ topUps: topUps({ purchaseEligible: false }) }),
+				'usage_silver'
+			)
+		).toBe(false);
+		expect(
+			canPurchaseRecoveryCredits(
+				billing({
+					topUps: topUps({
+						offers: [
+							{
+								merchantPricingUsageEventId: 'usage_silver',
+								purchaseEligible: false,
+							},
+						],
+					}),
+				}),
+				'usage_silver'
+			)
+		).toBe(false);
+	});
+
 	it('waits for CONNECTED and shares one billing read', async () => {
 		const pending = deferred();
 		const client = { getBilling: vi.fn(() => pending.promise) };
@@ -217,6 +270,112 @@ describe('BillingController', () => {
 		expect(navigate).toHaveBeenCalledWith(
 			'https://woocommerce.com/confirm/1'
 		);
+	});
+
+	it('submits one eligible bundle once and redirects only to the accepted confirmation result', async () => {
+		const pending = deferred();
+		const client = {
+			getBilling: vi
+				.fn()
+				.mockResolvedValue(billing({ topUps: topUps() })),
+			purchaseRecoveryCredits: vi.fn(() => pending.promise),
+		};
+		const navigate = vi.fn();
+		const controller = new BillingController(client, () => {}, navigate);
+		controller.setActive(true);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.billingPromise;
+		const first = controller.purchaseRecoveryCredits('usage_bronze');
+		const second = controller.purchaseRecoveryCredits('usage_silver');
+		await Promise.resolve();
+		expect(client.purchaseRecoveryCredits).toHaveBeenCalledTimes(1);
+		expect(client.purchaseRecoveryCredits.mock.calls[0][0]).toBe(
+			'usage_bronze'
+		);
+		expect(client.purchaseRecoveryCredits.mock.calls[0][1]).toMatch(
+			/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+		);
+		expect(controller.state.command).toBe('SUBMITTING');
+		pending.resolve({
+			purchaseId: 'purchase_1',
+			operationId: 'operation_1',
+			state: 'AWAITING_CONFIRMATION',
+			confirmationUrl: 'https://woocommerce.com/confirm/1',
+		});
+		await Promise.all([first, second]);
+		expect(navigate).toHaveBeenCalledWith(
+			'https://woocommerce.com/confirm/1'
+		);
+	});
+
+	it('refreshes once after an unknown purchase outcome and never retries automatically', async () => {
+		const unresolved = {
+			merchantPricingUsageEventId: 'usage_bronze',
+		};
+		const client = {
+			getBilling: vi
+				.fn()
+				.mockResolvedValueOnce(billing({ topUps: topUps() }))
+				.mockResolvedValueOnce(
+					billing({
+						topUps: topUps({
+							offers: [
+								{
+									...topUps().offers[0],
+									purchaseEligible: false,
+								},
+								topUps().offers[1],
+							],
+							unresolvedPurchases: [unresolved],
+						}),
+					})
+				),
+			purchaseRecoveryCredits: vi
+				.fn()
+				.mockRejectedValue(
+					new Error('billing_provider_outcome_unknown')
+				),
+		};
+		const controller = new BillingController(client);
+		controller.setActive(true);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.billingPromise;
+		await controller.purchaseRecoveryCredits('usage_bronze');
+		expect(client.getBilling).toHaveBeenCalledTimes(2);
+		expect(controller.state).toMatchObject({
+			notice: 'billing_provider_outcome_unknown',
+			blockedTopUpEventId: 'usage_bronze',
+			status: 'READY',
+		});
+		await controller.purchaseRecoveryCredits('usage_bronze');
+		expect(client.purchaseRecoveryCredits).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not redirect after a top-up response arrives following disconnect', async () => {
+		const pending = deferred();
+		const client = {
+			getBilling: vi
+				.fn()
+				.mockResolvedValue(billing({ topUps: topUps() })),
+			purchaseRecoveryCredits: vi.fn(() => pending.promise),
+		};
+		const navigate = vi.fn();
+		const controller = new BillingController(client, () => {}, navigate);
+		controller.setActive(true);
+		controller.setConnectionStatus('CONNECTED');
+		await controller.billingPromise;
+		const submission = controller.purchaseRecoveryCredits('usage_bronze');
+		await Promise.resolve();
+		controller.setConnectionStatus('DISCONNECTED');
+		pending.resolve({
+			purchaseId: 'purchase_1',
+			operationId: 'operation_1',
+			state: 'AWAITING_CONFIRMATION',
+			confirmationUrl: 'https://woocommerce.com/confirm/1',
+		});
+		await submission;
+		expect(navigate).not.toHaveBeenCalled();
+		expect(controller.state).toMatchObject({ status: 'IDLE', data: null });
 	});
 
 	it('keeps the paid plan and performs one durable read after accepted cancellation', async () => {

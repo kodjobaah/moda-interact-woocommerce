@@ -733,3 +733,47 @@ msgstr "Opslaan…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Categorie opslaan"
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr "Aankoop wordt gestart"
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr "De bevestiging moet worden gecontroleerd. Probeer deze bundel nog niet opnieuw."
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr "Betaling bevestigd. De tegoeden worden geactiveerd."
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr "Voor deze bundel is al een aankoop in behandeling. Vernieuw het factureringsoverzicht voordat u het opnieuw probeert."
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr "De aankoop kon niet worden gestart."
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr "Deze bundel is niet meer beschikbaar."
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr "Deze aankooppoging kon niet worden geverifieerd. Vernieuw het factureringsoverzicht voordat u het opnieuw probeert."
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr "Aankoop in behandeling"
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr "Vooraf bepaalde bundels met tegoed"
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr "Kies één bundel. WooCommerce toont het definitieve bedrag en eventuele belasting ter bevestiging."
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr "%s tegoed kopen"

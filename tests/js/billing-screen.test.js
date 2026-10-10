@@ -9,6 +9,7 @@ import {
 	resolveBillingLocale,
 	restoreCancelDialogFocus,
 	BillingHero,
+	TopUpSection,
 } from '../../src/billing-screen';
 import { CapacitySummary } from '../../src/billing/capacity-summary';
 
@@ -127,7 +128,187 @@ function readyState(data, overrides = {}) {
 	};
 }
 
+function topUpData(overrides = {}) {
+	return presentation({
+		topUps: {
+			configured: true,
+			purchaseEligible: true,
+			offers: [
+				{
+					merchantPricingUsageEventId: 'usage_bronze_private',
+					label: 'Bronze',
+					creditsGranted: 10,
+					amountMinor: 1000,
+					currency: 'USD',
+					purchaseEligible: true,
+					unavailableReason: null,
+				},
+				{
+					merchantPricingUsageEventId: 'usage_silver_private',
+					label: 'Silver',
+					creditsGranted: 25,
+					amountMinor: 2000,
+					currency: 'USD',
+					purchaseEligible: true,
+					unavailableReason: null,
+				},
+			],
+			latestPurchase: null,
+			unresolvedPurchases: [],
+			...overrides,
+		},
+	});
+}
+
+function findElements(node, predicate, result = []) {
+	if (Array.isArray(node)) {
+		for (const child of node) {
+			findElements(child, predicate, result);
+		}
+	} else if (node && typeof node === 'object' && node.props) {
+		if (predicate(node)) {
+			result.push(node);
+		}
+		findElements(node.props.children, predicate, result);
+	}
+	return result;
+}
+
 describe('Billing screen', () => {
+	it('renders only configured offers and keeps event IDs out of merchant-facing content', () => {
+		const data = topUpData();
+		const onPurchase = vi.fn();
+		const section = TopUpSection({
+			data,
+			state: readyState(data),
+			onPurchase,
+			locale: 'en-US',
+		});
+		const buttons = findElements(section, (node) => node.type === 'button');
+		const content = textContent(section);
+
+		expect(content).toContain('Bronze');
+		expect(content).toContain('$10.00');
+		expect(content).toContain('Buy 10 credits');
+		expect(content).not.toContain('usage_bronze_private');
+		expect(buttons).toHaveLength(2);
+		buttons[0].props.onClick();
+		expect(onPurchase).toHaveBeenCalledWith('usage_bronze_private');
+		expect(
+			TopUpSection({
+				data: topUpData({ configured: false }),
+				state: readyState(data),
+				onPurchase,
+			})
+		).toBeNull();
+		expect(
+			TopUpSection({
+				data: topUpData({ offers: [] }),
+				state: readyState(data),
+				onPurchase,
+			})
+		).toBeNull();
+	});
+
+	it('shows per-bundle pending and unknown states without blocking other offers', () => {
+		const data = topUpData({
+			offers: [
+				{
+					...topUpData().topUps.offers[0],
+					purchaseEligible: false,
+					unavailableReason: 'PENDING_PURCHASE',
+				},
+				topUpData().topUps.offers[1],
+			],
+			unresolvedPurchases: [
+				{
+					merchantPricingUsageEventId: 'usage_bronze_private',
+					operationState: 'OUTCOME_UNKNOWN',
+				},
+			],
+		});
+		const section = TopUpSection({
+			data,
+			state: readyState(data),
+			onPurchase: vi.fn(),
+			locale: 'en-US',
+		});
+		const buttons = findElements(section, (node) => node.type === 'button');
+		const content = textContent(section);
+
+		expect(content).toContain(
+			'Confirmation needs reconciliation. Do not retry this bundle yet.'
+		);
+		expect(buttons).toHaveLength(1);
+		expect(buttons[0].props.disabled).toBe(false);
+	});
+
+	it.each([
+		['INITIATING', 'Starting purchase'],
+		['AWAITING_CONFIRMATION', 'Waiting for Woo confirmation'],
+		[
+			'OUTCOME_UNKNOWN',
+			'Confirmation needs reconciliation. Do not retry this bundle yet.',
+		],
+		['CONFIRMED', 'Payment confirmed. Credits are being activated.'],
+	])(
+		'presents unresolved operation state %s without a retry control',
+		(operationState, message) => {
+			const data = topUpData({
+				offers: [
+					{
+						...topUpData().topUps.offers[0],
+						purchaseEligible: false,
+						unavailableReason: 'PENDING_PURCHASE',
+					},
+				],
+				unresolvedPurchases: [
+					{
+						merchantPricingUsageEventId: 'usage_bronze_private',
+						operationState,
+					},
+				],
+			});
+			const section = TopUpSection({
+				data,
+				state: readyState(data),
+				onPurchase: vi.fn(),
+				locale: 'en-US',
+			});
+
+			expect(textContent(section)).toContain(message);
+			expect(
+				findElements(section, (node) => node.type === 'button')
+			).toHaveLength(0);
+		}
+	);
+
+	it('disables every Buy action when global eligibility or a command lock is active', () => {
+		const data = topUpData({ purchaseEligible: false });
+		const section = TopUpSection({
+			data,
+			state: readyState(data),
+			onPurchase: vi.fn(),
+			locale: 'en-US',
+		});
+		const buttons = findElements(section, (node) => node.type === 'button');
+		expect(buttons).toHaveLength(2);
+		expect(buttons.every((button) => button.props.disabled)).toBe(true);
+
+		const lockedData = topUpData();
+		const locked = TopUpSection({
+			data: lockedData,
+			state: readyState(lockedData, { command: 'SUBMITTING' }),
+			onPurchase: vi.fn(),
+			locale: 'en-US',
+		});
+		expect(
+			findElements(locked, (node) => node.type === 'button').every(
+				(button) => button.props.disabled
+			)
+		).toBe(true);
+	});
+
 	it('keeps frozen and pending-operation notices visible in Plans view', () => {
 		const data = presentation({
 			experienceState: 'FROZEN',

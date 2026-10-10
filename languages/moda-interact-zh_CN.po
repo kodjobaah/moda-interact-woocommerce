@@ -733,3 +733,47 @@ msgstr "正在保存…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "保存类别"
+
+#: src/billing/top-up-section.js
+msgid "Starting purchase"
+msgstr "正在开始购买"
+
+#: src/billing/top-up-section.js
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr "确认结果需要核对。请暂时不要重试此套餐。"
+
+#: src/billing/top-up-section.js
+msgid "Payment confirmed. Credits are being activated."
+msgstr "付款已确认。正在激活额度。"
+
+#: src/billing/top-up-section.js
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr "此套餐已有待处理的购买。再次尝试前请刷新账单摘要。"
+
+#: src/billing/top-up-section.js
+msgid "The purchase could not be started."
+msgstr "无法开始购买。"
+
+#: src/billing/top-up-section.js
+msgid "This bundle is no longer available."
+msgstr "此套餐已不再提供。"
+
+#: src/billing/top-up-section.js
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr "无法验证此次购买尝试。再次尝试前请刷新账单摘要。"
+
+#: src/billing/top-up-section.js
+msgid "Purchase pending"
+msgstr "购买待处理"
+
+#: src/billing/top-up-section.js
+msgid "Predefined credit bundles"
+msgstr "预定义额度套餐"
+
+#: src/billing/top-up-section.js
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr "选择一个套餐。WooCommerce 将显示最终费用和适用税额供你确认。"
+
+#: src/billing/top-up-section.js
+msgid "Buy %s credits"
+msgstr "购买 %s 个额度"

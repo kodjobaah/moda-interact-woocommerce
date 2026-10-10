@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
 	BILLING_PATH,
 	BILLING_PLANS_PATH,
+	BILLING_TOP_UP_PURCHASE_PATH,
 	createBillingClient,
 	isWooConfirmationUrl,
 	parseBillingPlans,
@@ -151,6 +152,52 @@ describe('billing local REST client', () => {
 				actionId: '550e8400-e29b-41d4-a716-446655440000',
 			},
 		});
+	});
+
+	it('sends one opaque top-up offer and accepts only a safe exact purchase response', async () => {
+		const purchase = {
+			schemaVersion: 1,
+			purchaseId: 'purchase_1',
+			operationId: 'operation_1',
+			state: 'AWAITING_CONFIRMATION',
+			confirmationUrl: 'https://woocommerce.com/confirm/1',
+		};
+		const request = vi.fn().mockResolvedValue(purchase);
+		const client = createBillingClient(request);
+		expect(
+			await client.purchaseRecoveryCredits(
+				'usage_bronze',
+				'550e8400-e29b-41d4-a716-446655440000'
+			)
+		).toEqual(purchase);
+		expect(request).toHaveBeenCalledWith({
+			path: BILLING_TOP_UP_PURCHASE_PATH,
+			method: 'POST',
+			data: {
+				merchantPricingUsageEventId: 'usage_bronze',
+				actionId: '550e8400-e29b-41d4-a716-446655440000',
+			},
+		});
+
+		for (const invalid of [
+			{ ...purchase, purchaseId: ' ' },
+			{ ...purchase, operationId: '' },
+			{ ...purchase, state: 'CONFIRMED' },
+			{
+				...purchase,
+				confirmationUrl: 'https://woocommerce.com.attacker.test/',
+			},
+			{ ...purchase, providerContractId: 'must_not_escape' },
+		]) {
+			await expect(
+				createBillingClient(
+					vi.fn().mockResolvedValue(invalid)
+				).purchaseRecoveryCredits(
+					'usage_bronze',
+					'550e8400-e29b-41d4-a716-446655440000'
+				)
+			).rejects.toThrow('remote_response_invalid');
+		}
 	});
 
 	it('reduces unknown server errors to a bounded local category', async () => {
