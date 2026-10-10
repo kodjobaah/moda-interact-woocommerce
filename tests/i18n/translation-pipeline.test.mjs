@@ -8,7 +8,8 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { test } from 'vitest';
+// eslint-disable-next-line vitest/no-import-node-test -- This suite runs with node --test.
+import { test } from 'node:test';
 import { compileCatalogues } from '../../scripts/i18n/compile.mjs';
 import {
 	catalogueForWordPressLocale,

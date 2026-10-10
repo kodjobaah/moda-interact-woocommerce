@@ -42,3 +42,33 @@ per-shop API write exists.
 `Shop.storeLocale`, the CommerceAgent conversation language and WhatsApp
 language are **separate** from this administrator UI translation mechanism.
 Shopify ICU catalogues are translation references, not WordPress gettext assets.
+
+## ARCH-026-WOOCOMMERCE-010 — initial translation batch
+
+The English gettext source plus complete French (`fr_FR`), German (`de_DE`),
+Italian (`it_IT`), and Spanish (`es_ES`) reviewed PO sources cover the current
+169-message template. WordPress PHP `.mo` files and script-handle-specific JSON
+are built from these PO sources by `npm run i18n:compile` and included in the
+production plugin ZIP. A future message added to the POT requires an explicit
+translation update in **all present** PO files; the compiler fails otherwise.
+
+Terminology guidelines for this batch:
+
+| Source | French | German | Italian | Spanish |
+| --- | --- | --- | --- | --- |
+| Billing | Facturation | Abrechnung | Fatturazione | Facturación |
+| Recovery settings | Paramètres de récupération | Wiederherstellungseinstellungen | Impostazioni di recupero | Configuración de recuperación |
+| Store category | Catégorie de la boutique | Shop-Kategorie | Categoria del negozio | Categoría de la tienda |
+| Save category | Enregistrer la catégorie | Kategorie speichern | Salva categoria | Guardar categoría |
+| Free (named plan) | Free | Free | Free | Free |
+
+The product names **Moda Interact**, **WooCommerce**, **CommerceAgent**, and
+the named plan **Free** are intentionally not translated. For the rest, localized
+phrasing is required even when some Shopify reference catalogues still contain
+English fallbacks. `en_US` and `en_GB` use the original English source and do not
+need pseudo-translation PO files.
+
+Batch tests: `npm run test:i18n`; actual WordPress locale checks are included in
+`npm run test:integration:wordpress` and verify four administrator locales while
+the site's locale remains `en_GB`. Other language batches and WOO-014's global
+20-language gate remain separate tasks.

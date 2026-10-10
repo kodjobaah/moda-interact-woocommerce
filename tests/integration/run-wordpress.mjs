@@ -10,6 +10,7 @@ import { createWordPressFetch } from './wordpress-http.mjs';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
 import { assertStoreCategoryWordPress } from './category-assertions.mjs';
 import { assertLocaleWordPress } from './locale-wordpress.mjs';
+import { assertLocaleBatch010 } from './locale-batch-010.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -771,6 +772,7 @@ try {
 	// WordPress gettext and the bundled script must honor the administrator's
 	// UI locale without rewriting the site/store language.
 	assertLocaleWordPress({ wp, parseJsonOutput, repository });
+	assertLocaleBatch010({ wp, parseJsonOutput, repository });
 	const caPathInContainer = `${pluginDir}/tests/integration/.fixture-ca.pem`;
 	command(
 		'npm',
