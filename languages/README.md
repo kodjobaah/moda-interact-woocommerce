@@ -72,3 +72,31 @@ Batch tests: `npm run test:i18n`; actual WordPress locale checks are included in
 `npm run test:integration:wordpress` and verify four administrator locales while
 the site's locale remains `en_GB`. Other language batches and WOO-014's global
 20-language gate remain separate tasks.
+
+## ARCH-026-WOOCOMMERCE-011 — Northern European translation batch
+
+The Dutch (`nl_NL`), Danish (`da_DK`), Finnish (`fi`), Norwegian Bokmål
+(`nb_NO`) and Swedish (`sv_SE`) PO catalogues each cover all **169** source
+messages in the same WordPress text domain. They use the WOO-009 compiler to
+produce the PHP `.mo` and JavaScript translation assets; these generated files
+are not committed and are rebuilt for the production ZIP. The source catalogue
+remains the only English source of truth.
+
+| English source | Dutch | Danish | Finnish | Norwegian Bokmål | Swedish |
+| --- | --- | --- | --- | --- | --- |
+| Billing | Facturering | Fakturering | Laskutus | Fakturering | Fakturering |
+| Recovery settings | Herstelinstellingen | Indstillinger for gendannelse | Palautusasetukset | Innstillinger for gjenoppretting | Återställningsinställningar |
+| Store category | Winkelcategorie | Butikskategori | Kaupan luokka | Butikkategori | Butikskategori |
+| Save category | Categorie opslaan | Gem kategori | Tallenna luokka | Lagre kategori | Spara kategori |
+| Free (named plan) | Free | Free | Free | Free | Free |
+
+**Moda Interact**, **WooCommerce**, **CommerceAgent** and the named plan
+**Free** remain unchanged. Shopify translations informed matching merchant UI
+concepts, but English fallback values in Shopify were not accepted as
+translations for this plugin.
+
+`npm run test:i18n` checks this batch's exact source-key coverage and PHP/JS
+assets; `npm run test:integration:wordpress` switches the signed-in WordPress
+administrator through all five locales while verifying the unchanged site
+locale (`en_GB`). The missing WOO-012 and WOO-013 packs remain deliberately
+permitted until WOO-014's strict twenty-language release gate.

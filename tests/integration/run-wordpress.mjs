@@ -11,6 +11,7 @@ import { bootstrapInternationalContext } from './bootstrap-international-context
 import { assertStoreCategoryWordPress } from './category-assertions.mjs';
 import { assertLocaleWordPress } from './locale-wordpress.mjs';
 import { assertLocaleBatch010 } from './locale-batch-010.mjs';
+import { assertLocaleBatch011 } from './locale-batch-011.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -773,6 +774,7 @@ try {
 	// UI locale without rewriting the site/store language.
 	assertLocaleWordPress({ wp, parseJsonOutput, repository });
 	assertLocaleBatch010({ wp, parseJsonOutput, repository });
+	assertLocaleBatch011({ wp, parseJsonOutput, repository });
 	const caPathInContainer = `${pluginDir}/tests/integration/.fixture-ca.pem`;
 	command(
 		'npm',
