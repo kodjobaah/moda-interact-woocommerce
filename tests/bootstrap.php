@@ -12,6 +12,7 @@ $GLOBALS['moda_interact_can_activate_plugins'] = true;
 $GLOBALS['moda_interact_current_screen_id'] = 'woocommerce_page_wc-admin';
 $GLOBALS['moda_interact_registered_scripts'] = array();
 $GLOBALS['moda_interact_registered_styles'] = array();
+$GLOBALS['moda_interact_inline_scripts'] = array();
 $GLOBALS['moda_interact_enqueued_scripts'] = array();
 $GLOBALS['moda_interact_enqueued_styles'] = array();
 $GLOBALS['moda_interact_external_requests'] = array();
@@ -143,6 +144,11 @@ function wp_register_script( $handle, $src, $dependencies, $version, $in_footer 
 
 function wp_set_script_translations( $handle, $domain, $path = null ) {
 	$GLOBALS['moda_interact_script_translations'][] = array( $handle, $domain, $path );
+}
+
+function wp_add_inline_script( $handle, $data, $position = 'after' ) {
+	$GLOBALS['moda_interact_inline_scripts'][] = array( $handle, $data, $position );
+	return true;
 }
 
 function wp_register_style( $handle, $src, $dependencies, $version ) {

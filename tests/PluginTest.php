@@ -29,6 +29,7 @@ final class PluginTest extends TestCase {
 		$GLOBALS['moda_interact_can_activate_plugins'] = true;
 		$GLOBALS['moda_interact_current_screen_id'] = 'woocommerce_page_wc-admin';
 		$GLOBALS['moda_interact_registered_scripts'] = array();
+		$GLOBALS['moda_interact_inline_scripts'] = array();
 		$GLOBALS['moda_interact_script_translations'] = array();
 		$GLOBALS['moda_interact_registered_styles'] = array();
 		$GLOBALS['moda_interact_enqueued_scripts'] = array();
@@ -233,6 +234,8 @@ final class PluginTest extends TestCase {
 
 	public function test_assets_load_only_on_the_woocommerce_admin_screen(): void {
 		$setup = new Setup();
+		$GLOBALS['moda_interact_user_locale'] = 'de_DE';
+		$GLOBALS['moda_interact_store_locale'] = 'fr_FR';
 		$GLOBALS['moda_interact_current_screen_id'] = 'dashboard';
 		$setup->register_scripts();
 
@@ -248,5 +251,8 @@ final class PluginTest extends TestCase {
 			array( array( 'moda-interact', 'moda-interact', dirname( __DIR__ ) . '/languages' ) ),
 			$GLOBALS['moda_interact_script_translations']
 		);
+		self::assertSame( 'before', $GLOBALS['moda_interact_inline_scripts'][0][2] );
+		self::assertStringContainsString( '"user":"de_DE"', $GLOBALS['moda_interact_inline_scripts'][0][1] );
+		self::assertStringContainsString( '"site":"fr_FR"', $GLOBALS['moda_interact_inline_scripts'][0][1] );
 	}
 }

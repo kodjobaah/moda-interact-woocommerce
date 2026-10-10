@@ -1,9 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
 	BillingSummaryView,
+	BillingScreen,
 	PlanCard,
+	formatDate,
+	formatMoney,
+	formatQuantity,
+	resolveBillingLocale,
 	restoreCancelDialogFocus,
+	BillingHero,
 } from '../../src/billing-screen';
+import { CapacitySummary } from '../../src/billing/capacity-summary';
 
 function textContent(node) {
 	if (node === null || node === undefined || typeof node === 'boolean') {
@@ -11,6 +18,9 @@ function textContent(node) {
 	}
 	if (Array.isArray(node)) {
 		return node.map(textContent).join(' ');
+	}
+	if (node.type === CapacitySummary) {
+		return textContent(CapacitySummary(node.props));
 	}
 	if (typeof node === 'string' || typeof node === 'number') {
 		return String(node);
@@ -118,6 +128,98 @@ function readyState(data, overrides = {}) {
 }
 
 describe('Billing screen', () => {
+	it('keeps frozen and pending-operation notices visible in Plans view', () => {
+		const data = presentation({
+			experienceState: 'FROZEN',
+			pendingPlan: {
+				merchantPricingPlanId: 'plan_next',
+				displayName: 'Growth',
+				state: 'AWAITING_CONFIRMATION',
+			},
+		});
+		const screen = BillingScreen({
+			state: readyState(data, { view: 'PLANS' }),
+			onRefresh: vi.fn(),
+			onLoadPlans: vi.fn(),
+			onSelectPlan: vi.fn(),
+			onCancel: vi.fn(),
+			onSetView: vi.fn(),
+		});
+		const content = textContent(screen);
+
+		expect(content).toContain('Waiting for Woo confirmation');
+		expect(content).toContain(
+			'Paid included credits are temporarily unavailable'
+		);
+	});
+
+	it('keeps Billing hero actions accessible and respects plan availability', () => {
+		const data = presentation({
+			surfaces: {
+				...presentation().surfaces,
+				managePlansAllowed: false,
+			},
+		});
+		const onRefresh = vi.fn();
+		const onSetView = vi.fn();
+		const hero = BillingHero({
+			state: readyState(data, { view: 'SUMMARY' }),
+			onRefresh,
+			onSetView,
+		});
+		const summaryTab = findElement(
+			hero,
+			(node) =>
+				node.props.role === 'tab' && textContent(node) === 'Summary'
+		);
+		const plansTab = findElement(
+			hero,
+			(node) => node.props.role === 'tab' && textContent(node) === 'Plans'
+		);
+		const refreshButton = findElement(
+			hero,
+			(node) =>
+				node.type === 'button' &&
+				textContent(node) === 'Refresh billing'
+		);
+
+		expect(summaryTab.props['aria-selected']).toBe(true);
+		expect(plansTab.props.disabled).toBe(true);
+		plansTab.props.onClick();
+		expect(onSetView).toHaveBeenCalledWith('PLANS');
+		refreshButton.props.onClick();
+		expect(onRefresh).toHaveBeenCalledOnce();
+	});
+
+	it('uses normalized administrator locale before site and English fallbacks', () => {
+		const locale = resolveBillingLocale({ user: 'de_DE', site: 'fr_FR' });
+		expect(locale).toBe('de-DE');
+		expect(formatQuantity(12345, locale)).toBe(
+			new Intl.NumberFormat('de-DE').format(12345)
+		);
+		expect(formatMoney(123456, 'EUR', locale)).toBe(
+			new Intl.NumberFormat('de-DE', {
+				style: 'currency',
+				currency: 'EUR',
+			}).format(1234.56)
+		);
+		expect(formatDate('2026-10-10T00:00:00Z', locale)).toBe(
+			new Intl.DateTimeFormat('de-DE', {
+				dateStyle: 'medium',
+				timeZone: 'UTC',
+			}).format(new Date('2026-10-10T00:00:00Z'))
+		);
+	});
+
+	it('falls back from invalid administrator locale to site locale then English', () => {
+		expect(
+			resolveBillingLocale({ user: 'bad_locale!', site: 'fr_FR' })
+		).toBe('fr-FR');
+		expect(
+			resolveBillingLocale({ user: 'bad_locale!', site: 'also bad!' })
+		).toBe('en');
+	});
+
 	it('presents Free as a normal plan and uses only API capacity totals', () => {
 		const content = textContent(
 			summary(presentation(), readyState(presentation()))
