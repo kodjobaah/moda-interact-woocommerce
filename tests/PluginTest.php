@@ -44,6 +44,19 @@ final class PluginTest extends TestCase {
 		self::assertSame( array( Plugin::class, 'boot' ), $GLOBALS['moda_interact_initial_hooks']['plugins_loaded'][0] );
 	}
 
+	public function test_registers_wordpress_textdomain_at_init_not_plugins_loaded(): void {
+		self::assertContains(
+			array( Plugin::class, 'load_textdomain' ),
+			$GLOBALS['moda_interact_initial_hooks']['init']
+		);
+		self::assertNotContains(
+			array( Plugin::class, 'load_textdomain' ),
+			$GLOBALS['moda_interact_initial_hooks']['plugins_loaded']
+		);
+		Plugin::load_textdomain();
+		self::assertSame( 'moda-interact', $GLOBALS['moda_interact_loaded_textdomain'] );
+	}
+
 	public function test_declares_hpos_compatibility_before_woocommerce_initializes(): void {
 		self::assertCount( 1, $GLOBALS['moda_interact_initial_hooks']['before_woocommerce_init'] );
 		self::assertSame(

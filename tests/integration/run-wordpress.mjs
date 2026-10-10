@@ -9,6 +9,7 @@ import { assertStoreContextWordPress } from './store-context-assertions.mjs';
 import { createWordPressFetch } from './wordpress-http.mjs';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
 import { assertStoreCategoryWordPress } from './category-assertions.mjs';
+import { assertLocaleWordPress } from './locale-wordpress.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -767,6 +768,9 @@ try {
 			'echo wp_json_encode(dirname(MODA_INTERACT_MAIN_PLUGIN_FILE));'
 		)
 	);
+	// WordPress gettext and the bundled script must honor the administrator's
+	// UI locale without rewriting the site/store language.
+	assertLocaleWordPress({ wp, parseJsonOutput, repository });
 	const caPathInContainer = `${pluginDir}/tests/integration/.fixture-ca.pem`;
 	command(
 		'npm',

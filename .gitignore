@@ -59,3 +59,10 @@ bin/composer/**/vendor/
 lib/vendor/
 contributors.md
 contributors.html
+
+# Deterministically compiled from reviewed WordPress gettext PO files.
+/languages/*.mo
+/languages/*.json
+/tests/fixtures/i18n/output/
+
+/tests/integration/.localization-fixture-assets/

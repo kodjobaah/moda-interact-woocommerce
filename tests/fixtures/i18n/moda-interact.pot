@@ -1,0 +1,21 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Moda Interact 0.1.0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: includes/Admin/NativeNavigation.php:22
+msgid "Overview"
+msgstr ""
+
+#: src/recovery-settings/recovery-settings-screen.js:81
+msgid "Save category"
+msgstr ""
+
+#: src/billing-screen.js:100
+#, php-format
+msgid "%d recovery"
+msgid_plural "%d recoveries"
+msgstr[0] ""
+msgstr[1] ""

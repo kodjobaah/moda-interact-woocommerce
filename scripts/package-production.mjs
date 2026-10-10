@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const repository = resolve(import.meta.dirname, '..');
@@ -132,6 +132,23 @@ function verifyPackage() {
 		'Composer vendor/bin must not enter the archive'
 	);
 
+	// Locale batches are optional until WOO-014, but every present PO must
+	// compile into both WordPress PHP and handle-specific JS assets.
+	for (const source of readdirSync(resolve(repository, 'languages'))) {
+		const match = source.match(/^moda-interact-([A-Za-z_]+)\.po$/);
+		if (!match) {
+			continue;
+		}
+		for (const extension of [
+			`moda-interact-${match[1]}.mo`,
+			`moda-interact-${match[1]}-moda-interact.json`,
+		]) {
+			assert.ok(
+				entries.includes(`moda-interact/languages/${extension}`),
+				`compiled translation missing from ZIP: ${extension}`
+			);
+		}
+	}
 	const pot = readArchiveFile('languages/moda-interact.pot');
 	assert.match(pot, /X-Domain: moda-interact/);
 	assert.match(pot, /Moda Interact/);
@@ -218,6 +235,7 @@ function verifyPackage() {
 
 const trackedBefore = trackedSnapshot();
 run('npm', ['run', 'build']);
+run('npm', ['run', 'i18n:compile']);
 run('composer', [
 	'install',
 	'--no-dev',

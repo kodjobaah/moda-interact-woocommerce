@@ -5,7 +5,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['tests/integration/*.test.mjs'],
+			files: ['tests/integration/*.test.mjs', 'tests/i18n/*.test.mjs'],
 			rules: {
 				'vitest/no-import-node-test': 'off',
 			},

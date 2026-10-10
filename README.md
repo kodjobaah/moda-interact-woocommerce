@@ -150,3 +150,18 @@ Because packaging materializes production-only Composer dependencies, run
 Regenerate the WordPress translation template while the wp-env CLI container is
 available with `npm run i18n:makepot`; it extracts the `moda-interact` domain from
 the plugin source into `languages/moda-interact.pot`.
+
+
+## Admin interface localization (ARCH-026-WOOCOMMERCE-009)
+
+Locale selection is WordPress-native: the signed-in administrator's interface
+language takes precedence; the site language is used when no override exists.
+This does not update the shop's stored locale or customer conversation language.
+
+Run `npm run i18n:makepot` against a running wp-env to generate the source-only
+gettext template. Reviewed locale source `.po` files go in `languages/`.
+`npm run i18n:compile` creates handle-specific JavaScript JSON and PHP `.mo`
+assets; plugin packaging recompiles these automatically. Until the final WOO-014
+coverage gate, missing locale batches are allowed, but supplied catalogues
+must be complete. `npm run i18n:verify:20` enables the final strict gate.
+See `languages/README.md` for the translation-batch contract.
