@@ -733,3 +733,63 @@ msgstr "กำลังบันทึก…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "บันทึกหมวดหมู่"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "ไม่สามารถตรวจสอบสิทธิ์การอ่านได้ การเชื่อมต่อกับ Moda ของคุณไม่เปลี่ยนแปลง"
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "อนุมัติสิทธิ์การอ่านแล้ว"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "กำลังรอการอนุมัติจาก WooCommerce"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "ต้องอนุมัติสิทธิ์การอ่านอีกครั้ง"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "ยังไม่ได้เปิดใช้สิทธิ์การอ่าน"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "หยุดไม่ให้ Moda Interact อ่านข้อมูลร้านค้าหรือไม่"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "สิทธิ์อ่านข้อมูลร้านค้า"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "อนุญาตให้ Moda Interact อ่านข้อมูลร้านค้า WooCommerce จะขอให้คุณอนุมัติสิทธิ์แบบอ่านอย่างเดียว"
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "เปิดหน้าการอนุมัติ WooCommerce"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "หน้าการอนุมัติจะเปิดในแท็บใหม่ กลับมาที่นี่เพื่อตรวจสอบผลลัพธ์"
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "หากต้องการเพิกถอนคีย์ที่ร้านค้า ให้เปิด WooCommerce > การตั้งค่า > ขั้นสูง > REST API"
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "อนุญาตสิทธิ์การอ่าน"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "หยุดสิทธิ์การอ่าน"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "ตรวจสอบสิทธิ์"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "การอนุมัติยังไม่เสร็จสิ้นหรือหมดอายุแล้ว"

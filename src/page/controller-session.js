@@ -4,12 +4,14 @@ export function createControllerSession(controllers, listeners) {
 	const unsubscriptions = [
 		controllers.category.subscribe(listeners.onCategory),
 		controllers.recoverySummary.subscribe(listeners.onRecoverySummary),
+		controllers.readAccess.subscribe(listeners.onReadAccess),
 		controllers.sync.subscribe(listeners.onSync),
 		controllers.merchant.subscribe(listeners.onMerchant),
 		controllers.billing.subscribe(listeners.onBilling),
 		controllers.connection.subscribe((nextState) => {
 			listeners.onConnection(nextState);
 			const status = nextState.connection.status;
+			controllers.readAccess.setConnection(nextState.connection);
 			controllers.merchant.setConnectionStatus(status);
 			controllers.billing.setConnectionStatus(status);
 			controllers.sync.setConnectionStatus(status);
@@ -48,6 +50,7 @@ export function createControllerSession(controllers, listeners) {
 				'sync',
 				'category',
 				'recoverySummary',
+				'readAccess',
 			]) {
 				controllers[name].dispose();
 			}

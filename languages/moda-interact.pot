@@ -735,3 +735,63 @@ msgstr ""
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr ""
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr ""

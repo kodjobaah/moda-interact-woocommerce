@@ -1,5 +1,6 @@
 import { createElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ReadAccessPanel } from './read-access/read-access-panel';
 import { ConnectedWorkspace } from './page/connected-workspace';
 import { ConnectionPanel } from './page/connection-panel';
 import { useModaPageState } from './page/use-moda-page-state';
@@ -42,6 +43,14 @@ function ModaInteractPage() {
 						showSurfaceNavigation: !isNativeMerchantPage(
 							globalThis.location?.search ?? ''
 						),
+					})
+				: null,
+			page.connectionState.connection.status === 'CONNECTED' && page.activeSurface === 'OVERVIEW'
+				? createElement(ReadAccessPanel, {
+						state: page.readAccessState,
+						onStart: page.actions.startReadAccess,
+						onRefresh: page.actions.refreshReadAccess,
+						onRevoke: page.actions.revokeReadAccess,
 					})
 				: null
 		)

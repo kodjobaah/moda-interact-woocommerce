@@ -4,6 +4,9 @@ export function createPageActions(sessionRef, setActiveSurface) {
 	return {
 		connect: () => controllers()?.connection.connect(),
 		retryConnection: () => controllers()?.connection.refresh(),
+		refreshReadAccess: () => controllers()?.readAccess.refresh(),
+		startReadAccess: () => controllers()?.readAccess.start(),
+		revokeReadAccess: () => controllers()?.readAccess.revoke(),
 		refreshMerchant: () => controllers()?.merchant.refresh(),
 		syncStoreContext: () => controllers()?.sync.sync(),
 		refreshBilling: () => controllers()?.billing.refresh(),

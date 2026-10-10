@@ -726,3 +726,63 @@ msgstr "Enregistrement…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Enregistrer la catégorie"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "Impossible de vérifier l’accès en lecture. Votre connexion à Moda reste inchangée."
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "Accès en lecture approuvé"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "En attente de l’autorisation de WooCommerce"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "L’accès en lecture doit être autorisé à nouveau"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "Accès en lecture non activé"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "Empêcher Moda Interact de lire les données de la boutique ?"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "Accès en lecture à la boutique"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "Autorisez Moda Interact à lire les données de la boutique. WooCommerce vous demandera d’approuver un accès en lecture seule."
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "Ouvrir l’autorisation WooCommerce"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "L’autorisation s’ouvre dans un nouvel onglet. Revenez ici pour vérifier le résultat."
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "Pour révoquer la clé dans la boutique, ouvrez WooCommerce > Réglages > Avancé > API REST."
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "Autoriser l’accès en lecture"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "Arrêter l’accès en lecture"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "Vérifier l’accès"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "L’autorisation n’a pas été terminée ou a expiré"

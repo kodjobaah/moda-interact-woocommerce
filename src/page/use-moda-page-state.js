@@ -27,6 +27,7 @@ export function useModaPageState() {
 	});
 	const [merchantState, setMerchantState] = useState({ status: 'IDLE' });
 	const [billingState, setBillingState] = useState({ status: 'IDLE' });
+	const [readAccessState, setReadAccessState] = useState({ status: 'IDLE' });
 	const [syncState, setSyncState] = useState({ status: 'IDLE' });
 	const [categoryState, setCategoryState] = useState(initialCategoryState);
 	const [recoverySummaryState, setRecoverySummaryState] = useState({
@@ -39,6 +40,7 @@ export function useModaPageState() {
 			onConnection: setConnectionState,
 			onMerchant: setMerchantState,
 			onBilling: setBillingState,
+			onReadAccess: setReadAccessState,
 			onSync: setSyncState,
 			onCategory: setCategoryState,
 			onRecoverySummary: setRecoverySummaryState,
@@ -80,6 +82,31 @@ export function useModaPageState() {
 		);
 	}, [activeSurface, connectionState.connection.status]);
 
+	// The hosted return is advisory. Refresh the retained WordPress Admin page on focus
+	// and briefly poll pending grants; never infer approval from URL parameters.
+	useEffect(() => {
+		const refresh = () => {
+			if (globalThis.document?.visibilityState !== 'hidden') sessionRef.current?.controllers.readAccess.refresh();
+		};
+		globalThis.addEventListener?.('focus', refresh);
+		globalThis.document?.addEventListener?.('visibilitychange', refresh);
+		return () => {
+			globalThis.removeEventListener?.('focus', refresh);
+			globalThis.document?.removeEventListener?.('visibilitychange', refresh);
+		};
+	}, []);
+
+	useEffect(() => {
+		if (readAccessState.grantStatus !== 'PENDING' ||
+			connectionState.connection.status !== 'CONNECTED') return;
+		let checks = 0;
+		const interval = globalThis.setInterval?.(() => {
+			if (++checks > 15) { globalThis.clearInterval(interval); return; }
+			if (globalThis.document?.visibilityState !== 'hidden') sessionRef.current?.controllers.readAccess.refresh();
+		}, 6000);
+		return () => { if (interval !== undefined) globalThis.clearInterval?.(interval); };
+	}, [readAccessState.grantStatus, connectionState.connection.status]);
+
 	const actions = createPageActions(sessionRef, setActiveSurface);
 
 	return {
@@ -87,6 +114,7 @@ export function useModaPageState() {
 		connectionState,
 		merchantState,
 		billingState,
+		readAccessState,
 		syncState,
 		categoryState,
 		recoverySummaryState,

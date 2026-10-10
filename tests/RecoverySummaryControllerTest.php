@@ -51,9 +51,16 @@ final class RecoverySummaryControllerTest extends TestCase {
 		} );
 		self::assertSame( 400, $controller->read( new \WP_REST_Request( 'GET', array( 'shopId' => 'foreign' ) ) )->get_status() );
 		self::assertSame( 0, $calls );
+		// The previous assertion used a connected fixture; explicitly simulate an absent installation.
+		delete_option( InstallationStore::OPTION_NAME );
 		$store = new InstallationStore();
-		$disconnected = new RecoverySummaryController( $this->client( static fn() => self::response( 200, self::policy() ) ), $this->identity(), $store );
+		self::assertSame( 'missing', $store->read()['state'] );
+		$disconnected = new RecoverySummaryController( $this->client( static function () use ( &$calls ): array {
+			$calls++;
+			return self::response( 200, self::policy() );
+		} ), $this->identity(), $store );
 		self::assertSame( 401, $disconnected->read( new \WP_REST_Request( 'GET' ) )->get_status() );
+		self::assertSame( 0, $calls );
 	}
 
 	public function test_invalid_remote_policy_fails_closed(): void {

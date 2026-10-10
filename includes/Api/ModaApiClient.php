@@ -192,6 +192,53 @@ final class ModaApiClient {
 		return array_intersect_key( $payload, array_flip( array( 'schemaVersion', 'operationId', 'state', 'confirmationUrl' ) ) );
 	}
 
+	/** WooCommerce read-only consent: the browser receives a bounded native approval URL only. */
+	public function beginRestReadAuthorization( array $connection ): array {
+		$payload = $this->restReadRequest( $connection, '/v1/woocommerce/read-authorizations', 'POST', 201 );
+		if ( ! RestReadResponseValidator::start( $payload, $connection['canonicalSiteUrl'], $this->configuration->mode ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 201 );
+		}
+		return $payload;
+	}
+
+	public function restReadAuthorizationStatus( array $connection ): array {
+		$payload = $this->restReadRequest( $connection, '/v1/woocommerce/read-authorization', 'GET', 200 );
+		if ( ! RestReadResponseValidator::status( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $payload;
+	}
+
+	public function revokeRestReadAuthorization( array $connection ): array {
+		$payload = $this->restReadRequest( $connection, '/v1/woocommerce/read-authorization', 'DELETE', 200 );
+		if ( ! RestReadResponseValidator::revoked( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $payload;
+	}
+
+	private function restReadRequest( array $connection, string $path, string $method, int $expected_status ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		$response = $this->request( $path, $method, self::installationHeaders( $connection ) );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) {
+			throw new ModaApiClientException( 'unauthorized', $status );
+		}
+		if ( 409 === $status ) {
+			throw new ModaApiClientException( 'tenant_conflict', $status );
+		}
+		if ( $expected_status !== $status ) {
+			throw new ModaApiClientException( 'remote_unavailable', $status );
+		}
+		try {
+			return $this->jsonBody( $response );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+	}
+
 	private function recurringCommand( array $connection, string $path, string $method, string $plan_id, string $action_id ): array {
 		$payload = $this->billingRequest( $connection, $path, $method, array( 'merchantPricingPlanId' => $plan_id ), $action_id );
 		if ( ! BillingResponseValidator::isConfirmation( $payload ) ) {

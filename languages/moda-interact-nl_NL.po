@@ -733,3 +733,63 @@ msgstr "Opslaan…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Categorie opslaan"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "De leestoegang kon niet worden gecontroleerd. Je Moda-verbinding is niet gewijzigd."
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "Leestoegang goedgekeurd"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "Wachten op goedkeuring van WooCommerce"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "Leestoegang moet opnieuw worden goedgekeurd"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "Leestoegang niet ingeschakeld"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "Voorkomen dat Moda Interact winkelgegevens leest?"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "Leestoegang tot winkelgegevens"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "Sta Moda Interact toe om winkelgegevens te lezen. WooCommerce vraagt je om alleen-lezen toegang goed te keuren."
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "WooCommerce-goedkeuring openen"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "De goedkeuring wordt in een nieuw tabblad geopend. Kom hier terug om het resultaat te controleren."
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "Om de sleutel in de winkel in te trekken, ga naar WooCommerce > Instellingen > Geavanceerd > REST API."
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "Leestoegang toestaan"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "Leestoegang stoppen"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "Toegang controleren"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "De goedkeuring is niet voltooid of is verlopen"

@@ -733,3 +733,63 @@ msgstr "Ukládání…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Uložit kategorii"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "Přístup pro čtení se nepodařilo ověřit. Připojení k Moda se nezměnilo."
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "Přístup pro čtení schválen"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "Čeká se na schválení WooCommerce"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "Přístup pro čtení je nutné znovu schválit"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "Přístup pro čtení není povolen"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "Zabránit aplikaci Moda Interact ve čtení dat obchodu?"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "Přístup ke čtení dat obchodu"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "Povolte aplikaci Moda Interact číst data obchodu. WooCommerce vás požádá o schválení přístupu pouze pro čtení."
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "Otevřít schválení WooCommerce"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "Schválení se otevře na nové kartě. Vraťte se sem a zkontrolujte výsledek."
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "Chcete-li v obchodě odvolat klíč, otevřete WooCommerce > Nastavení > Pokročilé > REST API."
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "Povolit přístup pro čtení"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "Zastavit přístup pro čtení"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "Zkontrolovat přístup"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "Schválení nebylo dokončeno nebo jeho platnost vypršela"

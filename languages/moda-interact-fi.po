@@ -733,3 +733,63 @@ msgstr "Tallennetaan…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Tallenna luokka"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "Lukuoikeutta ei voitu tarkistaa. Moda-yhteytesi ei ole muuttunut."
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "Lukuoikeus hyväksytty"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "Odotetaan WooCommercen hyväksyntää"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "Lukuoikeus on hyväksyttävä uudelleen"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "Lukuoikeus ei ole käytössä"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "Estetäänkö Moda Interactia lukemasta kaupan tietoja?"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "Kaupan lukuoikeus"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "Salli Moda Interactin lukea kaupan tietoja. WooCommerce pyytää hyväksymään vain luku -käyttöoikeuden."
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "Avaa WooCommercen hyväksyntä"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "Hyväksyntä avautuu uuteen välilehteen. Palaa tähän tarkistamaan tulos."
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "Jos haluat peruuttaa avaimen kaupassa, avaa WooCommerce > Asetukset > Lisäasetukset > REST API."
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "Salli lukuoikeus"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "Lopeta lukuoikeus"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "Tarkista käyttöoikeus"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "Hyväksyntää ei viimeistelty tai se on vanhentunut"

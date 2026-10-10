@@ -26,6 +26,7 @@ $GLOBALS['moda_interact_home_url'] = 'https://merchant.example';
 $GLOBALS['moda_interact_store_locale'] = 'en_GB';
 $GLOBALS['moda_interact_base_location'] = array( 'country' => 'GB', 'state' => '' );
 $GLOBALS['moda_interact_can_manage_woocommerce'] = true;
+$GLOBALS['moda_interact_valid_rest_nonce'] = true;
 $GLOBALS['moda_interact_fail_option_writes'] = false;
 define( 'WC_VERSION', '11.1.2' );
 
@@ -58,6 +59,10 @@ function current_user_can( $capability ) {
 		return $GLOBALS['moda_interact_can_manage_woocommerce'];
 	}
 	return 'activate_plugins' === $capability && $GLOBALS['moda_interact_can_activate_plugins'];
+}
+
+function wp_verify_nonce( $nonce, $action ) {
+	return 'wp_rest' === $action && 'fixture_rest_nonce' === $nonce && $GLOBALS['moda_interact_valid_rest_nonce'] ? 1 : false;
 }
 
 function get_user_locale() {
@@ -270,7 +275,8 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 			private string $method = 'GET',
 			private array $query = array(),
 			private array|null $json = null,
-			private array $body = array()
+			private array $body = array(),
+			private array $headers = array( 'X-WP-Nonce' => 'fixture_rest_nonce' )
 		) {
 		}
 
@@ -278,6 +284,10 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		public function get_json_params(): ?array { return $this->json; }
 		public function get_body_params(): array { return $this->body; }
 		public function get_method(): string { return $this->method; }
+		public function get_header( $name ): ?string {
+			foreach ( $this->headers as $key => $value ) { if ( strtolower( $key ) === strtolower( $name ) ) return $value; }
+			return null;
+		}
 	}
 }
 

@@ -733,3 +733,63 @@ msgstr "Sparar…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "Spara kategori"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "Läsåtkomsten kunde inte kontrolleras. Din Moda-anslutning är oförändrad."
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "Läsåtkomst godkänd"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "Väntar på godkännande från WooCommerce"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "Läsåtkomsten behöver godkännas igen"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "Läsåtkomst är inte aktiverad"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "Hindra Moda Interact från att läsa butiksdata?"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "Läsåtkomst till butiken"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "Tillåt Moda Interact att läsa butiksdata. WooCommerce ber dig godkänna åtkomst med enbart läsrättigheter."
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "Öppna WooCommerce-godkännande"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "Godkännandet öppnas i en ny flik. Kom tillbaka hit för att kontrollera resultatet."
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "För att återkalla nyckeln i butiken, öppna WooCommerce > Inställningar > Avancerat > REST API."
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "Tillåt läsåtkomst"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "Stoppa läsåtkomst"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "Kontrollera åtkomst"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "Godkännandet slutfördes inte eller har gått ut"

@@ -733,3 +733,63 @@ msgstr "正在儲存…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "儲存類別"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "無法檢查讀取權限。您的 Moda 連線並未變更。"
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "讀取權限已核准"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "正在等待 WooCommerce 核准"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "讀取權限需要重新核准"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "讀取權限尚未啟用"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "要阻止 Moda Interact 讀取商店資料嗎？"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "商店讀取權限"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "允許 Moda Interact 讀取商店資料。WooCommerce 會要求您核准唯讀權限。"
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "開啟 WooCommerce 授權頁面"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "授權頁面將在新分頁開啟。請返回此處確認結果。"
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "若要在商店中撤銷金鑰，請開啟 WooCommerce > 設定 > 進階 > REST API。"
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "允許讀取權限"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "停止讀取權限"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "檢查權限"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "授權尚未完成或已過期"

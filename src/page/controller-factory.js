@@ -1,3 +1,4 @@
+import { ReadAccessController } from '../read-access/read-access-controller';
 import { BillingController } from '../billing-controller';
 import { ConnectionController } from '../connection-controller';
 import { MerchantBootstrapController } from '../merchant-bootstrap-controller';
@@ -24,6 +25,7 @@ export function createPageControllers() {
 	);
 
 	const recoverySummary = new RecoverySummaryController();
+	const readAccess = new ReadAccessController();
 	return {
 		connection,
 		merchant,
@@ -31,5 +33,6 @@ export function createPageControllers() {
 		sync,
 		category,
 		recoverySummary,
+		readAccess,
 	};
 }

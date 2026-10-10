@@ -733,3 +733,63 @@ msgstr "저장하는 중…"
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
 msgstr "카테고리 저장"
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr "읽기 권한을 확인할 수 없습니다. Moda 연결은 변경되지 않았습니다."
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr "읽기 권한 승인됨"
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr "WooCommerce 승인 대기 중"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Read access needs approval again"
+msgstr "읽기 권한을 다시 승인해야 합니다"
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access not enabled"
+msgstr "읽기 권한이 활성화되지 않음"
+
+#: src/read-access/read-access-panel.js:25
+msgid "Stop Moda Interact from reading store data?"
+msgstr "Moda Interact가 상점 데이터를 읽지 못하도록 하시겠습니까?"
+
+#: src/read-access/read-access-panel.js:32
+msgid "Store read access"
+msgstr "상점 읽기 권한"
+
+#: src/read-access/read-access-panel.js:35
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr "Moda Interact가 상점 데이터를 읽도록 허용합니다. WooCommerce에서 읽기 전용 권한 승인을 요청합니다."
+
+#: src/read-access/read-access-panel.js:39
+msgid "Open WooCommerce approval"
+msgstr "WooCommerce 승인 화면 열기"
+
+#: src/read-access/read-access-panel.js:43
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr "승인 화면은 새 탭에서 열립니다. 결과를 확인하려면 여기로 돌아오세요."
+
+#: src/read-access/read-access-panel.js:46
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr "상점에서 키를 취소하려면 WooCommerce > 설정 > 고급 > REST API로 이동하세요."
+
+#: src/read-access/read-access-panel.js:50
+msgid "Allow read access"
+msgstr "읽기 권한 허용"
+
+#: src/read-access/read-access-panel.js:52
+msgid "Stop read access"
+msgstr "읽기 권한 중지"
+
+#: src/read-access/read-access-panel.js:54
+msgid "Check access"
+msgstr "권한 확인"
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr "승인이 완료되지 않았거나 만료되었습니다"
