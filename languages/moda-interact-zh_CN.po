@@ -974,3 +974,140 @@ msgstr "返回账单"
 
 msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
 msgstr "请打开 WooCommerce.com 的订单页面，针对 Moda Interact 购买申请退款。只有在支付平台和卖家核实结果后，Moda 才会更新额度。"
+
+#: src/recoveries/filters/recovery-filter-form.js:5
+msgid "All statuses"
+msgstr "所有状态"
+
+#: src/recoveries/filters/recovery-filter-form.js:91
+msgid "Apply filters"
+msgstr "应用筛选"
+
+#: src/recoveries/recoveries-header.js:12
+msgid "Browse recovery attempts and their latest outcomes."
+msgstr "查看挽回尝试及其最新结果。"
+
+#: src/recoveries/filters/recovery-filter-form.js:9
+#: src/recoveries/list/recovery-status-badge.js:10
+msgid "Cancelled"
+msgstr "已取消"
+
+#: src/recoveries/list/recovery-row.js:33
+msgid "Checkout value"
+msgstr "结账金额"
+
+#. translators: %s: checkout date.
+#: src/recoveries/list/recovery-row.js:25
+msgid "Checkout · %s"
+msgstr "结账 · %s"
+
+#: src/recoveries/filters/recovery-filter-form.js:101
+msgid "Choose valid dates, up to 366 days, ending no later than today."
+msgstr "请选择不超过366天且结束日期不晚于今天的有效日期范围。"
+
+#: src/recoveries/filters/recovery-filter-panel.js:37
+msgid "Clear filters"
+msgstr "清除筛选"
+
+#: src/recoveries/filters/recovery-date-presets.js:8
+#: src/recoveries/filters/recovery-date-presets.js:40
+msgid "Custom dates"
+msgstr "自定义日期"
+
+#: src/recoveries/list/recovery-status-badge.js:5
+msgid "Detected"
+msgstr "已检测"
+
+#: src/recoveries/list/recovery-status-badge.js:7
+msgid "Engaged"
+msgstr "已互动"
+
+#: src/recoveries/filters/recovery-filter-form.js:8
+#: src/recoveries/list/recovery-status-badge.js:9
+msgid "Expired"
+msgstr "已过期"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "From"
+msgstr "开始日期"
+
+#: src/recoveries/list/recovery-row.js:22
+msgid "Guest"
+msgstr "访客"
+
+#: src/recoveries/filters/recovery-date-presets.js:7
+msgid "Last 30 days"
+msgstr "过去30天"
+
+#: src/recoveries/filters/recovery-date-presets.js:6
+msgid "Last 7 days"
+msgstr "过去7天"
+
+#: src/recoveries/states/recovery-results-state.js:7
+msgid "Loading recoveries…"
+msgstr "正在加载挽回记录…"
+
+#: src/recoveries/list/recovery-status-badge.js:6
+msgid "Message sent"
+msgstr "消息已发送"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No matching recoveries"
+msgstr "没有匹配的挽回记录"
+
+#: src/recoveries/filters/recovery-filter-form.js:6
+msgid "Ongoing"
+msgstr "进行中"
+
+#: src/recoveries/states/recovery-results-state.js:9
+msgid "Recoveries could not be loaded."
+msgstr "无法加载挽回记录。"
+
+#: src/recoveries/states/recovery-results-state.js:6
+msgid "Recovery data is not connected."
+msgstr "恢复数据尚未连接。"
+
+#: src/recoveries/list/recovery-pagination.js:9
+msgid "Recovery pages"
+msgstr "挽回记录分页"
+
+#: src/recoveries/states/recovery-results-state.js:20
+msgid "Recovery records will appear after the read API is connected."
+msgstr "连接读取 API 后，恢复记录将显示在此处。"
+
+#: src/recoveries/recoveries-header.js:22
+msgid "Refresh"
+msgstr "刷新"
+
+#: src/recoveries/filters/recovery-filter-form.js:54
+msgid "Search customer"
+msgstr "搜索客户"
+
+#: src/recoveries/list/recovery-row.js:35
+msgid "Started"
+msgstr "开始时间"
+
+#: src/recoveries/filters/recovery-filter-form.js:70
+#: src/recoveries/list/recovery-row.js:31
+msgid "Status"
+msgstr "状态"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "To"
+msgstr "结束日期"
+
+#: src/recoveries/filters/recovery-date-presets.js:5
+msgid "Today"
+msgstr "今天"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No recoveries yet"
+msgstr "暂无挽回记录"
+
+#: src/recoveries/states/recovery-results-state.js:32
+msgid "Recovery records will appear here when recovery starts."
+msgstr "开始挽回后，记录将显示在这里。"
+
+#: src/recoveries/states/recovery-results-state.js:35
+msgid "Try another date range, customer or status."
+msgstr "请尝试其他日期范围、客户或状态。"

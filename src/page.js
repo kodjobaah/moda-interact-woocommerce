@@ -9,18 +9,24 @@ import { isNativeMerchantPage } from './native-admin/page-surface';
 /** Top-level composition only; each feature owns its controller and presentation. */
 function ModaInteractPage() {
 	const page = useModaPageState();
+	const connectedRecoveries =
+		page.activeSurface === 'RECOVERIES' &&
+		page.connectionState.connection.status === 'CONNECTED';
 	const connectedBilling =
 		page.activeSurface === 'BILLING' &&
 		page.connectionState.connection.status === 'CONNECTED';
 
+	let pageClassName = 'moda-interact-page';
+	if (connectedBilling) {
+		pageClassName += ' moda-interact-page--billing';
+	} else if (connectedRecoveries) {
+		pageClassName += ' moda-interact-page--recoveries';
+	}
+
 	return createElement(
 		'main',
-		{
-			className: connectedBilling
-				? 'moda-interact-page moda-interact-page--billing'
-				: 'moda-interact-page',
-		},
-		connectedBilling
+		{ className: pageClassName },
+		connectedBilling || connectedRecoveries
 			? null
 			: createElement(
 					'header',
@@ -39,7 +45,7 @@ function ModaInteractPage() {
 		createElement(
 			'div',
 			{ className: 'moda-interact-page__content' },
-			connectedBilling
+			connectedBilling || connectedRecoveries
 				? null
 				: createElement(ConnectionPanel, {
 						state: page.connectionState,

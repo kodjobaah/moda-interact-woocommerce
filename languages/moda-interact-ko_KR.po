@@ -974,3 +974,140 @@ msgstr "청구 페이지로 돌아가기"
 
 msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
 msgstr "WooCommerce.com의 주문 페이지에서 Moda Interact 구매에 대한 환불을 요청하세요. Moda는 결제 제공업체와 판매자가 결과를 확인한 후에만 크레딧을 업데이트합니다."
+
+#: src/recoveries/filters/recovery-filter-form.js:5
+msgid "All statuses"
+msgstr "모든 상태"
+
+#: src/recoveries/filters/recovery-filter-form.js:91
+msgid "Apply filters"
+msgstr "필터 적용"
+
+#: src/recoveries/recoveries-header.js:12
+msgid "Browse recovery attempts and their latest outcomes."
+msgstr "구매 복구 시도와 최신 결과를 확인하세요."
+
+#: src/recoveries/filters/recovery-filter-form.js:9
+#: src/recoveries/list/recovery-status-badge.js:10
+msgid "Cancelled"
+msgstr "취소됨"
+
+#: src/recoveries/list/recovery-row.js:33
+msgid "Checkout value"
+msgstr "체크아웃 금액"
+
+#. translators: %s: checkout date.
+#: src/recoveries/list/recovery-row.js:25
+msgid "Checkout · %s"
+msgstr "체크아웃 · %s"
+
+#: src/recoveries/filters/recovery-filter-form.js:101
+msgid "Choose valid dates, up to 366 days, ending no later than today."
+msgstr "오늘 이전에 끝나는 최대 366일의 유효한 날짜를 선택하세요."
+
+#: src/recoveries/filters/recovery-filter-panel.js:37
+msgid "Clear filters"
+msgstr "필터 지우기"
+
+#: src/recoveries/filters/recovery-date-presets.js:8
+#: src/recoveries/filters/recovery-date-presets.js:40
+msgid "Custom dates"
+msgstr "날짜 지정"
+
+#: src/recoveries/list/recovery-status-badge.js:5
+msgid "Detected"
+msgstr "감지됨"
+
+#: src/recoveries/list/recovery-status-badge.js:7
+msgid "Engaged"
+msgstr "참여함"
+
+#: src/recoveries/filters/recovery-filter-form.js:8
+#: src/recoveries/list/recovery-status-badge.js:9
+msgid "Expired"
+msgstr "만료됨"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "From"
+msgstr "시작일"
+
+#: src/recoveries/list/recovery-row.js:22
+msgid "Guest"
+msgstr "게스트"
+
+#: src/recoveries/filters/recovery-date-presets.js:7
+msgid "Last 30 days"
+msgstr "최근 30일"
+
+#: src/recoveries/filters/recovery-date-presets.js:6
+msgid "Last 7 days"
+msgstr "최근 7일"
+
+#: src/recoveries/states/recovery-results-state.js:7
+msgid "Loading recoveries…"
+msgstr "구매 복구 불러오는 중…"
+
+#: src/recoveries/list/recovery-status-badge.js:6
+msgid "Message sent"
+msgstr "메시지 전송됨"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No matching recoveries"
+msgstr "일치하는 구매 복구가 없습니다"
+
+#: src/recoveries/filters/recovery-filter-form.js:6
+msgid "Ongoing"
+msgstr "진행 중"
+
+#: src/recoveries/states/recovery-results-state.js:9
+msgid "Recoveries could not be loaded."
+msgstr "구매 복구를 불러올 수 없습니다."
+
+#: src/recoveries/states/recovery-results-state.js:6
+msgid "Recovery data is not connected."
+msgstr "복구 데이터가 아직 연결되지 않았습니다."
+
+#: src/recoveries/list/recovery-pagination.js:9
+msgid "Recovery pages"
+msgstr "구매 복구 페이지"
+
+#: src/recoveries/states/recovery-results-state.js:20
+msgid "Recovery records will appear after the read API is connected."
+msgstr "읽기 API가 연결되면 복구 기록이 표시됩니다."
+
+#: src/recoveries/recoveries-header.js:22
+msgid "Refresh"
+msgstr "새로고침"
+
+#: src/recoveries/filters/recovery-filter-form.js:54
+msgid "Search customer"
+msgstr "고객 검색"
+
+#: src/recoveries/list/recovery-row.js:35
+msgid "Started"
+msgstr "시작 시간"
+
+#: src/recoveries/filters/recovery-filter-form.js:70
+#: src/recoveries/list/recovery-row.js:31
+msgid "Status"
+msgstr "상태"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "To"
+msgstr "종료일"
+
+#: src/recoveries/filters/recovery-date-presets.js:5
+msgid "Today"
+msgstr "오늘"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No recoveries yet"
+msgstr "아직 구매 복구가 없습니다"
+
+#: src/recoveries/states/recovery-results-state.js:32
+msgid "Recovery records will appear here when recovery starts."
+msgstr "구매 복구가 시작되면 여기에 기록이 표시됩니다."
+
+#: src/recoveries/states/recovery-results-state.js:35
+msgid "Try another date range, customer or status."
+msgstr "다른 날짜 범위, 고객 또는 상태를 시도하세요."

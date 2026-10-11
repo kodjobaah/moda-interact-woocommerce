@@ -974,3 +974,140 @@ msgstr "Faturalandırmaya dön"
 
 msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
 msgstr "Moda Interact satın alımınız için iade istemek üzere WooCommerce.com Siparişler sayfasını açın. Moda, kredileri yalnızca sağlayıcı ve satıcı sonucu doğruladıktan sonra günceller."
+
+#: src/recoveries/filters/recovery-filter-form.js:5
+msgid "All statuses"
+msgstr "Tüm durumlar"
+
+#: src/recoveries/filters/recovery-filter-form.js:91
+msgid "Apply filters"
+msgstr "Filtreleri uygula"
+
+#: src/recoveries/recoveries-header.js:12
+msgid "Browse recovery attempts and their latest outcomes."
+msgstr "Kurtarma girişimlerini ve en son sonuçlarını inceleyin."
+
+#: src/recoveries/filters/recovery-filter-form.js:9
+#: src/recoveries/list/recovery-status-badge.js:10
+msgid "Cancelled"
+msgstr "İptal edildi"
+
+#: src/recoveries/list/recovery-row.js:33
+msgid "Checkout value"
+msgstr "Ödeme değeri"
+
+#. translators: %s: checkout date.
+#: src/recoveries/list/recovery-row.js:25
+msgid "Checkout · %s"
+msgstr "Ödeme · %s"
+
+#: src/recoveries/filters/recovery-filter-form.js:101
+msgid "Choose valid dates, up to 366 days, ending no later than today."
+msgstr "En fazla 366 günlük ve en geç bugün biten geçerli tarihler seçin."
+
+#: src/recoveries/filters/recovery-filter-panel.js:37
+msgid "Clear filters"
+msgstr "Filtreleri temizle"
+
+#: src/recoveries/filters/recovery-date-presets.js:8
+#: src/recoveries/filters/recovery-date-presets.js:40
+msgid "Custom dates"
+msgstr "Özel tarihler"
+
+#: src/recoveries/list/recovery-status-badge.js:5
+msgid "Detected"
+msgstr "Algılandı"
+
+#: src/recoveries/list/recovery-status-badge.js:7
+msgid "Engaged"
+msgstr "Etkileşime girdi"
+
+#: src/recoveries/filters/recovery-filter-form.js:8
+#: src/recoveries/list/recovery-status-badge.js:9
+msgid "Expired"
+msgstr "Süresi doldu"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "From"
+msgstr "Başlangıç"
+
+#: src/recoveries/list/recovery-row.js:22
+msgid "Guest"
+msgstr "Misafir"
+
+#: src/recoveries/filters/recovery-date-presets.js:7
+msgid "Last 30 days"
+msgstr "Son 30 gün"
+
+#: src/recoveries/filters/recovery-date-presets.js:6
+msgid "Last 7 days"
+msgstr "Son 7 gün"
+
+#: src/recoveries/states/recovery-results-state.js:7
+msgid "Loading recoveries…"
+msgstr "Kurtarmalar yükleniyor…"
+
+#: src/recoveries/list/recovery-status-badge.js:6
+msgid "Message sent"
+msgstr "Mesaj gönderildi"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No matching recoveries"
+msgstr "Eşleşen kurtarma yok"
+
+#: src/recoveries/filters/recovery-filter-form.js:6
+msgid "Ongoing"
+msgstr "Devam ediyor"
+
+#: src/recoveries/states/recovery-results-state.js:9
+msgid "Recoveries could not be loaded."
+msgstr "Kurtarmalar yüklenemedi."
+
+#: src/recoveries/states/recovery-results-state.js:6
+msgid "Recovery data is not connected."
+msgstr "Kurtarma verileri henüz bağlanmadı."
+
+#: src/recoveries/list/recovery-pagination.js:9
+msgid "Recovery pages"
+msgstr "Kurtarma sayfaları"
+
+#: src/recoveries/states/recovery-results-state.js:20
+msgid "Recovery records will appear after the read API is connected."
+msgstr "Okuma API’si bağlandığında kurtarma kayıtları burada görüntülenecek."
+
+#: src/recoveries/recoveries-header.js:22
+msgid "Refresh"
+msgstr "Yenile"
+
+#: src/recoveries/filters/recovery-filter-form.js:54
+msgid "Search customer"
+msgstr "Müşteri ara"
+
+#: src/recoveries/list/recovery-row.js:35
+msgid "Started"
+msgstr "Başlangıç"
+
+#: src/recoveries/filters/recovery-filter-form.js:70
+#: src/recoveries/list/recovery-row.js:31
+msgid "Status"
+msgstr "Durum"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "To"
+msgstr "Bitiş"
+
+#: src/recoveries/filters/recovery-date-presets.js:5
+msgid "Today"
+msgstr "Bugün"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No recoveries yet"
+msgstr "Henüz kurtarma yok"
+
+#: src/recoveries/states/recovery-results-state.js:32
+msgid "Recovery records will appear here when recovery starts."
+msgstr "Kurtarma başladığında kayıtlar burada görünecek."
+
+#: src/recoveries/states/recovery-results-state.js:35
+msgid "Try another date range, customer or status."
+msgstr "Başka bir tarih aralığı, müşteri veya durum deneyin."

@@ -1,6 +1,7 @@
 import { createElement } from '@wordpress/element';
 import { ConnectedBillingScreen } from '../billing/connected-billing-screen';
 import { OverviewScreen } from '../overview-screen';
+import { RecoveriesScreen } from '../recoveries/recoveries-screen';
 import { RecoverySettingsScreen } from '../recovery-settings/recovery-settings-screen';
 import { SurfaceNavigation } from './surface-navigation';
 
@@ -16,7 +17,17 @@ export function ConnectedWorkspace({
 	showSurfaceNavigation = true,
 }) {
 	let activeContent;
-	if (activeSurface === 'BILLING') {
+	if (activeSurface === 'RECOVERIES') {
+		let timeZone = null;
+		if (merchantState.status === 'READY') {
+			const context = merchantState.data?.internationalContext;
+			timeZone = context?.timeZone ?? null;
+		}
+		activeContent = createElement(RecoveriesScreen, {
+			key: 'recoveries',
+			timeZone,
+		});
+	} else if (activeSurface === 'BILLING') {
 		activeContent = createElement(ConnectedBillingScreen, {
 			key: 'billing',
 			state: billingState,

@@ -974,3 +974,140 @@ msgstr "Zpět na fakturaci"
 
 msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
 msgstr "Otevřete Objednávky na WooCommerce.com a požádejte o vrácení peněz za nákup Moda Interact. Moda aktualizuje kredity až poté, co poskytovatel a prodejce ověří výsledek."
+
+#: src/recoveries/filters/recovery-filter-form.js:5
+msgid "All statuses"
+msgstr "Všechny stavy"
+
+#: src/recoveries/filters/recovery-filter-form.js:91
+msgid "Apply filters"
+msgstr "Použít filtry"
+
+#: src/recoveries/recoveries-header.js:12
+msgid "Browse recovery attempts and their latest outcomes."
+msgstr "Procházejte pokusy o obnovení a jejich nejnovější výsledky."
+
+#: src/recoveries/filters/recovery-filter-form.js:9
+#: src/recoveries/list/recovery-status-badge.js:10
+msgid "Cancelled"
+msgstr "Zrušeno"
+
+#: src/recoveries/list/recovery-row.js:33
+msgid "Checkout value"
+msgstr "Hodnota pokladny"
+
+#. translators: %s: checkout date.
+#: src/recoveries/list/recovery-row.js:25
+msgid "Checkout · %s"
+msgstr "Pokladna · %s"
+
+#: src/recoveries/filters/recovery-filter-form.js:101
+msgid "Choose valid dates, up to 366 days, ending no later than today."
+msgstr "Vyberte platná data, nejvýše 366 dní, končící nejpozději dnes."
+
+#: src/recoveries/filters/recovery-filter-panel.js:37
+msgid "Clear filters"
+msgstr "Vymazat filtry"
+
+#: src/recoveries/filters/recovery-date-presets.js:8
+#: src/recoveries/filters/recovery-date-presets.js:40
+msgid "Custom dates"
+msgstr "Vlastní data"
+
+#: src/recoveries/list/recovery-status-badge.js:5
+msgid "Detected"
+msgstr "Zjištěno"
+
+#: src/recoveries/list/recovery-status-badge.js:7
+msgid "Engaged"
+msgstr "Zapojeno"
+
+#: src/recoveries/filters/recovery-filter-form.js:8
+#: src/recoveries/list/recovery-status-badge.js:9
+msgid "Expired"
+msgstr "Vypršelo"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "From"
+msgstr "Od"
+
+#: src/recoveries/list/recovery-row.js:22
+msgid "Guest"
+msgstr "Host"
+
+#: src/recoveries/filters/recovery-date-presets.js:7
+msgid "Last 30 days"
+msgstr "Posledních 30 dní"
+
+#: src/recoveries/filters/recovery-date-presets.js:6
+msgid "Last 7 days"
+msgstr "Posledních 7 dní"
+
+#: src/recoveries/states/recovery-results-state.js:7
+msgid "Loading recoveries…"
+msgstr "Načítání obnovení…"
+
+#: src/recoveries/list/recovery-status-badge.js:6
+msgid "Message sent"
+msgstr "Zpráva odeslána"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No matching recoveries"
+msgstr "Žádná odpovídající obnovení"
+
+#: src/recoveries/filters/recovery-filter-form.js:6
+msgid "Ongoing"
+msgstr "Probíhá"
+
+#: src/recoveries/states/recovery-results-state.js:9
+msgid "Recoveries could not be loaded."
+msgstr "Obnovení se nepodařilo načíst."
+
+#: src/recoveries/states/recovery-results-state.js:6
+msgid "Recovery data is not connected."
+msgstr "Data obnovení zatím nejsou připojena."
+
+#: src/recoveries/list/recovery-pagination.js:9
+msgid "Recovery pages"
+msgstr "Stránky obnovení"
+
+#: src/recoveries/states/recovery-results-state.js:20
+msgid "Recovery records will appear after the read API is connected."
+msgstr "Záznamy obnovení se zobrazí po připojení rozhraní API pro čtení."
+
+#: src/recoveries/recoveries-header.js:22
+msgid "Refresh"
+msgstr "Obnovit"
+
+#: src/recoveries/filters/recovery-filter-form.js:54
+msgid "Search customer"
+msgstr "Hledat zákazníka"
+
+#: src/recoveries/list/recovery-row.js:35
+msgid "Started"
+msgstr "Zahájeno"
+
+#: src/recoveries/filters/recovery-filter-form.js:70
+#: src/recoveries/list/recovery-row.js:31
+msgid "Status"
+msgstr "Stav"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "To"
+msgstr "Do"
+
+#: src/recoveries/filters/recovery-date-presets.js:5
+msgid "Today"
+msgstr "Dnes"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No recoveries yet"
+msgstr "Zatím žádná obnovení"
+
+#: src/recoveries/states/recovery-results-state.js:32
+msgid "Recovery records will appear here when recovery starts."
+msgstr "Záznamy se zde zobrazí po zahájení obnovení."
+
+#: src/recoveries/states/recovery-results-state.js:35
+msgid "Try another date range, customer or status."
+msgstr "Zkuste jiný rozsah dat, zákazníka nebo stav."

@@ -974,3 +974,140 @@ msgstr "Voltar à faturação"
 
 msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
 msgstr "Abra Encomendas no WooCommerce.com para pedir o reembolso de uma compra Moda Interact. A Moda só atualiza os créditos depois de o fornecedor e o vendedor verificarem o resultado."
+
+#: src/recoveries/filters/recovery-filter-form.js:5
+msgid "All statuses"
+msgstr "Todos os estados"
+
+#: src/recoveries/filters/recovery-filter-form.js:91
+msgid "Apply filters"
+msgstr "Aplicar filtros"
+
+#: src/recoveries/recoveries-header.js:12
+msgid "Browse recovery attempts and their latest outcomes."
+msgstr "Consulte as tentativas de recuperação e os resultados mais recentes."
+
+#: src/recoveries/filters/recovery-filter-form.js:9
+#: src/recoveries/list/recovery-status-badge.js:10
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#: src/recoveries/list/recovery-row.js:33
+msgid "Checkout value"
+msgstr "Valor do checkout"
+
+#. translators: %s: checkout date.
+#: src/recoveries/list/recovery-row.js:25
+msgid "Checkout · %s"
+msgstr "Checkout · %s"
+
+#: src/recoveries/filters/recovery-filter-form.js:101
+msgid "Choose valid dates, up to 366 days, ending no later than today."
+msgstr "Escolha datas válidas, até 366 dias, terminando o mais tardar hoje."
+
+#: src/recoveries/filters/recovery-filter-panel.js:37
+msgid "Clear filters"
+msgstr "Limpar filtros"
+
+#: src/recoveries/filters/recovery-date-presets.js:8
+#: src/recoveries/filters/recovery-date-presets.js:40
+msgid "Custom dates"
+msgstr "Datas personalizadas"
+
+#: src/recoveries/list/recovery-status-badge.js:5
+msgid "Detected"
+msgstr "Detetado"
+
+#: src/recoveries/list/recovery-status-badge.js:7
+msgid "Engaged"
+msgstr "Envolvido"
+
+#: src/recoveries/filters/recovery-filter-form.js:8
+#: src/recoveries/list/recovery-status-badge.js:9
+msgid "Expired"
+msgstr "Expirado"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "From"
+msgstr "De"
+
+#: src/recoveries/list/recovery-row.js:22
+msgid "Guest"
+msgstr "Convidado"
+
+#: src/recoveries/filters/recovery-date-presets.js:7
+msgid "Last 30 days"
+msgstr "Últimos 30 dias"
+
+#: src/recoveries/filters/recovery-date-presets.js:6
+msgid "Last 7 days"
+msgstr "Últimos 7 dias"
+
+#: src/recoveries/states/recovery-results-state.js:7
+msgid "Loading recoveries…"
+msgstr "A carregar recuperações…"
+
+#: src/recoveries/list/recovery-status-badge.js:6
+msgid "Message sent"
+msgstr "Mensagem enviada"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No matching recoveries"
+msgstr "Nenhuma recuperação correspondente"
+
+#: src/recoveries/filters/recovery-filter-form.js:6
+msgid "Ongoing"
+msgstr "Em curso"
+
+#: src/recoveries/states/recovery-results-state.js:9
+msgid "Recoveries could not be loaded."
+msgstr "Não foi possível carregar as recuperações."
+
+#: src/recoveries/states/recovery-results-state.js:6
+msgid "Recovery data is not connected."
+msgstr "Os dados de recuperação ainda não estão ligados."
+
+#: src/recoveries/list/recovery-pagination.js:9
+msgid "Recovery pages"
+msgstr "Páginas de recuperações"
+
+#: src/recoveries/states/recovery-results-state.js:20
+msgid "Recovery records will appear after the read API is connected."
+msgstr "Os registos de recuperação aparecerão quando a API de leitura estiver ligada."
+
+#: src/recoveries/recoveries-header.js:22
+msgid "Refresh"
+msgstr "Atualizar"
+
+#: src/recoveries/filters/recovery-filter-form.js:54
+msgid "Search customer"
+msgstr "Pesquisar cliente"
+
+#: src/recoveries/list/recovery-row.js:35
+msgid "Started"
+msgstr "Início"
+
+#: src/recoveries/filters/recovery-filter-form.js:70
+#: src/recoveries/list/recovery-row.js:31
+msgid "Status"
+msgstr "Estado"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "To"
+msgstr "Até"
+
+#: src/recoveries/filters/recovery-date-presets.js:5
+msgid "Today"
+msgstr "Hoje"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No recoveries yet"
+msgstr "Ainda não há recuperações"
+
+#: src/recoveries/states/recovery-results-state.js:32
+msgid "Recovery records will appear here when recovery starts."
+msgstr "Os registos aparecerão aqui quando uma recuperação começar."
+
+#: src/recoveries/states/recovery-results-state.js:35
+msgid "Try another date range, customer or status."
+msgstr "Experimente outro intervalo, cliente ou estado."

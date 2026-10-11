@@ -2,6 +2,7 @@ import { isBillingReturn } from '../billing-controller';
 
 const nativeSurfaces = {
 	'moda-interact': 'OVERVIEW',
+	'moda-interact-recoveries': 'RECOVERIES',
 	'moda-interact-billing': 'BILLING',
 	'moda-interact-recovery-settings': 'RECOVERY',
 };

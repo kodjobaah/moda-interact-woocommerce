@@ -974,3 +974,140 @@ msgstr "กลับไปหน้าการเรียกเก็บเง
 
 msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
 msgstr "เปิดคำสั่งซื้อบน WooCommerce.com เพื่อขอคืนเงินสำหรับการซื้อ Moda Interact โดย Moda จะอัปเดตเครดิตหลังจากผู้ให้บริการและผู้ขายตรวจสอบผลแล้วเท่านั้น"
+
+#: src/recoveries/filters/recovery-filter-form.js:5
+msgid "All statuses"
+msgstr "ทุกสถานะ"
+
+#: src/recoveries/filters/recovery-filter-form.js:91
+msgid "Apply filters"
+msgstr "ใช้ตัวกรอง"
+
+#: src/recoveries/recoveries-header.js:12
+msgid "Browse recovery attempts and their latest outcomes."
+msgstr "ดูความพยายามกู้คืนและผลลัพธ์ล่าสุด"
+
+#: src/recoveries/filters/recovery-filter-form.js:9
+#: src/recoveries/list/recovery-status-badge.js:10
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#: src/recoveries/list/recovery-row.js:33
+msgid "Checkout value"
+msgstr "มูลค่าการชำระเงิน"
+
+#. translators: %s: checkout date.
+#: src/recoveries/list/recovery-row.js:25
+msgid "Checkout · %s"
+msgstr "การชำระเงิน · %s"
+
+#: src/recoveries/filters/recovery-filter-form.js:101
+msgid "Choose valid dates, up to 366 days, ending no later than today."
+msgstr "เลือกวันที่ที่ถูกต้อง ไม่เกิน 366 วัน และสิ้นสุดไม่เกินวันนี้"
+
+#: src/recoveries/filters/recovery-filter-panel.js:37
+msgid "Clear filters"
+msgstr "ล้างตัวกรอง"
+
+#: src/recoveries/filters/recovery-date-presets.js:8
+#: src/recoveries/filters/recovery-date-presets.js:40
+msgid "Custom dates"
+msgstr "กำหนดวันที่"
+
+#: src/recoveries/list/recovery-status-badge.js:5
+msgid "Detected"
+msgstr "ตรวจพบแล้ว"
+
+#: src/recoveries/list/recovery-status-badge.js:7
+msgid "Engaged"
+msgstr "มีส่วนร่วมแล้ว"
+
+#: src/recoveries/filters/recovery-filter-form.js:8
+#: src/recoveries/list/recovery-status-badge.js:9
+msgid "Expired"
+msgstr "หมดอายุแล้ว"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "From"
+msgstr "จาก"
+
+#: src/recoveries/list/recovery-row.js:22
+msgid "Guest"
+msgstr "ผู้เยี่ยมชม"
+
+#: src/recoveries/filters/recovery-date-presets.js:7
+msgid "Last 30 days"
+msgstr "30 วันที่ผ่านมา"
+
+#: src/recoveries/filters/recovery-date-presets.js:6
+msgid "Last 7 days"
+msgstr "7 วันที่ผ่านมา"
+
+#: src/recoveries/states/recovery-results-state.js:7
+msgid "Loading recoveries…"
+msgstr "กำลังโหลดการกู้คืน…"
+
+#: src/recoveries/list/recovery-status-badge.js:6
+msgid "Message sent"
+msgstr "ส่งข้อความแล้ว"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No matching recoveries"
+msgstr "ไม่พบการกู้คืนที่ตรงกัน"
+
+#: src/recoveries/filters/recovery-filter-form.js:6
+msgid "Ongoing"
+msgstr "กำลังดำเนินการ"
+
+#: src/recoveries/states/recovery-results-state.js:9
+msgid "Recoveries could not be loaded."
+msgstr "ไม่สามารถโหลดการกู้คืนได้"
+
+#: src/recoveries/states/recovery-results-state.js:6
+msgid "Recovery data is not connected."
+msgstr "ยังไม่ได้เชื่อมต่อข้อมูลการกู้คืน"
+
+#: src/recoveries/list/recovery-pagination.js:9
+msgid "Recovery pages"
+msgstr "หน้าการกู้คืน"
+
+#: src/recoveries/states/recovery-results-state.js:20
+msgid "Recovery records will appear after the read API is connected."
+msgstr "รายการกู้คืนจะแสดงเมื่อเชื่อมต่อ API สำหรับอ่านข้อมูลแล้ว"
+
+#: src/recoveries/recoveries-header.js:22
+msgid "Refresh"
+msgstr "รีเฟรช"
+
+#: src/recoveries/filters/recovery-filter-form.js:54
+msgid "Search customer"
+msgstr "ค้นหาลูกค้า"
+
+#: src/recoveries/list/recovery-row.js:35
+msgid "Started"
+msgstr "เริ่มต้น"
+
+#: src/recoveries/filters/recovery-filter-form.js:70
+#: src/recoveries/list/recovery-row.js:31
+msgid "Status"
+msgstr "สถานะ"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "To"
+msgstr "ถึง"
+
+#: src/recoveries/filters/recovery-date-presets.js:5
+msgid "Today"
+msgstr "วันนี้"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No recoveries yet"
+msgstr "ยังไม่มีการกู้คืน"
+
+#: src/recoveries/states/recovery-results-state.js:32
+msgid "Recovery records will appear here when recovery starts."
+msgstr "รายการจะแสดงที่นี่เมื่อเริ่มการกู้คืน"
+
+#: src/recoveries/states/recovery-results-state.js:35
+msgid "Try another date range, customer or status."
+msgstr "ลองช่วงวันที่ ลูกค้า หรือสถานะอื่น"

@@ -1,0 +1,115 @@
+.moda-recoveries__rows {
+	margin: 15px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.moda-recoveries__row {
+	display: grid;
+	grid-template-columns: minmax(180px, 1.3fr) minmax(0, 2fr);
+	gap: 18px;
+	padding: 17px 0;
+	border-top: 1px solid #e5ebe7;
+	overflow-wrap: anywhere;
+}
+
+.moda-recoveries__customer h3 {
+	margin: 0 0 5px;
+	color: var(--moda-forest-800);
+	font-size: 14px;
+	font-weight: 650;
+}
+
+.moda-recoveries__customer p {
+	margin: 0;
+	font-size: 12px;
+	color: var(--moda-muted);
+}
+
+.moda-recoveries__row-metadata {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	margin: 0;
+}
+
+.moda-recoveries__row-metadata dt {
+	font-size: 11px;
+	color: var(--moda-muted);
+}
+
+.moda-recoveries__row-metadata dd {
+	margin: 6px 0 0;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.moda-recoveries__badge {
+	display: inline-flex;
+	padding: 3px 7px;
+	border-radius: 4px;
+	background: #e7f0f7;
+	color: #24567a;
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.moda-recoveries__badge--COMPLETED {
+	background: #e2f0e6;
+	color: #20583e;
+}
+
+.moda-recoveries__badge--EXPIRED,
+.moda-recoveries__badge--CANCELLED {
+	background: #eef1ef;
+	color: #53645a;
+}
+
+.moda-recoveries__state {
+	padding: 44px 12px;
+	text-align: center;
+}
+
+.moda-recoveries__state h3 {
+	margin: 0;
+	font-size: 15px;
+}
+
+.moda-recoveries__state p {
+	margin: 8px 0 0;
+	color: var(--moda-muted);
+}
+
+.moda-recoveries__skeleton {
+	height: 64px;
+	margin: 15px auto 0;
+	border-radius: 6px;
+	background: linear-gradient(100deg, #eef1ef 20%, #f6f8f7 50%, #eef1ef 80%);
+}
+
+.moda-recoveries__pagination {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding-top: 14px;
+	border-top: 1px solid #e5ebe7;
+}
+
+@media (max-width: 960px) {
+
+	.moda-recoveries__row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px;
+	}
+}
+
+@media (max-width: 600px) {
+
+	.moda-recoveries__row-metadata {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.moda-recoveries__row-metadata > div:last-child {
+		grid-column: 1 / -1;
+	}
+}

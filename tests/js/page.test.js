@@ -148,8 +148,10 @@ describe('Moda Interact connection presentation', () => {
 			/install_safe|shop_safe|credentialVersion/
 		);
 		expect(source).not.toMatch(
-			/localStorage|sessionStorage|currentLocale|localeAllowlist|Recoveries/
+			/localStorage|sessionStorage|currentLocale|localeAllowlist/
 		);
+		// The top-level shell may route Recoveries, but must not embed its page copy.
+		expect(source).not.toMatch(/__\(['"]Recoveries['"]/);
 		expect(source).toContain('createElement(ConnectionPanel');
 		expect(source).toContain('createElement(ConnectedWorkspace');
 		expect(source).not.toContain('new BillingController');

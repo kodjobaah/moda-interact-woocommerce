@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ConnectedBillingScreen } from '../../src/billing/connected-billing-screen';
 import { OverviewScreen } from '../../src/overview-screen';
+import { RecoveriesScreen } from '../../src/recoveries/recoveries-screen';
 import { ConnectedWorkspace } from '../../src/page/connected-workspace';
 import { SurfaceNavigation } from '../../src/page/surface-navigation';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
@@ -32,6 +33,7 @@ function renderWorkspace(activeSurface) {
 describe('connected workspace composition', () => {
 	it.each([
 		['OVERVIEW', OverviewScreen],
+		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
 		['RECOVERY', RecoverySettingsScreen],
 	])('mounts only the %s screen next to the tablist', (surface, Screen) => {

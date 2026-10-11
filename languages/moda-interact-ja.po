@@ -974,3 +974,140 @@ msgstr "請求画面に戻る"
 
 msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
 msgstr "WooCommerce.com の注文ページで Moda Interact の購入に対する返金を申請してください。Moda はプロバイダーと販売者が結果を確認した後にのみクレジットを更新します。"
+
+#: src/recoveries/filters/recovery-filter-form.js:5
+msgid "All statuses"
+msgstr "すべてのステータス"
+
+#: src/recoveries/filters/recovery-filter-form.js:91
+msgid "Apply filters"
+msgstr "絞り込みを適用"
+
+#: src/recoveries/recoveries-header.js:12
+msgid "Browse recovery attempts and their latest outcomes."
+msgstr "購入復旧の試行と最新の結果を確認できます。"
+
+#: src/recoveries/filters/recovery-filter-form.js:9
+#: src/recoveries/list/recovery-status-badge.js:10
+msgid "Cancelled"
+msgstr "キャンセル済み"
+
+#: src/recoveries/list/recovery-row.js:33
+msgid "Checkout value"
+msgstr "チェックアウト金額"
+
+#. translators: %s: checkout date.
+#: src/recoveries/list/recovery-row.js:25
+msgid "Checkout · %s"
+msgstr "チェックアウト · %s"
+
+#: src/recoveries/filters/recovery-filter-form.js:101
+msgid "Choose valid dates, up to 366 days, ending no later than today."
+msgstr "今日以前に終了する366日以内の有効な日付範囲を選択してください。"
+
+#: src/recoveries/filters/recovery-filter-panel.js:37
+msgid "Clear filters"
+msgstr "絞り込みを解除"
+
+#: src/recoveries/filters/recovery-date-presets.js:8
+#: src/recoveries/filters/recovery-date-presets.js:40
+msgid "Custom dates"
+msgstr "日付を指定"
+
+#: src/recoveries/list/recovery-status-badge.js:5
+msgid "Detected"
+msgstr "検出済み"
+
+#: src/recoveries/list/recovery-status-badge.js:7
+msgid "Engaged"
+msgstr "エンゲージ済み"
+
+#: src/recoveries/filters/recovery-filter-form.js:8
+#: src/recoveries/list/recovery-status-badge.js:9
+msgid "Expired"
+msgstr "期限切れ"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "From"
+msgstr "開始日"
+
+#: src/recoveries/list/recovery-row.js:22
+msgid "Guest"
+msgstr "ゲスト"
+
+#: src/recoveries/filters/recovery-date-presets.js:7
+msgid "Last 30 days"
+msgstr "過去30日間"
+
+#: src/recoveries/filters/recovery-date-presets.js:6
+msgid "Last 7 days"
+msgstr "過去7日間"
+
+#: src/recoveries/states/recovery-results-state.js:7
+msgid "Loading recoveries…"
+msgstr "購入復旧を読み込み中…"
+
+#: src/recoveries/list/recovery-status-badge.js:6
+msgid "Message sent"
+msgstr "メッセージ送信済み"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No matching recoveries"
+msgstr "一致する購入復旧はありません"
+
+#: src/recoveries/filters/recovery-filter-form.js:6
+msgid "Ongoing"
+msgstr "進行中"
+
+#: src/recoveries/states/recovery-results-state.js:9
+msgid "Recoveries could not be loaded."
+msgstr "購入復旧を読み込めませんでした。"
+
+#: src/recoveries/states/recovery-results-state.js:6
+msgid "Recovery data is not connected."
+msgstr "リカバリーデータはまだ接続されていません。"
+
+#: src/recoveries/list/recovery-pagination.js:9
+msgid "Recovery pages"
+msgstr "購入復旧のページ"
+
+#: src/recoveries/states/recovery-results-state.js:20
+msgid "Recovery records will appear after the read API is connected."
+msgstr "読み取り API が接続されると、リカバリー記録が表示されます。"
+
+#: src/recoveries/recoveries-header.js:22
+msgid "Refresh"
+msgstr "更新"
+
+#: src/recoveries/filters/recovery-filter-form.js:54
+msgid "Search customer"
+msgstr "顧客を検索"
+
+#: src/recoveries/list/recovery-row.js:35
+msgid "Started"
+msgstr "開始日時"
+
+#: src/recoveries/filters/recovery-filter-form.js:70
+#: src/recoveries/list/recovery-row.js:31
+msgid "Status"
+msgstr "ステータス"
+
+#: src/recoveries/filters/recovery-filter-form.js:35
+msgid "To"
+msgstr "終了日"
+
+#: src/recoveries/filters/recovery-date-presets.js:5
+msgid "Today"
+msgstr "今日"
+
+#: src/recoveries/states/recovery-results-state.js:8
+msgid "No recoveries yet"
+msgstr "購入復旧はまだありません"
+
+#: src/recoveries/states/recovery-results-state.js:32
+msgid "Recovery records will appear here when recovery starts."
+msgstr "購入復旧が開始されると、ここに記録が表示されます。"
+
+#: src/recoveries/states/recovery-results-state.js:35
+msgid "Try another date range, customer or status."
+msgstr "別の日付範囲、顧客、ステータスをお試しください。"

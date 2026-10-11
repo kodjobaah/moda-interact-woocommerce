@@ -89,13 +89,19 @@ function readMo(buffer) {
 	return entries;
 }
 
-test('WOO-011 catalogues cover all 243 source keys, with no accidental English fallbacks', () => {
-	assert.equal(sourceKeys.size, 243);
+test('WOO-011 catalogues cover all 276 source keys, with no accidental English fallbacks', () => {
+	assert.equal(sourceKeys.size, 276);
 	const productNames = new Set([
 		'Moda Interact',
 		'WooCommerce',
 		'Free',
 		'%1$s: %2$s',
+	]);
+	const sourceLoanwords = new Map([
+		['nl_NL', new Set(['Checkout · %s', 'Status'])],
+		['da_DK', new Set(['Checkout · %s', 'Status'])],
+		['nb_NO', new Set(['Status'])],
+		['sv_SE', new Set(['Status'])],
 	]);
 	for (const { locale } of batch) {
 		const entries = poFromFile(
@@ -107,13 +113,14 @@ test('WOO-011 catalogues cover all 243 source keys, with no accidental English f
 			sourceKeys,
 			locale
 		);
-		assert.equal(entries.length, 244, locale);
+		assert.equal(entries.length, 277, locale);
 		assert.match(entries[0].translations[0], /Plural-Forms: nplurals=2;/);
 		for (const entry of translations) {
 			assert.ok(entry.translations[0], `${locale}: ${entry.id}`);
 			assert.ok(!entry.fuzzy, `${locale}: fuzzy ${entry.id}`);
 			assert.ok(
 				productNames.has(entry.id) ||
+					sourceLoanwords.get(locale)?.has(entry.id) ||
 					entry.id !== entry.translations[0],
 				`${locale}: English fallback ${entry.id}`
 			);

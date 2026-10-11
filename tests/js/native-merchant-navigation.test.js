@@ -6,6 +6,7 @@ import {
 	isNativeMerchantPage,
 } from '../../src/native-admin/page-surface';
 import { OverviewScreen } from '../../src/overview-screen';
+import { RecoveriesScreen } from '../../src/recoveries/recoveries-screen';
 import { ConnectedBillingScreen } from '../../src/billing/connected-billing-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 
@@ -27,6 +28,7 @@ const actions = {
 describe('native merchant navigation', () => {
 	it.each([
 		['?page=moda-interact', 'OVERVIEW'],
+		['?page=moda-interact-recoveries', 'RECOVERIES'],
 		['?page=moda-interact-billing', 'BILLING'],
 		['?page=moda-interact-recovery-settings', 'RECOVERY'],
 	])(
@@ -52,6 +54,7 @@ describe('native merchant navigation', () => {
 
 	it.each([
 		['OVERVIEW', OverviewScreen],
+		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
 		['RECOVERY', RecoverySettingsScreen],
 	])(
