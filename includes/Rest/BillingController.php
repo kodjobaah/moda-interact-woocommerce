@@ -49,6 +49,7 @@ final class BillingController {
 		$this->registerRoute( '/billing/subscription', 'POST', 'postSubscription' );
 		$this->registerRoute( '/billing/subscription/switch', 'POST', 'postSubscriptionSwitch' );
 		$this->registerRoute( '/billing/subscription/cancel', 'POST', 'postSubscriptionCancel' );
+		$this->registerRoute( '/billing/recovery-credit-purchases', 'POST', 'postRecoveryCreditPurchase' );
 	}
 
 	public function authorizeAdministrator(): bool|\WP_Error {
@@ -84,6 +85,15 @@ final class BillingController {
 			return self::error( 'invalid_request', 400 );
 		}
 		return $this->run( fn( array $connection ) => $this->api_client->cancelSubscription( $connection, $body['actionId'] ) );
+	}
+
+	public function postRecoveryCreditPurchase( \WP_REST_Request $request ): \WP_REST_Response {
+		$body = $request->get_json_params();
+		if ( ! self::validRequest( $request, array( 'actionId', 'merchantPricingUsageEventId' ) ) ||
+			! self::validActionId( $body['actionId'] ?? null ) || ! self::validPlanId( $body['merchantPricingUsageEventId'] ?? null ) ) {
+			return self::error( 'invalid_request', 400 );
+		}
+		return $this->run( fn( array $connection ) => $this->api_client->purchaseRecoveryCredits( $connection, $body['merchantPricingUsageEventId'], $body['actionId'] ) );
 	}
 
 	private function postPlanCommand( \WP_REST_Request $request, string $method ): \WP_REST_Response {
@@ -185,13 +195,16 @@ final class BillingController {
 			return self::error( 'billing_operation_failed', 422 );
 		}
 		if ( 'remote_rejected' === $reason && 409 === $error->http_status ) {
-			$conflicts = array( 'billing_operation_in_progress' => 'billing_operation_in_progress', 'billing_operation_conflict' => 'billing_operation_conflict', 'idempotency_conflict' => 'billing_operation_conflict', 'billing_plan_materialization_conflict' => 'billing_operation_conflict' );
+			$conflicts = array( 'billing_operation_in_progress' => 'billing_operation_in_progress', 'billing_operation_conflict' => 'billing_operation_conflict', 'idempotency_conflict' => 'idempotency_conflict', 'top_up_purchase_pending' => 'top_up_purchase_pending', 'top_up_purchase_unavailable' => 'top_up_purchase_unavailable', 'billing_plan_materialization_conflict' => 'billing_operation_conflict' );
 			return self::error( $conflicts[ $remote_error ] ?? 'billing_operation_conflict', 409 );
 		}
-		if ( 'remote_rejected' === $reason && in_array( $error->http_status, array( 400, 413, 422 ), true ) ) {
+		if ( 'remote_rejected' === $reason && in_array( $error->http_status, array( 400, 404, 413, 422 ), true ) ) {
 			$plan_errors = array( 'billing_plan_unavailable', 'billing_plan_unchanged', 'subscription_create_not_allowed', 'subscription_switch_not_allowed', 'free_plan_uses_cancellation', 'no_recurring_subscription', 'billing_catalogue_mapping_invalid' );
 			if ( in_array( $remote_error, $plan_errors, true ) ) {
 				return self::error( 'invalid_plan_selection', 422 );
+			}
+			if ( 'top_up_bundle_not_found' === $remote_error && 404 === $error->http_status ) {
+				return self::error( $remote_error, 404 );
 			}
 			if ( in_array( $remote_error, array( 'billing_provider_outcome_unknown', 'billing_operation_failed' ), true ) ) {
 				return self::error( 'billing_provider_outcome_unknown' === $remote_error ? 'billing_provider_outcome_unknown' : 'billing_operation_failed', 422 );

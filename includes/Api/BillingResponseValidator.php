@@ -43,6 +43,12 @@ final class BillingResponseValidator {
 			'CANCEL' === $value['kind'] && 'CONFIRMED' === $value['state'] && null === $value['confirmationUrl'];
 	}
 
+	public static function isRecoveryCreditPurchase( array $value ): bool {
+		return self::keys( $value, array( 'schemaVersion', 'purchaseId', 'operationId', 'state', 'confirmationUrl' ) ) &&
+			1 === $value['schemaVersion'] && self::nonBlankText( $value['purchaseId'], 128 ) && self::nonBlankText( $value['operationId'], 128 ) &&
+			'AWAITING_CONFIRMATION' === $value['state'] && self::confirmationUrl( $value['confirmationUrl'] );
+	}
+
 	public static function confirmationUrl( mixed $value ): bool {
 		if ( ! is_string( $value ) || strlen( $value ) > 2048 ) {
 			return false;
@@ -166,6 +172,10 @@ final class BillingResponseValidator {
 
 	private static function text( mixed $value, int $maximum ): bool {
 		return is_string( $value ) && '' !== $value && strlen( $value ) <= $maximum;
+	}
+
+	private static function nonBlankText( mixed $value, int $maximum ): bool {
+		return is_string( $value ) && '' !== trim( $value ) && strlen( $value ) <= $maximum;
 	}
 
 	private static function integer( mixed $value, int $minimum = 0 ): bool {

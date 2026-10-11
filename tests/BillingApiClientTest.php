@@ -60,6 +60,38 @@ final class BillingApiClientTest extends TestCase {
 		}
 	}
 
+	public function test_recovery_credit_purchase_sends_only_opaque_offer_and_validates_exact_confirmation(): void {
+		$requests = array();
+		$purchase = array( 'schemaVersion' => 1, 'purchaseId' => 'purchase_1', 'operationId' => 'operation_1', 'state' => 'AWAITING_CONFIRMATION', 'confirmationUrl' => 'https://woocommerce.com/confirm/1' );
+		$client = $this->client( static function ( string $url, array $args ) use ( &$requests, $purchase ): array {
+			$requests[] = array( $url, $args );
+			return self::response( 202, $purchase );
+		} );
+		$action_id = '550e8400-e29b-41d4-a716-446655440000';
+
+		self::assertSame( $purchase, $client->purchaseRecoveryCredits( self::connection(), 'usage_bronze', $action_id ) );
+		self::assertSame( 'https://api.example.test/v1/billing/recovery-credit-purchases', $requests[0][0] );
+		self::assertSame( 'POST', $requests[0][1]['method'] );
+		self::assertSame( $action_id, $requests[0][1]['headers']['Idempotency-Key'] );
+		self::assertSame( array( 'merchantPricingUsageEventId' => 'usage_bronze' ), json_decode( $requests[0][1]['body'], true ) );
+		self::assertArrayNotHasKey( 'shopId', $requests[0][1]['headers'] );
+
+		foreach ( array(
+			array_merge( $purchase, array( 'providerContractId' => 'must_not_escape' ) ),
+			array_merge( $purchase, array( 'purchaseId' => ' ' ) ),
+			array_merge( $purchase, array( 'state' => 'CONFIRMED' ) ),
+			array_merge( $purchase, array( 'confirmationUrl' => 'https://woocommerce.com.attacker.test/confirm' ) ),
+		) as $invalid ) {
+			$invalid_client = $this->client( static fn() => self::response( 202, $invalid ) );
+			try {
+				$invalid_client->purchaseRecoveryCredits( self::connection(), 'usage_bronze', $action_id );
+				self::fail( 'Expected invalid purchase response rejection.' );
+			} catch ( ModaApiClientException $error ) {
+				self::assertSame( 'remote_response_invalid', $error->getMessage() );
+			}
+		}
+	}
+
 	public function test_contract_validator_rejects_unknown_fields_versions_and_untrusted_confirmation_hosts(): void {
 		$presentation = self::billingPresentation();
 		self::assertTrue( BillingResponseValidator::isPresentation( $presentation ) );

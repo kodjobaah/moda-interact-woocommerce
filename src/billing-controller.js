@@ -8,10 +8,27 @@ export function isBillingReturn(search = '') {
 }
 
 export function createBillingActionId(cryptoObject = globalThis.crypto) {
-	if (!cryptoObject || typeof cryptoObject.randomUUID !== 'function') {
-		throw new Error('secure_random_unavailable');
+	let actionId;
+	if (typeof cryptoObject?.randomUUID === 'function') {
+		actionId = cryptoObject.randomUUID();
+	} else if (typeof cryptoObject?.getRandomValues === 'function') {
+		// randomUUID requires HTTPS; getRandomValues also works on local HTTP.
+		// Use cryptographically strong bytes, never Math.random for billing keys.
+		const bytes = new Uint8Array(16);
+		cryptoObject.getRandomValues(bytes);
+		bytes[6] = (bytes[6] & 0x0f) | 0x40;
+		bytes[8] = (bytes[8] & 0x3f) | 0x80;
+		const hex = Array.from(bytes, (byte) =>
+			byte.toString(16).padStart(2, '0')
+		).join('');
+		actionId = [
+			hex.slice(0, 8),
+			hex.slice(8, 12),
+			hex.slice(12, 16),
+			hex.slice(16, 20),
+			hex.slice(20),
+		].join('-');
 	}
-	const actionId = cryptoObject.randomUUID();
 	if (typeof actionId !== 'string' || !UUID_V4_PATTERN.test(actionId)) {
 		throw new Error('secure_random_unavailable');
 	}
@@ -46,15 +63,36 @@ export function planActionFor(data, plan) {
 	return null;
 }
 
+export function canPurchaseRecoveryCredits(data, usageEventId) {
+	if (
+		!data?.topUps?.configured ||
+		!data.topUps.purchaseEligible ||
+		typeof usageEventId !== 'string'
+	) {
+		return false;
+	}
+	const offer = data.topUps.offers.find(
+		(entry) => entry.merchantPricingUsageEventId === usageEventId
+	);
+	return Boolean(
+		offer?.purchaseEligible &&
+		!data.topUps.unresolvedPurchases.some(
+			(purchase) => purchase.merchantPricingUsageEventId === usageEventId
+		)
+	);
+}
+
 function initialState() {
 	return {
 		status: 'IDLE',
 		data: null,
 		plansStatus: 'IDLE',
 		plans: null,
-		view: 'SUMMARY',
+		view: 'TOP_UPS',
 		command: null,
+		feedbackContext: null,
 		notice: null,
+		blockedTopUpEventId: null,
 		error: null,
 	};
 }
@@ -117,16 +155,28 @@ export class BillingController {
 			this.plansRevision += 1;
 			this.billingPromise = null;
 			this.plansPromise = null;
+			this.publish({
+				...this.state,
+				feedbackContext: null,
+				notice: null,
+				error: null,
+			});
 			return Promise.resolve(this.state);
 		}
 		return this.refresh();
 	}
 
 	setView(view) {
-		if (!['SUMMARY', 'PLANS'].includes(view) || this.disposed) {
+		if (!['SUMMARY', 'TOP_UPS', 'PLANS'].includes(view) || this.disposed) {
 			return Promise.resolve(this.state);
 		}
-		this.publish({ ...this.state, view });
+		this.publish({
+			...this.state,
+			view,
+			feedbackContext: null,
+			notice: null,
+			error: null,
+		});
 		if (
 			view === 'PLANS' &&
 			this.connectionStatus === 'CONNECTED' &&
@@ -155,7 +205,18 @@ export class BillingController {
 
 		const revision = ++this.billingRevision;
 		const connectionRevision = this.connectionRevision;
-		this.publish({ ...this.state, status: 'LOADING', error: null });
+		this.publish({
+			...this.state,
+			status: 'LOADING',
+			error: null,
+			...(afterCommand
+				? {}
+				: {
+						feedbackContext: null,
+						notice: null,
+						blockedTopUpEventId: null,
+					}),
+		});
 		const operation = this.client
 			.getBilling()
 			.then((data) => {
@@ -276,11 +337,43 @@ export class BillingController {
 		}
 		const method =
 			action === 'CREATE' ? 'createSubscription' : 'switchSubscription';
-		return this.submitCommand(() =>
-			this.client[method](
-				plan.merchantPricingPlanId,
-				createBillingActionId()
-			)
+		return this.submitCommand(
+			() =>
+				this.client[method](
+					plan.merchantPricingPlanId,
+					createBillingActionId()
+				),
+			false,
+			{ feedbackContext: 'PLAN_CHANGE' }
+		);
+	}
+
+	purchaseRecoveryCredits(usageEventId) {
+		if (
+			this.state.status !== 'READY' ||
+			!canPurchaseRecoveryCredits(this.state.data, usageEventId) ||
+			this.state.blockedTopUpEventId === usageEventId
+		) {
+			return Promise.resolve(this.state);
+		}
+		return this.submitCommand(
+			() =>
+				this.client.purchaseRecoveryCredits(
+					usageEventId,
+					createBillingActionId()
+				),
+			false,
+			{
+				refreshErrors: new Set([
+					'top_up_purchase_pending',
+					'billing_provider_outcome_unknown',
+					'billing_operation_in_progress',
+					'top_up_bundle_not_found',
+					'top_up_purchase_unavailable',
+				]),
+				feedbackContext: 'TOP_UP',
+				usageEventId,
+			}
 		);
 	}
 
@@ -299,11 +392,12 @@ export class BillingController {
 		}
 		return this.submitCommand(
 			() => this.client.cancelSubscription(createBillingActionId()),
-			true
+			true,
+			{ feedbackContext: 'CANCELLATION' }
 		);
 	}
 
-	submitCommand(command, cancellation = false) {
+	submitCommand(command, cancellation = false, options = {}) {
 		if (
 			this.disposed ||
 			!this.active ||
@@ -317,6 +411,7 @@ export class BillingController {
 		this.publish({
 			...this.state,
 			command: 'SUBMITTING',
+			feedbackContext: null,
 			notice: null,
 			error: null,
 		});
@@ -330,24 +425,52 @@ export class BillingController {
 					this.publish({
 						...this.state,
 						command: null,
+						feedbackContext: options.feedbackContext ?? null,
 						notice: 'CANCEL_ACCEPTED',
 					});
 					return this.refreshAfterCommand();
 				}
-				this.publish({ ...this.state, command: 'REDIRECTING' });
+				this.publish({
+					...this.state,
+					command: 'REDIRECTING',
+					feedbackContext: null,
+				});
 				this.navigate(result.confirmationUrl);
 				return this.state;
 			})
 			.catch((error) => {
 				if (this.isCurrentConnection(connectionRevision)) {
+					const code = error?.message ?? 'remote_unavailable';
+					const refresh = options.refreshErrors?.has(code) ?? false;
 					this.publish({
 						...this.state,
 						command: null,
-						error: error?.message ?? 'remote_unavailable',
+						feedbackContext: options.feedbackContext ?? null,
+						notice: refresh ? code : null,
+						blockedTopUpEventId:
+							options.usageEventId &&
+							[
+								'top_up_purchase_pending',
+								'billing_provider_outcome_unknown',
+								'billing_operation_in_progress',
+								'top_up_bundle_not_found',
+								'idempotency_conflict',
+							].includes(code)
+								? options.usageEventId
+								: this.state.blockedTopUpEventId,
+						error: refresh ? null : code,
 					});
+					if (refresh) {
+						return this.refreshAfterCommand().then(() => {
+							if (this.isCurrentConnection(connectionRevision)) {
+								this.publish({ ...this.state, notice: code });
+							}
+							return this.state;
+						});
+					}
 					if (
-						error?.message === 'RECONNECT_REQUIRED' ||
-						error?.message === 'remote_authentication_failed'
+						code === 'RECONNECT_REQUIRED' ||
+						code === 'remote_authentication_failed'
 					) {
 						this.onConnectionAttention();
 					}

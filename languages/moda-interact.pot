@@ -20,7 +20,7 @@ msgstr ""
 #: includes/Admin/NativeNavigation.php:22
 #: includes/Admin/Setup.php:96
 #: src/index.js:18
-#: src/page.js:23
+#: src/page.js:24
 msgid "Moda Interact"
 msgstr ""
 
@@ -65,12 +65,12 @@ msgstr ""
 msgid "This section is not yet available for WooCommerce."
 msgstr ""
 
-#: includes/Runtime.php:86
+#: includes/Runtime.php:88
 msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
 msgstr ""
 
 #. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
-#: includes/Runtime.php:93
+#: includes/Runtime.php:95
 #, php-format
 msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
 msgstr ""
@@ -89,6 +89,7 @@ msgstr ""
 
 #: src/billing-screen.js:23
 #: src/billing-screen.js:27
+#: src/billing/top-up-section.js:34
 msgid "A billing change is already in progress. Refresh the billing summary before trying again."
 msgstr ""
 
@@ -108,15 +109,15 @@ msgstr ""
 msgid "The billing request failed. Try again."
 msgstr ""
 
-#: src/billing-screen.js:64
+#: src/billing-screen.js:65
 msgid "Loading billing summary…"
 msgstr ""
 
-#: src/billing-screen.js:76
+#: src/billing-screen.js:77
 msgid "The Moda Interact connection needs attention before billing can be loaded."
 msgstr ""
 
-#: src/billing-screen.js:93
+#: src/billing-screen.js:94
 #: src/billing/hero.js:70
 msgid "Refresh billing"
 msgstr ""
@@ -135,6 +136,7 @@ msgstr ""
 
 #: src/billing/cancel-dialog.js:92
 #: src/billing/plan-catalogue.js:32
+#: src/billing/top-up-section.js:207
 msgid "Submitting…"
 msgstr ""
 
@@ -163,12 +165,13 @@ msgid "Purchased credits available"
 msgstr ""
 
 #: src/billing/capacity-summary.js:49
+#: src/billing/top-up-section.js:113
 msgid "Recovery capacity"
 msgstr ""
 
 #: src/billing/hero.js:23
 #: src/billing/plan-catalogue.js:28
-#: src/billing/summary.js:146
+#: src/billing/summary.js:150
 msgid "Current plan"
 msgstr ""
 
@@ -176,8 +179,20 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr ""
+
 #: src/billing/hero.js:38
-msgid "Plans"
+msgid "Add top-up"
+msgstr ""
+
+#: src/billing/hero.js:39
+msgid "Change plan"
+msgstr ""
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
 msgstr ""
 
 #: src/billing/notices.js:19
@@ -205,6 +220,7 @@ msgid "Starting the plan change"
 msgstr ""
 
 #: src/billing/notices.js:53
+#: src/billing/top-up-section.js:13
 msgid "Waiting for Woo confirmation"
 msgstr ""
 
@@ -243,6 +259,9 @@ msgid "Cancellation status unavailable"
 msgstr ""
 
 #: src/billing/plan-catalogue.js:26
+#: src/billing/top-up-section.js:46
+#: src/billing/top-up-section.js:76
+#: src/billing/top-up-section.js:79
 #: src/recovery-settings/recovery-effective-summary.js:13
 #: src/recovery-settings/recovery-effective-summary.js:38
 msgid "Unavailable"
@@ -265,7 +284,7 @@ msgid "Featured"
 msgstr ""
 
 #: src/billing/plan-catalogue.js:61
-#: src/billing/summary.js:97
+#: src/billing/summary.js:101
 msgid "Free"
 msgstr ""
 
@@ -277,6 +296,10 @@ msgstr ""
 
 #: src/billing/plan-catalogue.js:78
 msgid "Lifetime recovery credits"
+msgstr ""
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
 msgstr ""
 
 #: src/billing/plan-catalogue.js:79
@@ -303,60 +326,109 @@ msgstr ""
 msgid "Not applicable"
 msgstr ""
 
-#: src/billing/summary.js:91
+#: src/billing/summary.js:95
 msgid "Plan"
 msgstr ""
 
-#: src/billing/summary.js:95
+#: src/billing/summary.js:99
 msgid "Plan type"
 msgstr ""
 
-#: src/billing/summary.js:98
+#: src/billing/summary.js:102
 msgid "Paid recurring"
 msgstr ""
 
-#: src/billing/summary.js:101
+#: src/billing/summary.js:105
 msgid "Recurring amount"
 msgstr ""
 
-#: src/billing/summary.js:103
+#: src/billing/summary.js:107
 msgid "No recurring charge"
 msgstr ""
 
-#: src/billing/summary.js:111
+#: src/billing/summary.js:115
 msgid "Billing period"
 msgstr ""
 
-#: src/billing/summary.js:112
+#: src/billing/summary.js:116
 msgid "Every 30 days"
 msgstr ""
 
-#: src/billing/summary.js:115
+#: src/billing/summary.js:119
 msgid "Next included allowance reset"
 msgstr ""
 
-#: src/billing/summary.js:120
+#: src/billing/summary.js:124
 msgid "Paid subscription ends"
 msgstr ""
 
-#: src/billing/summary.js:130
+#: src/billing/summary.js:134
 msgid "Subscription status"
 msgstr ""
 
-#: src/billing/summary.js:131
+#: src/billing/summary.js:135
 msgid "Scheduled to end"
 msgstr ""
 
-#: src/billing/summary.js:158
+#: src/billing/summary.js:162
 msgid "No current plan details are available."
 msgstr ""
 
-#: src/billing/summary.js:175
+#: src/billing/summary.js:179
 msgid "Submitting cancellation…"
 msgstr ""
 
-#: src/billing/summary.js:179
+#: src/billing/summary.js:183
 msgid "Cancel subscription"
+msgstr ""
+
+#: src/billing/top-up-section.js:12
+msgid "Starting purchase"
+msgstr ""
+
+#: src/billing/top-up-section.js:14
+#: src/billing/top-up-section.js:30
+msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
+msgstr ""
+
+#: src/billing/top-up-section.js:18
+msgid "Payment confirmed. Credits are being activated."
+msgstr ""
+
+#: src/billing/top-up-section.js:26
+msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgstr ""
+
+#: src/billing/top-up-section.js:38
+msgid "The purchase could not be started."
+msgstr ""
+
+#: src/billing/top-up-section.js:42
+msgid "This bundle is no longer available."
+msgstr ""
+
+#: src/billing/top-up-section.js:47
+msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgstr ""
+
+#: src/billing/top-up-section.js:63
+#: src/billing/top-up-section.js:69
+#: src/billing/top-up-section.js:73
+msgid "Purchase pending"
+msgstr ""
+
+#: src/billing/top-up-section.js:118
+msgid "Predefined credit bundles"
+msgstr ""
+
+#: src/billing/top-up-section.js:123
+msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgstr ""
+
+#. translators: %s: recovery-credit quantity.
+#: src/billing/top-up-section.js:210
+#, js-format
+msgid "Buy %s credits"
 msgstr ""
 
 #: src/overview-screen.js:25
@@ -487,7 +559,7 @@ msgstr ""
 msgid "Store settings synchronized."
 msgstr ""
 
-#: src/page.js:21
+#: src/page.js:22
 msgid "WooCommerce"
 msgstr ""
 
@@ -526,6 +598,7 @@ msgstr ""
 
 #: src/page/connection-panel.js:78
 #: src/page/connection-panel.js:199
+#: src/read-access/read-access-panel.js:35
 msgid "Connected"
 msgstr ""
 
@@ -539,6 +612,8 @@ msgstr ""
 
 #: src/page/connection-panel.js:108
 #: src/page/connection-panel.js:164
+#: src/read-access/read-access-panel.js:12
+#: src/read-access/read-access-panel.js:52
 msgid "Checking…"
 msgstr ""
 
@@ -575,6 +650,66 @@ msgstr ""
 #: src/recovery-settings/recovery-navigation.js:15
 #: src/recovery-settings/recovery-settings-header.js:21
 msgid "Recovery Settings"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:14
+msgid "Read access could not be checked. Your Moda connection is unchanged."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:16
+msgid "Read access approved"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:18
+msgid "Awaiting WooCommerce approval"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:20
+msgid "Approval was not completed or has expired"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:22
+msgid "Read access needs approval again"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:24
+msgid "Read access not enabled"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:27
+msgid "Stop Moda Interact from reading store data?"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:34
+msgid "Store read access"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:37
+msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:41
+msgid "Open WooCommerce approval"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:45
+msgid "Approval opens in a new tab. Return here to check the result."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:48
+msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgstr ""
+
+#: src/read-access/read-access-panel.js:52
+msgid "Allow read access"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:54
+msgid "Stop read access"
+msgstr ""
+
+#: src/read-access/read-access-panel.js:56
+msgid "Check access"
 msgstr ""
 
 #: src/recovery-settings/category-mappings.js:14
@@ -650,6 +785,10 @@ msgstr ""
 #: src/recovery-settings/recovery-effective-summary.js:55
 #, js-format
 msgid "Currently active: %s"
+msgstr ""
+
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
 msgstr ""
 
 #: src/recovery-settings/recovery-effective-summary.js:61
@@ -736,62 +875,30 @@ msgstr ""
 msgid "Save category"
 msgstr ""
 
-#: src/read-access/read-access-panel.js:14
-msgid "Read access could not be checked. Your Moda connection is unchanged."
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
 msgstr ""
 
-#: src/read-access/read-access-panel.js:16
-msgid "Read access approved"
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
 msgstr ""
 
-#: src/read-access/read-access-panel.js:18
-msgid "Awaiting WooCommerce approval"
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
 msgstr ""
 
-#: src/read-access/read-access-panel.js:20
-msgid "Read access needs approval again"
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
 msgstr ""
 
-#: src/read-access/read-access-panel.js:22
-msgid "Read access not enabled"
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
 msgstr ""
 
-#: src/read-access/read-access-panel.js:25
-msgid "Stop Moda Interact from reading store data?"
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
 msgstr ""
 
-#: src/read-access/read-access-panel.js:32
-msgid "Store read access"
-msgstr ""
-
-#: src/read-access/read-access-panel.js:35
-msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
-msgstr ""
-
-#: src/read-access/read-access-panel.js:39
-msgid "Open WooCommerce approval"
-msgstr ""
-
-#: src/read-access/read-access-panel.js:43
-msgid "Approval opens in a new tab. Return here to check the result."
-msgstr ""
-
-#: src/read-access/read-access-panel.js:46
-msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
-msgstr ""
-
-#: src/read-access/read-access-panel.js:50
-msgid "Allow read access"
-msgstr ""
-
-#: src/read-access/read-access-panel.js:52
-msgid "Stop read access"
-msgstr ""
-
-#: src/read-access/read-access-panel.js:54
-msgid "Check access"
-msgstr ""
-
-#: src/read-access/read-access-panel.js:20
-msgid "Approval was not completed or has expired"
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr ""

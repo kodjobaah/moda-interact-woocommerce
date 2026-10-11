@@ -9,11 +9,18 @@ import { isNativeMerchantPage } from './native-admin/page-surface';
 /** Top-level composition only; each feature owns its controller and presentation. */
 function ModaInteractPage() {
 	const page = useModaPageState();
+	const connectedBilling =
+		page.activeSurface === 'BILLING' &&
+		page.connectionState.connection.status === 'CONNECTED';
 
 	return createElement(
 		'main',
-		{ className: 'moda-interact-page' },
-		createElement(
+		{
+			className: connectedBilling
+				? 'moda-interact-page moda-interact-page--billing'
+				: 'moda-interact-page',
+		},
+		connectedBilling ? null : createElement(
 			'header',
 			{ className: 'moda-interact-page__header' },
 			createElement(
@@ -26,7 +33,7 @@ function ModaInteractPage() {
 		createElement(
 			'div',
 			{ className: 'moda-interact-page__content' },
-			createElement(ConnectionPanel, {
+			connectedBilling ? null : createElement(ConnectionPanel, {
 				state: page.connectionState,
 				onConnect: page.actions.connect,
 				onRetry: page.actions.retryConnection,

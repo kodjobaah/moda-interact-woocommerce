@@ -24,6 +24,7 @@ export function ConnectedWorkspace({
 			onLoadPlans: actions.loadPlans,
 			onSelectPlan: actions.selectPlan,
 			onCancel: actions.cancelPlan,
+			onPurchaseTopUp: actions.purchaseRecoveryCredits,
 			onSetView: actions.setBillingView,
 		});
 	} else if (activeSurface === 'RECOVERY') {

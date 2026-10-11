@@ -1,4 +1,4 @@
-import { createElement } from '@wordpress/element';
+import { createElement, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { planActionFor } from '../billing-controller';
 import {
@@ -12,6 +12,7 @@ export function PlanCard({
 	data,
 	state,
 	onSelect,
+	actionRef,
 	locale = resolveBillingLocale(),
 }) {
 	const action = planActionFor(data, plan);
@@ -24,9 +25,7 @@ export function PlanCard({
 	);
 	const disabled = !action || state.command !== null;
 	let actionLabel = __('Unavailable', 'moda-interact');
-	if (isCurrent) {
-		actionLabel = __('Current plan', 'moda-interact');
-	} else if (transitionPending) {
+	if (transitionPending) {
 		actionLabel = __('Billing change in progress', 'moda-interact');
 	} else if (state.command === 'SUBMITTING') {
 		actionLabel = __('Submitting…', 'moda-interact');
@@ -35,30 +34,48 @@ export function PlanCard({
 	} else if (action === 'SWITCH') {
 		actionLabel = __('Switch to plan', 'moda-interact');
 	}
+
 	return createElement(
 		'article',
 		{
 			className: `moda-interact-plan${plan.featured ? ' moda-interact-plan--featured' : ''}${isCurrent ? ' moda-interact-plan--current' : ''}`,
 			key: plan.merchantPricingPlanId,
 		},
-		plan.featured
-			? createElement(
-					'p',
-					{ className: 'moda-interact-plan__featured' },
-					__('Featured', 'moda-interact')
-				)
-			: null,
-		createElement('h3', null, plan.displayName),
 		createElement(
-			'p',
-			{ className: 'moda-interact-plan__description' },
-			plan.localizedDescription
+			'div',
+			{ className: 'moda-interact-plan__header' },
+			createElement(
+				'div',
+				{ className: 'moda-interact-plan__badges' },
+				isCurrent
+					? createElement(
+						'span',
+						{ className: 'moda-interact-plan__current-badge' },
+						__('Current plan', 'moda-interact')
+					)
+					: null,
+				plan.featured
+					? createElement(
+						'span',
+						{ className: 'moda-interact-plan__featured' },
+						__('Featured', 'moda-interact')
+					)
+					: null
+			),
+			isCurrent
+				? createElement(
+					'span',
+					{ className: 'moda-interact-plan__current-mark', 'aria-hidden': 'true' },
+					'✓'
+				)
+				: null
 		),
+		createElement('h4', null, plan.displayName),
 		createElement(
 			'p',
 			{ className: 'moda-interact-plan__price' },
 			plan.planKind === 'FREE'
-				? __('Free', 'moda-interact')
+				? formatMoney(0, plan.currency, locale)
 				: sprintf(
 						/* translators: 1: recurring plan price. */ __(
 							'%1$s / every 30 days',
@@ -70,6 +87,18 @@ export function PlanCard({
 							locale
 						)
 					)
+		),
+		plan.planKind === 'FREE'
+			? createElement(
+					'p',
+					{ className: 'moda-interact-plan__period' },
+					__('No recurring charge', 'moda-interact')
+				)
+			: null,
+		createElement(
+			'p',
+			{ className: 'moda-interact-plan__description' },
+			plan.localizedDescription
 		),
 		createElement(
 			'p',
@@ -95,17 +124,21 @@ export function PlanCard({
 					)
 				)
 			: null,
-		createElement(
-			'button',
-			{
-				type: 'button',
-				className: 'button button-primary',
-				disabled,
-				'aria-busy': state.command === 'SUBMITTING',
-				onClick: () => onSelect(plan),
-			},
-			actionLabel
-		)
+		// The current plan is identified by its badge; do not render a dead CTA.
+		isCurrent
+			? null
+			: createElement(
+					'button',
+					{
+						type: 'button',
+						className: 'button button-primary',
+						disabled,
+						'aria-busy': state.command === 'SUBMITTING',
+						ref: actionRef,
+						onClick: () => onSelect(plan),
+					},
+					actionLabel
+				)
 	);
 }
 
@@ -115,8 +148,29 @@ export function PlansView({
 	onRetry,
 	locale = resolveBillingLocale(),
 }) {
+	const nextPlanActionRef = useRef(null);
+	const [noAlternatives, setNoAlternatives] = useState(false);
+	const canManagePlans = state.data.surfaces.managePlansAllowed;
+	const firstActionablePlanId =
+		canManagePlans && state.plansStatus === 'READY'
+			? state.plans?.plans.find((plan) => planActionFor(state.data, plan))
+					?.merchantPricingPlanId
+			: null;
+
+	function focusPlanChoice() {
+		const choice = nextPlanActionRef.current;
+		if (!choice || choice.disabled) {
+			setNoAlternatives(true);
+			return;
+		}
+		setNoAlternatives(false);
+		choice.scrollIntoView?.({ block: 'nearest' });
+		choice.focus();
+	}
+
+	let content;
 	if (!state.data.surfaces.managePlansAllowed) {
-		return createElement(
+		content = createElement(
 			'p',
 			{ className: 'moda-interact-message', role: 'status' },
 			__(
@@ -124,16 +178,14 @@ export function PlansView({
 				'moda-interact'
 			)
 		);
-	}
-	if (state.plansStatus === 'IDLE' || state.plansStatus === 'LOADING') {
-		return createElement(
+	} else if (state.plansStatus === 'IDLE' || state.plansStatus === 'LOADING') {
+		content = createElement(
 			'p',
 			{ className: 'moda-interact-message', role: 'status' },
 			__('Loading available plans…', 'moda-interact')
 		);
-	}
-	if (state.plansStatus !== 'READY') {
-		return createElement(
+	} else if (state.plansStatus !== 'READY') {
+		content = createElement(
 			'div',
 			{ className: 'moda-interact-state' },
 			createElement(
@@ -147,19 +199,76 @@ export function PlansView({
 				__('Retry plan catalogue', 'moda-interact')
 			)
 		);
+	} else {
+		content = createElement(
+			'div',
+			{ className: 'moda-interact-plan-grid' },
+			...state.plans.plans.map((plan) =>
+				createElement(PlanCard, {
+					key: plan.merchantPricingPlanId,
+					plan,
+					data: state.data,
+					state,
+					onSelect,
+					actionRef: plan.merchantPricingPlanId === firstActionablePlanId
+						? nextPlanActionRef
+						: undefined,
+					locale,
+				})
+			)
+		);
 	}
+
 	return createElement(
-		'div',
-		{ className: 'moda-interact-plan-grid' },
-		...state.plans.plans.map((plan) =>
-			createElement(PlanCard, {
-				key: plan.merchantPricingPlanId,
-				plan,
-				data: state.data,
-				state,
-				onSelect,
-				locale,
-			})
-		)
+		'section',
+		{
+			className: 'moda-interact-plan-section',
+			'aria-labelledby': 'moda-interact-plan-section-heading',
+		},
+		createElement(
+			'header',
+			{ className: 'moda-interact-plan-section__intro' },
+			createElement(
+				'p',
+				{ className: 'moda-interact-plan-section__eyebrow' },
+				__('Subscription plans', 'moda-interact')
+			),
+			createElement(
+				'h3',
+				{ id: 'moda-interact-plan-section-heading' },
+				__('Choose the plan that fits your recovery volume', 'moda-interact')
+			),
+			createElement(
+				'p',
+				{ className: 'moda-interact-plan-section__description' },
+				__('Plan changes are confirmed through WooCommerce billing.', 'moda-interact')
+			)
+		),
+		content,
+		// Shopify uses a separate Manage Plans route. Woo focuses the existing
+		// eligible catalogue action instead, never submitting a provider command.
+		canManagePlans && state.plansStatus === 'READY' && state.data.currentPlan
+			? createElement(
+				'div',
+				{ className: 'moda-interact-plan-section__actions' },
+				createElement(
+					'button',
+					{
+						type: 'button',
+						className: 'moda-interact-plan-section__manage-button',
+						disabled: state.command !== null,
+						onClick: focusPlanChoice,
+					},
+					__('Change plan', 'moda-interact')
+				),
+				noAlternatives
+					? createElement(
+						'p',
+						{ className: 'moda-interact-plan-section__no-alternatives', role: 'status' },
+						__('No other plans are currently available.', 'moda-interact')
+					)
+					: null
+			)
+			: null
 	);
 }

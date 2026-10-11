@@ -2,7 +2,9 @@ import { createElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { PlansView } from './billing/plan-catalogue';
 import { BillingSummary } from './billing/summary';
-import { BillingHero } from './billing/hero';
+import { TopUpSection } from './billing/top-up-section';
+import { BillingHero, BillingViewSwitch } from './billing/hero';
+import { PurchasedCreditHistoryCard } from './billing/purchased-credit-history-card';
 import { billingNotices } from './billing/notices';
 import { resolveBillingLocale } from './billing/presentation-formatters';
 
@@ -53,6 +55,7 @@ export function BillingScreen({
 	onLoadPlans,
 	onSelectPlan,
 	onCancel,
+	onPurchaseTopUp,
 	onSetView,
 }) {
 	const locale = resolveBillingLocale();
@@ -100,6 +103,13 @@ export function BillingScreen({
 			onRetry: onLoadPlans,
 			locale,
 		});
+	} else if (state.view === 'TOP_UPS') {
+		content = createElement(TopUpSection, {
+			data: state.data,
+			state,
+			onPurchase: onPurchaseTopUp,
+			locale,
+		});
 	} else {
 		content = createElement(BillingSummary, {
 			data: state.data,
@@ -120,10 +130,16 @@ export function BillingScreen({
 				state.command === 'SUBMITTING',
 		},
 		createElement(BillingHero, { state, onRefresh, onSetView }),
-		...(state.status === 'READY' && state.view === 'PLANS'
+		createElement(BillingViewSwitch, { state, onSetView }),
+		state.status === 'READY' ? createElement(PurchasedCreditHistoryCard) : null,
+		...(state.status === 'READY' && state.view !== 'SUMMARY'
 			? billingNotices(state.data, state)
 			: []),
-		state.error
+		state.error &&
+			!(
+				state.feedbackContext === 'TOP_UP' &&
+				state.error === 'billing_operation_failed'
+			)
 			? createElement(
 					'p',
 					{
@@ -144,6 +160,7 @@ export {
 	restoreCancelDialogFocus,
 } from './billing/summary';
 export { PlanCard, PlansView } from './billing/plan-catalogue';
+export { TopUpSection } from './billing/top-up-section';
 export { BillingHero } from './billing/hero';
 export {
 	formatDate,
