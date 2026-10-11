@@ -866,3 +866,111 @@ msgstr "Kies het abonnement dat past bij je herstelvolume"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "Abonnementswijzigingen worden bevestigd via WooCommerce-facturering."
+
+msgid "Awaiting confirmation"
+msgstr "Wachten op bevestiging"
+
+msgid "Active"
+msgstr "Actief"
+
+msgid "Refund pending"
+msgstr "Terugbetaling in behandeling"
+
+msgid "Completed"
+msgstr "Voltooid"
+
+msgid "Refunded"
+msgstr "Terugbetaald"
+
+msgid "Refund request being prepared"
+msgstr "Terugbetalingsverzoek wordt voorbereid"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "Wachten op beslissing van de verkoper in WooCommerce"
+
+msgid "Refund completed"
+msgstr "Terugbetaling voltooid"
+
+msgid "Refund rejected"
+msgstr "Terugbetaling afgewezen"
+
+msgid "Refund cancelled"
+msgstr "Terugbetaling geannuleerd"
+
+msgid "Refund needs review"
+msgstr "Terugbetaling moet worden beoordeeld"
+
+msgid "Original credits"
+msgstr "Oorspronkelijke credits"
+
+msgid "Current credits"
+msgstr "Huidige credits"
+
+msgid "Reserved / in progress"
+msgstr "Gereserveerd / in behandeling"
+
+msgid "Available now"
+msgstr "Nu beschikbaar"
+
+msgid "Credits held for refund"
+msgstr "Credits gereserveerd voor terugbetaling"
+
+msgid "Purchase date"
+msgstr "Aankoopdatum"
+
+msgid "Original purchase amount"
+msgstr "Oorspronkelijk aankoopbedrag"
+
+msgid "Purchase"
+msgstr "Aankoop"
+
+msgid "All"
+msgstr "Alles"
+
+msgid "Purchase history filters"
+msgstr "Filters voor aankoopgeschiedenis"
+
+msgid "This purchase already has a refund request."
+msgstr "Voor deze aankoop is al een terugbetaling aangevraagd."
+
+msgid "This purchase is not eligible for a refund."
+msgstr "Deze aankoop komt niet in aanmerking voor terugbetaling."
+
+msgid "Request refund on WooCommerce.com"
+msgstr "Terugbetaling aanvragen op WooCommerce.com"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "Opent WooCommerce.com in een nieuw tabblad"
+
+msgid "Purchase history pages"
+msgstr "Pagina's van de aankoopgeschiedenis"
+
+msgid "%s per page"
+msgstr "%s per pagina"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s van %3$s"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Page %1$s of %2$s"
+msgstr "Pagina %1$s van %2$s"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Loading purchase history…"
+msgstr "Aankoopgeschiedenis laden…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "De aankoopgeschiedenis kon niet worden geladen. Probeer het opnieuw."
+
+msgid "No purchases match this view."
+msgstr "Geen aankopen komen overeen met deze weergave."
+
+msgid "Back to billing"
+msgstr "Terug naar facturering"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "Open Bestellingen op WooCommerce.com om een terugbetaling voor een Moda Interact-aankoop aan te vragen. Moda werkt credits pas bij nadat de provider en verkoper de uitkomst hebben geverifieerd."

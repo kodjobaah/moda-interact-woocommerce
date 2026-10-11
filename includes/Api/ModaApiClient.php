@@ -176,6 +176,28 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+	/** API-006 provider-scoped read; never submit a refund or return an unchecked provider URL. */
+	public function billingPurchaseHistory( array $connection, string $filter, int $page, int $page_size ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
+		$path = '/v1/billing/recovery-credit-purchases?' . http_build_query( array(
+			'filter' => $filter, 'page' => $page, 'pageSize' => $page_size,
+		), '', '&', PHP_QUERY_RFC3986 );
+		$response = $this->request( $path, 'GET', self::installationHeaders( $connection ), null, self::DEFAULT_TIMEOUT_SECONDS, 65537 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', 401 );
+		if ( 200 !== $status ) throw new ModaApiClientException( 409 === $status ? 'remote_rejected' : 'remote_unavailable', $status, self::billingErrorCode( $response ) );
+		try {
+			$payload = $this->jsonBody( $response, 65536 );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		if ( ! BillingPurchaseHistoryResponseValidator::history( $payload ) ||
+			$payload['filter'] !== $filter || $payload['pageSize'] !== $page_size ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $payload;
+	}
+
 	public function createSubscription( array $connection, string $plan_id, string $action_id ): array {
 		return $this->recurringCommand( $connection, '/v1/billing/subscription', 'POST', $plan_id, $action_id );
 	}

@@ -5,36 +5,67 @@ import {
 	resolveBillingLocale,
 } from './presentation-formatters';
 
-/** The read-only capacity snapshot stays visible across billing actions. */
-export function BillingHubCapacity({ data, state, onSetView, locale = resolveBillingLocale() }) {
+/**
+ * The read-only capacity snapshot stays visible across billing actions.
+ * @param {Object}                 root0           - Capacity display inputs.
+ * @param {Object}                 root0.data      - API billing presentation.
+ * @param {Object}                 root0.state     - Current billing UI state.
+ * @param {(view: string) => void} root0.onSetView - Switch to the summary.
+ * @param {string}                 [root0.locale]  - Administrator UI locale.
+ */
+export function BillingHubCapacity({
+	data,
+	state,
+	onSetView,
+	locale = resolveBillingLocale(),
+}) {
 	if (!data?.capacity) {
 		return null;
 	}
 
 	const { capacity } = data;
 	const metrics = [
-		...(capacity.paidIncluded ? [[
-			'paid',
-			__('Paid included credits remaining', 'moda-interact'),
-			data.experienceState === 'FROZEN'
-				? __('Temporarily unavailable', 'moda-interact')
-				: formatQuantity(capacity.paidIncluded.remaining, locale),
-		]] : []),
-		...(capacity.freeLifetime ? [[
-			'free',
-			__('Lifetime Free credits remaining', 'moda-interact'),
-			formatQuantity(capacity.freeLifetime.remaining, locale),
-		]] : []),
-		...(capacity.promotional ? [[
-			'promotional',
-			__('Promotional credits remaining', 'moda-interact'),
-			formatQuantity(capacity.promotional.remaining, locale),
-		]] : []),
-		...(capacity.purchased ? [[
-			'purchased',
-			__('Purchased credits available', 'moda-interact'),
-			formatQuantity(capacity.purchased.available, locale),
-		]] : []),
+		...(capacity.paidIncluded
+			? [
+					[
+						'paid',
+						__('Paid included credits remaining', 'moda-interact'),
+						data.experienceState === 'FROZEN'
+							? __('Temporarily unavailable', 'moda-interact')
+							: formatQuantity(
+									capacity.paidIncluded.remaining,
+									locale
+								),
+					],
+				]
+			: []),
+		...(capacity.freeLifetime
+			? [
+					[
+						'free',
+						__('Lifetime Free credits remaining', 'moda-interact'),
+						formatQuantity(capacity.freeLifetime.remaining, locale),
+					],
+				]
+			: []),
+		...(capacity.promotional
+			? [
+					[
+						'promotional',
+						__('Promotional credits remaining', 'moda-interact'),
+						formatQuantity(capacity.promotional.remaining, locale),
+					],
+				]
+			: []),
+		...(capacity.purchased
+			? [
+					[
+						'purchased',
+						__('Purchased credits available', 'moda-interact'),
+						formatQuantity(capacity.purchased.available, locale),
+					],
+				]
+			: []),
 	];
 
 	return createElement(
@@ -50,7 +81,8 @@ export function BillingHubCapacity({ data, state, onSetView, locale = resolveBil
 			createElement(
 				'strong',
 				null,
-				data.currentPlan?.displayName ?? __('Unavailable', 'moda-interact')
+				data.currentPlan?.displayName ??
+					__('Unavailable', 'moda-interact')
 			)
 		),
 		createElement(

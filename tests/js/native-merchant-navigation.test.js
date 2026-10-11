@@ -6,7 +6,7 @@ import {
 	isNativeMerchantPage,
 } from '../../src/native-admin/page-surface';
 import { OverviewScreen } from '../../src/overview-screen';
-import { BillingScreen } from '../../src/billing-screen';
+import { ConnectedBillingScreen } from '../../src/billing/connected-billing-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 
 const actions = {
@@ -52,7 +52,7 @@ describe('native merchant navigation', () => {
 
 	it.each([
 		['OVERVIEW', OverviewScreen],
-		['BILLING', BillingScreen],
+		['BILLING', ConnectedBillingScreen],
 		['RECOVERY', RecoverySettingsScreen],
 	])(
 		'renders only the %s screen when the native menu owns navigation',

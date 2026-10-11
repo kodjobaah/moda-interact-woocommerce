@@ -75,6 +75,7 @@
 }
 
 @media (max-width: 600px) {
+
 	.moda-interact-billing-hub__switch {
 		width: 100%;
 	}
@@ -159,6 +160,7 @@
 }
 
 @media (max-width: 600px) {
+
 	.moda-interact-purchased-credit-history {
 		align-items: stretch;
 		flex-direction: column;
@@ -170,7 +172,8 @@
 	}
 }
 
-// Shopify-inspired Subscription plans panel. WooCommerce remains the command owner.
+// Shopify-inspired Subscription plans panel.
+// WooCommerce remains the command owner.
 .moda-interact-page--billing .moda-interact-plan-section {
 	display: grid;
 	gap: 20px;
@@ -314,12 +317,14 @@
 }
 
 @media (max-width: 900px) {
+
 	.moda-interact-plan-section .moda-interact-plan-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
 @media (max-width: 600px) {
+
 	.moda-interact-plan-section .moda-interact-plan-grid {
 		grid-template-columns: minmax(0, 1fr);
 	}

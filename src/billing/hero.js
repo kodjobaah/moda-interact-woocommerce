@@ -47,7 +47,10 @@ export function BillingHero({ state, onRefresh, onSetView }) {
 				createElement(
 					'h2',
 					{ id: 'moda-interact-billing-heading' },
-					__('Add more conversations or change your plan.', 'moda-interact')
+					__(
+						'Add more conversations or change your plan.',
+						'moda-interact'
+					)
 				),
 				createElement(
 					'div',
@@ -58,10 +61,15 @@ export function BillingHero({ state, onRefresh, onSetView }) {
 							{
 								key: view,
 								type: 'button',
-								className: view === state.view
-									? 'button moda-interact-billing-hub__action is-active'
-									: 'button moda-interact-billing-hub__action',
-								disabled: !ready,
+								className:
+									view === state.view
+										? 'button moda-interact-billing-hub__action is-active'
+										: 'button moda-interact-billing-hub__action',
+								disabled:
+									!ready ||
+									(view === 'PLANS' &&
+										!state.data?.surfaces
+											.managePlansAllowed),
 								onClick: () => onSetView(view),
 							},
 							label
@@ -69,18 +77,27 @@ export function BillingHero({ state, onRefresh, onSetView }) {
 					)
 				)
 			),
-			ready ? createElement(BillingHubCapacity, {
-				data: state.data,
-				state,
-				onSetView,
-			}) : null
+			ready
+				? createElement(BillingHubCapacity, {
+						data: state.data,
+						state,
+						onSetView,
+					})
+				: null
 		)
 	);
 }
 
-/** Ordinary buttons, not ARIA tabs: no misleading arrow-key tab contract. */
+/**
+ * Ordinary buttons, not ARIA tabs: no misleading arrow-key tab contract.
+ * @param {Object}                 root0           - View switch properties.
+ * @param {Object}                 root0.state     - Billing state.
+ * @param {(view: string) => void} root0.onSetView - Select a view.
+ */
 export function BillingViewSwitch({ state, onSetView }) {
-	if (state.status !== 'READY') return null;
+	if (state.status !== 'READY') {
+		return null;
+	}
 	return createElement(
 		'nav',
 		{
@@ -95,6 +112,9 @@ export function BillingViewSwitch({ state, onSetView }) {
 					type: 'button',
 					className: state.view === view ? 'is-active' : '',
 					'aria-pressed': state.view === view,
+					disabled:
+						view === 'PLANS' &&
+						!state.data?.surfaces.managePlansAllowed,
 					onClick: () => onSetView(view),
 				},
 				label

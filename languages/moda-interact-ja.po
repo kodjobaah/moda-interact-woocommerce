@@ -866,3 +866,111 @@ msgstr "リカバリー件数に合ったプランを選択してください"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "プラン変更は WooCommerce の請求手続きを通じて確認されます。"
+
+msgid "Awaiting confirmation"
+msgstr "確認待ち"
+
+msgid "Active"
+msgstr "有効"
+
+msgid "Refund pending"
+msgstr "返金保留中"
+
+msgid "Completed"
+msgstr "完了"
+
+msgid "Refunded"
+msgstr "返金済み"
+
+msgid "Refund request being prepared"
+msgstr "返金リクエストを準備中"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "WooCommerce での販売者の判断待ち"
+
+msgid "Refund completed"
+msgstr "返金が完了しました"
+
+msgid "Refund rejected"
+msgstr "返金が拒否されました"
+
+msgid "Refund cancelled"
+msgstr "返金がキャンセルされました"
+
+msgid "Refund needs review"
+msgstr "返金の確認が必要です"
+
+msgid "Original credits"
+msgstr "元のクレジット"
+
+msgid "Current credits"
+msgstr "現在のクレジット"
+
+msgid "Reserved / in progress"
+msgstr "予約済み / 処理中"
+
+msgid "Available now"
+msgstr "現在利用可能"
+
+msgid "Credits held for refund"
+msgstr "返金のために保留中のクレジット"
+
+msgid "Purchase date"
+msgstr "購入日"
+
+msgid "Original purchase amount"
+msgstr "元の購入金額"
+
+msgid "Purchase"
+msgstr "購入"
+
+msgid "All"
+msgstr "すべて"
+
+msgid "Purchase history filters"
+msgstr "購入履歴フィルター"
+
+msgid "This purchase already has a refund request."
+msgstr "この購入にはすでに返金リクエストがあります。"
+
+msgid "This purchase is not eligible for a refund."
+msgstr "この購入は返金対象ではありません。"
+
+msgid "Request refund on WooCommerce.com"
+msgstr "WooCommerce.com で返金をリクエスト"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "WooCommerce.com を新しいタブで開きます"
+
+msgid "Purchase history pages"
+msgstr "購入履歴ページ"
+
+msgid "%s per page"
+msgstr "1ページあたり %s 件"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%3$s 件中 %1$s-%2$s 件"
+
+msgid "Previous"
+msgstr "前へ"
+
+msgid "Page %1$s of %2$s"
+msgstr "%1$s / %2$s ページ"
+
+msgid "Next"
+msgstr "次へ"
+
+msgid "Loading purchase history…"
+msgstr "購入履歴を読み込み中…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "購入履歴を読み込めませんでした。もう一度お試しください。"
+
+msgid "No purchases match this view."
+msgstr "この表示に一致する購入はありません。"
+
+msgid "Back to billing"
+msgstr "請求画面に戻る"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "WooCommerce.com の注文ページで Moda Interact の購入に対する返金を申請してください。Moda はプロバイダーと販売者が結果を確認した後にのみクレジットを更新します。"

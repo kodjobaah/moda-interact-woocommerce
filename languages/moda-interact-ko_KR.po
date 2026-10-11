@@ -866,3 +866,111 @@ msgstr "복구 규모에 맞는 요금제를 선택하세요"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "요금제 변경은 WooCommerce 결제를 통해 확인됩니다."
+
+msgid "Awaiting confirmation"
+msgstr "확인 대기 중"
+
+msgid "Active"
+msgstr "활성"
+
+msgid "Refund pending"
+msgstr "환불 대기 중"
+
+msgid "Completed"
+msgstr "완료"
+
+msgid "Refunded"
+msgstr "환불 완료"
+
+msgid "Refund request being prepared"
+msgstr "환불 요청 준비 중"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "WooCommerce에서 판매자 결정 대기 중"
+
+msgid "Refund completed"
+msgstr "환불 완료"
+
+msgid "Refund rejected"
+msgstr "환불 거절됨"
+
+msgid "Refund cancelled"
+msgstr "환불 취소됨"
+
+msgid "Refund needs review"
+msgstr "환불 검토 필요"
+
+msgid "Original credits"
+msgstr "원래 크레딧"
+
+msgid "Current credits"
+msgstr "현재 크레딧"
+
+msgid "Reserved / in progress"
+msgstr "예약됨 / 진행 중"
+
+msgid "Available now"
+msgstr "현재 사용 가능"
+
+msgid "Credits held for refund"
+msgstr "환불을 위해 보류된 크레딧"
+
+msgid "Purchase date"
+msgstr "구매일"
+
+msgid "Original purchase amount"
+msgstr "원래 구매 금액"
+
+msgid "Purchase"
+msgstr "구매"
+
+msgid "All"
+msgstr "전체"
+
+msgid "Purchase history filters"
+msgstr "구매 내역 필터"
+
+msgid "This purchase already has a refund request."
+msgstr "이 구매에는 이미 환불 요청이 있습니다."
+
+msgid "This purchase is not eligible for a refund."
+msgstr "이 구매는 환불 대상이 아닙니다."
+
+msgid "Request refund on WooCommerce.com"
+msgstr "WooCommerce.com에서 환불 요청"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "새 탭에서 WooCommerce.com 열기"
+
+msgid "Purchase history pages"
+msgstr "구매 내역 페이지"
+
+msgid "%s per page"
+msgstr "페이지당 %s개"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "총 %3$s개 중 %1$s-%2$s"
+
+msgid "Previous"
+msgstr "이전"
+
+msgid "Page %1$s of %2$s"
+msgstr "%2$s페이지 중 %1$s페이지"
+
+msgid "Next"
+msgstr "다음"
+
+msgid "Loading purchase history…"
+msgstr "구매 내역 불러오는 중…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "구매 내역을 불러오지 못했습니다. 다시 시도하세요."
+
+msgid "No purchases match this view."
+msgstr "이 보기에 해당하는 구매가 없습니다."
+
+msgid "Back to billing"
+msgstr "청구 페이지로 돌아가기"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "WooCommerce.com의 주문 페이지에서 Moda Interact 구매에 대한 환불을 요청하세요. Moda는 결제 제공업체와 판매자가 결과를 확인한 후에만 크레딧을 업데이트합니다."

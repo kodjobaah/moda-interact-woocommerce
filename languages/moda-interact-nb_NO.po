@@ -866,3 +866,111 @@ msgstr "Velg planen som passer til ditt antall gjenopprettinger"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "Planendringer bekreftes via WooCommerce-fakturering."
+
+msgid "Awaiting confirmation"
+msgstr "Venter på bekreftelse"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Refund pending"
+msgstr "Refusjon venter"
+
+msgid "Completed"
+msgstr "Fullført"
+
+msgid "Refunded"
+msgstr "Refundert"
+
+msgid "Refund request being prepared"
+msgstr "Refusjonsforespørselen klargjøres"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "Venter på leverandørens beslutning i WooCommerce"
+
+msgid "Refund completed"
+msgstr "Refusjon fullført"
+
+msgid "Refund rejected"
+msgstr "Refusjon avslått"
+
+msgid "Refund cancelled"
+msgstr "Refusjon kansellert"
+
+msgid "Refund needs review"
+msgstr "Refusjonen må gjennomgås"
+
+msgid "Original credits"
+msgstr "Opprinnelige kreditter"
+
+msgid "Current credits"
+msgstr "Gjeldende kreditter"
+
+msgid "Reserved / in progress"
+msgstr "Reservert / pågår"
+
+msgid "Available now"
+msgstr "Tilgjengelig nå"
+
+msgid "Credits held for refund"
+msgstr "Kreditter holdt av til refusjon"
+
+msgid "Purchase date"
+msgstr "Kjøpsdato"
+
+msgid "Original purchase amount"
+msgstr "Opprinnelig kjøpsbeløp"
+
+msgid "Purchase"
+msgstr "Kjøp"
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Purchase history filters"
+msgstr "Filtre for kjøpshistorikk"
+
+msgid "This purchase already has a refund request."
+msgstr "Det finnes allerede en refusjonsforespørsel for dette kjøpet."
+
+msgid "This purchase is not eligible for a refund."
+msgstr "Dette kjøpet kvalifiserer ikke for refusjon."
+
+msgid "Request refund on WooCommerce.com"
+msgstr "Be om refusjon på WooCommerce.com"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "Åpner WooCommerce.com i en ny fane"
+
+msgid "Purchase history pages"
+msgstr "Sider i kjøpshistorikken"
+
+msgid "%s per page"
+msgstr "%s per side"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s av %3$s"
+
+msgid "Previous"
+msgstr "Forrige"
+
+msgid "Page %1$s of %2$s"
+msgstr "Side %1$s av %2$s"
+
+msgid "Next"
+msgstr "Neste"
+
+msgid "Loading purchase history…"
+msgstr "Laster kjøpshistorikk…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "Kjøpshistorikken kunne ikke lastes. Prøv igjen."
+
+msgid "No purchases match this view."
+msgstr "Ingen kjøp samsvarer med denne visningen."
+
+msgid "Back to billing"
+msgstr "Tilbake til fakturering"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "Åpne Bestillinger på WooCommerce.com for å be om refusjon for et Moda Interact-kjøp. Moda oppdaterer først kredittene når leverandøren og selgeren har bekreftet resultatet."

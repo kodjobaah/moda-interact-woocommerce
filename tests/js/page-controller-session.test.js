@@ -67,7 +67,9 @@ describe('page controller session', () => {
 		session.start();
 		expect(items.connection.refresh).toHaveBeenCalledTimes(1);
 		items.connection.publish({ connection: { status: 'CONNECTED' } });
-		expect(items.readAccess.setConnection).toHaveBeenCalledWith({ status: 'CONNECTED' });
+		expect(items.readAccess.setConnection).toHaveBeenCalledWith({
+			status: 'CONNECTED',
+		});
 		// Read access receives the connection object, not a legacy status-only update.
 		expect(items.readAccess.setConnectionStatus).not.toHaveBeenCalled();
 		for (const name of [

@@ -866,3 +866,111 @@ msgstr "Valitse palautusmäärääsi sopiva tilaus"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "Tilausmuutokset vahvistetaan WooCommerce-laskutuksen kautta."
+
+msgid "Awaiting confirmation"
+msgstr "Odottaa vahvistusta"
+
+msgid "Active"
+msgstr "Aktiivinen"
+
+msgid "Refund pending"
+msgstr "Hyvitys odottaa"
+
+msgid "Completed"
+msgstr "Valmis"
+
+msgid "Refunded"
+msgstr "Hyvitetty"
+
+msgid "Refund request being prepared"
+msgstr "Hyvityspyyntöä valmistellaan"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "Odottaa myyjän päätöstä WooCommercessa"
+
+msgid "Refund completed"
+msgstr "Hyvitys suoritettu"
+
+msgid "Refund rejected"
+msgstr "Hyvitys hylätty"
+
+msgid "Refund cancelled"
+msgstr "Hyvitys peruttu"
+
+msgid "Refund needs review"
+msgstr "Hyvitys vaatii tarkistuksen"
+
+msgid "Original credits"
+msgstr "Alkuperäiset krediitit"
+
+msgid "Current credits"
+msgstr "Nykyiset krediitit"
+
+msgid "Reserved / in progress"
+msgstr "Varattu / käynnissä"
+
+msgid "Available now"
+msgstr "Saatavilla nyt"
+
+msgid "Credits held for refund"
+msgstr "Hyvitystä varten pidätetyt krediitit"
+
+msgid "Purchase date"
+msgstr "Ostopäivä"
+
+msgid "Original purchase amount"
+msgstr "Alkuperäinen ostosumma"
+
+msgid "Purchase"
+msgstr "Osto"
+
+msgid "All"
+msgstr "Kaikki"
+
+msgid "Purchase history filters"
+msgstr "Ostohistorian suodattimet"
+
+msgid "This purchase already has a refund request."
+msgstr "Tästä ostoksesta on jo tehty hyvityspyyntö."
+
+msgid "This purchase is not eligible for a refund."
+msgstr "Tätä ostosta ei voi hyvittää."
+
+msgid "Request refund on WooCommerce.com"
+msgstr "Pyydä hyvitystä WooCommerce.comissa"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "Avaa WooCommerce.comin uuteen välilehteen"
+
+msgid "Purchase history pages"
+msgstr "Ostohistorian sivut"
+
+msgid "%s per page"
+msgstr "%s sivulla"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s/%3$s"
+
+msgid "Previous"
+msgstr "Edellinen"
+
+msgid "Page %1$s of %2$s"
+msgstr "Sivu %1$s/%2$s"
+
+msgid "Next"
+msgstr "Seuraava"
+
+msgid "Loading purchase history…"
+msgstr "Ladataan ostohistoriaa…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "Ostohistorian lataaminen epäonnistui. Yritä uudelleen."
+
+msgid "No purchases match this view."
+msgstr "Mikään osto ei vastaa tätä näkymää."
+
+msgid "Back to billing"
+msgstr "Takaisin laskutukseen"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "Avaa WooCommerce.comin Tilaukset ja pyydä hyvitystä Moda Interact -ostoksesta. Moda päivittää krediitit vasta, kun palveluntarjoaja ja myyjä ovat vahvistaneet lopputuloksen."

@@ -866,3 +866,111 @@ msgstr "Vyberte tarif, který odpovídá vašemu objemu obnov"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "Změny tarifu se potvrzují prostřednictvím fakturace WooCommerce."
+
+msgid "Awaiting confirmation"
+msgstr "Čeká se na potvrzení"
+
+msgid "Active"
+msgstr "Aktivní"
+
+msgid "Refund pending"
+msgstr "Vrácení peněz čeká"
+
+msgid "Completed"
+msgstr "Dokončeno"
+
+msgid "Refunded"
+msgstr "Vráceno"
+
+msgid "Refund request being prepared"
+msgstr "Připravuje se žádost o vrácení peněz"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "Čeká se na rozhodnutí prodejce ve WooCommerce"
+
+msgid "Refund completed"
+msgstr "Vrácení peněz dokončeno"
+
+msgid "Refund rejected"
+msgstr "Vrácení peněz zamítnuto"
+
+msgid "Refund cancelled"
+msgstr "Vrácení peněz zrušeno"
+
+msgid "Refund needs review"
+msgstr "Vrácení peněz vyžaduje kontrolu"
+
+msgid "Original credits"
+msgstr "Původní kredity"
+
+msgid "Current credits"
+msgstr "Aktuální kredity"
+
+msgid "Reserved / in progress"
+msgstr "Rezervováno / probíhá"
+
+msgid "Available now"
+msgstr "Nyní k dispozici"
+
+msgid "Credits held for refund"
+msgstr "Kredity zadržené pro vrácení peněz"
+
+msgid "Purchase date"
+msgstr "Datum nákupu"
+
+msgid "Original purchase amount"
+msgstr "Původní částka nákupu"
+
+msgid "Purchase"
+msgstr "Nákup"
+
+msgid "All"
+msgstr "Vše"
+
+msgid "Purchase history filters"
+msgstr "Filtry historie nákupů"
+
+msgid "This purchase already has a refund request."
+msgstr "U tohoto nákupu již existuje žádost o vrácení peněz."
+
+msgid "This purchase is not eligible for a refund."
+msgstr "Na tento nákup se nevztahuje vrácení peněz."
+
+msgid "Request refund on WooCommerce.com"
+msgstr "Požádat o vrácení peněz na WooCommerce.com"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "Otevře WooCommerce.com na nové kartě"
+
+msgid "Purchase history pages"
+msgstr "Stránky historie nákupů"
+
+msgid "%s per page"
+msgstr "%s na stránku"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s z %3$s"
+
+msgid "Previous"
+msgstr "Předchozí"
+
+msgid "Page %1$s of %2$s"
+msgstr "Strana %1$s z %2$s"
+
+msgid "Next"
+msgstr "Další"
+
+msgid "Loading purchase history…"
+msgstr "Načítání historie nákupů…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "Historii nákupů se nepodařilo načíst. Zkuste to znovu."
+
+msgid "No purchases match this view."
+msgstr "Tomuto zobrazení neodpovídají žádné nákupy."
+
+msgid "Back to billing"
+msgstr "Zpět na fakturaci"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "Otevřete Objednávky na WooCommerce.com a požádejte o vrácení peněz za nákup Moda Interact. Moda aktualizuje kredity až poté, co poskytovatel a prodejce ověří výsledek."

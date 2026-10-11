@@ -49,6 +49,7 @@ final class BillingController {
 		$this->registerRoute( '/billing/subscription', 'POST', 'postSubscription' );
 		$this->registerRoute( '/billing/subscription/switch', 'POST', 'postSubscriptionSwitch' );
 		$this->registerRoute( '/billing/subscription/cancel', 'POST', 'postSubscriptionCancel' );
+		$this->registerRoute( '/billing/recovery-credit-purchases', 'GET', 'getRecoveryCreditPurchaseHistory' );
 		$this->registerRoute( '/billing/recovery-credit-purchases', 'POST', 'postRecoveryCreditPurchase' );
 	}
 
@@ -69,6 +70,27 @@ final class BillingController {
 		}
 		$locale = self::presentationLocale( function_exists( 'get_user_locale' ) ? (string) get_user_locale() : '' );
 		return $this->run( fn( array $connection ) => $this->api_client->billingPlans( $connection, $locale ) );
+	}
+
+	/** Privileged, read-only history query; the browser cannot select a tenant or provider. */
+	public function getRecoveryCreditPurchaseHistory( \WP_REST_Request $request ): \WP_REST_Response {
+		$query = $request->get_query_params();
+		if ( array_key_exists( '_locale', $query ) ) {
+			if ( 'user' !== $query['_locale'] ) return self::error( 'invalid_request', 400 );
+			unset( $query['_locale'] );
+		}
+		foreach ( array_keys( $query ) as $key ) {
+			if ( ! in_array( $key, array( 'filter', 'page', 'pageSize' ), true ) ) return self::error( 'invalid_request', 400 );
+		}
+		if ( ( null !== $request->get_json_params() && array() !== $request->get_json_params() ) || array() !== $request->get_body_params() ||
+			( method_exists( $request, 'get_body' ) && '' !== $request->get_body() ) ) return self::error( 'invalid_request', 400 );
+		$filter = $query['filter'] ?? 'ACTIVE';
+		$page = $query['page'] ?? '1';
+		$page_size = $query['pageSize'] ?? '5';
+		if ( ! is_string( $filter ) || ! in_array( $filter, array( 'ACTIVE', 'WITHDRAWN', 'COMPLETED', 'REFUNDED', 'ALL' ), true ) ||
+			! is_string( $page ) || ! preg_match( '/^[1-9][0-9]{0,8}$/D', (string) $page ) ||
+			! is_string( $page_size ) || ! in_array( (string) $page_size, array( '5', '10', '20' ), true ) ) return self::error( 'invalid_request', 400 );
+		return $this->run( fn( array $connection ) => $this->api_client->billingPurchaseHistory( $connection, $filter, (int) $page, (int) $page_size ) );
 	}
 
 	public function postSubscription( \WP_REST_Request $request ): \WP_REST_Response {
@@ -178,6 +200,9 @@ final class BillingController {
 		$remote_error = $error->remote_error;
 		if ( 'unauthorized' === $reason ) {
 			return self::error( 'remote_authentication_failed', 401 );
+		}
+		if ( 'billing_integrity_invalid' === $remote_error ) {
+			return self::error( 'remote_response_invalid', 502 );
 		}
 		if ( 'remote_response_invalid' === $reason ) {
 			return self::error( 'remote_response_invalid', 502 );

@@ -3,9 +3,11 @@ import { __ } from '@wordpress/i18n';
 
 /**
  * Present the Shopify-equivalent purchased-credit management entry point.
- * WOOCOMMERCE-003 will provide its destination; never invent a history route.
+ * @param {Object}     root0             - Card properties.
+ * @param {() => void} root0.onManage    - Open the internal history view.
+ * @param {boolean}    [root0.available] - Whether the API permits history.
  */
-export function PurchasedCreditHistoryCard() {
+export function PurchasedCreditHistoryCard({ onManage, available = false }) {
 	return createElement(
 		'section',
 		{
@@ -17,7 +19,10 @@ export function PurchasedCreditHistoryCard() {
 			{ className: 'moda-interact-purchased-credit-history__copy' },
 			createElement(
 				'p',
-				{ className: 'moda-interact-purchased-credit-history__eyebrow' },
+				{
+					className:
+						'moda-interact-purchased-credit-history__eyebrow',
+				},
 				__('Purchased recovery credits', 'moda-interact')
 			),
 			createElement(
@@ -27,7 +32,10 @@ export function PurchasedCreditHistoryCard() {
 			),
 			createElement(
 				'p',
-				{ className: 'moda-interact-purchased-credit-history__description' },
+				{
+					className:
+						'moda-interact-purchased-credit-history__description',
+				},
 				__(
 					'Review purchased credit lots and request refunds for unused credits.',
 					'moda-interact'
@@ -41,16 +49,21 @@ export function PurchasedCreditHistoryCard() {
 				'button',
 				{
 					type: 'button',
-					disabled: true,
-					'aria-describedby': 'moda-interact-purchased-credit-history-unavailable',
+					disabled: !available,
+					onClick: onManage,
 				},
 				__('Manage purchased credits', 'moda-interact')
 			),
-			createElement(
-				'small',
-				{ id: 'moda-interact-purchased-credit-history-unavailable' },
-				__('This section is not yet available for WooCommerce.', 'moda-interact')
-			)
+			!available
+				? createElement(
+						'small',
+						{ role: 'status' },
+						__(
+							'This section is not yet available for WooCommerce.',
+							'moda-interact'
+						)
+					)
+				: null
 		)
 	);
 }

@@ -194,20 +194,22 @@ describe('Billing screen', () => {
 		expect(buttons).toHaveLength(2);
 		buttons[0].props.onClick();
 		expect(onPurchase).toHaveBeenCalledWith('usage_bronze_private');
-		expect(
-			TopUpSection({
-				data: topUpData({ configured: false }),
-				state: readyState(data),
+		for (const emptyData of [
+			topUpData({ configured: false }),
+			topUpData({ offers: [] }),
+		]) {
+			const emptySection = TopUpSection({
+				data: emptyData,
+				state: readyState(emptyData),
 				onPurchase,
-			})
-		).toBeNull();
-		expect(
-			TopUpSection({
-				data: topUpData({ offers: [] }),
-				state: readyState(data),
-				onPurchase,
-			})
-		).toBeNull();
+			});
+			expect(textContent(emptySection)).toContain(
+				'No top-ups are currently available for this subscription.'
+			);
+			expect(
+				findElements(emptySection, (node) => node.type === 'button')
+			).toHaveLength(0);
+		}
 	});
 
 	it('shows per-bundle pending and unknown states without blocking other offers', () => {
@@ -348,14 +350,15 @@ describe('Billing screen', () => {
 			onRefresh,
 			onSetView,
 		});
-		const summaryTab = findElement(
+		const topUpButton = findElement(
 			hero,
 			(node) =>
-				node.props.role === 'tab' && textContent(node) === 'Summary'
+				node.type === 'button' && textContent(node) === 'Add top-up'
 		);
-		const plansTab = findElement(
+		const plansButton = findElement(
 			hero,
-			(node) => node.props.role === 'tab' && textContent(node) === 'Plans'
+			(node) =>
+				node.type === 'button' && textContent(node) === 'Change plan'
 		);
 		const refreshButton = findElement(
 			hero,
@@ -364,10 +367,11 @@ describe('Billing screen', () => {
 				textContent(node) === 'Refresh billing'
 		);
 
-		expect(summaryTab.props['aria-selected']).toBe(true);
-		expect(plansTab.props.disabled).toBe(true);
-		plansTab.props.onClick();
-		expect(onSetView).toHaveBeenCalledWith('PLANS');
+		expect(topUpButton.props.disabled).toBe(false);
+		expect(plansButton.props.disabled).toBe(true);
+		topUpButton.props.onClick();
+		expect(onSetView).toHaveBeenCalledWith('TOP_UPS');
+		expect(onSetView).not.toHaveBeenCalledWith('PLANS');
 		refreshButton.props.onClick();
 		expect(onRefresh).toHaveBeenCalledOnce();
 	});

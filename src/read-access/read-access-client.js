@@ -85,7 +85,10 @@ export function createReadAccessClient(request = apiFetch) {
 			);
 		},
 		async revoke() {
-			const result = await request({ path: READ_ACCESS_PATH, method: 'DELETE' });
+			const result = await request({
+				path: READ_ACCESS_PATH,
+				method: 'DELETE',
+			});
 			if (
 				!exactKeys(result, [
 					'schemaVersion',
@@ -98,7 +101,10 @@ export function createReadAccessClient(request = apiFetch) {
 			) {
 				throw new Error('invalid_read_access_response');
 			}
-			return { grantStatus: 'REAUTHORIZATION_REQUIRED', providerRevocationRequired: true };
+			return {
+				grantStatus: 'REAUTHORIZATION_REQUIRED',
+				providerRevocationRequired: true,
+			};
 		},
 	};
 }

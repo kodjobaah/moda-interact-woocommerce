@@ -86,25 +86,43 @@ export function useModaPageState() {
 	// and briefly poll pending grants; never infer approval from URL parameters.
 	useEffect(() => {
 		const refresh = () => {
-			if (globalThis.document?.visibilityState !== 'hidden') sessionRef.current?.controllers.readAccess.refresh();
+			if (globalThis.document?.visibilityState !== 'hidden') {
+				sessionRef.current?.controllers.readAccess.refresh();
+			}
 		};
 		globalThis.addEventListener?.('focus', refresh);
 		globalThis.document?.addEventListener?.('visibilitychange', refresh);
 		return () => {
 			globalThis.removeEventListener?.('focus', refresh);
-			globalThis.document?.removeEventListener?.('visibilitychange', refresh);
+			globalThis.document?.removeEventListener?.(
+				'visibilitychange',
+				refresh
+			);
 		};
 	}, []);
 
 	useEffect(() => {
-		if (readAccessState.grantStatus !== 'PENDING' ||
-			connectionState.connection.status !== 'CONNECTED') return;
+		if (
+			readAccessState.grantStatus !== 'PENDING' ||
+			connectionState.connection.status !== 'CONNECTED'
+		) {
+			return;
+		}
 		let checks = 0;
 		const interval = globalThis.setInterval?.(() => {
-			if (++checks > 15) { globalThis.clearInterval(interval); return; }
-			if (globalThis.document?.visibilityState !== 'hidden') sessionRef.current?.controllers.readAccess.refresh();
+			if (++checks > 15) {
+				globalThis.clearInterval(interval);
+				return;
+			}
+			if (globalThis.document?.visibilityState !== 'hidden') {
+				sessionRef.current?.controllers.readAccess.refresh();
+			}
 		}, 6000);
-		return () => { if (interval !== undefined) globalThis.clearInterval?.(interval); };
+		return () => {
+			if (interval !== undefined) {
+				globalThis.clearInterval?.(interval);
+			}
+		};
 	}, [readAccessState.grantStatus, connectionState.connection.status]);
 
 	const actions = createPageActions(sessionRef, setActiveSurface);

@@ -866,3 +866,111 @@ msgstr "Wählen Sie den Tarif, der zu Ihrem Rückgewinnungsvolumen passt"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "Tarifwechsel werden über die WooCommerce-Abrechnung bestätigt."
+
+msgid "Awaiting confirmation"
+msgstr "Warten auf Bestätigung"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Refund pending"
+msgstr "Erstattung ausstehend"
+
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+msgid "Refunded"
+msgstr "Erstattet"
+
+msgid "Refund request being prepared"
+msgstr "Rückerstattungsantrag wird vorbereitet"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "Warten auf die Entscheidung des Anbieters in WooCommerce"
+
+msgid "Refund completed"
+msgstr "Rückerstattung abgeschlossen"
+
+msgid "Refund rejected"
+msgstr "Rückerstattung abgelehnt"
+
+msgid "Refund cancelled"
+msgstr "Rückerstattung storniert"
+
+msgid "Refund needs review"
+msgstr "Rückerstattung muss geprüft werden"
+
+msgid "Original credits"
+msgstr "Ursprüngliche Credits"
+
+msgid "Current credits"
+msgstr "Aktuelle Credits"
+
+msgid "Reserved / in progress"
+msgstr "Reserviert / in Bearbeitung"
+
+msgid "Available now"
+msgstr "Jetzt verfügbar"
+
+msgid "Credits held for refund"
+msgstr "Für die Rückerstattung zurückgehaltene Credits"
+
+msgid "Purchase date"
+msgstr "Kaufdatum"
+
+msgid "Original purchase amount"
+msgstr "Ursprünglicher Kaufbetrag"
+
+msgid "Purchase"
+msgstr "Kauf"
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Purchase history filters"
+msgstr "Filter für den Kaufverlauf"
+
+msgid "This purchase already has a refund request."
+msgstr "Für diesen Kauf wurde bereits eine Rückerstattung beantragt."
+
+msgid "This purchase is not eligible for a refund."
+msgstr "Dieser Kauf ist nicht erstattungsfähig."
+
+msgid "Request refund on WooCommerce.com"
+msgstr "Rückerstattung auf WooCommerce.com beantragen"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "Öffnet WooCommerce.com in einem neuen Tab"
+
+msgid "Purchase history pages"
+msgstr "Seiten des Kaufverlaufs"
+
+msgid "%s per page"
+msgstr "%s pro Seite"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s von %3$s"
+
+msgid "Previous"
+msgstr "Zurück"
+
+msgid "Page %1$s of %2$s"
+msgstr "Seite %1$s von %2$s"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Loading purchase history…"
+msgstr "Kaufverlauf wird geladen…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "Der Kaufverlauf konnte nicht geladen werden. Bitte erneut versuchen."
+
+msgid "No purchases match this view."
+msgstr "Keine Käufe entsprechen dieser Ansicht."
+
+msgid "Back to billing"
+msgstr "Zurück zur Abrechnung"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "Öffnen Sie Ihre Bestellungen auf WooCommerce.com, um eine Rückerstattung für einen Moda-Interact-Kauf zu beantragen. Moda aktualisiert die Credits erst, nachdem Anbieter und Verkäufer das Ergebnis geprüft haben."

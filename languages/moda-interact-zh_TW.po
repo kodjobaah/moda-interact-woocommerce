@@ -866,3 +866,111 @@ msgstr "選擇符合您挽回量的方案"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "方案變更會透過 WooCommerce 帳單流程確認。"
+
+msgid "Awaiting confirmation"
+msgstr "等待確認"
+
+msgid "Active"
+msgstr "有效"
+
+msgid "Refund pending"
+msgstr "退款待處理"
+
+msgid "Completed"
+msgstr "已完成"
+
+msgid "Refunded"
+msgstr "已退款"
+
+msgid "Refund request being prepared"
+msgstr "正在準備退款申請"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "等待 WooCommerce 中的賣家決定"
+
+msgid "Refund completed"
+msgstr "退款已完成"
+
+msgid "Refund rejected"
+msgstr "退款已拒絕"
+
+msgid "Refund cancelled"
+msgstr "退款已取消"
+
+msgid "Refund needs review"
+msgstr "退款需要審核"
+
+msgid "Original credits"
+msgstr "原始額度"
+
+msgid "Current credits"
+msgstr "目前額度"
+
+msgid "Reserved / in progress"
+msgstr "已預留 / 進行中"
+
+msgid "Available now"
+msgstr "目前可用"
+
+msgid "Credits held for refund"
+msgstr "為退款暫時保留的額度"
+
+msgid "Purchase date"
+msgstr "購買日期"
+
+msgid "Original purchase amount"
+msgstr "原始購買金額"
+
+msgid "Purchase"
+msgstr "購買"
+
+msgid "All"
+msgstr "全部"
+
+msgid "Purchase history filters"
+msgstr "購買記錄篩選"
+
+msgid "This purchase already has a refund request."
+msgstr "此購買已有退款申請。"
+
+msgid "This purchase is not eligible for a refund."
+msgstr "此購買不符合退款條件。"
+
+msgid "Request refund on WooCommerce.com"
+msgstr "在 WooCommerce.com 申請退款"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "將在新分頁開啟 WooCommerce.com"
+
+msgid "Purchase history pages"
+msgstr "購買記錄頁面"
+
+msgid "%s per page"
+msgstr "每頁 %s 筆"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s，共 %3$s 筆"
+
+msgid "Previous"
+msgstr "上一頁"
+
+msgid "Page %1$s of %2$s"
+msgstr "第 %1$s 頁，共 %2$s 頁"
+
+msgid "Next"
+msgstr "下一頁"
+
+msgid "Loading purchase history…"
+msgstr "正在載入購買記錄…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "無法載入購買記錄。請重試。"
+
+msgid "No purchases match this view."
+msgstr "沒有與此檢視相符的購買。"
+
+msgid "Back to billing"
+msgstr "返回帳單"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "請開啟 WooCommerce.com 的訂單頁面，為 Moda Interact 購買申請退款。只有在支付平台及賣家核實結果後，Moda 才會更新額度。"

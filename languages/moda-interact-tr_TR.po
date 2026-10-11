@@ -866,3 +866,111 @@ msgstr "Kurtarma hacminize uygun planı seçin"
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "Plan değişiklikleri WooCommerce faturalandırması üzerinden onaylanır."
+
+msgid "Awaiting confirmation"
+msgstr "Onay bekleniyor"
+
+msgid "Active"
+msgstr "Etkin"
+
+msgid "Refund pending"
+msgstr "Geri ödeme bekliyor"
+
+msgid "Completed"
+msgstr "Tamamlandı"
+
+msgid "Refunded"
+msgstr "Geri ödendi"
+
+msgid "Refund request being prepared"
+msgstr "İade talebi hazırlanıyor"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "WooCommerce üzerinde satıcı kararı bekleniyor"
+
+msgid "Refund completed"
+msgstr "İade tamamlandı"
+
+msgid "Refund rejected"
+msgstr "İade reddedildi"
+
+msgid "Refund cancelled"
+msgstr "İade iptal edildi"
+
+msgid "Refund needs review"
+msgstr "İadenin incelenmesi gerekiyor"
+
+msgid "Original credits"
+msgstr "İlk krediler"
+
+msgid "Current credits"
+msgstr "Mevcut krediler"
+
+msgid "Reserved / in progress"
+msgstr "Ayrılmış / devam ediyor"
+
+msgid "Available now"
+msgstr "Şu anda kullanılabilir"
+
+msgid "Credits held for refund"
+msgstr "İade için ayrılan krediler"
+
+msgid "Purchase date"
+msgstr "Satın alma tarihi"
+
+msgid "Original purchase amount"
+msgstr "İlk satın alma tutarı"
+
+msgid "Purchase"
+msgstr "Satın alma"
+
+msgid "All"
+msgstr "Tümü"
+
+msgid "Purchase history filters"
+msgstr "Satın alma geçmişi filtreleri"
+
+msgid "This purchase already has a refund request."
+msgstr "Bu satın alma için zaten bir iade talebi var."
+
+msgid "This purchase is not eligible for a refund."
+msgstr "Bu satın alma iade için uygun değil."
+
+msgid "Request refund on WooCommerce.com"
+msgstr "WooCommerce.com üzerinden iade talep et"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "WooCommerce.com yeni bir sekmede açılır"
+
+msgid "Purchase history pages"
+msgstr "Satın alma geçmişi sayfaları"
+
+msgid "%s per page"
+msgstr "Sayfa başına %s"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s / %3$s"
+
+msgid "Previous"
+msgstr "Önceki"
+
+msgid "Page %1$s of %2$s"
+msgstr "Sayfa %1$s / %2$s"
+
+msgid "Next"
+msgstr "Sonraki"
+
+msgid "Loading purchase history…"
+msgstr "Satın alma geçmişi yükleniyor…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "Satın alma geçmişi yüklenemedi. Lütfen yeniden deneyin."
+
+msgid "No purchases match this view."
+msgstr "Bu görünüme uyan satın alma yok."
+
+msgid "Back to billing"
+msgstr "Faturalandırmaya dön"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "Moda Interact satın alımınız için iade istemek üzere WooCommerce.com Siparişler sayfasını açın. Moda, kredileri yalnızca sağlayıcı ve satıcı sonucu doğruladıktan sonra günceller."

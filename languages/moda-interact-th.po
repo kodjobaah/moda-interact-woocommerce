@@ -866,3 +866,111 @@ msgstr "เลือกแพ็กเกจที่เหมาะกับป
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr "การเปลี่ยนแพ็กเกจจะได้รับการยืนยันผ่านระบบการเรียกเก็บเงินของ WooCommerce"
+
+msgid "Awaiting confirmation"
+msgstr "รอการยืนยัน"
+
+msgid "Active"
+msgstr "ใช้งานอยู่"
+
+msgid "Refund pending"
+msgstr "รอการคืนเงิน"
+
+msgid "Completed"
+msgstr "เสร็จสิ้น"
+
+msgid "Refunded"
+msgstr "คืนเงินแล้ว"
+
+msgid "Refund request being prepared"
+msgstr "กำลังเตรียมคำขอคืนเงิน"
+
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr "รอการตัดสินใจของผู้ขายใน WooCommerce"
+
+msgid "Refund completed"
+msgstr "คืนเงินเสร็จสิ้น"
+
+msgid "Refund rejected"
+msgstr "ปฏิเสธการคืนเงิน"
+
+msgid "Refund cancelled"
+msgstr "ยกเลิกการคืนเงิน"
+
+msgid "Refund needs review"
+msgstr "ต้องตรวจสอบการคืนเงิน"
+
+msgid "Original credits"
+msgstr "เครดิตเริ่มต้น"
+
+msgid "Current credits"
+msgstr "เครดิตปัจจุบัน"
+
+msgid "Reserved / in progress"
+msgstr "สำรองไว้ / กำลังใช้งาน"
+
+msgid "Available now"
+msgstr "พร้อมใช้งานตอนนี้"
+
+msgid "Credits held for refund"
+msgstr "เครดิตที่ระงับไว้เพื่อคืนเงิน"
+
+msgid "Purchase date"
+msgstr "วันที่ซื้อ"
+
+msgid "Original purchase amount"
+msgstr "ยอดซื้อเดิม"
+
+msgid "Purchase"
+msgstr "การซื้อ"
+
+msgid "All"
+msgstr "ทั้งหมด"
+
+msgid "Purchase history filters"
+msgstr "ตัวกรองประวัติการซื้อ"
+
+msgid "This purchase already has a refund request."
+msgstr "การซื้อนี้มีคำขอคืนเงินแล้ว"
+
+msgid "This purchase is not eligible for a refund."
+msgstr "การซื้อนี้ไม่มีสิทธิ์ขอคืนเงิน"
+
+msgid "Request refund on WooCommerce.com"
+msgstr "ขอคืนเงินบน WooCommerce.com"
+
+msgid "Opens WooCommerce.com in a new tab"
+msgstr "เปิด WooCommerce.com ในแท็บใหม่"
+
+msgid "Purchase history pages"
+msgstr "หน้าประวัติการซื้อ"
+
+msgid "%s per page"
+msgstr "%s รายการต่อหน้า"
+
+msgid "%1$s–%2$s of %3$s"
+msgstr "%1$s-%2$s จาก %3$s"
+
+msgid "Previous"
+msgstr "ก่อนหน้า"
+
+msgid "Page %1$s of %2$s"
+msgstr "หน้า %1$s จาก %2$s"
+
+msgid "Next"
+msgstr "ถัดไป"
+
+msgid "Loading purchase history…"
+msgstr "กำลังโหลดประวัติการซื้อ…"
+
+msgid "Purchase history could not be loaded. Please try again."
+msgstr "โหลดประวัติการซื้อไม่ได้ โปรดลองอีกครั้ง"
+
+msgid "No purchases match this view."
+msgstr "ไม่มีการซื้อที่ตรงกับมุมมองนี้"
+
+msgid "Back to billing"
+msgstr "กลับไปหน้าการเรียกเก็บเงิน"
+
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr "เปิดคำสั่งซื้อบน WooCommerce.com เพื่อขอคืนเงินสำหรับการซื้อ Moda Interact โดย Moda จะอัปเดตเครดิตหลังจากผู้ให้บริการและผู้ขายตรวจสอบผลแล้วเท่านั้น"

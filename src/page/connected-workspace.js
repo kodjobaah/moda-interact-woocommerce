@@ -1,5 +1,5 @@
 import { createElement } from '@wordpress/element';
-import { BillingScreen } from '../billing-screen';
+import { ConnectedBillingScreen } from '../billing/connected-billing-screen';
 import { OverviewScreen } from '../overview-screen';
 import { RecoverySettingsScreen } from '../recovery-settings/recovery-settings-screen';
 import { SurfaceNavigation } from './surface-navigation';
@@ -17,7 +17,7 @@ export function ConnectedWorkspace({
 }) {
 	let activeContent;
 	if (activeSurface === 'BILLING') {
-		activeContent = createElement(BillingScreen, {
+		activeContent = createElement(ConnectedBillingScreen, {
 			key: 'billing',
 			state: billingState,
 			onRefresh: actions.refreshBilling,

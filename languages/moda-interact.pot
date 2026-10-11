@@ -902,3 +902,153 @@ msgstr ""
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr ""
+
+#: src/billing/purchase-history-card.js:7
+msgid "Awaiting confirmation"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:8
+#: src/billing/purchase-history-filters.js:6
+msgid "Active"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:9
+#: src/billing/purchase-history-filters.js:7
+msgid "Refund pending"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:10
+#: src/billing/purchase-history-filters.js:8
+msgid "Completed"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:11
+#: src/billing/purchase-history-filters.js:9
+msgid "Refunded"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:14
+msgid "Refund request being prepared"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:15
+msgid "Awaiting vendor decision in WooCommerce"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:16
+msgid "Refund completed"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:17
+msgid "Refund rejected"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:18
+msgid "Refund cancelled"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:19
+msgid "Refund needs review"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:23
+msgid "Original credits"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:24
+msgid "Current credits"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:25
+msgid "Reserved / in progress"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:26
+msgid "Available now"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:27
+msgid "Credits held for refund"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:46
+msgid "Purchase date"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:48
+msgid "Original purchase amount"
+msgstr ""
+
+#: src/billing/purchase-history-card.js:53
+msgid "Purchase"
+msgstr ""
+
+#: src/billing/purchase-history-filters.js:10
+msgid "All"
+msgstr ""
+
+#: src/billing/purchase-history-filters.js:17
+msgid "Purchase history filters"
+msgstr ""
+
+#: src/billing/purchase-history-guidance.js:11
+msgid "This purchase already has a refund request."
+msgstr ""
+
+#: src/billing/purchase-history-guidance.js:15
+msgid "This purchase is not eligible for a refund."
+msgstr ""
+
+#: src/billing/purchase-history-guidance.js:24
+msgid "Request refund on WooCommerce.com"
+msgstr ""
+
+#: src/billing/purchase-history-guidance.js:25
+msgid "Opens WooCommerce.com in a new tab"
+msgstr ""
+
+#: src/billing/purchase-history-pagination.js:15
+#: src/billing/purchase-history-pagination.js:19
+#: src/billing/purchase-history-pagination.js:28
+msgid "Purchase history pages"
+msgstr ""
+
+#: src/billing/purchase-history-pagination.js:25
+msgid "%s per page"
+msgstr ""
+
+#: src/billing/purchase-history-pagination.js:31
+msgid "%1$s–%2$s of %3$s"
+msgstr ""
+
+#: src/billing/purchase-history-pagination.js:36
+msgid "Previous"
+msgstr ""
+
+#: src/billing/purchase-history-pagination.js:39
+msgid "Page %1$s of %2$s"
+msgstr ""
+
+#: src/billing/purchase-history-pagination.js:44
+msgid "Next"
+msgstr ""
+
+#: src/billing/purchase-history-screen.js:14
+msgid "Loading purchase history…"
+msgstr ""
+
+#: src/billing/purchase-history-screen.js:18
+msgid "Purchase history could not be loaded. Please try again."
+msgstr ""
+
+#: src/billing/purchase-history-screen.js:25
+msgid "No purchases match this view."
+msgstr ""
+
+#: src/billing/purchase-history-screen.js:39
+msgid "Back to billing"
+msgstr ""
+
+#: src/billing/purchase-history-screen.js:55
+msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
+msgstr ""

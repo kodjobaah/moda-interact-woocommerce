@@ -1,4 +1,5 @@
 import { createElement } from '@wordpress/element';
+import { PurchaseHistoryScreen } from './billing/purchase-history-screen';
 import { __ } from '@wordpress/i18n';
 import { PlansView } from './billing/plan-catalogue';
 import { BillingSummary } from './billing/summary';
@@ -57,8 +58,13 @@ export function BillingScreen({
 	onCancel,
 	onPurchaseTopUp,
 	onSetView,
+	history,
 }) {
 	const locale = resolveBillingLocale();
+	const showHistory =
+		state.status === 'READY' &&
+		state.view === 'PURCHASE_HISTORY' &&
+		state.data?.surfaces.purchaseHistoryAllowed;
 	let content;
 	if (state.status === 'IDLE' || state.status === 'LOADING') {
 		content = createElement(
@@ -96,6 +102,12 @@ export function BillingScreen({
 				__('Refresh billing', 'moda-interact')
 			)
 		);
+	} else if (showHistory) {
+		content = createElement(PurchaseHistoryScreen, {
+			history,
+			locale,
+			onBack: () => onSetView('TOP_UPS'),
+		});
 	} else if (state.view === 'PLANS') {
 		content = createElement(PlansView, {
 			state,
@@ -123,16 +135,28 @@ export function BillingScreen({
 		'section',
 		{
 			className: 'moda-interact-billing',
-			'aria-labelledby': 'moda-interact-billing-heading',
+			'aria-labelledby': showHistory
+				? 'moda-purchase-history-title'
+				: 'moda-interact-billing-heading',
 			'aria-busy':
 				state.status === 'LOADING' ||
 				state.plansStatus === 'LOADING' ||
-				state.command === 'SUBMITTING',
+				state.command === 'SUBMITTING' ||
+				Boolean(showHistory && history?.state.status === 'LOADING'),
 		},
-		createElement(BillingHero, { state, onRefresh, onSetView }),
-		createElement(BillingViewSwitch, { state, onSetView }),
-		state.status === 'READY' ? createElement(PurchasedCreditHistoryCard) : null,
-		...(state.status === 'READY' && state.view !== 'SUMMARY'
+		showHistory
+			? null
+			: createElement(BillingHero, { state, onRefresh, onSetView }),
+		showHistory
+			? null
+			: createElement(BillingViewSwitch, { state, onSetView }),
+		state.status === 'READY' && !showHistory
+			? createElement(PurchasedCreditHistoryCard, {
+					onManage: () => onSetView('PURCHASE_HISTORY'),
+					available: state.data.surfaces.purchaseHistoryAllowed,
+				})
+			: null,
+		...(state.status === 'READY' && state.view !== 'SUMMARY' && !showHistory
 			? billingNotices(state.data, state)
 			: []),
 		state.error &&

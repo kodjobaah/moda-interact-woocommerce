@@ -16,7 +16,10 @@ export function createBillingActionId(cryptoObject = globalThis.crypto) {
 		// Use cryptographically strong bytes, never Math.random for billing keys.
 		const bytes = new Uint8Array(16);
 		cryptoObject.getRandomValues(bytes);
+		// The UUID v4 format requires setting version and variant bits.
+		// eslint-disable-next-line no-bitwise
 		bytes[6] = (bytes[6] & 0x0f) | 0x40;
+		// eslint-disable-next-line no-bitwise
 		bytes[8] = (bytes[8] & 0x3f) | 0x80;
 		const hex = Array.from(bytes, (byte) =>
 			byte.toString(16).padStart(2, '0')
@@ -167,7 +170,21 @@ export class BillingController {
 	}
 
 	setView(view) {
-		if (!['SUMMARY', 'TOP_UPS', 'PLANS'].includes(view) || this.disposed) {
+		if (
+			!['SUMMARY', 'TOP_UPS', 'PLANS', 'PURCHASE_HISTORY'].includes(
+				view
+			) ||
+			this.disposed
+		) {
+			return Promise.resolve(this.state);
+		}
+		if (
+			this.state.status === 'READY' &&
+			((view === 'PLANS' &&
+				!this.state.data?.surfaces.managePlansAllowed) ||
+				(view === 'PURCHASE_HISTORY' &&
+					!this.state.data?.surfaces.purchaseHistoryAllowed))
+		) {
 			return Promise.resolve(this.state);
 		}
 		this.publish({

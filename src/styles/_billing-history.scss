@@ -1,0 +1,229 @@
+// Woo purchased-credit history, scoped to the existing connected
+// Billing surface.
+.moda-interact-page--billing .moda-purchase-history {
+	display: grid;
+	gap: 18px;
+	min-width: 0;
+}
+
+.moda-purchase-history__breadcrumb {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	font-weight: 700;
+	color: var(--moda-forest-900);
+}
+
+.moda-purchase-history__breadcrumb button {
+	padding: 6px 0;
+	border: 0;
+	background: transparent;
+	color: var(--moda-forest-700);
+	font: inherit;
+	cursor: pointer;
+}
+
+.moda-purchase-history__panel {
+	display: grid;
+	gap: 26px;
+	padding: clamp(18px, 3vw, 32px);
+	border: 1px solid var(--moda-border);
+	border-radius: 24px;
+	background: #fff;
+	box-shadow: var(--moda-shadow);
+}
+
+.moda-purchase-history__panel > header {
+	display: grid;
+	justify-items: start;
+	gap: 7px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--moda-border);
+}
+
+.moda-purchase-history__panel > header h2 {
+	margin: 0;
+	font-size: clamp(26px, 3.5vw, 43px);
+	font-weight: 600;
+	line-height: 1.1;
+	color: var(--moda-forest-900);
+	letter-spacing: -0.03em;
+}
+
+.moda-purchase-history__panel > header p {
+	margin: 0;
+	color: var(--moda-muted);
+}
+
+.moda-purchase-history__filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	width: fit-content;
+	max-width: 100%;
+	padding: 5px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: var(--moda-forest-50);
+}
+
+.moda-purchase-history__filters button {
+	min-height: 41px;
+	padding: 8px 16px;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--moda-muted);
+	font: inherit;
+	font-weight: 750;
+	cursor: pointer;
+}
+
+.moda-purchase-history__filters button.is-active {
+	background: #fff;
+	color: var(--moda-forest-900);
+	box-shadow: 0 3px 12px rgb(20 61 44 / 10%);
+}
+
+.moda-purchase-history__results,
+.moda-purchase-history__list {
+	display: grid;
+	gap: 17px;
+}
+
+.moda-purchase-history__empty {
+	padding: 25px;
+	border: 1px dashed var(--moda-border);
+	border-radius: 18px;
+	color: var(--moda-muted);
+	text-align: center;
+}
+
+.moda-purchase-history__card {
+	display: grid;
+	gap: 16px;
+	min-width: 0;
+	padding: 20px;
+	border: 1px solid var(--moda-border);
+	border-radius: 20px;
+	background: var(--moda-forest-50);
+}
+
+.moda-purchase-history__card-head {
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.moda-purchase-history__card-head h3 {
+	margin: 0 0 5px;
+	color: var(--moda-forest-900);
+	font-size: 19px;
+}
+
+.moda-purchase-history__card-head p,
+.moda-purchase-history__hint {
+	margin: 0;
+	color: var(--moda-muted);
+}
+
+.moda-purchase-history__status {
+	display: inline-block;
+	padding: 5px 12px;
+	border: 1px solid var(--moda-border);
+	border-radius: 99px;
+	background: #fff;
+	font-size: 12px;
+	font-weight: 800;
+	color: var(--moda-forest-900);
+}
+
+.moda-purchase-history__details {
+	display: grid;
+	grid-template-columns: minmax(135px, 1fr) minmax(0, 2fr);
+	gap: 8px 18px;
+	margin: 0;
+}
+
+.moda-purchase-history__details dt {
+	color: var(--moda-muted);
+}
+
+.moda-purchase-history__details dd {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-weight: 650;
+	overflow-wrap: anywhere;
+}
+
+.moda-purchase-history__refund {
+	display: grid;
+	justify-items: start;
+	gap: 8px;
+}
+
+.moda-purchase-history__refund .button {
+	max-width: 100%;
+	white-space: normal;
+	height: auto;
+	padding: 10px 20px;
+	border-radius: 999px;
+}
+
+.moda-purchase-history__refund small,
+.moda-purchase-history__help {
+	color: var(--moda-muted);
+}
+
+.moda-purchase-history__refund-status {
+	margin: 0;
+	font-weight: 700;
+	color: var(--moda-forest-800);
+}
+
+.moda-purchase-history__pagination,
+.moda-purchase-history__pagination nav {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.moda-purchase-history__pagination {
+	justify-content: space-between;
+}
+
+.moda-purchase-history__pagination button,
+.moda-purchase-history__pagination select {
+	min-height: 39px;
+	padding: 7px 11px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: #fff;
+	color: var(--moda-forest-900);
+	font: inherit;
+	font-weight: 650;
+}
+
+@media (max-width: 600px) {
+
+	.moda-purchase-history__filters {
+		border-radius: 18px;
+	}
+
+	.moda-purchase-history__filters button {
+		flex: 1 1 auto;
+	}
+
+	.moda-purchase-history__details {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 3px;
+	}
+
+	.moda-purchase-history__details dd + dt {
+		margin-top: 9px;
+	}
+}

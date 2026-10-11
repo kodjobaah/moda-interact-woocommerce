@@ -124,19 +124,22 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 		),
 		data.capacity?.purchased
 			? createElement(
-				'div',
-				{ className: 'moda-interact-top-ups__balance' },
-				createElement(
-					'strong',
-					null,
-					formatQuantity(data.capacity.purchased.available, locale)
-				),
-				createElement(
-					'span',
-					null,
-					__('Purchased credits available', 'moda-interact')
+					'div',
+					{ className: 'moda-interact-top-ups__balance' },
+					createElement(
+						'strong',
+						null,
+						formatQuantity(
+							data.capacity.purchased.available,
+							locale
+						)
+					),
+					createElement(
+						'span',
+						null,
+						__('Purchased credits available', 'moda-interact')
+					)
 				)
-			)
 			: null,
 		notice
 			? createElement(
@@ -145,7 +148,7 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 						className: 'moda-interact-top-ups__notice',
 						role: 'alert',
 					},
-				notice
+					notice
 				)
 			: null,
 		offers.length > 0
@@ -166,7 +169,7 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 						);
 						const pending = Boolean(
 							unresolved ||
-								offer.unavailableReason === 'PENDING_PURCHASE'
+							offer.unavailableReason === 'PENDING_PURCHASE'
 						);
 						const disabled = Boolean(
 							status ||
@@ -213,33 +216,41 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 									)
 								: createElement(
 										'div',
-										{ className: 'moda-interact-top-up__actions' },
+										{
+											className:
+												'moda-interact-top-up__actions',
+										},
 										status
 											? createElement(
-												'p',
-												{
-													className:
-														'moda-interact-top-up__status',
-													role: 'status',
-												},
-												status
-											)
-										: null,
+													'p',
+													{
+														className:
+															'moda-interact-top-up__status',
+														role: 'status',
+													},
+													status
+												)
+											: null,
 										createElement(
 											'button',
 											{
 												type: 'button',
-												className: 'button button-primary',
+												className:
+													'button button-primary',
 												disabled,
 												'aria-busy':
-													state.command === 'SUBMITTING',
+													state.command ===
+													'SUBMITTING',
 												onClick: () =>
 													onPurchase(
 														offer.merchantPricingUsageEventId
 													),
 											},
 											state.command === 'SUBMITTING'
-												? __('Submitting…', 'moda-interact')
+												? __(
+														'Submitting…',
+														'moda-interact'
+													)
 												: sprintf(
 														/* translators: %s: recovery-credit quantity. */
 														__(
@@ -252,14 +263,20 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 														)
 													)
 										)
-								)
+									)
 						);
 					})
 				)
 			: createElement(
 					'p',
-					{ className: 'moda-interact-top-ups__empty', role: 'status' },
-					__('No top-ups are currently available for this subscription.', 'moda-interact')
+					{
+						className: 'moda-interact-top-ups__empty',
+						role: 'status',
+					},
+					__(
+						'No top-ups are currently available for this subscription.',
+						'moda-interact'
+					)
 				)
 	);
 }

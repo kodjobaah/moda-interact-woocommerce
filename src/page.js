@@ -20,24 +20,32 @@ function ModaInteractPage() {
 				? 'moda-interact-page moda-interact-page--billing'
 				: 'moda-interact-page',
 		},
-		connectedBilling ? null : createElement(
-			'header',
-			{ className: 'moda-interact-page__header' },
-			createElement(
-				'p',
-				{ className: 'moda-interact-page__eyebrow' },
-				__('WooCommerce', 'moda-interact')
-			),
-			createElement('h1', null, __('Moda Interact', 'moda-interact'))
-		),
+		connectedBilling
+			? null
+			: createElement(
+					'header',
+					{ className: 'moda-interact-page__header' },
+					createElement(
+						'p',
+						{ className: 'moda-interact-page__eyebrow' },
+						__('WooCommerce', 'moda-interact')
+					),
+					createElement(
+						'h1',
+						null,
+						__('Moda Interact', 'moda-interact')
+					)
+				),
 		createElement(
 			'div',
 			{ className: 'moda-interact-page__content' },
-			connectedBilling ? null : createElement(ConnectionPanel, {
-				state: page.connectionState,
-				onConnect: page.actions.connect,
-				onRetry: page.actions.retryConnection,
-			}),
+			connectedBilling
+				? null
+				: createElement(ConnectionPanel, {
+						state: page.connectionState,
+						onConnect: page.actions.connect,
+						onRetry: page.actions.retryConnection,
+					}),
 			page.connectionState.connection.status === 'CONNECTED'
 				? createElement(ConnectedWorkspace, {
 						activeSurface: page.activeSurface,
@@ -52,7 +60,8 @@ function ModaInteractPage() {
 						),
 					})
 				: null,
-			page.connectionState.connection.status === 'CONNECTED' && page.activeSurface === 'OVERVIEW'
+			page.connectionState.connection.status === 'CONNECTED' &&
+				page.activeSurface === 'OVERVIEW'
 				? createElement(ReadAccessPanel, {
 						state: page.readAccessState,
 						onStart: page.actions.startReadAccess,
