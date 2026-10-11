@@ -327,6 +327,10 @@ msgstr "Für diesen Shop ist kein Vertrag über wiederkehrende Zahlungen verfüg
 msgid "No recurring charge"
 msgstr "Keine wiederkehrende Gebühr"
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr "Für dieses Abonnement sind derzeit keine Aufladungen verfügbar."
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr "Nachfassen ohne Antwort"
@@ -412,6 +416,10 @@ msgstr "Tarifstatus nicht verfügbar"
 msgid "Plan type"
 msgstr "Tarifart"
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr "Weitere Unterhaltungen hinzufügen oder Tarif wechseln."
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr "Aufladung hinzufügen"
@@ -419,6 +427,10 @@ msgstr "Aufladung hinzufügen"
 #: src/billing/hero.js:39
 msgid "Change plan"
 msgstr "Tarif wechseln"
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
+msgstr "Derzeit sind keine weiteren Tarife verfügbar."
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"
@@ -477,6 +489,10 @@ msgstr "Wiederherstellungseinstellungen"
 #: src/billing/capacity-summary.js:49
 msgid "Recovery capacity"
 msgstr "Wiederherstellungskapazität"
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
+msgstr "Wiederherstellungsguthaben"
 
 #: src/billing/plan-catalogue.js:79
 msgid "Recovery credits every 30 days"
@@ -822,3 +838,31 @@ msgstr "WooCommerce"
 #: src/page/connection-panel.js:82
 msgid "WordPress site"
 msgstr "WordPress-Website"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr "Gekaufte Wiederherstellungsguthaben"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr "Verlauf gekaufter Guthaben"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr "Sehen Sie gekaufte Guthabenpakete ein und beantragen Sie Erstattungen für ungenutztes Guthaben."
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr "Gekauftes Guthaben verwalten"
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr "Abonnementpläne"
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr "Wählen Sie den Tarif, der zu Ihrem Rückgewinnungsvolumen passt"
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
+msgstr "Tarifwechsel werden über die WooCommerce-Abrechnung bestätigt."

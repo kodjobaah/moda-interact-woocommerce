@@ -327,6 +327,10 @@ msgstr "Bu mağaza için yinelenen faturalandırma sözleşmesi bulunmuyor."
 msgid "No recurring charge"
 msgstr "Yinelenen ücret yok"
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr "Bu abonelik için şu anda ek kredi paketi bulunmuyor."
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr "Yanıt gelmediğinde takip mesajı"
@@ -412,6 +416,10 @@ msgstr "Plan durumu kullanılamıyor"
 msgid "Plan type"
 msgstr "Plan türü"
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr "Daha fazla görüşme ekleyin veya planınızı değiştirin."
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr "Ek paket ekle"
@@ -419,6 +427,10 @@ msgstr "Ek paket ekle"
 #: src/billing/hero.js:39
 msgid "Change plan"
 msgstr "Planı değiştir"
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
+msgstr "Şu anda başka bir plan mevcut değil."
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"
@@ -477,6 +489,10 @@ msgstr "Kurtarma Ayarları"
 #: src/billing/capacity-summary.js:49
 msgid "Recovery capacity"
 msgstr "Kurtarma kapasitesi"
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
+msgstr "Kurtarma kredileri"
 
 #: src/billing/plan-catalogue.js:79
 msgid "Recovery credits every 30 days"
@@ -822,3 +838,31 @@ msgstr "WooCommerce"
 #: src/page/connection-panel.js:82
 msgid "WordPress site"
 msgstr "WordPress sitesi"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr "Satın alınan kurtarma kredileri"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr "Satın alınan kredi geçmişi"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr "Satın alınan kredi paketlerini görüntüleyin ve kullanılmayan krediler için iade talep edin."
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr "Satın alınan kredileri yönet"
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr "Abonelik planları"
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr "Kurtarma hacminize uygun planı seçin"
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
+msgstr "Plan değişiklikleri WooCommerce faturalandırması üzerinden onaylanır."

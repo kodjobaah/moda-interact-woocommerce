@@ -8,10 +8,27 @@ export function isBillingReturn(search = '') {
 }
 
 export function createBillingActionId(cryptoObject = globalThis.crypto) {
-	if (!cryptoObject || typeof cryptoObject.randomUUID !== 'function') {
-		throw new Error('secure_random_unavailable');
+	let actionId;
+	if (typeof cryptoObject?.randomUUID === 'function') {
+		actionId = cryptoObject.randomUUID();
+	} else if (typeof cryptoObject?.getRandomValues === 'function') {
+		// randomUUID requires HTTPS; getRandomValues also works on local HTTP.
+		// Use cryptographically strong bytes, never Math.random for billing keys.
+		const bytes = new Uint8Array(16);
+		cryptoObject.getRandomValues(bytes);
+		bytes[6] = (bytes[6] & 0x0f) | 0x40;
+		bytes[8] = (bytes[8] & 0x3f) | 0x80;
+		const hex = Array.from(bytes, (byte) =>
+			byte.toString(16).padStart(2, '0')
+		).join('');
+		actionId = [
+			hex.slice(0, 8),
+			hex.slice(8, 12),
+			hex.slice(12, 16),
+			hex.slice(16, 20),
+			hex.slice(20),
+		].join('-');
 	}
-	const actionId = cryptoObject.randomUUID();
 	if (typeof actionId !== 'string' || !UUID_V4_PATTERN.test(actionId)) {
 		throw new Error('secure_random_unavailable');
 	}
@@ -71,7 +88,7 @@ function initialState() {
 		data: null,
 		plansStatus: 'IDLE',
 		plans: null,
-		view: 'SUMMARY',
+		view: 'TOP_UPS',
 		command: null,
 		feedbackContext: null,
 		notice: null,

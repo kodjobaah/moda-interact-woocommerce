@@ -327,6 +327,10 @@ msgstr "ไม่มีสัญญาเรียกเก็บเงินแ
 msgid "No recurring charge"
 msgstr "ไม่มีค่าบริการแบบประจำ"
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr "ขณะนี้ไม่มีแพ็กเกจเติมเครดิตสำหรับการสมัครใช้งานนี้"
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr "ติดตามผลเมื่อไม่มีการตอบกลับ"
@@ -412,6 +416,10 @@ msgstr "ไม่สามารถตรวจสอบสถานะแผน
 msgid "Plan type"
 msgstr "ประเภทแผน"
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr "เพิ่มการสนทนาหรือเปลี่ยนแพ็กเกจของคุณ"
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr "เพิ่มเครดิต"
@@ -419,6 +427,10 @@ msgstr "เพิ่มเครดิต"
 #: src/billing/hero.js:39
 msgid "Change plan"
 msgstr "เปลี่ยนแพ็กเกจ"
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
+msgstr "ขณะนี้ไม่มีแพ็กเกจอื่นให้เลือก"
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"
@@ -477,6 +489,10 @@ msgstr "การตั้งค่าการกู้คืน"
 #: src/billing/capacity-summary.js:49
 msgid "Recovery capacity"
 msgstr "สิทธิ์เครดิตการกู้คืน"
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
+msgstr "เครดิตการกู้คืน"
 
 #: src/billing/plan-catalogue.js:79
 msgid "Recovery credits every 30 days"
@@ -822,3 +838,31 @@ msgstr "WooCommerce"
 #: src/page/connection-panel.js:82
 msgid "WordPress site"
 msgstr "เว็บไซต์ WordPress"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr "เครดิตกู้คืนที่ซื้อ"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr "ประวัติเครดิตที่ซื้อ"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr "ดูแพ็กเกจเครดิตที่ซื้อและขอคืนเงินสำหรับเครดิตที่ยังไม่ได้ใช้"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr "จัดการเครดิตที่ซื้อ"
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr "แพ็กเกจการสมัครสมาชิก"
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr "เลือกแพ็กเกจที่เหมาะกับปริมาณการกู้คืนของคุณ"
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
+msgstr "การเปลี่ยนแพ็กเกจจะได้รับการยืนยันผ่านระบบการเรียกเก็บเงินของ WooCommerce"

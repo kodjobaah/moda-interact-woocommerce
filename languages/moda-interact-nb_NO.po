@@ -327,6 +327,10 @@ msgstr "Ingen avtale om gjentakende fakturering er tilgjengelig for denne butikk
 msgid "No recurring charge"
 msgstr "Ingen gjentakende belastning"
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr "Ingen påfyll er tilgjengelige for dette abonnementet akkurat nå."
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr "Oppfølging uten svar"
@@ -412,6 +416,10 @@ msgstr "Abonnementsstatus er utilgjengelig"
 msgid "Plan type"
 msgstr "Abonnementstype"
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr "Legg til flere samtaler eller bytt abonnement."
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr "Legg til påfyll"
@@ -419,6 +427,10 @@ msgstr "Legg til påfyll"
 #: src/billing/hero.js:39
 msgid "Change plan"
 msgstr "Bytt abonnement"
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
+msgstr "Ingen andre abonnementer er tilgjengelige for øyeblikket."
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"
@@ -477,6 +489,10 @@ msgstr "Innstillinger for gjenoppretting"
 #: src/billing/capacity-summary.js:49
 msgid "Recovery capacity"
 msgstr "Gjenopprettingskapasitet"
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
+msgstr "Gjenopprettingskreditter"
 
 #: src/billing/plan-catalogue.js:79
 msgid "Recovery credits every 30 days"
@@ -822,3 +838,31 @@ msgstr "WooCommerce"
 #: src/page/connection-panel.js:82
 msgid "WordPress site"
 msgstr "WordPress-nettsted"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr "Kjøpte gjenopprettingskreditter"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr "Historikk for kjøpte kreditter"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr "Se kjøpte kredittpakker og be om refusjon for ubrukte kreditter."
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr "Administrer kjøpte kreditter"
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr "Abonnementer"
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr "Velg planen som passer til ditt antall gjenopprettinger"
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
+msgstr "Planendringer bekreftes via WooCommerce-fakturering."

@@ -327,6 +327,10 @@ msgstr "No hay ningún contrato de facturación recurrente disponible para esta 
 msgid "No recurring charge"
 msgstr "Sin cargo recurrente"
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr "No hay recargas disponibles actualmente para esta suscripción."
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr "Seguimiento sin respuesta"
@@ -412,6 +416,10 @@ msgstr "Estado del plan no disponible"
 msgid "Plan type"
 msgstr "Tipo de plan"
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr "Añade más conversaciones o cambia de plan."
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr "Añadir recarga"
@@ -419,6 +427,10 @@ msgstr "Añadir recarga"
 #: src/billing/hero.js:39
 msgid "Change plan"
 msgstr "Cambiar plan"
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
+msgstr "No hay otros planes disponibles en este momento."
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"
@@ -477,6 +489,10 @@ msgstr "Configuración de recuperación"
 #: src/billing/capacity-summary.js:49
 msgid "Recovery capacity"
 msgstr "Capacidad de recuperación"
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
+msgstr "Créditos de recuperación"
 
 #: src/billing/plan-catalogue.js:79
 msgid "Recovery credits every 30 days"
@@ -822,3 +838,31 @@ msgstr "WooCommerce"
 #: src/page/connection-panel.js:82
 msgid "WordPress site"
 msgstr "Sitio de WordPress"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr "Créditos de recuperación comprados"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr "Historial de créditos comprados"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr "Consulta los lotes de créditos comprados y solicita reembolsos de los créditos no utilizados."
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr "Gestionar créditos comprados"
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr "Planes de suscripción"
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr "Elige el plan que se adapte a tu volumen de recuperaciones"
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
+msgstr "Los cambios de plan se confirman a través de la facturación de WooCommerce."

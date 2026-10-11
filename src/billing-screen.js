@@ -3,7 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { PlansView } from './billing/plan-catalogue';
 import { BillingSummary } from './billing/summary';
 import { TopUpSection } from './billing/top-up-section';
-import { BillingHero } from './billing/hero';
+import { BillingHero, BillingViewSwitch } from './billing/hero';
+import { PurchasedCreditHistoryCard } from './billing/purchased-credit-history-card';
 import { billingNotices } from './billing/notices';
 import { resolveBillingLocale } from './billing/presentation-formatters';
 
@@ -129,7 +130,9 @@ export function BillingScreen({
 				state.command === 'SUBMITTING',
 		},
 		createElement(BillingHero, { state, onRefresh, onSetView }),
-		...(state.status === 'READY' && state.view === 'PLANS'
+		createElement(BillingViewSwitch, { state, onSetView }),
+		state.status === 'READY' ? createElement(PurchasedCreditHistoryCard) : null,
+		...(state.status === 'READY' && state.view !== 'SUMMARY'
 			? billingNotices(state.data, state)
 			: []),
 		state.error &&

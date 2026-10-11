@@ -1,0 +1,365 @@
+// Action switch and top-up states below the persistent Billing hub.
+.moda-interact-billing-hub__switch {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	justify-self: start;
+	width: fit-content;
+	max-width: 100%;
+	padding: 5px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: var(--moda-soft);
+}
+
+.moda-interact-billing-hub__switch button {
+	min-height: 38px;
+	padding: 8px 16px;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--moda-muted);
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.moda-interact-billing-hub__switch button.is-active {
+	background: #fff;
+	color: var(--moda-forest-900);
+	box-shadow: 0 3px 12px rgb(20 61 44 / 10%);
+}
+
+.moda-interact-page--billing .moda-interact-top-ups {
+	padding: clamp(18px, 2.5vw, 24px);
+	border: 1px solid var(--moda-border);
+	border-radius: 22px;
+	background: #fff;
+	box-shadow: var(--moda-shadow);
+}
+
+.moda-interact-top-ups__balance {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	width: fit-content;
+	max-width: 100%;
+	padding: 14px 18px;
+	border: 1px solid var(--moda-border);
+	border-radius: 17px;
+	background: var(--moda-forest-50);
+}
+
+.moda-interact-top-ups__balance strong {
+	font-size: 25px;
+	color: var(--moda-forest-900);
+}
+
+.moda-interact-top-ups__balance span {
+	color: var(--moda-muted);
+}
+
+.moda-interact-top-up__credits {
+	margin: 0;
+	font-size: 13px;
+	color: var(--moda-muted);
+}
+
+.moda-interact-top-ups__empty {
+	margin: 0;
+	padding: 20px;
+	border: 1px dashed var(--moda-border);
+	border-radius: 16px;
+	color: var(--moda-muted);
+	text-align: center;
+}
+
+@media (max-width: 600px) {
+	.moda-interact-billing-hub__switch {
+		width: 100%;
+	}
+
+	.moda-interact-billing-hub__switch button {
+		flex: 1 1 auto;
+	}
+}
+
+// Placeholder for the WOOCOMMERCE-003 history/refund destination.
+// Keep the entry visible without linking to an unimplemented route.
+.moda-interact-purchased-credit-history {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 22px;
+	min-width: 0;
+	padding: clamp(18px, 2.5vw, 24px);
+	border: 1px solid var(--moda-border);
+	border-radius: 22px;
+	background: #fff;
+}
+
+.moda-interact-purchased-credit-history__copy {
+	min-width: 0;
+}
+
+.moda-interact-purchased-credit-history__eyebrow {
+	display: inline-block;
+	margin: 0 0 9px;
+	padding: 6px 11px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: var(--moda-forest-100);
+	color: var(--moda-forest-900);
+	font-size: 12px;
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.moda-interact-purchased-credit-history h3 {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: 19px;
+	line-height: 1.3;
+}
+
+.moda-interact-purchased-credit-history__description {
+	margin: 5px 0 0;
+	color: var(--moda-muted);
+	line-height: 1.5;
+}
+
+.moda-interact-purchased-credit-history__action {
+	display: grid;
+	justify-items: center;
+	gap: 6px;
+	flex: 0 0 auto;
+	max-width: 250px;
+}
+
+.moda-interact-purchased-credit-history__action button {
+	min-height: 44px;
+	padding: 10px 17px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: #fff;
+	color: var(--moda-forest-900);
+	font: inherit;
+	font-weight: 750;
+}
+
+.moda-interact-purchased-credit-history__action button:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.moda-interact-purchased-credit-history__action small {
+	color: var(--moda-muted);
+	font-size: 11px;
+	text-align: center;
+}
+
+@media (max-width: 600px) {
+	.moda-interact-purchased-credit-history {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.moda-interact-purchased-credit-history__action {
+		justify-items: stretch;
+		max-width: none;
+	}
+}
+
+// Shopify-inspired Subscription plans panel. WooCommerce remains the command owner.
+.moda-interact-page--billing .moda-interact-plan-section {
+	display: grid;
+	gap: 20px;
+	min-width: 0;
+	padding: clamp(20px, 2.6vw, 28px);
+	border: 1px solid var(--moda-border);
+	border-radius: 22px;
+	background: #fff;
+	box-shadow: var(--moda-shadow);
+}
+
+.moda-interact-plan-section__intro {
+	display: grid;
+	justify-items: start;
+	gap: 4px;
+	min-width: 0;
+}
+
+.moda-interact-plan-section__eyebrow {
+	margin: 0 0 5px;
+	padding: 6px 11px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: var(--moda-forest-100);
+	color: var(--moda-forest-900);
+	font-size: 12px;
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.moda-interact-plan-section__intro h3 {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: 17px;
+	font-weight: 750;
+	line-height: 1.35;
+	text-wrap: balance;
+}
+
+.moda-interact-plan-section__description {
+	margin: 0;
+	color: var(--moda-muted);
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-plan-section .moda-interact-plan-grid {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.moda-interact-plan-section .moda-interact-plan {
+	align-items: stretch;
+	gap: 9px;
+	padding: 20px;
+	border: 1px solid var(--moda-border);
+	border-radius: 20px;
+	background: linear-gradient(180deg, #fff, var(--moda-forest-50));
+}
+
+.moda-interact-plan-section .moda-interact-plan--current {
+	border-color: var(--moda-forest-700);
+	box-shadow: 0 12px 25px rgb(20 61 44 / 8%);
+}
+
+.moda-interact-plan-section .moda-interact-plan--featured {
+	border-color: var(--moda-forest-600);
+}
+
+.moda-interact-plan__header {
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+	gap: 10px;
+	min-height: 32px;
+}
+
+.moda-interact-plan__badges {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+
+.moda-interact-plan__current-badge {
+	display: inline-block;
+	padding: 6px 11px;
+	border-radius: 999px;
+	background: var(--moda-forest-900);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 800;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.moda-interact-plan__current-mark {
+	display: grid;
+	place-items: center;
+	flex: 0 0 32px;
+	width: 32px;
+	height: 32px;
+	border-radius: 10px;
+	background: var(--moda-forest-700);
+	color: #fff;
+	font-size: 19px;
+	font-weight: 800;
+}
+
+.moda-interact-plan-section .moda-interact-plan h4 {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: 25px;
+	font-weight: 650;
+	line-height: 1.15;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-plan-section .moda-interact-plan__price {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: clamp(24px, 2.6vw, 30px);
+	font-weight: 800;
+	line-height: 1.2;
+	font-variant-numeric: tabular-nums;
+}
+
+.moda-interact-plan__period {
+	margin: -8px 0 2px;
+	color: var(--moda-muted);
+	font-size: 12px;
+}
+
+.moda-interact-plan-section .moda-interact-plan__description {
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.moda-interact-plan-section .moda-interact-plan button {
+	margin-top: auto;
+}
+
+@media (max-width: 900px) {
+	.moda-interact-plan-section .moda-interact-plan-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 600px) {
+	.moda-interact-plan-section .moda-interact-plan-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+// Shopify-style Change plan action, safely focused on Woo's existing catalogue.
+.moda-interact-plan-section__actions {
+	display: grid;
+	justify-items: start;
+	gap: 10px;
+}
+
+.moda-interact-plan-section__manage-button {
+	min-height: 44px;
+	padding: 10px 20px;
+	border: 1px solid var(--moda-forest-700);
+	border-radius: 999px;
+	background: var(--moda-forest-700);
+	color: #fff;
+	font: inherit;
+	font-weight: 750;
+	cursor: pointer;
+}
+
+.moda-interact-plan-section__manage-button:hover:not(:disabled) {
+	background: var(--moda-forest-900);
+}
+
+.moda-interact-plan-section__manage-button:focus-visible {
+	outline: 2px solid #1359b8;
+	outline-offset: 3px;
+}
+
+.moda-interact-plan-section__manage-button:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.moda-interact-plan-section__no-alternatives {
+	margin: 0;
+	color: var(--moda-muted);
+	font-size: 13px;
+}

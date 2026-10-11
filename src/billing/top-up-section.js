@@ -122,6 +122,22 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 				)
 			)
 		),
+		data.capacity?.purchased
+			? createElement(
+				'div',
+				{ className: 'moda-interact-top-ups__balance' },
+				createElement(
+					'strong',
+					null,
+					formatQuantity(data.capacity.purchased.available, locale)
+				),
+				createElement(
+					'span',
+					null,
+					__('Purchased credits available', 'moda-interact')
+				)
+			)
+			: null,
 		notice
 			? createElement(
 					'p',
@@ -129,7 +145,7 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 						className: 'moda-interact-top-ups__notice',
 						role: 'alert',
 					},
-					notice
+				notice
 				)
 			: null,
 		offers.length > 0
@@ -169,6 +185,13 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 								key: offer.merchantPricingUsageEventId,
 							},
 							createElement('h4', null, offer.label),
+							createElement(
+								'p',
+								{ className: 'moda-interact-top-up__credits' },
+								formatQuantity(offer.creditsGranted, locale),
+								' ',
+								__('Recovery credits', 'moda-interact')
+							),
 							createElement(
 								'p',
 								{ className: 'moda-interact-top-up__price' },
@@ -235,8 +258,8 @@ export function TopUpSection({ data, state, onPurchase, locale }) {
 				)
 			: createElement(
 					'p',
-					{ className: 'moda-interact-top-ups__notice', role: 'status' },
-					__('Unavailable', 'moda-interact')
+					{ className: 'moda-interact-top-ups__empty', role: 'status' },
+					__('No top-ups are currently available for this subscription.', 'moda-interact')
 				)
 	);
 }

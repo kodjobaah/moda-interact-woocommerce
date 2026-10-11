@@ -327,6 +327,10 @@ msgstr "此商店沒有可用的定期收費合約。"
 msgid "No recurring charge"
 msgstr "沒有定期費用"
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr "此訂閱目前沒有可購買的加值方案。"
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr "未回覆時的後續追蹤"
@@ -412,6 +416,10 @@ msgstr "無法取得方案狀態"
 msgid "Plan type"
 msgstr "方案類型"
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr "新增更多對話或變更方案。"
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr "新增加值"
@@ -419,6 +427,10 @@ msgstr "新增加值"
 #: src/billing/hero.js:39
 msgid "Change plan"
 msgstr "變更方案"
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
+msgstr "目前沒有其他可用方案。"
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"
@@ -476,6 +488,10 @@ msgstr "恢復設定"
 
 #: src/billing/capacity-summary.js:49
 msgid "Recovery capacity"
+msgstr "恢復額度"
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
 msgstr "恢復額度"
 
 #: src/billing/plan-catalogue.js:79
@@ -822,3 +838,31 @@ msgstr "WooCommerce"
 #: src/page/connection-panel.js:82
 msgid "WordPress site"
 msgstr "WordPress 網站"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr "已購挽回額度"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr "已購額度紀錄"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr "查看已購買的額度批次，並申請退還未使用的額度。"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr "管理已購額度"
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr "訂閱方案"
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr "選擇符合您挽回量的方案"
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
+msgstr "方案變更會透過 WooCommerce 帳單流程確認。"

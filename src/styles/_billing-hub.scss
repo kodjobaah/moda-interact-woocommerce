@@ -1,0 +1,210 @@
+// Shopify-style Billing hub scoped to the connected WordPress merchant surface.
+// Billing data and commands remain owned by the existing Woo controllers.
+.moda-interact-page--billing {
+	width: min(100%, 1280px);
+	padding: clamp(16px, 2vw, 28px);
+
+	.moda-interact-surfaces {
+		margin-top: 0;
+	}
+
+	.moda-interact-billing {
+		width: min(100%, 1100px);
+		margin: 0 auto;
+		gap: 20px;
+	}
+}
+
+.moda-interact-billing-hub {
+	display: grid;
+	gap: 18px;
+	min-width: 0;
+}
+
+.moda-interact-billing-hub__topbar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: center;
+	gap: 14px;
+}
+
+.moda-interact-billing-hub__page-title {
+	grid-column: 2;
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-weight: 800;
+	text-align: center;
+}
+
+.moda-interact-billing-hub__refresh {
+	grid-column: 3;
+	justify-self: end;
+	min-height: 38px;
+	border-color: var(--moda-border) !important;
+	border-radius: 12px !important;
+	background: var(--moda-surface) !important;
+	color: var(--moda-forest-900) !important;
+}
+
+.moda-interact-billing-hub__hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr);
+	align-items: stretch;
+	gap: 22px;
+	padding: clamp(18px, 2.5vw, 28px);
+	border: 1px solid var(--moda-border);
+	border-radius: 24px;
+	background: linear-gradient(125deg, #fff, var(--moda-forest-50));
+	box-shadow: var(--moda-shadow);
+}
+
+.moda-interact-billing-hub__copy {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 16px;
+}
+
+.moda-interact-billing-hub__eyebrow {
+	margin: 0;
+	padding: 7px 13px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: var(--moda-forest-100);
+	color: var(--moda-forest-900);
+	font-size: 12px;
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.moda-interact-billing-hub__copy h2 {
+	max-width: 620px;
+	margin: 0;
+	color: var(--moda-forest-950);
+	font-size: clamp(27px, 3.8vw, 44px);
+	font-weight: 550;
+	line-height: 1.12;
+	letter-spacing: -0.035em;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-billing-hub__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.moda-interact-billing-hub__action.button {
+	min-height: 42px;
+	padding: 9px 17px;
+	border: 1px solid var(--moda-border);
+	border-radius: 999px;
+	background: #fff;
+	color: var(--moda-forest-900);
+	font-weight: 750;
+}
+
+.moda-interact-billing-hub__action.button.is-active {
+	border-color: var(--moda-forest-700);
+	background: var(--moda-forest-700);
+	color: #fff;
+}
+
+.moda-interact-billing-hub__capacity {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 16px;
+	padding: 22px;
+	border-radius: 22px;
+	background: linear-gradient(135deg, var(--moda-forest-950), var(--moda-forest-700));
+	color: #fff;
+}
+
+.moda-interact-billing-hub__plan {
+	display: grid;
+	gap: 2px;
+}
+
+.moda-interact-billing-hub__plan span {
+	color: rgb(255 255 255 / 80%);
+}
+
+.moda-interact-billing-hub__plan strong {
+	font-size: 26px;
+	font-weight: 750;
+	line-height: 1.1;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-billing-hub__metrics {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.moda-interact-billing-hub__metric {
+	display: grid;
+	align-content: start;
+	gap: 3px;
+	min-width: 0;
+	padding: 12px;
+	border: 1px solid rgb(255 255 255 / 14%);
+	border-radius: 15px;
+	background: rgb(255 255 255 / 9%);
+}
+
+.moda-interact-billing-hub__metric strong {
+	font-size: 20px;
+	line-height: 1.1;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-billing-hub__metric span {
+	color: rgb(255 255 255 / 87%);
+	font-size: 12px;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-billing-hub__details {
+	align-self: flex-start;
+	margin-top: auto;
+	padding: 3px 0;
+	border: 0;
+	background: transparent;
+	color: #fff;
+	font: inherit;
+	font-weight: 700;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}
+
+@media (max-width: 850px) {
+	.moda-interact-billing-hub__hero {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 600px) {
+	.moda-interact-billing-hub__topbar {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.moda-interact-billing-hub__page-title,
+	.moda-interact-billing-hub__refresh {
+		grid-column: 1;
+		justify-self: start;
+	}
+
+	.moda-interact-billing-hub__hero {
+		padding: 16px;
+	}
+
+	.moda-interact-billing-hub__capacity {
+		padding: 17px;
+	}
+}

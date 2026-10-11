@@ -327,6 +327,10 @@ msgstr "Pro tento obchod není k dispozici smlouva o opakovaných platbách."
 msgid "No recurring charge"
 msgstr "Bez opakovaného poplatku"
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr "Pro toto předplatné momentálně nejsou k dispozici žádná dobití."
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr "Následné připomenutí bez odpovědi"
@@ -412,6 +416,10 @@ msgstr "Stav tarifu není dostupný"
 msgid "Plan type"
 msgstr "Typ tarifu"
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr "Přidejte další konverzace nebo změňte tarif."
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr "Přidat dobití"
@@ -419,6 +427,10 @@ msgstr "Přidat dobití"
 #: src/billing/hero.js:39
 msgid "Change plan"
 msgstr "Změnit tarif"
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
+msgstr "Žádné další tarify nyní nejsou k dispozici."
 
 #: src/billing/top-up-section.js
 msgid "Predefined credit bundles"
@@ -477,6 +489,10 @@ msgstr "Nastavení obnovy"
 #: src/billing/capacity-summary.js:49
 msgid "Recovery capacity"
 msgstr "Kapacita obnovy"
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
+msgstr "Kredity na obnovu"
 
 #: src/billing/plan-catalogue.js:79
 msgid "Recovery credits every 30 days"
@@ -822,3 +838,31 @@ msgstr "WooCommerce"
 #: src/page/connection-panel.js:82
 msgid "WordPress site"
 msgstr "Web WordPress"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr "Zakoupené kredity na obnovu"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr "Historie zakoupených kreditů"
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr "Prohlédněte si zakoupené balíčky kreditů a požádejte o vrácení peněz za nevyužité kredity."
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr "Spravovat zakoupené kredity"
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr "Předplatné a tarify"
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr "Vyberte tarif, který odpovídá vašemu objemu obnov"
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
+msgstr "Změny tarifu se potvrzují prostřednictvím fakturace WooCommerce."

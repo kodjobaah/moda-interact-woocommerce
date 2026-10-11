@@ -512,4 +512,22 @@ describe('BillingController', () => {
 			})
 		).toBe('550e8400-e29b-41d4-a716-446655440000');
 	});
+
+	it('creates a secure UUID v4 when randomUUID is unavailable on local HTTP', () => {
+		const getRandomValues = vi.fn((bytes) => {
+			for (let i = 0; i < bytes.length; i++) {
+				bytes[i] = i;
+			}
+			return bytes;
+		});
+		const id = createBillingActionId({ getRandomValues });
+		expect(id).toBe('00010203-0405-4607-8809-0a0b0c0d0e0f');
+		expect(getRandomValues).toHaveBeenCalledTimes(1);
+	});
+
+	it('fails closed if neither secure UUID source exists', () => {
+		expect(() => createBillingActionId({})).toThrow(
+			'secure_random_unavailable'
+		);
+	});
 });

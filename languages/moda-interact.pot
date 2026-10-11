@@ -179,12 +179,20 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
+#: src/billing/hero.js:50
+msgid "Add more conversations or change your plan."
+msgstr ""
+
 #: src/billing/hero.js:38
 msgid "Add top-up"
 msgstr ""
 
 #: src/billing/hero.js:39
 msgid "Change plan"
+msgstr ""
+
+#: src/billing/plan-catalogue.js
+msgid "No other plans are currently available."
 msgstr ""
 
 #: src/billing/notices.js:19
@@ -288,6 +296,10 @@ msgstr ""
 
 #: src/billing/plan-catalogue.js:78
 msgid "Lifetime recovery credits"
+msgstr ""
+
+#: src/billing/top-up-section.js:193
+msgid "Recovery credits"
 msgstr ""
 
 #: src/billing/plan-catalogue.js:79
@@ -775,6 +787,10 @@ msgstr ""
 msgid "Currently active: %s"
 msgstr ""
 
+#: src/billing/top-up-section.js:262
+msgid "No top-ups are currently available for this subscription."
+msgstr ""
+
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
 msgstr ""
@@ -857,4 +873,32 @@ msgstr ""
 
 #: src/recovery-settings/recovery-settings-screen.js:176
 msgid "Save category"
+msgstr ""
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased recovery credits"
+msgstr ""
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Purchased credit history"
+msgstr ""
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Review purchased credit lots and request refunds for unused credits."
+msgstr ""
+
+#: src/billing/purchased-credit-history-card.js
+msgid "Manage purchased credits"
+msgstr ""
+
+#: src/billing/plan-catalogue.js
+msgid "Subscription plans"
+msgstr ""
+
+#: src/billing/plan-catalogue.js
+msgid "Choose the plan that fits your recovery volume"
+msgstr ""
+
+#: src/billing/plan-catalogue.js
+msgid "Plan changes are confirmed through WooCommerce billing."
 msgstr ""
