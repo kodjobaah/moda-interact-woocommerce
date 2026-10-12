@@ -1111,3 +1111,106 @@ msgstr "Los registros aparecerán aquí cuando comience una recuperación."
 #: src/recoveries/states/recovery-results-state.js:35
 msgid "Try another date range, customer or status."
 msgstr "Prueba otro intervalo, cliente o estado."
+
+#: src/recoveries/detail/conversation/conversation-message.js:36
+msgid "Automated message"
+msgstr "Mensaje automático"
+
+#: src/recoveries/detail/recovery-detail-screen.js:16
+msgid "Back to recoveries"
+msgstr "Volver a recuperaciones"
+
+#: src/recoveries/detail/context/checkout-context-panel.js:10
+msgid "Checkout context"
+msgstr "Contexto del pago"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:18
+#: src/recoveries/detail/conversation/conversation-panel.js:26
+msgid "Conversation"
+msgstr "Conversación"
+
+#: src/recoveries/detail/conversation/conversation-message.js:35
+msgid "Customer"
+msgstr "Cliente"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:30
+msgid "Jump to latest"
+msgstr "Ir a los últimos mensajes"
+
+#: src/recoveries/detail/context/recovery-milestones.js:21
+msgid "Milestones"
+msgstr "Hitos"
+
+#: src/recoveries/detail/conversation/conversation-message.js:34
+msgid "Moda assistant"
+msgstr "Asistente de Moda"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:39
+msgid "No conversation recorded."
+msgstr "No hay conversación registrada."
+
+#: src/recoveries/detail/context/related-recoveries.js:32
+msgid "No related recoveries."
+msgstr "No hay recuperaciones relacionadas."
+
+#: src/recoveries/detail/conversation/conversation-panel.js:22
+msgid "Read-only conversation history."
+msgstr "Historial de conversación de solo lectura."
+
+#: src/recoveries/detail/recovery-detail-header.js:14
+#: src/recoveries/detail/recovery-detail-header.js:17
+msgid "Recovery details"
+msgstr "Detalles de la recuperación"
+
+#: src/recoveries/detail/recovery-detail-screen.js:20
+msgid "Recovery unavailable."
+msgstr "Recuperación no disponible."
+
+#: src/recoveries/detail/context/related-recoveries.js:15
+#: src/recoveries/detail/context/related-recoveries.js:35
+msgid "Related recoveries"
+msgstr "Recuperaciones relacionadas"
+
+#: src/recoveries/detail/conversation/conversation-message.js:37
+msgid "Team member"
+msgstr "Miembro del equipo"
+
+#: src/recoveries/detail/states/detail-section-state.js:8
+msgid "This section could not be loaded."
+msgstr "No se pudo cargar esta sección."
+
+#: src/recoveries/detail/conversation/conversation-message.js:51
+msgid "Transcription unavailable"
+msgstr "Transcripción no disponible"
+
+#: src/recoveries/detail/conversation/conversation-message.js:38
+msgid "Unknown sender"
+msgstr "Remitente desconocido"
+
+#: src/recoveries/detail/conversation/conversation-message.js:54
+msgid "Unsupported message"
+msgstr "Mensaje no compatible"
+
+#: src/recoveries/detail/conversation/conversation-message.js:48
+msgid "Voice message"
+msgstr "Mensaje de voz"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Pending"
+msgstr "Pendiente"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Sent"
+msgstr "Enviado"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Delivered"
+msgstr "Entregado"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Read"
+msgstr "Leído"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Failed"
+msgstr "Fallido"

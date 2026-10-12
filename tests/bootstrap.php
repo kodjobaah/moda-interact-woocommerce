@@ -280,6 +280,9 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		) {
 		}
 
+		private array $url = array();
+		public function set_url_params( array $url ): void { $this->url = $url; }
+		public function get_url_params(): array { return $this->url; }
 		public function get_query_params(): array { return $this->query; }
 		public function get_json_params(): ?array { return $this->json; }
 		public function get_body_params(): array { return $this->body; }

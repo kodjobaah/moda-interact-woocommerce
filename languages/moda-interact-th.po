@@ -1111,3 +1111,106 @@ msgstr "รายการจะแสดงที่นี่เมื่อเ
 #: src/recoveries/states/recovery-results-state.js:35
 msgid "Try another date range, customer or status."
 msgstr "ลองช่วงวันที่ ลูกค้า หรือสถานะอื่น"
+
+#: src/recoveries/detail/conversation/conversation-message.js:36
+msgid "Automated message"
+msgstr "ข้อความอัตโนมัติ"
+
+#: src/recoveries/detail/recovery-detail-screen.js:16
+msgid "Back to recoveries"
+msgstr "กลับไปยังรายการกู้คืน"
+
+#: src/recoveries/detail/context/checkout-context-panel.js:10
+msgid "Checkout context"
+msgstr "ข้อมูลการชำระเงิน"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:18
+#: src/recoveries/detail/conversation/conversation-panel.js:26
+msgid "Conversation"
+msgstr "การสนทนา"
+
+#: src/recoveries/detail/conversation/conversation-message.js:35
+msgid "Customer"
+msgstr "ลูกค้า"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:30
+msgid "Jump to latest"
+msgstr "ไปยังข้อความล่าสุด"
+
+#: src/recoveries/detail/context/recovery-milestones.js:21
+msgid "Milestones"
+msgstr "เหตุการณ์สำคัญ"
+
+#: src/recoveries/detail/conversation/conversation-message.js:34
+msgid "Moda assistant"
+msgstr "ผู้ช่วย Moda"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:39
+msgid "No conversation recorded."
+msgstr "ไม่มีการสนทนาที่บันทึกไว้"
+
+#: src/recoveries/detail/context/related-recoveries.js:32
+msgid "No related recoveries."
+msgstr "ไม่มีการกู้คืนที่เกี่ยวข้อง"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:22
+msgid "Read-only conversation history."
+msgstr "ประวัติการสนทนาแบบอ่านอย่างเดียว"
+
+#: src/recoveries/detail/recovery-detail-header.js:14
+#: src/recoveries/detail/recovery-detail-header.js:17
+msgid "Recovery details"
+msgstr "รายละเอียดการกู้คืน"
+
+#: src/recoveries/detail/recovery-detail-screen.js:20
+msgid "Recovery unavailable."
+msgstr "ไม่พบข้อมูลการกู้คืน"
+
+#: src/recoveries/detail/context/related-recoveries.js:15
+#: src/recoveries/detail/context/related-recoveries.js:35
+msgid "Related recoveries"
+msgstr "การกู้คืนที่เกี่ยวข้อง"
+
+#: src/recoveries/detail/conversation/conversation-message.js:37
+msgid "Team member"
+msgstr "สมาชิกทีม"
+
+#: src/recoveries/detail/states/detail-section-state.js:8
+msgid "This section could not be loaded."
+msgstr "ไม่สามารถโหลดส่วนนี้ได้"
+
+#: src/recoveries/detail/conversation/conversation-message.js:51
+msgid "Transcription unavailable"
+msgstr "ไม่มีการถอดเสียง"
+
+#: src/recoveries/detail/conversation/conversation-message.js:38
+msgid "Unknown sender"
+msgstr "ผู้ส่งที่ไม่ทราบชื่อ"
+
+#: src/recoveries/detail/conversation/conversation-message.js:54
+msgid "Unsupported message"
+msgstr "ข้อความที่ไม่รองรับ"
+
+#: src/recoveries/detail/conversation/conversation-message.js:48
+msgid "Voice message"
+msgstr "ข้อความเสียง"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Pending"
+msgstr "รอดำเนินการ"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Sent"
+msgstr "ส่งแล้ว"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Delivered"
+msgstr "ส่งถึงแล้ว"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Read"
+msgstr "อ่านแล้ว"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Failed"
+msgstr "ล้มเหลว"

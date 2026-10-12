@@ -1111,3 +1111,106 @@ msgstr "Oppføringer vises her når en gjenoppretting starter."
 #: src/recoveries/states/recovery-results-state.js:35
 msgid "Try another date range, customer or status."
 msgstr "Prøv en annen datoperiode, kunde eller status."
+
+#: src/recoveries/detail/conversation/conversation-message.js:36
+msgid "Automated message"
+msgstr "Automatisk melding"
+
+#: src/recoveries/detail/recovery-detail-screen.js:16
+msgid "Back to recoveries"
+msgstr "Tilbake til gjenopprettinger"
+
+#: src/recoveries/detail/context/checkout-context-panel.js:10
+msgid "Checkout context"
+msgstr "Kasseinformasjon"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:18
+#: src/recoveries/detail/conversation/conversation-panel.js:26
+msgid "Conversation"
+msgstr "Samtale"
+
+#: src/recoveries/detail/conversation/conversation-message.js:35
+msgid "Customer"
+msgstr "Kunde"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:30
+msgid "Jump to latest"
+msgstr "Gå til de nyeste"
+
+#: src/recoveries/detail/context/recovery-milestones.js:21
+msgid "Milestones"
+msgstr "Milepæler"
+
+#: src/recoveries/detail/conversation/conversation-message.js:34
+msgid "Moda assistant"
+msgstr "Moda-assistent"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:39
+msgid "No conversation recorded."
+msgstr "Ingen samtale registrert."
+
+#: src/recoveries/detail/context/related-recoveries.js:32
+msgid "No related recoveries."
+msgstr "Ingen relaterte gjenopprettinger."
+
+#: src/recoveries/detail/conversation/conversation-panel.js:22
+msgid "Read-only conversation history."
+msgstr "Samtalehistorikk med kun lesetilgang."
+
+#: src/recoveries/detail/recovery-detail-header.js:14
+#: src/recoveries/detail/recovery-detail-header.js:17
+msgid "Recovery details"
+msgstr "Detaljer om gjenoppretting"
+
+#: src/recoveries/detail/recovery-detail-screen.js:20
+msgid "Recovery unavailable."
+msgstr "Gjenoppretting utilgjengelig."
+
+#: src/recoveries/detail/context/related-recoveries.js:15
+#: src/recoveries/detail/context/related-recoveries.js:35
+msgid "Related recoveries"
+msgstr "Relaterte gjenopprettinger"
+
+#: src/recoveries/detail/conversation/conversation-message.js:37
+msgid "Team member"
+msgstr "Teammedlem"
+
+#: src/recoveries/detail/states/detail-section-state.js:8
+msgid "This section could not be loaded."
+msgstr "Denne delen kunne ikke lastes inn."
+
+#: src/recoveries/detail/conversation/conversation-message.js:51
+msgid "Transcription unavailable"
+msgstr "Transkripsjon utilgjengelig"
+
+#: src/recoveries/detail/conversation/conversation-message.js:38
+msgid "Unknown sender"
+msgstr "Ukjent avsender"
+
+#: src/recoveries/detail/conversation/conversation-message.js:54
+msgid "Unsupported message"
+msgstr "Meldingen støttes ikke"
+
+#: src/recoveries/detail/conversation/conversation-message.js:48
+msgid "Voice message"
+msgstr "Talemelding"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Pending"
+msgstr "Venter"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Sent"
+msgstr "Sendt"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Delivered"
+msgstr "Levert"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Read"
+msgstr "Lest"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Failed"
+msgstr "Mislyktes"

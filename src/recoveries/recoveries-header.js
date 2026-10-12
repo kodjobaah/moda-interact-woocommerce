@@ -1,7 +1,7 @@
 import { createElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-export function RecoveriesHeader() {
+export function RecoveriesHeader({ onRefresh, disabled = false }) {
 	return createElement(
 		'header',
 		{ className: 'moda-recoveries__header' },
@@ -27,8 +27,8 @@ export function RecoveriesHeader() {
 			{
 				type: 'button',
 				className: 'button moda-recoveries__refresh',
-				disabled: true,
-				// There is deliberately no refresh handler before the read API exists.
+				disabled: disabled || !onRefresh,
+				onClick: onRefresh,
 			},
 			__('Refresh', 'moda-interact')
 		)

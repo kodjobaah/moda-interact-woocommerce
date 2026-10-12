@@ -22,6 +22,7 @@ export function RecoveryFilterForm({
 	filters,
 	today,
 	error,
+	busy = false,
 	onChange,
 	onSubmit,
 }) {
@@ -98,6 +99,7 @@ export function RecoveryFilterForm({
 			{
 				type: 'submit',
 				className: 'button button-primary moda-recoveries__apply',
+				disabled: busy,
 			},
 			__('Apply filters', 'moda-interact')
 		),

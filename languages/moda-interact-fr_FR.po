@@ -1111,3 +1111,106 @@ msgstr "Les relances apparaîtront ici dès leur démarrage."
 #: src/recoveries/states/recovery-results-state.js:35
 msgid "Try another date range, customer or status."
 msgstr "Essayez une autre période, un autre client ou un autre statut."
+
+#: src/recoveries/detail/conversation/conversation-message.js:36
+msgid "Automated message"
+msgstr "Message automatique"
+
+#: src/recoveries/detail/recovery-detail-screen.js:16
+msgid "Back to recoveries"
+msgstr "Retour aux récupérations"
+
+#: src/recoveries/detail/context/checkout-context-panel.js:10
+msgid "Checkout context"
+msgstr "Contexte du panier"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:18
+#: src/recoveries/detail/conversation/conversation-panel.js:26
+msgid "Conversation"
+msgstr "Conversation"
+
+#: src/recoveries/detail/conversation/conversation-message.js:35
+msgid "Customer"
+msgstr "Client"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:30
+msgid "Jump to latest"
+msgstr "Voir les derniers messages"
+
+#: src/recoveries/detail/context/recovery-milestones.js:21
+msgid "Milestones"
+msgstr "Étapes"
+
+#: src/recoveries/detail/conversation/conversation-message.js:34
+msgid "Moda assistant"
+msgstr "Assistant Moda"
+
+#: src/recoveries/detail/conversation/conversation-panel.js:39
+msgid "No conversation recorded."
+msgstr "Aucune conversation enregistrée."
+
+#: src/recoveries/detail/context/related-recoveries.js:32
+msgid "No related recoveries."
+msgstr "Aucune récupération associée."
+
+#: src/recoveries/detail/conversation/conversation-panel.js:22
+msgid "Read-only conversation history."
+msgstr "Historique de conversation en lecture seule."
+
+#: src/recoveries/detail/recovery-detail-header.js:14
+#: src/recoveries/detail/recovery-detail-header.js:17
+msgid "Recovery details"
+msgstr "Détails de la récupération"
+
+#: src/recoveries/detail/recovery-detail-screen.js:20
+msgid "Recovery unavailable."
+msgstr "Récupération indisponible."
+
+#: src/recoveries/detail/context/related-recoveries.js:15
+#: src/recoveries/detail/context/related-recoveries.js:35
+msgid "Related recoveries"
+msgstr "Récupérations associées"
+
+#: src/recoveries/detail/conversation/conversation-message.js:37
+msgid "Team member"
+msgstr "Membre de l’équipe"
+
+#: src/recoveries/detail/states/detail-section-state.js:8
+msgid "This section could not be loaded."
+msgstr "Impossible de charger cette section."
+
+#: src/recoveries/detail/conversation/conversation-message.js:51
+msgid "Transcription unavailable"
+msgstr "Transcription indisponible"
+
+#: src/recoveries/detail/conversation/conversation-message.js:38
+msgid "Unknown sender"
+msgstr "Expéditeur inconnu"
+
+#: src/recoveries/detail/conversation/conversation-message.js:54
+msgid "Unsupported message"
+msgstr "Message non pris en charge"
+
+#: src/recoveries/detail/conversation/conversation-message.js:48
+msgid "Voice message"
+msgstr "Message vocal"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Pending"
+msgstr "En attente"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Sent"
+msgstr "Envoyé"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Delivered"
+msgstr "Livré"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Read"
+msgstr "Lu"
+
+#: src/recoveries/detail/recovery-detail-presentation.js
+msgid "Failed"
+msgstr "Échec"

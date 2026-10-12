@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 export function RecoveryPagination({
 	hasPrevious = false,
 	hasNext = false,
+	pageLabel = null,
 	onPrevious,
 	onNext,
 }) {
@@ -23,6 +24,13 @@ export function RecoveryPagination({
 			},
 			__('Previous', 'moda-interact')
 		),
+		pageLabel
+			? createElement(
+					'span',
+					{ className: 'moda-recoveries__page-label' },
+					pageLabel
+				)
+			: null,
 		createElement(
 			'button',
 			{

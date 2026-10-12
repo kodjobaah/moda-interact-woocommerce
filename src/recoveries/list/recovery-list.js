@@ -5,15 +5,16 @@ import { RecoveryPagination } from './recovery-pagination';
 import { RecoveryResultsState } from '../states/recovery-results-state';
 
 /**
- * All data props are supplied by a future API adapter; never generate demo rows.
+ * The existing read API supplies list data; detail links preserve applied filters.
  *
- * @param {Object}     root0                - List presentation data.
- * @param {string}     root0.state          - Read state.
- * @param {Array}      root0.items          - Recovery DTOs.
- * @param {string}     root0.dateRangeLabel - Human-readable selected range.
- * @param {Object}     root0.pagination     - Pagination display state.
- * @param {() => void} root0.onRetry        - Retry callback.
- * @param {() => void} root0.onClear        - Clear-filters callback.
+ * @param {Object}                 root0                - List presentation data.
+ * @param {string}                 root0.state          - Read state.
+ * @param {Array}                  root0.items          - Recovery DTOs.
+ * @param {string}                 root0.dateRangeLabel - Human-readable selected range.
+ * @param {Object}                 root0.pagination     - Pagination display state.
+ * @param {(id: string) => string} root0.getDetailHref  - Safe detail-link builder.
+ * @param {() => void}             root0.onRetry        - Retry callback.
+ * @param {() => void}             root0.onClear        - Clear-filters callback.
  * @return {Object} List element.
  */
 export function RecoveryList({
@@ -21,6 +22,7 @@ export function RecoveryList({
 	items = [],
 	dateRangeLabel,
 	pagination = {},
+	getDetailHref,
 	onRetry,
 	onClear,
 }) {
@@ -47,7 +49,11 @@ export function RecoveryList({
 					'ul',
 					{ className: 'moda-recoveries__rows' },
 					...items.map((item) =>
-						createElement(RecoveryRow, { key: item.id, item })
+						createElement(RecoveryRow, {
+							key: item.id,
+							item,
+							detailHref: getDetailHref?.(item.id) ?? null,
+						})
 					)
 				)
 			: createElement(RecoveryResultsState, {

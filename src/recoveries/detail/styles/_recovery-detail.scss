@@ -1,0 +1,219 @@
+// Shopify Recovery Detail structure within the existing WordPress Admin menu.
+.moda-recovery-detail {
+	display: grid;
+	gap: 22px;
+	width: min(100%, 1160px);
+	min-width: 0;
+	margin: 0 auto;
+	color: var(--moda-forest-950);
+}
+
+.moda-recovery-detail__back {
+	justify-self: start;
+	color: var(--moda-forest-800);
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.moda-recovery-detail__back:hover,
+.moda-recovery-detail__back:focus-visible {
+	text-decoration: underline;
+}
+
+.moda-recovery-detail__header {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	flex-wrap: wrap;
+	gap: 24px;
+	min-width: 0;
+}
+
+.moda-recovery-detail__customer {
+	min-width: 0;
+	flex: 1 1 300px;
+	overflow-wrap: anywhere;
+}
+
+.moda-recovery-detail__customer > p {
+	margin: 0 0 8px;
+	font-size: 13px;
+}
+
+.moda-recovery-detail__customer > h1 {
+	margin: 0 0 10px;
+	font-size: clamp(24px, 3vw, 30px);
+	font-weight: 650;
+	line-height: 1.2;
+}
+
+.moda-recovery-detail__summary {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(90px, 1fr));
+	gap: 20px;
+	min-width: 0;
+	margin: 0;
+}
+
+.moda-recovery-detail__summary dt {
+	margin-bottom: 6px;
+	font-size: 12px;
+	color: var(--moda-muted);
+}
+
+.moda-recovery-detail__summary dd {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 650;
+	overflow-wrap: anywhere;
+}
+
+.moda-recovery-detail__unavailable {
+	margin: 0;
+	padding: 14px 17px;
+	border: 1px solid var(--moda-border);
+	border-radius: 12px;
+	background: var(--moda-forest-50);
+	font-size: 14px;
+}
+
+.moda-recovery-detail__layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1.75fr) minmax(250px, 0.9fr);
+	align-items: start;
+	gap: 16px;
+	min-width: 0;
+}
+
+.moda-recovery-detail__card {
+	min-width: 0;
+	padding: 20px;
+	border: 1px solid var(--moda-border);
+	border-radius: 14px;
+	background: #fff;
+}
+
+.moda-recovery-detail__card h2,
+.moda-recovery-detail__card h3 {
+	margin: 0;
+	color: var(--moda-forest-950);
+	font-weight: 650;
+}
+
+.moda-recovery-detail__card h2 {
+	font-size: 17px;
+}
+
+.moda-recovery-detail__card h3 {
+	font-size: 15px;
+}
+
+.moda-recovery-detail__section-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.moda-recovery-detail__section-heading .button {
+	min-height: 34px;
+	color: var(--moda-forest-800);
+}
+
+.moda-recovery-detail__aside details > summary {
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.moda-recovery-detail__context-body {
+	display: grid;
+	gap: 20px;
+	padding-top: 16px;
+}
+
+.moda-recovery-detail__milestones-section,
+.moda-recovery-detail__related {
+	display: grid;
+	gap: 14px;
+	min-width: 0;
+}
+
+.moda-recovery-detail__milestones {
+	display: grid;
+	gap: 12px;
+	margin: 0;
+}
+
+.moda-recovery-detail__milestones dt {
+	font-size: 12px;
+	color: var(--moda-muted);
+}
+
+.moda-recovery-detail__milestones dd {
+	margin: 4px 0 0;
+	font-size: 13px;
+	font-weight: 650;
+}
+
+.moda-recovery-detail__related {
+	padding-top: 16px;
+	border-top: 1px solid var(--moda-border);
+}
+
+.moda-recovery-detail__related-list {
+	display: grid;
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.moda-recovery-detail__related-list li {
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--moda-border);
+	overflow-wrap: anywhere;
+}
+
+.moda-recovery-detail__related-list p {
+	margin: 7px 0 0;
+}
+
+.moda-recovery-detail__section-state {
+	margin: 12px 0;
+	color: var(--moda-muted);
+	line-height: 1.6;
+}
+
+@media (max-width: 960px) {
+
+	.moda-recovery-detail__layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 600px) {
+
+	.moda-recovery-detail {
+		gap: 16px;
+	}
+
+	.moda-recovery-detail__header {
+		gap: 14px;
+	}
+
+	.moda-recovery-detail__summary {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		width: 100%;
+	}
+
+	.moda-recovery-detail__summary > div:last-child {
+		grid-column: 1 / -1;
+	}
+
+	.moda-recovery-detail__card {
+		padding: 15px;
+	}
+}

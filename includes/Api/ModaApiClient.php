@@ -156,6 +156,67 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+	/** Read-only, server-paginated recoveries for the authenticated Woo installation. */
+	public function merchantRecoveries( array $connection, array $filters ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		$path = '/v1/merchant/recoveries?' . http_build_query( $filters, '', '&', PHP_QUERY_RFC3986 );
+		$response = $this->request( $path, 'GET', self::installationHeaders( $connection ), null, self::DEFAULT_TIMEOUT_SECONDS, 131073 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 400 === $status ) throw new ModaApiClientException( 'invalid_request', $status );
+		if ( 409 === $status ) throw new ModaApiClientException( 'tenant_conflict', $status );
+		if ( 200 !== $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try {
+			$payload = $this->jsonBody( $response, 131072 );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		if ( ! RecoveryListResponseValidator::isValid( $payload ) ||
+			( isset( $filters['pageSize'] ) && $payload['pageSize'] !== (int) $filters['pageSize'] ) ||
+			( isset( $filters['page'] ) && $payload['page'] > (int) $filters['page'] ) ||
+			( isset( $filters['from'] ) && $payload['from'] !== $filters['from'] ) ||
+			( isset( $filters['to'] ) && $payload['to'] !== $filters['to'] ) ||
+			( isset( $filters['q'] ) && $payload['q'] !== trim( $filters['q'] ) ) ||
+			( isset( $filters['status'] ) && $payload['status'] !== $filters['status'] ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return $payload;
+	}
+
+
+	/** API-013 detail reads: a single summary or one bounded cursor page. */
+	public function merchantRecoveryDetail( array $connection, string $id, string $section = 'summary', array $query = array() ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
+		if ( ! preg_match( '/^[A-Za-z0-9_-]{1,191}$/D', $id ) ||
+			! in_array( $section, array( 'summary', 'messages', 'related' ), true ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$path = '/v1/merchant/recoveries/' . rawurlencode( $id );
+		if ( 'summary' !== $section ) $path .= '/' . $section;
+		if ( $query ) $path .= '?' . http_build_query( $query, '', '&', PHP_QUERY_RFC3986 );
+		// 50 bounded Unicode messages can exceed 2 MiB; the JSON body is still capped at 8 MiB.
+		$limit = 'messages' === $section ? 8388608 : ( 'related' === $section ? 16384 : 8192 );
+		$response = $this->request( $path, 'GET', self::installationHeaders( $connection ), null, self::DEFAULT_TIMEOUT_SECONDS, $limit + 1 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 404 === $status ) throw new ModaApiClientException( 'not_found', $status );
+		if ( 400 === $status ) throw new ModaApiClientException( 'invalid_request', $status );
+		if ( 409 === $status ) throw new ModaApiClientException( 'tenant_conflict', $status );
+		if ( 200 !== $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try {
+			$payload = $this->jsonBody( $response, $limit );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		if ( ( 'summary' === $section && ( ! RecoveryDetailResponseValidator::isSummary( $payload ) || $payload['id'] !== $id ) ) ||
+			( 'summary' !== $section && ! RecoveryDetailResponseValidator::isPage( $payload, $section ) ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return $payload;
+	}
+
 	public function billingPresentation( array $connection ): array {
 		$payload = $this->billingRequest( $connection, '/v1/billing', 'GET' );
 		if ( ! BillingResponseValidator::isPresentation( $payload ) ) {

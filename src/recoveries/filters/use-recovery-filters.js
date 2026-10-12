@@ -1,4 +1,4 @@
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { dateInTimeZone, presetDates } from './recovery-date-presets';
 
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
@@ -33,15 +33,22 @@ export function initialRecoveryFilters(today) {
 }
 
 /**
- * UI-only filter state. The later API integration owns network submission.
+ * Draft filters are independent of the applied server-side query.
  *
- * @param {string|null} timeZone Merchant IANA time zone, if known.
+ * @param {string|null} timeZone    Merchant IANA time zone, if known.
+ * @param {Object|null} serverRange Initial authoritative dates returned by the API.
  * @return {Object} Local filters and callbacks.
  */
-export function useRecoveryFilters(timeZone) {
+export function useRecoveryFilters(timeZone, serverRange = null) {
 	const today = dateInTimeZone(new Date(), timeZone);
 	const [filters, setFilters] = useState(() => initialRecoveryFilters(today));
 	const [error, setError] = useState(false);
+	const edited = useRef(false);
+	const hasServerRange = serverRange !== null;
+	const rangeFrom = serverRange?.from;
+	const rangeTo = serverRange?.to;
+	const rangeQuery = serverRange?.q;
+	const rangeStatus = serverRange?.status;
 
 	// Merchant timezone may arrive after connection/bootstrap. Preserve custom dates.
 	useEffect(() => {
@@ -52,10 +59,31 @@ export function useRecoveryFilters(timeZone) {
 		);
 	}, [today]);
 
+	// The initial API read uses the store timezone, not the browser's UTC clock.
+	// Never overwrite dates after the merchant edits the draft form.
+	useEffect(() => {
+		if (!hasServerRange || edited.current) {
+			return;
+		}
+		setFilters((current) => ({
+			...current,
+			from: rangeFrom,
+			to: rangeTo,
+			q: rangeQuery ?? current.q,
+			status: rangeStatus ?? current.status,
+			preset:
+				['TODAY', 'WEEK', 'MONTH'].find((preset) => {
+					const range = presetDates(preset, today);
+					return range.from === rangeFrom && range.to === rangeTo;
+				}) ?? 'CUSTOM',
+		}));
+	}, [hasServerRange, rangeFrom, rangeTo, rangeQuery, rangeStatus, today]);
+
 	const update = (field, value) => {
 		if (!['from', 'to', 'q', 'status'].includes(field)) {
 			return;
 		}
+		edited.current = true;
 		setError(false);
 		setFilters((current) => ({
 			...current,
@@ -66,6 +94,7 @@ export function useRecoveryFilters(timeZone) {
 	};
 
 	const selectPreset = (preset) => {
+		edited.current = true;
 		setError(false);
 		setFilters((current) =>
 			preset === 'CUSTOM'
@@ -79,14 +108,16 @@ export function useRecoveryFilters(timeZone) {
 	};
 
 	const clear = () => {
+		edited.current = true;
 		setFilters(initialRecoveryFilters(today));
 		setError(false);
 	};
 
 	const submit = (event) => {
 		event?.preventDefault?.();
-		// No request or success message exists until the read API is connected.
-		setError(!isValidDateRange(filters, today));
+		const valid = isValidDateRange(filters, today);
+		setError(!valid);
+		return valid;
 	};
 
 	return { filters, today, error, update, selectPreset, clear, submit };

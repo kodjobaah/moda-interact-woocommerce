@@ -14,11 +14,12 @@ function Detail({ label, children }) {
 /**
  * Presentation-only DTO; no checkout/customer fixtures are bundled into production.
  *
- * @param {Object} root0      - Component props.
- * @param {Object} root0.item - Recovery row.
+ * @param {Object}      root0            - Component props.
+ * @param {Object}      root0.item       - Recovery row.
+ * @param {string|null} root0.detailHref - WordPress Admin detail URL when available.
  * @return {Object} Row element.
  */
-export function RecoveryRow({ item }) {
+export function RecoveryRow({ item, detailHref = null }) {
 	return createElement(
 		'li',
 		{ className: 'moda-recoveries__row' },
@@ -28,7 +29,13 @@ export function RecoveryRow({ item }) {
 			createElement(
 				'h3',
 				{ dir: 'auto' },
-				item.customerName || __('Guest', 'moda-interact')
+				detailHref
+					? createElement(
+							'a',
+							{ href: detailHref },
+							item.customerName || __('Guest', 'moda-interact')
+						)
+					: item.customerName || __('Guest', 'moda-interact')
 			),
 			item.customerEmail
 				? createElement('p', { dir: 'auto' }, item.customerEmail)
