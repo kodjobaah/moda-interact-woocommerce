@@ -4,6 +4,7 @@ export function createControllerSession(controllers, listeners) {
 	const unsubscriptions = [
 		controllers.category.subscribe(listeners.onCategory),
 		controllers.recoverySummary.subscribe(listeners.onRecoverySummary),
+		controllers.recoveryPolicy.subscribe(listeners.onRecoveryPolicy),
 		controllers.readAccess.subscribe(listeners.onReadAccess),
 		controllers.sync.subscribe(listeners.onSync),
 		controllers.merchant.subscribe(listeners.onMerchant),
@@ -24,6 +25,7 @@ export function createControllerSession(controllers, listeners) {
 			previousConnectionStatus = status;
 			controllers.category.setConnectionStatus(status);
 			controllers.recoverySummary.setConnectionStatus(status);
+			controllers.recoveryPolicy.setConnectionStatus(status);
 		}),
 	];
 	let disposed = false;
@@ -50,6 +52,7 @@ export function createControllerSession(controllers, listeners) {
 				'sync',
 				'category',
 				'recoverySummary',
+				'recoveryPolicy',
 				'readAccess',
 			]) {
 				controllers[name].dispose();

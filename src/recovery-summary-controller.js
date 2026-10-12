@@ -55,7 +55,7 @@ export class RecoverySummaryController {
 		}
 	}
 
-	refresh() {
+	refresh(force = false) {
 		if (
 			this.disposed ||
 			!this.active ||
@@ -63,7 +63,7 @@ export class RecoverySummaryController {
 		) {
 			return Promise.resolve(this.state);
 		}
-		if (this.pending) {
+		if (this.pending && !force) {
 			return this.pending;
 		}
 		const revision = ++this.revision;

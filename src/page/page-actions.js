@@ -18,6 +18,9 @@ export function createPageActions(sessionRef, setActiveSurface) {
 		setBillingView: (view) => controllers()?.billing.setView(view),
 		refreshCategory: () => controllers()?.category.refresh(),
 		refreshRecoverySummary: () => controllers()?.recoverySummary.refresh(),
+		refreshRecoveryPolicy: () => controllers()?.recoveryPolicy.refresh(),
+		saveRecoveryPolicy: (draft) =>
+			controllers()?.recoveryPolicy.save(draft),
 		chooseCategory: (categoryId) =>
 			controllers()?.category.chooseCategory(categoryId),
 		toggleMapping: (mappingId) =>
@@ -27,6 +30,7 @@ export function createPageActions(sessionRef, setActiveSurface) {
 			setActiveSurface(surface);
 			controllers()?.billing.setActive(surface === 'BILLING');
 			controllers()?.recoverySummary.setActive(surface === 'RECOVERY');
+			controllers()?.recoveryPolicy.setActive(surface === 'RECOVERY');
 			if (surface === 'RECOVERY') {
 				controllers()?.category.refresh();
 			}

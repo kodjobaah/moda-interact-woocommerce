@@ -13,6 +13,8 @@ use ModaInteract\WooCommerce\Rest\ConnectionController;
 use ModaInteract\WooCommerce\Rest\StoreContextController;
 use ModaInteract\WooCommerce\Rest\StoreCategoryController;
 use ModaInteract\WooCommerce\Rest\RecoverySummaryController;
+use ModaInteract\WooCommerce\Rest\RecoveryPolicyController;
+use ModaInteract\WooCommerce\Rest\RecoveryCouponCatalogueController;
 use ModaInteract\WooCommerce\Rest\RecoveryListController;
 use ModaInteract\WooCommerce\Rest\RecoveryDetailController;
 use ModaInteract\WooCommerce\Rest\ReadAccessController;
@@ -75,6 +77,8 @@ final class Runtime {
 		( new StoreContextController( null, new SiteIdentity( $mode ) ) )->register();
 		( new StoreCategoryController( null, new SiteIdentity( $mode ) ) )->register();
 		( new RecoverySummaryController( null, new SiteIdentity( $mode ) ) )->register();
+		( new RecoveryPolicyController( null, new SiteIdentity( $mode ) ) )->register();
+		( new RecoveryCouponCatalogueController() )->register();
 		( new RecoveryListController( null, new SiteIdentity( $mode ) ) )->register();
 		( new RecoveryDetailController( null, new SiteIdentity( $mode ) ) )->register();
 		( new ReadAccessController( null, new SiteIdentity( $mode ) ) )->register();

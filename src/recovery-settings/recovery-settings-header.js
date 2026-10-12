@@ -19,6 +19,11 @@ export function RecoverySettingsHeader({ summaryState, onRefreshSummary }) {
 				'h2',
 				{ id: 'moda-interact-recovery-heading' },
 				__('Recovery Settings', 'moda-interact')
+			),
+			createElement(
+				'span',
+				{ className: 'moda-interact-status' },
+				__('Connected', 'moda-interact')
 			)
 		),
 		createElement(RecoveryEffectiveSummary, {

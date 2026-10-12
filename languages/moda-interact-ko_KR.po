@@ -1214,3 +1214,96 @@ msgstr "읽음"
 #: src/recoveries/detail/recovery-detail-presentation.js
 msgid "Failed"
 msgstr "실패"
+
+#: src/recovery-settings/recovery-behaviour-panel.js:62
+msgid "Save recovery behaviour"
+msgstr "복구 동작 저장"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:56
+msgid "Review the recovery settings and try again."
+msgstr "설정을 확인한 후 다시 시도하세요."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:89
+msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
+msgstr "할인 지원은 무료 및 유료 요금제 모두 아래 선택을 따릅니다. 후속 메시지는 별도로 청구됩니다."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+msgid "Start recovery after (minutes) of checkout inactivity"
+msgstr "결제 비활성 후 (분) 지나면 복구 시작"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+msgid "Send one follow-up when the customer has not replied"
+msgstr "고객이 응답하지 않으면 후속 메시지 한 번 보내기"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:179
+msgid "After (minutes)"
+msgstr "(분) 후"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:195
+msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
+msgstr "고객이 응답하면 대화를 계속해도 추가 복구 크레딧을 사용하지 않습니다. 예약된 후속 메시지는 새로운 선제적 복구 시도이며 추가 크레딧을 사용합니다. 시간은 마지막으로 보낸 선제적 복구 메시지부터 측정됩니다."
+
+#: src/recovery-settings/recovery-offer-choices.js:63
+msgid "WooCommerce coupon selection is not yet available."
+msgstr "WooCommerce 쿠폰 선택 기능은 아직 사용할 수 없습니다."
+
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour saved."
+msgstr "복구 동작이 저장되었습니다."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
+msgstr "복구 설정이 다른 곳에서 변경되었습니다. 다시 저장하기 전에 새로고침하여 최신 정책을 확인하세요. 입력한 변경 사항은 계속 표시됩니다."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour could not be saved. Your edits are still visible."
+msgstr "복구 동작을 저장하지 못했습니다. 입력한 변경 사항은 계속 표시됩니다."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings could not be loaded. Refresh to retry."
+msgstr "복구 설정을 불러오지 못했습니다. 새로고침하여 다시 시도하세요."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Refreshing will replace unsaved recovery changes."
+msgstr "새로고침하면 저장하지 않은 복구 변경 사항이 대체됩니다."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 0 and 10,080."
+msgstr "0~10,080 사이의 정수 분 값을 입력하세요."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 60 and 10,080."
+msgstr "60~10,080 사이의 정수 분 값을 입력하세요."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Browse coupons"
+msgstr "쿠폰 찾아보기"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr "미리보기 전용입니다. 선택한 쿠폰은 저장되거나 복구 메시지에 사용되지 않습니다."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search coupons"
+msgstr "쿠폰 검색"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search"
+msgstr "검색"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Coupons could not be loaded."
+msgstr "쿠폰을 불러올 수 없습니다."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "No coupons found."
+msgstr "쿠폰을 찾을 수 없습니다."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Review required"
+msgstr "검토 필요"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Select for preview: %s"
+msgstr "미리보기 선택: %s"

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { RecoverySettingsHeader } from '../../src/recovery-settings/recovery-settings-header';
 import { CategoryProfileSummary } from '../../src/recovery-settings/category-profile-summary';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
+import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
 import { categoriesFixture } from './store-category-fixtures';
 
 function walk(node, visitor) {
@@ -11,6 +12,9 @@ function walk(node, visitor) {
 		return;
 	}
 	if (!node || typeof node !== 'object') {
+		return;
+	}
+	if (node.type === RecoveryBehaviourPanel) {
 		return;
 	}
 	if (typeof node.type === 'function') {

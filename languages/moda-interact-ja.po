@@ -1214,3 +1214,96 @@ msgstr "既読"
 #: src/recoveries/detail/recovery-detail-presentation.js
 msgid "Failed"
 msgstr "失敗"
+
+#: src/recovery-settings/recovery-behaviour-panel.js:62
+msgid "Save recovery behaviour"
+msgstr "リカバリー動作を保存"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:56
+msgid "Review the recovery settings and try again."
+msgstr "回復設定を確認して、もう一度お試しください。"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:89
+msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
+msgstr "割引支援は無料・有料プランとも下の選択に従います。フォローアップは別途課金されます。"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+msgid "Start recovery after (minutes) of checkout inactivity"
+msgstr "チェックアウトが非アクティブになってから（分）後に回復を開始"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+msgid "Send one follow-up when the customer has not replied"
+msgstr "顧客が返信しない場合にフォローアップを1回送信"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:179
+msgid "After (minutes)"
+msgstr "（分）後"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:195
+msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
+msgstr "顧客が返信した場合、会話の継続に追加の回復クレジットは使いません。予定されたフォローアップは新しい積極的な回復試行となり、追加クレジットを使います。時間は最後に送信した積極的な回復メッセージから測定します。"
+
+#: src/recovery-settings/recovery-offer-choices.js:63
+msgid "WooCommerce coupon selection is not yet available."
+msgstr "WooCommerceのクーポン選択はまだ利用できません。"
+
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour saved."
+msgstr "リカバリー動作を保存しました。"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
+msgstr "リカバリー設定が別の場所で変更されました。再度保存する前に更新して最新の設定を確認してください。編集内容は引き続き表示されています。"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour could not be saved. Your edits are still visible."
+msgstr "リカバリー動作を保存できませんでした。編集内容は引き続き表示されています。"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings could not be loaded. Refresh to retry."
+msgstr "リカバリー設定を読み込めませんでした。更新して再試行してください。"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Refreshing will replace unsaved recovery changes."
+msgstr "更新すると、保存されていないリカバリーの変更は置き換えられます。"
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 0 and 10,080."
+msgstr "0～10,080 の整数を分数ではなく分単位で入力してください。"
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 60 and 10,080."
+msgstr "60～10,080 の整数を分単位で入力してください。"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Browse coupons"
+msgstr "クーポンを閲覧"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr "プレビューのみです。選択したクーポンは保存されず、リカバリーメッセージにも使用されません。"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search coupons"
+msgstr "クーポンを検索"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search"
+msgstr "検索"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Coupons could not be loaded."
+msgstr "クーポンを読み込めませんでした。"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "No coupons found."
+msgstr "クーポンが見つかりません。"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Review required"
+msgstr "確認が必要"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Select for preview: %s"
+msgstr "プレビュー用に選択: %s"

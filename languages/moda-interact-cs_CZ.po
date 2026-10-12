@@ -1214,3 +1214,96 @@ msgstr "Přečteno"
 #: src/recoveries/detail/recovery-detail-presentation.js
 msgid "Failed"
 msgstr "Selhalo"
+
+#: src/recovery-settings/recovery-behaviour-panel.js:62
+msgid "Save recovery behaviour"
+msgstr "Uložit chování obnovy"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:56
+msgid "Review the recovery settings and try again."
+msgstr "Zkontrolujte nastavení obnovy a zkuste to znovu."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:89
+msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
+msgstr "Pomoc se slevami se řídí volbou níže u bezplatných i placených tarifů. Následné zprávy se účtují zvlášť."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+msgid "Start recovery after (minutes) of checkout inactivity"
+msgstr "Spustit obnovu po (minutách) neaktivity pokladny"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+msgid "Send one follow-up when the customer has not replied"
+msgstr "Odeslat jednu následnou zprávu, pokud zákazník neodpověděl"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:179
+msgid "After (minutes)"
+msgstr "Po (minutách)"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:195
+msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
+msgstr "Odpověď zákazníka nepoužije další kredit obnovy. Naplánovaná následná zpráva je nový proaktivní pokus a použije další kredit obnovy. Čas se měří od poslední odeslané proaktivní zprávy."
+
+#: src/recovery-settings/recovery-offer-choices.js:63
+msgid "WooCommerce coupon selection is not yet available."
+msgstr "Výběr kupónů WooCommerce zatím není dostupný."
+
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour saved."
+msgstr "Chování obnovy bylo uloženo."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
+msgstr "Nastavení obnovy byla změněna jinde. Před dalším uložením je aktualizujte a zkontrolujte nejnovější pravidla. Vaše úpravy jsou stále viditelné."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour could not be saved. Your edits are still visible."
+msgstr "Chování obnovy se nepodařilo uložit. Vaše úpravy jsou stále viditelné."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings could not be loaded. Refresh to retry."
+msgstr "Nastavení obnovy se nepodařilo načíst. Aktualizujte je a zkuste to znovu."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Refreshing will replace unsaved recovery changes."
+msgstr "Aktualizace nahradí neuložené změny obnovy."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 0 and 10,080."
+msgstr "Zadejte celé číslo minut od 0 do 10 080."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 60 and 10,080."
+msgstr "Zadejte celé číslo minut od 60 do 10 080."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Browse coupons"
+msgstr "Procházet kupóny"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr "Pouze náhled. Výběr kupónu se neukládá ani nepoužívá v zprávách o obnovení nákupu."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search coupons"
+msgstr "Hledat kupóny"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search"
+msgstr "Hledat"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Coupons could not be loaded."
+msgstr "Kupóny se nepodařilo načíst."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "No coupons found."
+msgstr "Nebyly nalezeny žádné kupóny."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Review required"
+msgstr "Vyžaduje ověření"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Select for preview: %s"
+msgstr "Vybrat pro náhled: %s"

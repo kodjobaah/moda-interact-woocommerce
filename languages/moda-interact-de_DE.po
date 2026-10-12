@@ -1214,3 +1214,96 @@ msgstr "Gelesen"
 #: src/recoveries/detail/recovery-detail-presentation.js
 msgid "Failed"
 msgstr "Fehlgeschlagen"
+
+#: src/recovery-settings/recovery-behaviour-panel.js:62
+msgid "Save recovery behaviour"
+msgstr "Wiederherstellungsverhalten speichern"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:56
+msgid "Review the recovery settings and try again."
+msgstr "Überprüfen Sie die Einstellungen und versuchen Sie es erneut."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:89
+msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
+msgstr "Die Rabattunterstützung folgt der Auswahl unten, bei kostenlosen und kostenpflichtigen Tarifen. Folgenachrichten werden separat berechnet."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+msgid "Start recovery after (minutes) of checkout inactivity"
+msgstr "Wiederherstellung nach (Minuten) Inaktivität im Checkout starten"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+msgid "Send one follow-up when the customer has not replied"
+msgstr "Eine Nachfassnachricht senden, wenn der Kunde nicht geantwortet hat"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:179
+msgid "After (minutes)"
+msgstr "Nach (Minuten)"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:195
+msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
+msgstr "Eine Antwort des Kunden verwendet keinen weiteren Wiederherstellungskredit. Eine geplante Nachfassnachricht ist ein neuer proaktiver Versuch und verwendet einen weiteren Kredit. Die Zeit wird ab der letzten proaktiven Nachricht gemessen."
+
+#: src/recovery-settings/recovery-offer-choices.js:63
+msgid "WooCommerce coupon selection is not yet available."
+msgstr "Die Auswahl von WooCommerce-Gutscheinen ist noch nicht verfügbar."
+
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour saved."
+msgstr "Wiederherstellungsverhalten gespeichert."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
+msgstr "Die Wiederherstellungseinstellungen wurden an anderer Stelle geändert. Aktualisiere sie, um die neuesten Einstellungen vor dem erneuten Speichern zu prüfen. Deine Änderungen bleiben sichtbar."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour could not be saved. Your edits are still visible."
+msgstr "Das Wiederherstellungsverhalten konnte nicht gespeichert werden. Deine Änderungen bleiben sichtbar."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings could not be loaded. Refresh to retry."
+msgstr "Die Wiederherstellungseinstellungen konnten nicht geladen werden. Aktualisiere sie, um es erneut zu versuchen."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Refreshing will replace unsaved recovery changes."
+msgstr "Beim Aktualisieren werden nicht gespeicherte Wiederherstellungsänderungen ersetzt."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 0 and 10,080."
+msgstr "Gib eine ganze Minutenzahl zwischen 0 und 10.080 ein."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 60 and 10,080."
+msgstr "Gib eine ganze Minutenzahl zwischen 60 und 10.080 ein."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Browse coupons"
+msgstr "Gutscheine durchsuchen"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr "Nur Vorschau. Die Gutscheinauswahl wird nicht gespeichert oder in Wiederherstellungsnachrichten verwendet."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search coupons"
+msgstr "Gutscheine suchen"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search"
+msgstr "Suchen"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Coupons could not be loaded."
+msgstr "Gutscheine konnten nicht geladen werden."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "No coupons found."
+msgstr "Keine Gutscheine gefunden."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Review required"
+msgstr "Prüfung erforderlich"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Select for preview: %s"
+msgstr "Für Vorschau auswählen: %s"

@@ -1214,3 +1214,96 @@ msgstr "Lida"
 #: src/recoveries/detail/recovery-detail-presentation.js
 msgid "Failed"
 msgstr "Falhou"
+
+#: src/recovery-settings/recovery-behaviour-panel.js:62
+msgid "Save recovery behaviour"
+msgstr "Salvar comportamento de recuperação"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:56
+msgid "Review the recovery settings and try again."
+msgstr "Revise as configurações e tente novamente."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:89
+msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
+msgstr "A assistência com descontos segue a opção abaixo, nos planos gratuitos e pagos. Lembretes continuam cobrados separadamente."
+
+#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+msgid "Start recovery after (minutes) of checkout inactivity"
+msgstr "Iniciar a recuperação após (minutos) de inatividade no checkout"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+msgid "Send one follow-up when the customer has not replied"
+msgstr "Enviar um acompanhamento quando o cliente não responder"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:179
+msgid "After (minutes)"
+msgstr "Após (minutos)"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:195
+msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
+msgstr "Se o cliente responder, continuar a conversa não usa outro crédito de recuperação. Um acompanhamento agendado é uma nova tentativa proativa e usa outro crédito. O tempo é medido desde a última mensagem proativa enviada."
+
+#: src/recovery-settings/recovery-offer-choices.js:63
+msgid "WooCommerce coupon selection is not yet available."
+msgstr "A seleção de cupons do WooCommerce ainda não está disponível."
+
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour saved."
+msgstr "Comportamento de recuperação salvo."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
+msgstr "As configurações de recuperação foram alteradas em outro lugar. Atualize para revisar a política mais recente antes de salvar novamente. Suas alterações continuam visíveis."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour could not be saved. Your edits are still visible."
+msgstr "Não foi possível salvar o comportamento de recuperação. Suas alterações continuam visíveis."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings could not be loaded. Refresh to retry."
+msgstr "Não foi possível carregar as configurações de recuperação. Atualize para tentar novamente."
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Refreshing will replace unsaved recovery changes."
+msgstr "A atualização substituirá as alterações de recuperação não salvas."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 0 and 10,080."
+msgstr "Digite um número inteiro de minutos entre 0 e 10.080."
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 60 and 10,080."
+msgstr "Digite um número inteiro de minutos entre 60 e 10.080."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Browse coupons"
+msgstr "Explorar cupons"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr "Somente visualização. Os cupons selecionados não são salvos nem usados nas mensagens de recuperação."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search coupons"
+msgstr "Pesquisar cupons"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search"
+msgstr "Pesquisar"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Coupons could not be loaded."
+msgstr "Não foi possível carregar os cupons."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "No coupons found."
+msgstr "Nenhum cupom encontrado."
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Review required"
+msgstr "Exige verificação"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Select for preview: %s"
+msgstr "Selecionar para visualização: %s"

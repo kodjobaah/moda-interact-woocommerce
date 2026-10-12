@@ -89,8 +89,8 @@ function readMo(buffer) {
 	return entries;
 }
 
-test('WOO-011 catalogues cover all 301 source keys, with no accidental English fallbacks', () => {
-	assert.equal(sourceKeys.size, 301);
+test('WOO-011 catalogues cover all 324 source keys, with no accidental English fallbacks', () => {
+	assert.equal(sourceKeys.size, 324);
 	const productNames = new Set([
 		'Moda Interact',
 		'WooCommerce',
@@ -113,7 +113,7 @@ test('WOO-011 catalogues cover all 301 source keys, with no accidental English f
 			sourceKeys,
 			locale
 		);
-		assert.equal(entries.length, 302, locale);
+		assert.equal(entries.length, sourceKeys.size + 1, locale);
 		assert.match(entries[0].translations[0], /Plural-Forms: nplurals=2;/);
 		for (const entry of translations) {
 			assert.ok(entry.translations[0], `${locale}: ${entry.id}`);

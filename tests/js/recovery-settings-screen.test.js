@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
+import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
 import { RecoveryNavigation } from '../../src/recovery-settings/recovery-navigation';
 import { categoriesFixture } from './store-category-fixtures';
 
@@ -13,6 +14,9 @@ function flatten(node) {
 	if (typeof node === 'string' || typeof node === 'number') {
 		return String(node);
 	}
+	if (node.type === RecoveryBehaviourPanel) {
+		return ''; // React hook owner is tested through its pure view.
+	}
 	if (typeof node.type === 'function') {
 		return flatten(node.type(node.props));
 	}
@@ -25,6 +29,9 @@ function buttons(node, found = []) {
 		return found;
 	}
 	if (node === null || node === undefined || typeof node !== 'object') {
+		return found;
+	}
+	if (node.type === RecoveryBehaviourPanel) {
 		return found;
 	}
 	if (typeof node.type === 'function') {

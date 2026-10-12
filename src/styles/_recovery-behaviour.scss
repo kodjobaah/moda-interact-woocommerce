@@ -1,0 +1,205 @@
+// Recovery behaviour is saved explicitly through the privileged policy API.
+.moda-interact-recovery .moda-recovery-behaviour {
+	padding: clamp(16px, 2.4vw, 26px);
+}
+
+.moda-recovery-behaviour__notice,
+.moda-recovery-behaviour__credit-note {
+	margin: 0 0 16px;
+	padding: 12px 14px;
+	border: 1px solid var(--moda-forest-200);
+	border-radius: 12px;
+	background: var(--moda-forest-50);
+	color: var(--moda-forest-800);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+.moda-recovery-behaviour__sections {
+	display: grid;
+}
+
+.moda-recovery-behaviour__section {
+	min-width: 0;
+	padding: 20px 0;
+	border-bottom: 1px solid var(--moda-border);
+}
+
+.moda-recovery-behaviour__step-heading {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 14px;
+}
+
+.moda-recovery-behaviour__step-heading > span {
+	display: grid;
+	width: 27px;
+	height: 27px;
+	flex: 0 0 27px;
+	place-items: center;
+	border-radius: 8px;
+	background: var(--moda-forest-700);
+	color: #fff;
+	font-weight: 750;
+}
+
+.moda-recovery-behaviour__step-heading h3 {
+	margin: 0;
+	font-size: 19px;
+}
+
+.moda-recovery-behaviour__step-heading p {
+	margin: 2px 0 0;
+	color: var(--moda-muted);
+	font-size: 13px;
+}
+
+.moda-recovery-behaviour__offers {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.moda-recovery-behaviour__offer {
+	display: flex;
+	gap: 10px;
+	min-width: 0;
+	min-height: 104px;
+	align-items: flex-start;
+	padding: 13px;
+	border: 1px solid var(--moda-border);
+	border-radius: 14px;
+	background: var(--moda-surface);
+	color: var(--moda-forest-900);
+}
+
+.moda-recovery-behaviour__offer.is-active {
+	border-color: var(--moda-forest-600);
+	background: var(--moda-forest-50);
+}
+
+.moda-recovery-behaviour__offer input {
+	flex: 0 0 auto;
+	margin: 1px 0 0;
+	accent-color: var(--moda-forest-700);
+}
+
+.moda-recovery-behaviour__offer strong {
+	font-size: 13px;
+	line-height: 1.45;
+	overflow-wrap: anywhere;
+}
+
+.moda-recovery-behaviour__unavailable {
+	color: var(--moda-muted);
+	font-size: 12px;
+}
+
+.moda-recovery-behaviour__hint {
+	grid-column: 1 / -1;
+	margin: 6px 0 0;
+	color: var(--moda-muted);
+	font-size: 12px;
+}
+
+.moda-recovery-behaviour__setting-row {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.moda-recovery-behaviour__setting-row > label,
+.moda-recovery-behaviour__field {
+	min-width: 0;
+	padding: 13px;
+	border: 1px solid var(--moda-border);
+	border-radius: 13px;
+	font-weight: 650;
+}
+
+.moda-recovery-behaviour__number-control input {
+	width: 100%;
+	min-height: 42px;
+	margin-top: 8px;
+}
+
+.moda-recovery-behaviour__number-control [role="alert"] {
+	margin: 6px 0 0;
+	color: #982b32;
+	font-size: 12px;
+}
+
+.moda-recovery-behaviour__effective {
+	display: flex;
+	align-items: center;
+	padding: 13px;
+	border-radius: 13px;
+	background: var(--moda-forest-100);
+	color: var(--moda-forest-900);
+	font-weight: 650;
+}
+
+.moda-recovery-behaviour__toggle {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.moda-recovery-behaviour__toggle input {
+	accent-color: var(--moda-forest-700);
+}
+
+.moda-recovery-behaviour__credit-note {
+	margin: 12px 0 0;
+}
+
+.moda-recovery-behaviour__footer {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+	padding-top: 18px;
+}
+
+.moda-recovery-behaviour__footer .button {
+	min-height: 42px;
+	border-radius: 999px;
+}
+
+@media (max-width: 840px) {
+
+	.moda-recovery-behaviour__offers {
+		grid-template-columns: 1fr;
+	}
+
+	.moda-recovery-behaviour__offer {
+		min-height: auto;
+	}
+}
+
+@media (max-width: 600px) {
+
+	.moda-recovery-behaviour__setting-row {
+		grid-template-columns: 1fr;
+	}
+
+	.moda-recovery-behaviour__footer,
+	.moda-recovery-behaviour__footer .button {
+		width: 100%;
+	}
+}
+
+.moda-recovery-behaviour__field > label {
+	display: block;
+}
+
+.moda-recovery-behaviour__refresh {
+	margin: 0;
+	color: var(--moda-muted);
+	font-size: 12px;
+}

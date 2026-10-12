@@ -13,6 +13,7 @@ export function ConnectedWorkspace({
 	syncState,
 	categoryState,
 	recoverySummaryState,
+	recoveryPolicyState,
 	actions,
 	showSurfaceNavigation = true,
 }) {
@@ -48,6 +49,9 @@ export function ConnectedWorkspace({
 			onSave: actions.saveCategory,
 			summaryState: recoverySummaryState,
 			onRefreshSummary: actions.refreshRecoverySummary,
+			policyState: recoveryPolicyState,
+			onRefreshPolicy: actions.refreshRecoveryPolicy,
+			onSavePolicy: actions.saveRecoveryPolicy,
 		});
 	} else {
 		activeContent = createElement(OverviewScreen, {

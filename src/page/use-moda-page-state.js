@@ -34,6 +34,10 @@ export function useModaPageState() {
 		status: 'IDLE',
 		data: null,
 	});
+	const [recoveryPolicyState, setRecoveryPolicyState] = useState({
+		status: 'IDLE',
+		data: null,
+	});
 
 	useEffect(() => {
 		const session = createControllerSession(createPageControllers(), {
@@ -44,6 +48,7 @@ export function useModaPageState() {
 			onSync: setSyncState,
 			onCategory: setCategoryState,
 			onRecoverySummary: setRecoverySummaryState,
+			onRecoveryPolicy: setRecoveryPolicyState,
 			onConnectionLost: () => {
 				if (!isNativeMerchantPage(globalThis.location?.search ?? '')) {
 					setActiveSurface('OVERVIEW');
@@ -76,10 +81,11 @@ export function useModaPageState() {
 	}, [activeSurface, connectionState.connection.status]);
 
 	useEffect(() => {
-		sessionRef.current?.controllers.recoverySummary.setActive(
+		const active =
 			connectionState.connection.status === 'CONNECTED' &&
-				activeSurface === 'RECOVERY'
-		);
+			activeSurface === 'RECOVERY';
+		sessionRef.current?.controllers.recoverySummary.setActive(active);
+		sessionRef.current?.controllers.recoveryPolicy.setActive(active);
 	}, [activeSurface, connectionState.connection.status]);
 
 	// The hosted return is advisory. Refresh the retained WordPress Admin page on focus
@@ -136,6 +142,7 @@ export function useModaPageState() {
 		syncState,
 		categoryState,
 		recoverySummaryState,
+		recoveryPolicyState,
 		actions,
 	};
 }

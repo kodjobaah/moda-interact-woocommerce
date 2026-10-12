@@ -1214,3 +1214,96 @@ msgstr "อ่านแล้ว"
 #: src/recoveries/detail/recovery-detail-presentation.js
 msgid "Failed"
 msgstr "ล้มเหลว"
+
+#: src/recovery-settings/recovery-behaviour-panel.js:62
+msgid "Save recovery behaviour"
+msgstr "บันทึกพฤติกรรมการกู้คืน"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:56
+msgid "Review the recovery settings and try again."
+msgstr "ตรวจสอบการตั้งค่าแล้วลองอีกครั้ง"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:89
+msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
+msgstr "การช่วยเหลือด้านส่วนลดเป็นไปตามตัวเลือกด้านล่างทั้งแผนฟรีและแผนชำระเงิน ข้อความติดตามคิดค่าใช้จ่ายแยกต่างหาก"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+msgid "Start recovery after (minutes) of checkout inactivity"
+msgstr "เริ่มการกู้คืนหลังไม่มีการใช้งานเช็กเอาต์ (นาที)"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+msgid "Send one follow-up when the customer has not replied"
+msgstr "ส่งข้อความติดตามหนึ่งครั้งเมื่อลูกค้าไม่ตอบกลับ"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:179
+msgid "After (minutes)"
+msgstr "หลัง (นาที)"
+
+#: src/recovery-settings/recovery-behaviour-fields.js:195
+msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
+msgstr "หากลูกค้าตอบ การสนทนาต่อจะไม่ใช้เครดิตการกู้คืนเพิ่ม ข้อความติดตามที่กำหนดเวลาไว้เป็นความพยายามเชิงรุกใหม่และใช้เครดิตเพิ่ม เวลานับจากข้อความเชิงรุกล่าสุดที่ส่ง"
+
+#: src/recovery-settings/recovery-offer-choices.js:63
+msgid "WooCommerce coupon selection is not yet available."
+msgstr "ยังไม่สามารถเลือกคูปอง WooCommerce ได้"
+
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour saved."
+msgstr "บันทึกการทำงานของการกู้คืนแล้ว"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
+msgstr "การตั้งค่าการกู้คืนถูกเปลี่ยนจากที่อื่น โปรดรีเฟรชเพื่อตรวจสอบนโยบายล่าสุดก่อนบันทึกอีกครั้ง การแก้ไขของคุณยังคงแสดงอยู่"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery behaviour could not be saved. Your edits are still visible."
+msgstr "ไม่สามารถบันทึกการทำงานของการกู้คืนได้ การแก้ไขของคุณยังคงแสดงอยู่"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Recovery settings could not be loaded. Refresh to retry."
+msgstr "ไม่สามารถโหลดการตั้งค่าการกู้คืนได้ โปรดรีเฟรชแล้วลองอีกครั้ง"
+
+#: src/recovery-settings/recovery-behaviour-panel.js
+msgid "Refreshing will replace unsaved recovery changes."
+msgstr "การรีเฟรชจะแทนที่การเปลี่ยนแปลงการกู้คืนที่ยังไม่ได้บันทึก"
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 0 and 10,080."
+msgstr "ป้อนจำนวนนาทีเป็นจำนวนเต็มระหว่าง 0 ถึง 10,080"
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Enter a whole number of minutes between 60 and 10,080."
+msgstr "ป้อนจำนวนนาทีเป็นจำนวนเต็มระหว่าง 60 ถึง 10,080"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Browse coupons"
+msgstr "เรียกดูคูปอง"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr "ดูตัวอย่างเท่านั้น ระบบจะไม่บันทึกคูปองที่เลือกหรือนำไปใช้ในข้อความกู้คืน"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search coupons"
+msgstr "ค้นหาคูปอง"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Search"
+msgstr "ค้นหา"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Coupons could not be loaded."
+msgstr "ไม่สามารถโหลดคูปองได้"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "No coupons found."
+msgstr "ไม่พบคูปอง"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Review required"
+msgstr "ต้องตรวจสอบ"
+
+#: src/recovery-settings/woo-coupons/coupon-preview.js
+msgid "Select for preview: %s"
+msgstr "เลือกเพื่อดูตัวอย่าง: %s"

@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { CategoryProfileSummary } from './category-profile-summary';
 import { CategorySelector } from './category-selector';
 import { RecoverySettingsHeader } from './recovery-settings-header';
+import { RecoveryBehaviourPanel } from './recovery-behaviour-panel';
 
 function Feedback({ status }) {
 	const messages = {
@@ -62,6 +63,9 @@ export function RecoverySettingsScreen({
 	onSave,
 	summaryState,
 	onRefreshSummary,
+	policyState,
+	onRefreshPolicy,
+	onSavePolicy,
 }) {
 	const loading = state.status === 'LOADING';
 	const saving = state.status === 'SAVING';
@@ -84,6 +88,11 @@ export function RecoverySettingsScreen({
 		createElement(RecoverySettingsHeader, {
 			summaryState,
 			onRefreshSummary,
+		}),
+		createElement(RecoveryBehaviourPanel, {
+			policyState,
+			onRefreshPolicy,
+			onSavePolicy,
 		}),
 		createElement(
 			'details',

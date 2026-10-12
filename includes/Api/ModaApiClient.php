@@ -156,6 +156,49 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+	/** Read or update the existing merchant recovery policy through API-002. */
+	public function merchantRecoveryPolicy( array $connection, ?array $update = null ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		if ( null !== $update && ! RecoveryPolicyResponseValidator::isUpdate( $update ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = null === $update ? null : wp_json_encode( $update );
+		if ( null !== $update && ( ! is_string( $body ) || strlen( $body ) > 2048 ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$headers = self::installationHeaders( $connection );
+		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
+		$response = $this->request(
+			'/v1/merchant/recovery-policy', null === $body ? 'GET' : 'PUT', $headers,
+			$body, self::DEFAULT_TIMEOUT_SECONDS
+		);
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 400 === $status || 413 === $status ) throw new ModaApiClientException( 'invalid_request', $status );
+		if ( 409 === $status ) {
+			try {
+				$error = self::decodeErrorBody( $response )['error'] ?? null;
+			} catch ( ModaApiClientException $exception ) {
+				$error = null;
+			}
+			if ( 'recovery_policy_conflict' === $error ) throw new ModaApiClientException( 'policy_conflict', $status );
+			if ( 'recovery_offer_unsupported' === $error ) throw new ModaApiClientException( 'offer_unsupported', $status );
+			throw new ModaApiClientException( 'tenant_conflict', $status );
+		}
+		if ( 200 !== $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try {
+			$payload = $this->jsonBody( $response );
+		} catch ( ModaApiClientException $exception ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		if ( ! RecoveryPolicyResponseValidator::isValid( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return $payload;
+	}
+
 	/** Read-only, server-paginated recoveries for the authenticated Woo installation. */
 	public function merchantRecoveries( array $connection, array $filters ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) {
