@@ -1307,3 +1307,15 @@ msgstr "ต้องตรวจสอบ"
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Select for preview: %s"
 msgstr "เลือกเพื่อดูตัวอย่าง: %s"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "%s selected"
+msgstr "เลือกแล้ว %s รายการ"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Select at least one coupon."
+msgstr "เลือกคูปองอย่างน้อยหนึ่งรายการ"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Discard changes"
+msgstr "ละทิ้งการเปลี่ยนแปลง"

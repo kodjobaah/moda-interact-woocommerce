@@ -545,6 +545,59 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+	/** Woo merchant discount configuration, never a provider coupon REST proxy. */
+	public function merchantDiscountOffers( array $connection, ?array $update = null ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			( null !== $update && ! DiscountOffersContracts::update( $update ) ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = null === $update ? null : wp_json_encode( $update );
+		if ( null !== $update && ( ! is_string( $body ) || strlen( $body ) > 8192 ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$headers = self::installationHeaders( $connection );
+		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
+		$response = $this->request( '/v1/merchant/discount-offers',
+			null === $body ? 'GET' : 'PUT', $headers, $body );
+		$this->checkDiscountStatus( $response );
+		$payload = $this->jsonBody( $response, 8192 );
+		if ( ! DiscountOffersContracts::offers( $payload ) ) throw new ModaApiClientException( 'remote_response_invalid' );
+		return $payload;
+	}
+
+	public function merchantDiscountCatalogue( array $connection, array $query ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			array_diff( array_keys( $query ), array( 'limit', 'cursor', 'search' ) ) ||
+			! isset( $query['limit'] ) || ! is_int( $query['limit'] ) || $query['limit'] < 1 || $query['limit'] > 25 ||
+			( isset( $query['cursor'] ) && ! DiscountOffersContracts::id( $query['cursor'] ) ) ||
+			( isset( $query['search'] ) && ( ! is_string( $query['search'] ) || strlen( $query['search'] ) > 80 ) ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$path = '/v1/merchant/discount-catalogue?' . http_build_query( $query, '', '&', PHP_QUERY_RFC3986 );
+		$response = $this->request( $path, 'GET', self::installationHeaders( $connection ), null,
+			self::DEFAULT_TIMEOUT_SECONDS, 65537 );
+		$this->checkDiscountStatus( $response );
+		$payload = $this->jsonBody( $response, 65536 );
+		if ( ! DiscountOffersContracts::catalogue( $payload ) ) throw new ModaApiClientException( 'remote_response_invalid' );
+		return $payload;
+	}
+
+	private function checkDiscountStatus( mixed $response ): void {
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 200 === $status ) return;
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 400 === $status || 413 === $status ) throw new ModaApiClientException( 'invalid_request', $status );
+		if ( 422 === $status || 409 === $status || 503 === $status ) {
+			try { $code = self::decodeErrorBody( $response )['error'] ?? ''; }
+			catch ( ModaApiClientException $error ) { $code = ''; }
+			if ( in_array( $code, array( 'catalogue_not_current', 'selected_coupon_not_found',
+				'selection_required', 'selection_limit_exceeded', 'offers_conflict' ), true ) ) {
+				throw new ModaApiClientException( $code, $status );
+			}
+		}
+		throw new ModaApiClientException( 'remote_unavailable', $status );
+	}
+
 	private static function categoryId( mixed $id ): bool {
 		return is_string( $id ) && strlen( $id ) <= 128 && 1 === preg_match( '/^[A-Za-z0-9_-]+$/D', $id );
 	}

@@ -4,6 +4,11 @@ namespace ModaInteract\WooCommerce;
 
 defined( 'ABSPATH' ) || exit;
 
+// Bundled production Composer loaders are class-map authoritative.
+// This bounded feature is explicitly loaded without requiring a vendor rebuild.
+require_once __DIR__ . '/Api/DiscountOffersContracts.php';
+require_once __DIR__ . '/Rest/RecoveryDiscountOffersController.php';
+
 use ModaInteract\WooCommerce\Admin\Setup;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Api\ModaApiConfigurationException;
@@ -15,6 +20,7 @@ use ModaInteract\WooCommerce\Rest\StoreCategoryController;
 use ModaInteract\WooCommerce\Rest\RecoverySummaryController;
 use ModaInteract\WooCommerce\Rest\RecoveryPolicyController;
 use ModaInteract\WooCommerce\Rest\RecoveryCouponCatalogueController;
+use ModaInteract\WooCommerce\Rest\RecoveryDiscountOffersController;
 use ModaInteract\WooCommerce\Rest\RecoveryListController;
 use ModaInteract\WooCommerce\Rest\RecoveryDetailController;
 use ModaInteract\WooCommerce\Rest\ReadAccessController;
@@ -79,6 +85,7 @@ final class Runtime {
 		( new RecoverySummaryController( null, new SiteIdentity( $mode ) ) )->register();
 		( new RecoveryPolicyController( null, new SiteIdentity( $mode ) ) )->register();
 		( new RecoveryCouponCatalogueController() )->register();
+		( new RecoveryDiscountOffersController( null, new SiteIdentity( $mode ) ) )->register();
 		( new RecoveryListController( null, new SiteIdentity( $mode ) ) )->register();
 		( new RecoveryDetailController( null, new SiteIdentity( $mode ) ) )->register();
 		( new ReadAccessController( null, new SiteIdentity( $mode ) ) )->register();
