@@ -1307,3 +1307,15 @@ msgstr "Kræver kontrol"
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Select for preview: %s"
 msgstr "Vælg til forhåndsvisning: %s"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "%s selected"
+msgstr "%s valgt"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Select at least one coupon."
+msgstr "Vælg mindst én kupon."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Discard changes"
+msgstr "Kassér ændringer"

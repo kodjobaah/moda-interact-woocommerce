@@ -1307,3 +1307,15 @@ msgstr "需要驗證"
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Select for preview: %s"
 msgstr "選取以預覽：%s"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "%s selected"
+msgstr "已選取 %s 項"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Select at least one coupon."
+msgstr "請至少選取一張優惠券。"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Discard changes"
+msgstr "捨棄變更"

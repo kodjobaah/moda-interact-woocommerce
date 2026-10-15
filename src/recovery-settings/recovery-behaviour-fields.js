@@ -100,10 +100,9 @@ export function RecoveryBehaviourFields({
 					'moda-interact'
 				),
 			}),
-			createElement(RecoveryOfferChoices, {
+			couponPreview ?? createElement(RecoveryOfferChoices, {
 				activeMode: effective?.recoveryOfferMode ?? null,
-			}),
-			couponPreview
+			})
 		),
 		createElement(
 			'section',

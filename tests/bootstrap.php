@@ -281,6 +281,10 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		}
 
 		private array $url = array();
+		private string $route = '/moda-interact/v1/merchant/discount-offers';
+		public function set_route( string $route ): void { $this->route = $route; }
+		public function get_route(): string { return $this->route; }
+		public function get_body(): string { return null === $this->json ? '' : json_encode( $this->json ); }
 		public function set_url_params( array $url ): void { $this->url = $url; }
 		public function get_url_params(): array { return $this->url; }
 		public function get_query_params(): array { return $this->query; }
@@ -316,5 +320,7 @@ if ( ! class_exists( 'WP_Error' ) ) {
 class WooCommerce {}
 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+require_once dirname( __DIR__ ) . '/includes/Api/DiscountOffersContracts.php';
+require_once dirname( __DIR__ ) . '/includes/Rest/RecoveryDiscountOffersController.php';
 require_once dirname( __DIR__ ) . '/moda-interact.php';
 $GLOBALS['moda_interact_initial_hooks'] = $GLOBALS['moda_interact_test_hooks'];

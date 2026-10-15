@@ -1307,3 +1307,15 @@ msgstr "Exige verificação"
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Select for preview: %s"
 msgstr "Selecionar para visualização: %s"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "%s selected"
+msgstr "%s selecionados"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Select at least one coupon."
+msgstr "Selecione pelo menos um cupom."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Discard changes"
+msgstr "Descartar alterações"

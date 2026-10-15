@@ -1307,3 +1307,15 @@ msgstr "Vaatii tarkistuksen"
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Select for preview: %s"
 msgstr "Valitse esikatseluun: %s"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "%s selected"
+msgstr "%s valittu"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Select at least one coupon."
+msgstr "Valitse vähintään yksi kuponki."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-panel.js
+msgid "Discard changes"
+msgstr "Hylkää muutokset"

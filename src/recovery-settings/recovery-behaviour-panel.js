@@ -1,7 +1,7 @@
 import { createElement, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { RecoveryBehaviourFields } from './recovery-behaviour-fields';
-import { CouponCataloguePreview } from './woo-coupons/coupon-preview';
+import { MerchantOffersPanel } from './woo-coupons/merchant-offers-panel';
 import {
 	recoveryBehaviourPreview,
 	recoveryBehaviourChanged,
@@ -129,7 +129,7 @@ export function RecoveryBehaviourPanel({
 			overrideActive: policy?.overrideActive === true,
 		}),
 		createElement(RecoveryBehaviourFields, {
-			couponPreview: createElement(CouponCataloguePreview),
+			couponPreview: createElement(MerchantOffersPanel),
 			effective: policy?.effective ?? null,
 			draft,
 			errors,
