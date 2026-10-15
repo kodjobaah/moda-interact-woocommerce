@@ -77,6 +77,38 @@ final class ReadAccessControllerTest extends TestCase {
 		self::assertFalse( RestReadResponseValidator::start( $start, self::record()['canonicalSiteUrl'], ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT ) );
 	}
 
+	public function test_start_accepts_api_v2_locale_proof_and_returns_native_approval_url(): void {
+		$start = self::startWithProof( self::v2DisplayProof() );
+		$controller = $this->controller( static fn() => self::response( 201, $start ) );
+		$result = $controller->start( new \WP_REST_Request( 'POST' ) );
+		self::assertSame( 201, $result->get_status() );
+		self::assertSame( $start, $result->get_data() );
+		self::assertTrue( RestReadResponseValidator::start( $start, self::record()['canonicalSiteUrl'], ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT ) );
+	}
+
+	public function test_rejects_malformed_api_v2_locale_proofs(): void {
+		$proof = self::v2DisplayProof();
+		$segments = explode( '.', $proof );
+		$malformed = array(
+			'unknown version' => 'v3.' . implode( '.', array_slice( $segments, 1 ) ),
+			'oversized key ID' => implode( '.', array( 'v2', str_repeat( 'k', 65 ), $segments[2], $segments[3], $segments[4] ) ),
+			'short nonce' => implode( '.', array( 'v2', $segments[1], str_repeat( 'A', 15 ), $segments[3], $segments[4] ) ),
+			'short ciphertext' => implode( '.', array( 'v2', $segments[1], $segments[2], 'A', $segments[4] ) ),
+			'short authentication tag' => implode( '.', array( 'v2', $segments[1], $segments[2], $segments[3], str_repeat( 'A', 21 ) ) ),
+			'non-base64url character' => str_replace( 'dev-1', 'dev!', $proof ),
+			'extra segment' => $proof . '.extra',
+			'trailing newline' => $proof . "\n",
+			'oversized proof' => str_repeat( 'A', 161 ),
+		);
+		foreach ( $malformed as $case => $candidate ) {
+			$start = self::startWithProof( $candidate );
+			self::assertFalse(
+				RestReadResponseValidator::start( $start, self::record()['canonicalSiteUrl'], ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT ),
+				$case
+			);
+		}
+	}
+
 	public function test_status_and_revoke_stay_distinct_from_inbound_installation(): void {
 		$methods = array();
 		$controller = $this->controller( static function ( $url, $args ) use ( &$methods ) {
@@ -150,6 +182,19 @@ final class ReadAccessControllerTest extends TestCase {
 			'authorizationUrl' => 'http://woocommerce-sandbox.local:8080/wc-auth/v1/authorize?' . $query,
 			'expiresAt' => '2026-10-10T13:00:00.000Z',
 		);
+	}
+
+	private static function v2DisplayProof(): string {
+		return 'v2.dev-1.' . str_repeat( 'A', 16 ) . '.AA0.' . str_repeat( 'A', 22 );
+	}
+
+	private static function startWithProof( string $proof ): array {
+		$start = self::start();
+		$parts = explode( '?', $start['authorizationUrl'], 2 );
+		parse_str( $parts[1], $parameters );
+		$parameters['return_url'] .= '?display_locale=en&display_proof=' . rawurlencode( $proof );
+		$start['authorizationUrl'] = $parts[0] . '?' . http_build_query( $parameters );
+		return $start;
 	}
 
 	private static function response( int $status, array $payload ): array {

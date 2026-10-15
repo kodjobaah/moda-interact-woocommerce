@@ -64,7 +64,7 @@ final class RestReadResponseValidator {
 				is_string( $presentation['display_locale'] ) &&
 				1 === preg_match( '/^[a-z]{2}(?:-[A-Za-z]{2,4})?$/D', $presentation['display_locale'] ) &&
 				is_string( $presentation['display_proof'] ) &&
-				1 === preg_match( '/^[A-Za-z0-9_-]{43}$/D', $presentation['display_proof'] );
+				self::validDisplayProof( $presentation['display_proof'] );
 		}
 		$scheme = is_array( $return ) ? ( $return['scheme'] ?? null ) : null;
 		$host = is_array( $return ) ? strtolower( trim( (string) ( $return['host'] ?? '' ), '[]' ) ) : '';
@@ -81,6 +81,15 @@ final class RestReadResponseValidator {
 			$return_query_valid && ! isset( $callback['query'] ) &&
 			( $return['path'] ?? '' ) === '/v1/woocommerce/read-authorizations/return' &&
 			1 === preg_match( '#^/v1/woocommerce/read-authorizations/callback/[A-Za-z0-9_-]{43}$#', $callback['path'] ?? '' );
+	}
+
+	/** API-007 v2 uses five bounded base64url segments; the legacy proof remains accepted. */
+	private static function validDisplayProof( string $proof ): bool {
+		if ( strlen( $proof ) > 160 ) {
+			return false;
+		}
+		return 1 === preg_match( '/^[A-Za-z0-9_-]{43}$/D', $proof ) ||
+			1 === preg_match( '/^v2\.[A-Za-z0-9_-]{1,64}\.[A-Za-z0-9_-]{16}\.[A-Za-z0-9_-]{2,32}\.[A-Za-z0-9_-]{22}$/D', $proof );
 	}
 
 	private static function hasKeys( array $payload, array $expected ): bool {
