@@ -75,6 +75,29 @@ final class RecoveryDiscountOffersControllerTest extends TestCase {
 		self::assertSame( 'CATALOGUE_NOT_CURRENT', $reply->get_data()['status'] );
 	}
 
+	public function test_catalogue_contract_accepts_custom_coupon_types_and_complete_long_codes(): void {
+		$catalogue = self::catalogue();
+		$long_code = str_repeat( 'W', 4096 );
+		$catalogue['items'][0]['providerType'] = 'WooCoupon:external_plugin_type';
+		$catalogue['items'][0]['code'] = $long_code;
+		$catalogue['items'][0]['title'] = $long_code;
+		$catalogue['items'][0]['summary'] = 'zero, expired, or exhausted: informational only';
+		self::assertTrue( DiscountOffersContracts::catalogue( $catalogue ) );
+		$limit = 0;
+		$controller = $this->controller( static function ( string $url, array $args ) use ( $catalogue, &$limit ) {
+			$limit = $args['limit_response_size'];
+			return self::response( 200, $catalogue );
+		} );
+		$request = new WP_REST_Request( 'GET' );
+		$request->set_route( '/moda-interact/v1/merchant/discount-catalogue' );
+		$reply = $controller->handle( $request );
+		self::assertSame( 200, $reply->get_status() );
+		self::assertSame( $long_code, $reply->get_data()['items'][0]['code'] );
+		self::assertSame( 262145, $limit );
+		$catalogue['items'][0]['providerType'] = "WooCoupon:custom\nheader";
+		self::assertFalse( DiscountOffersContracts::catalogue( $catalogue ) );
+	}
+
 	public function test_payload_validation_rejects_foreign_identity_fields(): void {
 		self::assertFalse( DiscountOffersContracts::offers( array_merge( self::offers(), array( 'shopId' => 'other' ) ) ) );
 		self::assertFalse( DiscountOffersContracts::catalogue( array_merge( self::catalogue(), array( 'credential' => 'private' ) ) ) );

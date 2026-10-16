@@ -1319,3 +1319,23 @@ msgstr "Vyberte alespoň jeden kupón."
 #: src/recovery-settings/woo-coupons/merchant-offers-panel.js
 msgid "Discard changes"
 msgstr "Zahodit změny"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "No discount will be offered."
+msgstr "Nebude nabídnuta žádná sleva."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "This saves your preference; it does not send or redeem a coupon."
+msgstr "Tím se pouze uloží vaše volba; kupón se neodešle ani neuplatní."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Coupon synchronisation is pending or unavailable."
+msgstr "Synchronizace kupónů čeká na dokončení nebo není dostupná."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Retry coupons"
+msgstr "Zkusit znovu načíst kupóny"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "WooCommerce determines whether a coupon can be redeemed."
+msgstr "WooCommerce určuje, zda lze kupón uplatnit."

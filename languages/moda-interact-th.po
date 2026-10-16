@@ -1319,3 +1319,23 @@ msgstr "เลือกคูปองอย่างน้อยหนึ่ง
 #: src/recovery-settings/woo-coupons/merchant-offers-panel.js
 msgid "Discard changes"
 msgstr "ละทิ้งการเปลี่ยนแปลง"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "No discount will be offered."
+msgstr "จะไม่มีการเสนอส่วนลด"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "This saves your preference; it does not send or redeem a coupon."
+msgstr "การดำเนินการนี้บันทึกเฉพาะการตั้งค่าของคุณ โดยไม่ส่งหรือใช้คูปอง"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Coupon synchronisation is pending or unavailable."
+msgstr "การซิงค์คูปองกำลังรอหรือไม่พร้อมใช้งาน"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Retry coupons"
+msgstr "ลองโหลดคูปองอีกครั้ง"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "WooCommerce determines whether a coupon can be redeemed."
+msgstr "WooCommerce เป็นผู้กำหนดว่าสามารถใช้คูปองได้หรือไม่"

@@ -575,9 +575,9 @@ final class ModaApiClient {
 		}
 		$path = '/v1/merchant/discount-catalogue?' . http_build_query( $query, '', '&', PHP_QUERY_RFC3986 );
 		$response = $this->request( $path, 'GET', self::installationHeaders( $connection ), null,
-			self::DEFAULT_TIMEOUT_SECONDS, 65537 );
+			self::DEFAULT_TIMEOUT_SECONDS, 262145 );
 		$this->checkDiscountStatus( $response );
-		$payload = $this->jsonBody( $response, 65536 );
+		$payload = $this->jsonBody( $response, 262144 );
 		if ( ! DiscountOffersContracts::catalogue( $payload ) ) throw new ModaApiClientException( 'remote_response_invalid' );
 		return $payload;
 	}

@@ -83,16 +83,13 @@ export function parseCatalogue(value) {
 				]) ||
 				!ID.test(item.id) ||
 				typeof item.title !== 'string' ||
-				item.title.length > 512 ||
 				(item.summary !== null &&
 					(typeof item.summary !== 'string' ||
 						item.summary.length > 2048)) ||
-				!/^WooCoupon:(percent|fixed_cart|fixed_product)$/.test(
-					item.providerType
-				) ||
-				(item.code !== null &&
-					(typeof item.code !== 'string' ||
-						item.code.length > 256)) ||
+				typeof item.providerType !== 'string' ||
+				!/^WooCoupon:[^\x00-\x1f\x7f]+$/.test(item.providerType) ||
+				item.providerType.length > 128 ||
+				(item.code !== null && typeof item.code !== 'string') ||
 				!['startsAt', 'endsAt'].every(
 					(name) =>
 						item[name] === null ||

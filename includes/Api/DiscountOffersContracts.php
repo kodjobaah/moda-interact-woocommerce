@@ -60,10 +60,11 @@ final class DiscountOffersContracts {
 			! is_array( $data['items'] ) || ! array_is_list( $data['items'] ) || count( $data['items'] ) > 25 ) return false;
 		foreach ( $data['items'] as $item ) {
 			if ( ! self::exact( $item, array( 'id', 'title', 'summary', 'providerType', 'code', 'startsAt', 'endsAt', 'selected' ) ) ||
-				! self::id( $item['id'] ) || ! is_string( $item['title'] ) || strlen( $item['title'] ) > 512 ||
+				! self::id( $item['id'] ) || ! is_string( $item['title'] ) ||
 				( null !== $item['summary'] && ( ! is_string( $item['summary'] ) || strlen( $item['summary'] ) > 2048 ) ) ||
-				! in_array( $item['providerType'], array( 'WooCoupon:percent', 'WooCoupon:fixed_cart', 'WooCoupon:fixed_product' ), true ) ||
-				( null !== $item['code'] && ( ! is_string( $item['code'] ) || strlen( $item['code'] ) > 256 ) ) ||
+				( ! is_string( $item['providerType'] ) || strlen( $item['providerType'] ) > 128 ||
+				! preg_match( '/^WooCoupon:[^\x00-\x1f\x7f]+$/D', $item['providerType'] ) ) ||
+				( null !== $item['code'] && ! is_string( $item['code'] ) ) ||
 				! self::date( $item['startsAt'] ) || ! self::date( $item['endsAt'] ) || ! is_bool( $item['selected'] ) ) return false;
 		}
 		return ! $data['hasMore'] || count( $data['items'] ) > 0;

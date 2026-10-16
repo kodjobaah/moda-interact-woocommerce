@@ -30,8 +30,9 @@ function PolicyNotice({ status, dirty, overrideActive }) {
 			'moda-interact'
 		);
 	} else if (status === 'OFFER_UNSUPPORTED') {
+		// A legacy recovery-policy save failure is not a coupon catalogue status.
 		content = __(
-			'WooCommerce coupon selection is not yet available.',
+			'Recovery behaviour could not be saved. Your edits are still visible.',
 			'moda-interact'
 		);
 	} else if (status === 'INVALID_REQUEST') {

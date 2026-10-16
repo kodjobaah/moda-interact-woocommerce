@@ -63,14 +63,39 @@ describe('ARCH-036 Woo merchant offers', () => {
 		).toThrow();
 	});
 
-	it('uses only privileged WordPress endpoints and sends no CAS token', async () => {
-		const fetcher = vi.fn(async ({ method, path }) =>
-			method === 'PUT'
-				? offers()
-				: path.includes('discount-catalogue')
-					? first
-					: offers()
+	it('accepts unknown types, expired/zero metadata and complete >255-character codes', () => {
+		const longCode = 'Z'.repeat(4096);
+		const rows = [row('coupon_5'), row('coupon_6'), row('coupon_7')].map(
+			(item, i) => ({
+				...item,
+				providerType: [
+					'WooCoupon:plugin_custom',
+					'WooCoupon:fixed_cart',
+					'WooCoupon:percent',
+				][i],
+				code: i === 0 ? longCode : item.code,
+				title: i === 0 ? longCode : item.title,
+				summary: ['0', 'expired', 'usage limit reached'][i],
+				endsAt: i === 1 ? '2025-01-01T00:00:00.000Z' : null,
+			})
 		);
+		expect(
+			parseCatalogue({
+				...first,
+				items: rows,
+				hasMore: false,
+				nextCursor: null,
+			}).items
+		).toEqual(rows);
+	});
+
+	it('uses only privileged WordPress endpoints and sends no CAS token', async () => {
+		const fetcher = vi.fn(async ({ method, path }) => {
+			if (method === 'PUT') {
+				return offers();
+			}
+			return path.includes('discount-catalogue') ? first : offers();
+		});
 		const client = createMerchantOffersClient(fetcher);
 		await client.readOffers();
 		await client.readCatalogue({ search: 'SAVE' });
@@ -99,6 +124,9 @@ describe('ARCH-036 Woo merchant offers', () => {
 			saveOffers,
 		});
 		await controller.refresh();
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('READY')
+		);
 		expect(controller.state.selectedIds).toEqual(selected);
 		await controller.next();
 		controller.toggle('coupon_4');
@@ -133,6 +161,9 @@ describe('ARCH-036 Woo merchant offers', () => {
 			saveOffers,
 		});
 		await controller.refresh();
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('READY')
+		);
 		controller.toggle('coupon_1');
 		controller.setMode('NONE');
 		controller.setMode('FIXED');
@@ -148,20 +179,112 @@ describe('ARCH-036 Woo merchant offers', () => {
 		controller.dispose();
 	});
 
-	it('does not allow controls to persist before the first successful Background sync', async () => {
-		const saveOffers = vi.fn();
+	it('loads NONE without reading a catalogue and saves AI even when coupon fetch would fail', async () => {
+		const readCatalogue = vi.fn(async () => {
+			throw new Error('CATALOGUE_NOT_CURRENT');
+		});
+		const saveOffers = vi.fn(async (draft) =>
+			offers(draft.recoveryOfferMode, draft.selectedDiscountIds)
+		);
 		const controller = new MerchantOffersController({
-			readOffers: async () => {
-				throw new Error('CATALOGUE_NOT_CURRENT');
-			},
-			readCatalogue: vi.fn(),
+			readOffers: async () => offers('NONE', []),
+			readCatalogue,
 			saveOffers,
 		});
 		await controller.refresh();
-		expect(controller.state.status).toBe('NOT_READY');
+		expect(controller.state.status).toBe('READY');
+		expect(controller.state.catalogueStatus).toBe('IDLE');
+		expect(readCatalogue).not.toHaveBeenCalled();
 		controller.setMode('AI_BEST_APPLICABLE');
+		expect(controller.isDirty()).toBe(true);
+		await controller.save();
+		expect(saveOffers).toHaveBeenCalledWith({
+			recoveryOfferMode: 'AI_BEST_APPLICABLE',
+			selectedDiscountIds: [],
+		});
+		expect(readCatalogue).not.toHaveBeenCalled();
+		controller.dispose();
+	});
+
+	it('does not erase FIXED preferences when catalogue is not current; NONE remains savable', async () => {
+		const readCatalogue = vi.fn(async () => {
+			throw new Error('CATALOGUE_NOT_CURRENT');
+		});
+		const saveOffers = vi.fn(async (draft) =>
+			offers(draft.recoveryOfferMode, draft.selectedDiscountIds)
+		);
+		const controller = new MerchantOffersController({
+			readOffers: async () => offers(),
+			readCatalogue,
+			saveOffers,
+		});
+		await controller.refresh();
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('NOT_READY')
+		);
+		expect(controller.state.status).toBe('READY');
+		expect(controller.state.selectedIds).toEqual(selected);
+		controller.setMode('NONE');
+		await controller.save();
+		expect(saveOffers).toHaveBeenCalledWith({
+			recoveryOfferMode: 'NONE',
+			selectedDiscountIds: selected,
+		});
+		controller.dispose();
+	});
+
+	it('allows a FIXED retry without discarding draft and blocks duplicate catalogue requests', async () => {
+		const gate = deferred();
+		let calls = 0;
+		const readCatalogue = vi.fn(() =>
+			++calls === 1
+				? Promise.reject(new Error('CATALOGUE_NOT_CURRENT'))
+				: gate.promise
+		);
+		const saveOffers = vi.fn();
+		const controller = new MerchantOffersController({
+			readOffers: async () => offers('NONE', []),
+			readCatalogue,
+			saveOffers,
+		});
+		await controller.refresh();
+		controller.setMode('FIXED');
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('NOT_READY')
+		);
+		expect(controller.state.mode).toBe('FIXED');
+		const retry = controller.retryCoupons();
+		await controller.retryCoupons();
+		expect(readCatalogue).toHaveBeenCalledTimes(2);
+		gate.finish({ ...first, items: [], hasMore: false, nextCursor: null });
+		await retry;
+		expect(controller.state.catalogueStatus).toBe('READY');
+		expect(controller.state.page.items).toEqual([]);
 		await controller.save();
 		expect(saveOffers).not.toHaveBeenCalled();
+		controller.setMode('NONE');
+		expect(controller.isDirty()).toBe(false);
+		controller.dispose();
+	});
+
+	it('keeps saved selected IDs across a catalogue failure, mode changes and Discard', async () => {
+		const controller = new MerchantOffersController({
+			readOffers: async () => offers(),
+			readCatalogue: async () => {
+				throw new Error('CATALOGUE_NOT_CURRENT');
+			},
+			saveOffers: vi.fn(),
+		});
+		await controller.refresh();
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('NOT_READY')
+		);
+		controller.setMode('NONE');
+		expect(controller.isDirty()).toBe(true);
+		controller.cancel();
+		expect(controller.state.mode).toBe('FIXED');
+		expect(controller.state.selectedIds).toEqual(selected);
+		expect(controller.isDirty()).toBe(false);
 		controller.dispose();
 	});
 });
