@@ -24,7 +24,9 @@ export class FeaturePreferencesController {
 	}
 
 	publish(state) {
-		if (this.disposed) return;
+		if (this.disposed) {
+			return;
+		}
 		this.state = state;
 		this.listeners.forEach((listener) => listener(state));
 	}
@@ -36,21 +38,34 @@ export class FeaturePreferencesController {
 	}
 
 	setConnection(connection) {
-		if (this.disposed) return;
+		if (this.disposed) {
+			return;
+		}
 		const status = connection?.status ?? 'LOADING';
 		const identity = `${connection?.installationId ?? ''}:${connection?.credentialVersion ?? ''}`;
-		if (this.connectionStatus === status && this.connectionIdentity === identity) return;
+		if (
+			this.connectionStatus === status &&
+			this.connectionIdentity === identity
+		) {
+			return;
+		}
 		this.connectionStatus = status;
 		this.connectionIdentity = identity;
 		this.reset();
-		if (status === 'CONNECTED' && this.active) this.refresh();
+		if (status === 'CONNECTED' && this.active) {
+			this.refresh();
+		}
 	}
 
 	setActive(active) {
-		if (this.disposed || this.active === active) return;
+		if (this.disposed || this.active === active) {
+			return;
+		}
 		this.active = active;
 		this.reset();
-		if (active && this.connectionStatus === 'CONNECTED') this.refresh();
+		if (active && this.connectionStatus === 'CONNECTED') {
+			this.refresh();
+		}
 	}
 
 	isCurrent(epoch) {
@@ -63,20 +78,32 @@ export class FeaturePreferencesController {
 	}
 
 	async refresh() {
-		if (!this.isReady()) return this.state;
-		if (this.pending) return this.pending;
+		if (!this.isReady()) {
+			return this.state;
+		}
+		if (this.pending) {
+			return this.pending;
+		}
 		const epoch = ++this.epoch;
 		this.publish({ status: 'LOADING', data: null });
 		return this.perform(epoch, () => this.client.read(), 'READY');
 	}
 
 	async save(featureId, enabled) {
-		if (!this.isReady() || !this.state.data) return this.state;
-		if (this.pending) return this.pending;
+		if (!this.isReady() || !this.state.data) {
+			return this.state;
+		}
+		if (this.pending) {
+			return this.pending;
+		}
 		const snapshot = this.state.data;
 		const feature = snapshot.features.find((item) => item.id === featureId);
-		if (!feature?.editable || typeof enabled !== 'boolean') return this.state;
-		if (feature.enabled === enabled) return this.state;
+		if (!feature?.editable || typeof enabled !== 'boolean') {
+			return this.state;
+		}
+		if (feature.enabled === enabled) {
+			return this.state;
+		}
 		const epoch = ++this.epoch;
 		this.publish({ status: 'SAVING', data: snapshot });
 		return this.perform(
@@ -111,20 +138,22 @@ export class FeaturePreferencesController {
 			.catch((error) => {
 				if (this.isCurrent(epoch)) {
 					const code = error?.code || error?.message;
-					const status =
-						code === 'FEATURES_UNAVAILABLE'
-							? 'UNAVAILABLE'
-							: code === 'DENIED' || code === 'FORBIDDEN'
-								? 'DENIED'
-								: code === 'CONFLICT'
-									? 'CONFLICT'
-									: 'ERROR';
+					let status = 'ERROR';
+					if (code === 'FEATURES_UNAVAILABLE') {
+						status = 'UNAVAILABLE';
+					} else if (code === 'DENIED' || code === 'FORBIDDEN') {
+						status = 'DENIED';
+					} else if (code === 'CONFLICT') {
+						status = 'CONFLICT';
+					}
 					this.publish({ status, data: null });
 				}
 				return this.state;
 			})
 			.finally(() => {
-				if (this.pending === request) this.pending = null;
+				if (this.pending === request) {
+					this.pending = null;
+				}
 			});
 		this.pending = request;
 		return request;

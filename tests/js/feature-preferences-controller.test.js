@@ -40,12 +40,18 @@ const deferred = () => {
 };
 
 async function flush() {
-	for (let i = 0; i < 8; i++) await Promise.resolve();
+	for (let i = 0; i < 8; i++) {
+		await Promise.resolve();
+	}
 }
 
 function mount(client) {
 	const controller = new FeaturePreferencesController(client);
-	controller.setConnection({ status: 'CONNECTED', installationId: 'a', credentialVersion: 1 });
+	controller.setConnection({
+		status: 'CONNECTED',
+		installationId: 'a',
+		credentialVersion: 1,
+	});
 	controller.setActive(true);
 	return controller;
 }
@@ -62,16 +68,34 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 
 	it('rejects invalid, duplicate or client-defined entitlements', () => {
 		expect(parseFeaturePreferences(snapshot)).toBe(snapshot);
-		expect(() => parseFeaturePreferences({ ...snapshot, features: [{ ...snapshot.features[0], editable: 'yes' }] })).toThrow('FEATURES_INVALID');
-		expect(() => parseFeaturePreferences({ ...snapshot, features: [snapshot.features[0], snapshot.features[0]] })).toThrow('FEATURES_INVALID');
-		expect(() => parseFeaturePreferences({ features: [] })).toThrow('FEATURES_INVALID');
+		expect(() =>
+			parseFeaturePreferences({
+				...snapshot,
+				features: [{ ...snapshot.features[0], editable: 'yes' }],
+			})
+		).toThrow('FEATURES_INVALID');
+		expect(() =>
+			parseFeaturePreferences({
+				...snapshot,
+				features: [snapshot.features[0], snapshot.features[0]],
+			})
+		).toThrow('FEATURES_INVALID');
+		expect(() => parseFeaturePreferences({ features: [] })).toThrow(
+			'FEATURES_INVALID'
+		);
 	});
 
 	it('renders an authoritative empty state and distinguishes denied and transport errors', async () => {
-		const client = { read: vi.fn(async () => ({ revision: 'empty', features: [] })), save: vi.fn() };
+		const client = {
+			read: vi.fn(async () => ({ revision: 'empty', features: [] })),
+			save: vi.fn(),
+		};
 		const controller = mount(client);
 		await flush();
-		expect(controller.state).toEqual({ status: 'READY', data: { revision: 'empty', features: [] } });
+		expect(controller.state).toEqual({
+			status: 'READY',
+			data: { revision: 'empty', features: [] },
+		});
 		client.read.mockRejectedValueOnce(new Error('DENIED'));
 		await controller.refresh();
 		expect(controller.state.status).toBe('DENIED');
@@ -83,7 +107,10 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 
 	it('serializes revision-aware saves and disables required feature changes', async () => {
 		const pending = deferred();
-		const client = { read: vi.fn(async () => snapshot), save: vi.fn(() => pending.promise) };
+		const client = {
+			read: vi.fn(async () => snapshot),
+			save: vi.fn(() => pending.promise),
+		};
 		const controller = mount(client);
 		await flush();
 		await controller.save('required-1', false);
@@ -98,7 +125,14 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 		});
 		expect(controller.state.status).toBe('SAVING');
 		expect(controller.state.data.features[1].enabled).toBe(false);
-		pending.resolve({ ...snapshot, revision: 'revision-2', features: [snapshot.features[0], { ...snapshot.features[1], enabled: true, effective: true }] });
+		pending.resolve({
+			...snapshot,
+			revision: 'revision-2',
+			features: [
+				snapshot.features[0],
+				{ ...snapshot.features[1], enabled: true, effective: true },
+			],
+		});
 		await first;
 		expect(controller.state.status).toBe('SAVED');
 		expect(controller.state.data.features[1].enabled).toBe(true);
@@ -107,12 +141,19 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 
 	it('invalidates pending saves after credential rotation, disconnection or navigation', async () => {
 		const pending = deferred();
-		const client = { read: vi.fn(async () => snapshot), save: vi.fn(() => pending.promise) };
+		const client = {
+			read: vi.fn(async () => snapshot),
+			save: vi.fn(() => pending.promise),
+		};
 		const controller = mount(client);
 		await flush();
 		const saving = controller.save('optional-1', true);
 		await flush();
-		controller.setConnection({ status: 'CONNECTED', installationId: 'a', credentialVersion: 2 });
+		controller.setConnection({
+			status: 'CONNECTED',
+			installationId: 'a',
+			credentialVersion: 2,
+		});
 		await flush();
 		expect(controller.state.status).toBe('READY');
 		pending.resolve({ ...snapshot, revision: 'obsolete' });
@@ -129,7 +170,13 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 
 	it('does not accept late reads after switching installations', async () => {
 		const pending = deferred();
-		const client = { read: vi.fn().mockImplementationOnce(() => pending.promise).mockResolvedValue(snapshot), save: vi.fn() };
+		const client = {
+			read: vi
+				.fn()
+				.mockImplementationOnce(() => pending.promise)
+				.mockResolvedValue(snapshot),
+			save: vi.fn(),
+		};
 		const controller = mount(client);
 		await flush();
 		controller.setConnection({ status: 'CONNECTED', installationId: 'b' });

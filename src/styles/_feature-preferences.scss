@@ -1,4 +1,4 @@
-// Shopify Recovery Settings: Conversation features (scoped to Woo admin content).
+// Shopify-aligned conversation features in Woo Recovery Settings.
 .moda-interact-recovery .moda-interact-features {
 	padding: 20px;
 	background: var(--moda-surface);
@@ -42,7 +42,10 @@
 	background: linear-gradient(180deg, #fff, #fbfdfc);
 	color: var(--moda-forest-900);
 	cursor: pointer;
-	transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+	transition:
+		border-color 0.16s ease,
+		background 0.16s ease,
+		box-shadow 0.16s ease;
 }
 
 .moda-interact-features__card.is-selected {
@@ -69,7 +72,7 @@
 	box-shadow: 0 7px 16px rgb(20 61 44 / 14%);
 }
 
-.moda-interact-features__card input[type='checkbox'] {
+.moda-interact-features__card input[type="checkbox"] {
 	position: absolute;
 	width: 1px;
 	height: 1px;
@@ -104,11 +107,13 @@
 	background: var(--moda-forest-700);
 }
 
-.moda-interact-features__card.is-selected .moda-interact-features__switch > span {
+.moda-interact-features__card.is-selected
+.moda-interact-features__switch > span {
 	transform: translateX(19px);
 }
 
-.moda-interact-features__card input:focus-visible + .moda-interact-features__switch {
+.moda-interact-features__card
+input:focus-visible + .moda-interact-features__switch {
 	box-shadow: var(--moda-focus-ring);
 }
 
@@ -155,6 +160,7 @@
 }
 
 @media (max-width: 820px) {
+
 	.moda-interact-features__grid {
 		grid-template-columns: minmax(0, 1fr);
 	}

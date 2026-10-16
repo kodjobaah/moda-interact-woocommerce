@@ -17,7 +17,10 @@ export function createFeaturePreferencesClient() {
 	};
 }
 
-/** Strictly validate the projection before presenting it as plan authority. */
+/**
+ * Strictly validate the projection before presenting it as plan authority.
+ * @param {unknown} value
+ */
 export function parseFeaturePreferences(value) {
 	if (
 		!value ||
