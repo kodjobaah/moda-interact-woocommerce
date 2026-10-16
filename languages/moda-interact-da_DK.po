@@ -1339,3 +1339,72 @@ msgstr "Prøv at indlæse kuponer igen"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce afgør, om en kupon kan indløses."
+
+msgid "Contact Moda support and review your messages."
+msgstr "Kontakt Moda-support, og se dine beskeder."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "Supportbeskeder er endnu ikke tilgængelige for WooCommerce."
+
+msgid "Support messages could not be loaded."
+msgstr "Supportbeskeder kunne ikke indlæses."
+
+msgid "No messages yet."
+msgstr "Ingen beskeder endnu."
+
+msgid "Support thread"
+msgstr "Supporttråd"
+
+msgid "Support pages"
+msgstr "Supportsider"
+
+msgid "You"
+msgstr "Dig"
+
+msgid "System"
+msgstr "Systembesked"
+
+msgid "Moda Support"
+msgstr "Moda-support"
+
+msgid "Unread"
+msgstr "Ulæst"
+
+msgid "Translation unavailable"
+msgstr "Oversættelse ikke tilgængelig"
+
+msgid "Translation pending"
+msgstr "Oversættelse afventer"
+
+msgid "View translation"
+msgstr "Vis oversættelse"
+
+msgid "View original"
+msgstr "Vis original"
+
+msgid "View billing"
+msgstr "Vis fakturering"
+
+msgid "Contact support"
+msgstr "Kontakt support"
+
+msgid "Message"
+msgstr "Besked"
+
+msgid "Sending…"
+msgstr "Sender…"
+
+msgid "Send"
+msgstr "Send besked"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "Afsendelse af supportbeskeder er endnu ikke tilgængelig for WooCommerce."
+
+msgid "Enter 1 to 500 characters."
+msgstr "Indtast 1 til 500 tegn."
+
+msgid "The message could not be sent."
+msgstr "Beskeden kunne ikke sendes."
+
+msgid "You do not have permission to view support messages."
+msgstr "Du har ikke tilladelse til at se supportbeskeder."

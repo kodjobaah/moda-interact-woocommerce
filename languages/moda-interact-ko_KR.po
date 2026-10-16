@@ -1339,3 +1339,72 @@ msgstr "쿠폰 다시 불러오기"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "쿠폰을 사용할 수 있는지는 WooCommerce에서 결정합니다."
+
+msgid "Contact Moda support and review your messages."
+msgstr "Moda 지원팀에 문의하고 메시지를 확인하세요."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "WooCommerce에서는 아직 지원 메시지를 사용할 수 없습니다."
+
+msgid "Support messages could not be loaded."
+msgstr "지원 메시지를 불러올 수 없습니다."
+
+msgid "No messages yet."
+msgstr "아직 메시지가 없습니다."
+
+msgid "Support thread"
+msgstr "지원 대화"
+
+msgid "Support pages"
+msgstr "지원 페이지"
+
+msgid "You"
+msgstr "나"
+
+msgid "System"
+msgstr "시스템"
+
+msgid "Moda Support"
+msgstr "Moda 지원"
+
+msgid "Unread"
+msgstr "읽지 않음"
+
+msgid "Translation unavailable"
+msgstr "번역을 사용할 수 없음"
+
+msgid "Translation pending"
+msgstr "번역 대기 중"
+
+msgid "View translation"
+msgstr "번역 보기"
+
+msgid "View original"
+msgstr "원문 보기"
+
+msgid "View billing"
+msgstr "결제 정보 보기"
+
+msgid "Contact support"
+msgstr "지원팀에 문의"
+
+msgid "Message"
+msgstr "메시지"
+
+msgid "Sending…"
+msgstr "전송 중…"
+
+msgid "Send"
+msgstr "보내기"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "WooCommerce에서는 아직 지원 메시지를 보낼 수 없습니다."
+
+msgid "Enter 1 to 500 characters."
+msgstr "1~500자를 입력하세요."
+
+msgid "The message could not be sent."
+msgstr "메시지를 보내지 못했습니다."
+
+msgid "You do not have permission to view support messages."
+msgstr "지원 메시지를 볼 권한이 없습니다."

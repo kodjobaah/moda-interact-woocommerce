@@ -4,6 +4,7 @@ const nativeSurfaces = {
 	'moda-interact': 'OVERVIEW',
 	'moda-interact-recoveries': 'RECOVERIES',
 	'moda-interact-billing': 'BILLING',
+	'moda-interact-support': 'SUPPORT',
 	'moda-interact-recovery-settings': 'RECOVERY',
 };
 

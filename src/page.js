@@ -15,12 +15,17 @@ function ModaInteractPage() {
 	const connectedRecoverySettings =
 		page.activeSurface === 'RECOVERY' &&
 		page.connectionState.connection.status === 'CONNECTED';
+	const connectedSupport =
+		page.activeSurface === 'SUPPORT' &&
+		page.connectionState.connection.status === 'CONNECTED';
 	const connectedBilling =
 		page.activeSurface === 'BILLING' &&
 		page.connectionState.connection.status === 'CONNECTED';
 
 	let pageClassName = 'moda-interact-page';
-	if (connectedBilling) {
+	if (connectedSupport) {
+		pageClassName += ' moda-interact-page--support';
+	} else if (connectedBilling) {
 		pageClassName += ' moda-interact-page--billing';
 	} else if (connectedRecoverySettings) {
 		pageClassName += ' moda-interact-page--recovery-settings';
@@ -31,7 +36,7 @@ function ModaInteractPage() {
 	return createElement(
 		'main',
 		{ className: pageClassName },
-		connectedBilling || connectedRecoveries || connectedRecoverySettings
+		connectedBilling || connectedRecoveries || connectedRecoverySettings || connectedSupport
 			? null
 			: createElement(
 					'header',
@@ -50,7 +55,7 @@ function ModaInteractPage() {
 		createElement(
 			'div',
 			{ className: 'moda-interact-page__content' },
-			connectedBilling || connectedRecoveries || connectedRecoverySettings
+			connectedBilling || connectedRecoveries || connectedRecoverySettings || connectedSupport
 				? null
 				: createElement(ConnectionPanel, {
 						state: page.connectionState,
@@ -60,6 +65,7 @@ function ModaInteractPage() {
 			page.connectionState.connection.status === 'CONNECTED'
 				? createElement(ConnectedWorkspace, {
 						activeSurface: page.activeSurface,
+						connectionIdentity: `${page.connectionState.connection.installationId ?? ''}:${page.connectionState.connection.credentialVersion ?? ''}`,
 						merchantState: page.merchantState,
 						billingState: page.billingState,
 						syncState: page.syncState,

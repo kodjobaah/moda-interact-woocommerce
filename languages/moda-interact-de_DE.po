@@ -1339,3 +1339,72 @@ msgstr "Coupons erneut laden"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce entscheidet, ob ein Coupon eingelöst werden kann."
+
+msgid "Contact Moda support and review your messages."
+msgstr "Kontaktieren Sie den Moda-Support und lesen Sie Ihre Nachrichten."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "Supportnachrichten sind für WooCommerce noch nicht verfügbar."
+
+msgid "Support messages could not be loaded."
+msgstr "Supportnachrichten konnten nicht geladen werden."
+
+msgid "No messages yet."
+msgstr "Noch keine Nachrichten."
+
+msgid "Support thread"
+msgstr "Supportverlauf"
+
+msgid "Support pages"
+msgstr "Supportseiten"
+
+msgid "You"
+msgstr "Sie"
+
+msgid "System"
+msgstr "Systemmeldung"
+
+msgid "Moda Support"
+msgstr "Moda-Support"
+
+msgid "Unread"
+msgstr "Ungelesen"
+
+msgid "Translation unavailable"
+msgstr "Übersetzung nicht verfügbar"
+
+msgid "Translation pending"
+msgstr "Übersetzung ausstehend"
+
+msgid "View translation"
+msgstr "Übersetzung anzeigen"
+
+msgid "View original"
+msgstr "Original anzeigen"
+
+msgid "View billing"
+msgstr "Abrechnung anzeigen"
+
+msgid "Contact support"
+msgstr "Support kontaktieren"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Sending…"
+msgstr "Wird gesendet…"
+
+msgid "Send"
+msgstr "Senden"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "Das Senden von Supportnachrichten ist für WooCommerce noch nicht verfügbar."
+
+msgid "Enter 1 to 500 characters."
+msgstr "Geben Sie 1 bis 500 Zeichen ein."
+
+msgid "The message could not be sent."
+msgstr "Die Nachricht konnte nicht gesendet werden."
+
+msgid "You do not have permission to view support messages."
+msgstr "Sie sind nicht berechtigt, Supportnachrichten anzusehen."

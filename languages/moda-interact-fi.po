@@ -1339,3 +1339,72 @@ msgstr "Yritä ladata kupongit uudelleen"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce määrittää, voiko kupongin lunastaa."
+
+msgid "Contact Moda support and review your messages."
+msgstr "Ota yhteyttä Modan tukeen ja tarkastele viestejäsi."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "Tukiviestit eivät ole vielä käytettävissä WooCommercessa."
+
+msgid "Support messages could not be loaded."
+msgstr "Tukiviestejä ei voitu ladata."
+
+msgid "No messages yet."
+msgstr "Ei vielä viestejä."
+
+msgid "Support thread"
+msgstr "Tukikeskustelu"
+
+msgid "Support pages"
+msgstr "Tukisivut"
+
+msgid "You"
+msgstr "Sinä"
+
+msgid "System"
+msgstr "Järjestelmä"
+
+msgid "Moda Support"
+msgstr "Modan tuki"
+
+msgid "Unread"
+msgstr "Lukematon"
+
+msgid "Translation unavailable"
+msgstr "Käännös ei ole saatavilla"
+
+msgid "Translation pending"
+msgstr "Käännös odottaa"
+
+msgid "View translation"
+msgstr "Näytä käännös"
+
+msgid "View original"
+msgstr "Näytä alkuperäinen"
+
+msgid "View billing"
+msgstr "Näytä laskutus"
+
+msgid "Contact support"
+msgstr "Ota yhteyttä tukeen"
+
+msgid "Message"
+msgstr "Viesti"
+
+msgid "Sending…"
+msgstr "Lähetetään…"
+
+msgid "Send"
+msgstr "Lähetä"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "Tukiviestien lähettäminen ei ole vielä käytettävissä WooCommercessa."
+
+msgid "Enter 1 to 500 characters."
+msgstr "Kirjoita 1–500 merkkiä."
+
+msgid "The message could not be sent."
+msgstr "Viestiä ei voitu lähettää."
+
+msgid "You do not have permission to view support messages."
+msgstr "Sinulla ei ole oikeutta tarkastella tukiviestejä."

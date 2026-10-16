@@ -211,28 +211,33 @@ final class PluginTest extends TestCase {
 		$planned = ob_get_clean();
 		self::assertStringContainsString( 'not yet available for WooCommerce', $planned );
 		self::assertStringNotContainsString( 'moda-interact-native-root', $planned );
+
+		ob_start();
+		call_user_func( $GLOBALS['moda_interact_native_submenus'][4]['callback'] );
+		$support = ob_get_clean();
+		self::assertStringContainsString( 'id="moda-interact-native-root"', $support );
 	}
 
 	public function test_native_navigation_checks_merchant_capability_and_only_loads_app_assets(): void {
 		$setup = new Setup();
 		$setup->register_page();
 
-		foreach ( array( 'toplevel_page_moda-interact', 'moda-interact_page_moda-interact-billing', 'moda-interact_page_moda-interact-recoveries', 'moda-interact_page_moda-interact-recovery-settings' ) as $screen ) {
+		foreach ( array( 'toplevel_page_moda-interact', 'moda-interact_page_moda-interact-billing', 'moda-interact_page_moda-interact-recoveries', 'moda-interact_page_moda-interact-recovery-settings', 'moda-interact_page_moda-interact-support' ) as $screen ) {
 			$GLOBALS['moda_interact_current_screen_id'] = $screen;
 			$setup->register_scripts();
 		}
-		self::assertCount( 4, $GLOBALS['moda_interact_enqueued_scripts'] );
+		self::assertCount( 5, $GLOBALS['moda_interact_enqueued_scripts'] );
 
 		$GLOBALS['moda_interact_current_screen_id'] = 'moda-interact_page_moda-interact-promotions';
 		$setup->register_scripts();
-		self::assertCount( 4, $GLOBALS['moda_interact_enqueued_scripts'] );
+		self::assertCount( 5, $GLOBALS['moda_interact_enqueued_scripts'] );
 
 		$GLOBALS['moda_interact_can_manage_woocommerce'] = false;
 		ob_start();
 		call_user_func( $GLOBALS['moda_interact_native_menu'][0]['callback'] );
 		self::assertSame( '', ob_get_clean() );
 		ob_start();
-		call_user_func( $GLOBALS['moda_interact_native_submenus'][3]['callback'] );
+		call_user_func( $GLOBALS['moda_interact_native_submenus'][4]['callback'] );
 		self::assertSame( '', ob_get_clean() );
 	}
 

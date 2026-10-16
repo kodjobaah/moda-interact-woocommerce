@@ -1339,3 +1339,72 @@ msgstr "Kuponları yeniden yükle"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "Bir kuponun kullanılıp kullanılamayacağını WooCommerce belirler."
+
+msgid "Contact Moda support and review your messages."
+msgstr "Moda desteğiyle iletişime geçin ve mesajlarınızı görüntüleyin."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "Destek mesajları WooCommerce için henüz kullanılamıyor."
+
+msgid "Support messages could not be loaded."
+msgstr "Destek mesajları yüklenemedi."
+
+msgid "No messages yet."
+msgstr "Henüz mesaj yok."
+
+msgid "Support thread"
+msgstr "Destek konuşması"
+
+msgid "Support pages"
+msgstr "Destek sayfaları"
+
+msgid "You"
+msgstr "Siz"
+
+msgid "System"
+msgstr "Sistem"
+
+msgid "Moda Support"
+msgstr "Moda Destek"
+
+msgid "Unread"
+msgstr "Okunmadı"
+
+msgid "Translation unavailable"
+msgstr "Çeviri kullanılamıyor"
+
+msgid "Translation pending"
+msgstr "Çeviri bekleniyor"
+
+msgid "View translation"
+msgstr "Çeviriyi görüntüle"
+
+msgid "View original"
+msgstr "Orijinali görüntüle"
+
+msgid "View billing"
+msgstr "Faturalandırmayı görüntüle"
+
+msgid "Contact support"
+msgstr "Destekle iletişime geç"
+
+msgid "Message"
+msgstr "Mesaj"
+
+msgid "Sending…"
+msgstr "Gönderiliyor…"
+
+msgid "Send"
+msgstr "Gönder"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "Destek mesajı gönderme WooCommerce için henüz kullanılamıyor."
+
+msgid "Enter 1 to 500 characters."
+msgstr "1 ila 500 karakter girin."
+
+msgid "The message could not be sent."
+msgstr "Mesaj gönderilemedi."
+
+msgid "You do not have permission to view support messages."
+msgstr "Destek mesajlarını görüntüleme izniniz yok."

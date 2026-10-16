@@ -1339,3 +1339,72 @@ msgstr "重新載入優惠券"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "優惠券能否兌換由 WooCommerce 決定。"
+
+msgid "Contact Moda support and review your messages."
+msgstr "聯絡 Moda 支援並查看您的訊息。"
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "WooCommerce 尚未提供支援訊息功能。"
+
+msgid "Support messages could not be loaded."
+msgstr "無法載入支援訊息。"
+
+msgid "No messages yet."
+msgstr "尚無訊息。"
+
+msgid "Support thread"
+msgstr "支援對話"
+
+msgid "Support pages"
+msgstr "支援頁面"
+
+msgid "You"
+msgstr "您"
+
+msgid "System"
+msgstr "系統"
+
+msgid "Moda Support"
+msgstr "Moda 支援"
+
+msgid "Unread"
+msgstr "未讀"
+
+msgid "Translation unavailable"
+msgstr "無法提供翻譯"
+
+msgid "Translation pending"
+msgstr "等待翻譯"
+
+msgid "View translation"
+msgstr "檢視翻譯"
+
+msgid "View original"
+msgstr "檢視原文"
+
+msgid "View billing"
+msgstr "檢視帳單"
+
+msgid "Contact support"
+msgstr "聯絡支援"
+
+msgid "Message"
+msgstr "訊息"
+
+msgid "Sending…"
+msgstr "傳送中…"
+
+msgid "Send"
+msgstr "傳送"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "WooCommerce 尚未提供傳送支援訊息功能。"
+
+msgid "Enter 1 to 500 characters."
+msgstr "請輸入 1 至 500 個字元。"
+
+msgid "The message could not be sent."
+msgstr "無法傳送訊息。"
+
+msgid "You do not have permission to view support messages."
+msgstr "您沒有權限檢視支援訊息。"

@@ -1339,3 +1339,72 @@ msgstr "クーポンを再読み込み"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "クーポンを利用できるかどうかは WooCommerce が判断します。"
+
+msgid "Contact Moda support and review your messages."
+msgstr "Modaサポートへのお問い合わせとメッセージの確認ができます。"
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "WooCommerceではサポートメッセージはまだ利用できません。"
+
+msgid "Support messages could not be loaded."
+msgstr "サポートメッセージを読み込めませんでした。"
+
+msgid "No messages yet."
+msgstr "メッセージはまだありません。"
+
+msgid "Support thread"
+msgstr "サポートスレッド"
+
+msgid "Support pages"
+msgstr "サポートのページ"
+
+msgid "You"
+msgstr "あなた"
+
+msgid "System"
+msgstr "システム"
+
+msgid "Moda Support"
+msgstr "Modaサポート"
+
+msgid "Unread"
+msgstr "未読"
+
+msgid "Translation unavailable"
+msgstr "翻訳を利用できません"
+
+msgid "Translation pending"
+msgstr "翻訳待ち"
+
+msgid "View translation"
+msgstr "翻訳を表示"
+
+msgid "View original"
+msgstr "原文を表示"
+
+msgid "View billing"
+msgstr "請求情報を見る"
+
+msgid "Contact support"
+msgstr "サポートに連絡"
+
+msgid "Message"
+msgstr "メッセージ"
+
+msgid "Sending…"
+msgstr "送信中…"
+
+msgid "Send"
+msgstr "送信"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "WooCommerceではサポートメッセージの送信はまだ利用できません。"
+
+msgid "Enter 1 to 500 characters."
+msgstr "1〜500文字を入力してください。"
+
+msgid "The message could not be sent."
+msgstr "メッセージを送信できませんでした。"
+
+msgid "You do not have permission to view support messages."
+msgstr "サポートメッセージを表示する権限がありません。"
