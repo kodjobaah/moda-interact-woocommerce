@@ -1686,3 +1686,99 @@ msgstr "Deaktiveret nu"
 #: src/recovery-settings/feature-preferences-panel.js:160
 msgid "Refresh features"
 msgstr "Opdater funktioner"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Alle hændelser"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Faktureringsperioder"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Nuværende periode"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Hændelsestype"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Indlæser forbrugshistorik…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Intet forbrug registreret for denne periode."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Tidligere perioder"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Antal"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Registreret den"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Registreret forbrug"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Gendannelse"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Gendannelsessamtale"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Se registreret forbrug af gendannelsessamtaler pr. faktureringsperiode."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Rækker pr. side"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Vælg en periode"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "Den valgte faktureringsperiode er ikke tilgængelig."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Denne historikside er ikke længere gyldig. Ryd valget for at starte forfra."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Ikke tilknyttet"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Forbrugshistorik"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Forbrugshistorikken kunne ikke indlæses. Prøv igen."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "Forbrugshistorik er endnu ikke tilgængelig for denne WooCommerce-butik. Ingen data er ændret."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Sider med forbrugshistorik"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Vis gendannelse"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Du har ikke tilladelse til at se forbrugshistorikken."

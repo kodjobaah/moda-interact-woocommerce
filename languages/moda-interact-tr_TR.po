@@ -1671,3 +1671,99 @@ msgstr "Şu anda devre dışı"
 #: src/recovery-settings/feature-preferences-panel.js:160
 msgid "Refresh features"
 msgstr "Özellikleri yenile"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Tüm etkinlikler"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Faturalama dönemleri"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Geçerli dönem"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Etkinlik türü"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Kullanım geçmişi yükleniyor…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Bu dönem için kaydedilmiş kullanım yok."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Önceki dönemler"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Miktar"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Kaydedilme zamanı"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Kaydedilen kullanım"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Kurtarma"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Kurtarma görüşmesi"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Kurtarma görüşmelerinin kaydedilen kullanımını faturalama dönemine göre inceleyin."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Sayfa başına satır"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Dönem seçin"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "Seçilen faturalama dönemi kullanılamıyor."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Bu geçmiş sayfası artık geçerli değil. Yeniden başlamak için seçimi temizleyin."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Bağlantısız"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Kullanım geçmişi"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Kullanım geçmişi yüklenemedi. Tekrar deneyin."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "Kullanım geçmişi bu WooCommerce mağazasında henüz kullanılamıyor. Hiçbir kayıt değiştirilmedi."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Kullanım geçmişi sayfaları"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Kurtarmayı görüntüle"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Kullanım geçmişini görüntüleme izniniz yok."

@@ -7,6 +7,7 @@ import { SurfaceNavigation } from '../../src/page/surface-navigation';
 import { SupportScreen } from '../../src/support/support-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { PromotionsScreen } from '../../src/promotions/promotions-screen';
+import { UsageHistoryScreen } from '../../src/usage-history/usage-history-screen';
 
 function renderWorkspace(activeSurface) {
 	return ConnectedWorkspace({
@@ -37,6 +38,7 @@ describe('connected workspace composition', () => {
 		['OVERVIEW', OverviewScreen],
 		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
+		['USAGE', UsageHistoryScreen],
 		['PROMOTIONS', PromotionsScreen],
 		['SUPPORT', SupportScreen],
 		['RECOVERY', RecoverySettingsScreen],

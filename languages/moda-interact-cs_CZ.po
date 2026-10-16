@@ -1668,3 +1668,99 @@ msgstr "Nyní vypnuto"
 #: src/recovery-settings/feature-preferences-panel.js:160
 msgid "Refresh features"
 msgstr "Obnovit funkce"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Všechny události"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Fakturační období"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Aktuální období"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Typ události"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Načítání historie využití…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Pro toto období nebylo zaznamenáno žádné využití."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Minulá období"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Množství"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Zaznamenáno"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Zaznamenané využití"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Obnovení"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Konverzace pro obnovení"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Prohlédněte si zaznamenané využití konverzací pro obnovení podle fakturačního období."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Řádků na stránku"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Vybrat období"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "Vybrané fakturační období není dostupné."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Tato stránka historie již není platná. Vymažte výběr a začněte znovu."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Nepřiřazeno"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Historie využití"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Historii využití se nepodařilo načíst. Zkuste to znovu."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "Historie využití zatím není pro tento obchod WooCommerce dostupná. Žádné záznamy nebyly změněny."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Stránky historie využití"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Zobrazit obnovení"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Nemáte oprávnění zobrazit historii využití."

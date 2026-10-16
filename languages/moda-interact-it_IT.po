@@ -1702,3 +1702,99 @@ msgstr "Attualmente disattivo"
 #: src/recovery-settings/feature-preferences-panel.js:160
 msgid "Refresh features"
 msgstr "Aggiorna funzionalità"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Tutti gli eventi"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Periodi di fatturazione"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Periodo corrente"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Tipo di evento"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Caricamento cronologia utilizzo…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Nessun utilizzo registrato per questo periodo."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Periodi precedenti"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Quantità"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Registrato il"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Utilizzo registrato"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Recupero"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Conversazione di recupero"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Consulta l’utilizzo registrato delle conversazioni di recupero per periodo di fatturazione."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Righe per pagina"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Seleziona un periodo"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "Il periodo di fatturazione selezionato non è disponibile."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Questa pagina della cronologia non è più valida. Cancella la selezione per ricominciare."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Non collegato"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Cronologia utilizzo"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Impossibile caricare la cronologia utilizzo. Riprova."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "La cronologia utilizzo non è ancora disponibile per questo negozio WooCommerce. Nessun dato è stato modificato."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Pagine della cronologia utilizzo"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Visualizza recupero"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Non hai il permesso di visualizzare la cronologia utilizzo."

@@ -1607,3 +1607,99 @@ msgstr "当前已停用"
 #: src/recovery-settings/feature-preferences-panel.js:160
 msgid "Refresh features"
 msgstr "刷新功能"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "所有事件"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "计费周期"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "当前周期"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "事件类型"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "正在加载使用记录…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "此周期没有已记录的使用量。"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "以往周期"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "数量"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "记录时间"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "已记录使用量"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "恢复"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "恢复对话"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "按计费周期查看恢复对话的使用记录。"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "每页行数"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "选择周期"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "所选计费周期不可用。"
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "此历史记录页面已失效。请清除选择后重试。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "未关联"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "使用记录"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "无法加载使用记录，请重试。"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "此 WooCommerce 商店尚不支持查看使用记录。未更改任何使用数据。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "使用记录页面"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "查看恢复记录"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "您无权查看使用记录。"
