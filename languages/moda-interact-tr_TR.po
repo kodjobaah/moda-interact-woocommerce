@@ -1623,3 +1623,51 @@ msgstr "Mesaj gönderilemedi."
 
 msgid "You do not have permission to view support messages."
 msgstr "Destek mesajlarını görüntüleme izniniz yok."
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "Özellik tercihleri bu WooCommerce mağazasında henüz kullanılamıyor. Hiçbir ayar değiştirilmedi."
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "Bu özellik ayarlarını görüntüleme izniniz yok."
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "Özellik ayarları başka bir yerde değiştirildi. Güncel ayarları görmek için yenileyin."
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "Özellik ayarları yüklenemedi veya kaydedilemedi. Yenileyip tekrar deneyin."
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "Sohbet özellikleri"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "Temel konuşma özellikleri her zaman etkindir. İsteğe bağlı özellikleri açıp kapatabilirsiniz; değişiklikler yalnızca yeni konuşmalara uygulanır."
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "Mevcut planınızda uygun özellik yok."
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "İsteğe bağlı"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "Her zaman etkin"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "Şu anda etkin"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "Şu anda devre dışı"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "Özellikleri yenile"

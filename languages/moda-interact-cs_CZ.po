@@ -1620,3 +1620,51 @@ msgstr "Zprávu se nepodařilo odeslat."
 
 msgid "You do not have permission to view support messages."
 msgstr "Nemáte oprávnění prohlížet zprávy podpory."
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "Nastavení funkcí zatím není pro tento obchod WooCommerce dostupné. Žádná nastavení nebyla změněna."
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "Nemáte oprávnění zobrazit tato nastavení funkcí."
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "Nastavení funkcí se změnilo jinde. Obnovte stránku a zkontrolujte aktuální nastavení."
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "Nastavení funkcí nelze načíst ani uložit. Obnovte stránku a zkuste to znovu."
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "Funkce konverzací"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "Základní konverzační funkce jsou vždy zapnuté. Volitelné funkce můžete zapnout nebo vypnout; změny se použijí pouze na nové konverzace."
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "Ve vašem aktuálním tarifu nejsou dostupné žádné vhodné funkce."
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "Volitelné"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "Vždy zapnuto"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "Nyní zapnuto"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "Nyní vypnuto"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "Obnovit funkce"

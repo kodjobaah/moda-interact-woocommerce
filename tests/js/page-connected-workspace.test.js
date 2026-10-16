@@ -47,5 +47,10 @@ describe('connected workspace composition', () => {
 		expect(content.type).toBe(Screen);
 		expect(navigation.props.activeSurface).toBe(surface);
 		expect(workspace.props.className).toBe('moda-interact-surfaces');
+		if (surface === 'RECOVERY') {
+			expect(content.props).toHaveProperty('featurePreferencesState');
+			expect(content.props).toHaveProperty('onRefreshFeatures');
+			expect(content.props).toHaveProperty('onToggleFeature');
+		}
 	});
 });

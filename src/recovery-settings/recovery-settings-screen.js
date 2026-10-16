@@ -4,6 +4,7 @@ import { CategoryProfileSummary } from './category-profile-summary';
 import { CategorySelector } from './category-selector';
 import { RecoverySettingsHeader } from './recovery-settings-header';
 import { RecoveryBehaviourPanel } from './recovery-behaviour-panel';
+import { FeaturePreferencesPanel } from './feature-preferences-panel';
 
 function Feedback({ status }) {
 	const messages = {
@@ -66,6 +67,9 @@ export function RecoverySettingsScreen({
 	policyState,
 	onRefreshPolicy,
 	onSavePolicy,
+	featurePreferencesState,
+	onRefreshFeatures,
+	onToggleFeature,
 }) {
 	const loading = state.status === 'LOADING';
 	const saving = state.status === 'SAVING';
@@ -94,6 +98,12 @@ export function RecoverySettingsScreen({
 			onRefreshPolicy,
 			onSavePolicy,
 		}),
+		createElement(FeaturePreferencesPanel, {
+			state: featurePreferencesState,
+			onRefresh: onRefreshFeatures,
+			onToggle: onToggleFeature,
+		}),
+
 		createElement(
 			'details',
 			{ open: true, className: 'moda-interact-recovery__panel' },

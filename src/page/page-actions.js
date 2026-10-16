@@ -19,6 +19,9 @@ export function createPageActions(sessionRef, setActiveSurface) {
 		refreshCategory: () => controllers()?.category.refresh(),
 		refreshRecoverySummary: () => controllers()?.recoverySummary.refresh(),
 		refreshRecoveryPolicy: () => controllers()?.recoveryPolicy.refresh(),
+		refreshFeaturePreferences: () => controllers()?.featurePreferences.refresh(),
+		toggleFeaturePreference: (id, enabled) =>
+			controllers()?.featurePreferences.save(id, enabled),
 		saveRecoveryPolicy: (draft) =>
 			controllers()?.recoveryPolicy.save(draft),
 		chooseCategory: (categoryId) =>
@@ -31,6 +34,7 @@ export function createPageActions(sessionRef, setActiveSurface) {
 			controllers()?.billing.setActive(surface === 'BILLING');
 			controllers()?.recoverySummary.setActive(surface === 'RECOVERY');
 			controllers()?.recoveryPolicy.setActive(surface === 'RECOVERY');
+			controllers()?.featurePreferences.setActive(surface === 'RECOVERY');
 			if (surface === 'RECOVERY') {
 				controllers()?.category.refresh();
 			}

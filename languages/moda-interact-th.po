@@ -1576,3 +1576,51 @@ msgstr "ไม่สามารถส่งข้อความได้"
 
 msgid "You do not have permission to view support messages."
 msgstr "คุณไม่มีสิทธิ์ดูข้อความสนับสนุน"
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "การตั้งค่าคุณสมบัติยังไม่พร้อมใช้งานสำหรับร้าน WooCommerce นี้ ไม่มีการเปลี่ยนแปลงการตั้งค่าใด ๆ"
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "คุณไม่มีสิทธิ์ดูการตั้งค่าคุณสมบัติเหล่านี้"
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "การตั้งค่าคุณสมบัติถูกเปลี่ยนจากที่อื่น รีเฟรชเพื่อตรวจสอบการตั้งค่าล่าสุด"
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "ไม่สามารถโหลดหรือบันทึกการตั้งค่าคุณสมบัติได้ รีเฟรชแล้วลองอีกครั้ง"
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "ฟีเจอร์การสนทนา"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "ฟีเจอร์หลักของการสนทนาจะเปิดใช้งานเสมอ คุณสามารถเปิดหรือปิดฟีเจอร์เสริมได้ โดยการเปลี่ยนแปลงจะมีผลกับการสนทนาใหม่เท่านั้น"
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "ไม่มีฟีเจอร์ที่ใช้ได้ในแผนปัจจุบัน"
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "ไม่บังคับ"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "เปิดใช้งานเสมอ"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "เปิดใช้งานอยู่"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "ปิดใช้งานอยู่"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "รีเฟรชคุณสมบัติ"

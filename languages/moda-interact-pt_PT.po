@@ -1651,3 +1651,51 @@ msgstr "Não foi possível enviar a mensagem."
 
 msgid "You do not have permission to view support messages."
 msgstr "Não tem permissão para consultar as mensagens de apoio."
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "As preferências de funcionalidades ainda não estão disponíveis para esta loja WooCommerce. Nenhuma definição foi alterada."
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "Não tem permissão para consultar estas definições de funcionalidades."
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "As definições foram alteradas noutro local. Atualize para consultar as mais recentes."
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "Não foi possível carregar ou guardar as definições. Atualize e tente novamente."
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "Funcionalidades de conversa"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "As funcionalidades principais de conversação estão sempre ativas. Pode ativar ou desativar funcionalidades opcionais; as alterações aplicam-se apenas a novas conversas."
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "Nenhuma funcionalidade disponível no seu plano atual."
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "Opcional"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "Sempre ativo"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "Atualmente ativado"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "Atualmente desativado"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "Atualizar funcionalidades"
