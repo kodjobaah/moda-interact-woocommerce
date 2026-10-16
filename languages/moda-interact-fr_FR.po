@@ -1339,3 +1339,72 @@ msgstr "Réessayer le chargement des coupons"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce détermine si un coupon peut être utilisé."
+
+msgid "Contact Moda support and review your messages."
+msgstr "Contactez l’assistance Moda et consultez vos messages."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "Les messages d’assistance ne sont pas encore disponibles pour WooCommerce."
+
+msgid "Support messages could not be loaded."
+msgstr "Impossible de charger les messages d’assistance."
+
+msgid "No messages yet."
+msgstr "Aucun message pour le moment."
+
+msgid "Support thread"
+msgstr "Fil d’assistance"
+
+msgid "Support pages"
+msgstr "Pages d’assistance"
+
+msgid "You"
+msgstr "Vous"
+
+msgid "System"
+msgstr "Système"
+
+msgid "Moda Support"
+msgstr "Assistance Moda"
+
+msgid "Unread"
+msgstr "Non lu"
+
+msgid "Translation unavailable"
+msgstr "Traduction indisponible"
+
+msgid "Translation pending"
+msgstr "Traduction en attente"
+
+msgid "View translation"
+msgstr "Voir la traduction"
+
+msgid "View original"
+msgstr "Voir l’original"
+
+msgid "View billing"
+msgstr "Voir la facturation"
+
+msgid "Contact support"
+msgstr "Contacter l’assistance"
+
+msgid "Message"
+msgstr "Votre message"
+
+msgid "Sending…"
+msgstr "Envoi…"
+
+msgid "Send"
+msgstr "Envoyer"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "L’envoi de messages d’assistance n’est pas encore disponible pour WooCommerce."
+
+msgid "Enter 1 to 500 characters."
+msgstr "Saisissez entre 1 et 500 caractères."
+
+msgid "The message could not be sent."
+msgstr "Le message n’a pas pu être envoyé."
+
+msgid "You do not have permission to view support messages."
+msgstr "Vous n’avez pas l’autorisation de consulter les messages d’assistance."

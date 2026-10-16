@@ -1339,3 +1339,72 @@ msgstr "ลองโหลดคูปองอีกครั้ง"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce เป็นผู้กำหนดว่าสามารถใช้คูปองได้หรือไม่"
+
+msgid "Contact Moda support and review your messages."
+msgstr "ติดต่อฝ่ายสนับสนุน Moda และดูข้อความของคุณ"
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "ยังไม่สามารถใช้ข้อความสนับสนุนสำหรับ WooCommerce ได้"
+
+msgid "Support messages could not be loaded."
+msgstr "ไม่สามารถโหลดข้อความสนับสนุนได้"
+
+msgid "No messages yet."
+msgstr "ยังไม่มีข้อความ"
+
+msgid "Support thread"
+msgstr "การสนทนากับฝ่ายสนับสนุน"
+
+msgid "Support pages"
+msgstr "หน้าฝ่ายสนับสนุน"
+
+msgid "You"
+msgstr "คุณ"
+
+msgid "System"
+msgstr "ระบบ"
+
+msgid "Moda Support"
+msgstr "ฝ่ายสนับสนุน Moda"
+
+msgid "Unread"
+msgstr "ยังไม่อ่าน"
+
+msgid "Translation unavailable"
+msgstr "ไม่สามารถแปลได้"
+
+msgid "Translation pending"
+msgstr "รอการแปล"
+
+msgid "View translation"
+msgstr "ดูคำแปล"
+
+msgid "View original"
+msgstr "ดูต้นฉบับ"
+
+msgid "View billing"
+msgstr "ดูการเรียกเก็บเงิน"
+
+msgid "Contact support"
+msgstr "ติดต่อฝ่ายสนับสนุน"
+
+msgid "Message"
+msgstr "ข้อความ"
+
+msgid "Sending…"
+msgstr "กำลังส่ง…"
+
+msgid "Send"
+msgstr "ส่ง"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "ยังไม่สามารถส่งข้อความถึงฝ่ายสนับสนุนจาก WooCommerce ได้"
+
+msgid "Enter 1 to 500 characters."
+msgstr "กรอกข้อความ 1 ถึง 500 ตัวอักษร"
+
+msgid "The message could not be sent."
+msgstr "ไม่สามารถส่งข้อความได้"
+
+msgid "You do not have permission to view support messages."
+msgstr "คุณไม่มีสิทธิ์ดูข้อความสนับสนุน"

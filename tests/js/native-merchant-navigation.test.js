@@ -8,6 +8,7 @@ import {
 import { OverviewScreen } from '../../src/overview-screen';
 import { RecoveriesScreen } from '../../src/recoveries/recoveries-screen';
 import { ConnectedBillingScreen } from '../../src/billing/connected-billing-screen';
+import { SupportScreen } from '../../src/support/support-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 
 const actions = {
@@ -30,6 +31,7 @@ describe('native merchant navigation', () => {
 		['?page=moda-interact', 'OVERVIEW'],
 		['?page=moda-interact-recoveries', 'RECOVERIES'],
 		['?page=moda-interact-billing', 'BILLING'],
+		['?page=moda-interact-support', 'SUPPORT'],
 		['?page=moda-interact-recovery-settings', 'RECOVERY'],
 	])(
 		'resolves %s to %s without another navigation bar',
@@ -49,13 +51,14 @@ describe('native merchant navigation', () => {
 		expect(
 			initialMerchantSurface('?page=wc-admin&moda_billing_return=1')
 		).toBe('BILLING');
-		expect(isNativeMerchantPage('?page=moda-interact-support')).toBe(false);
+		expect(isNativeMerchantPage('?page=moda-interact-support')).toBe(true);
 	});
 
 	it.each([
 		['OVERVIEW', OverviewScreen],
 		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
+		['SUPPORT', SupportScreen],
 		['RECOVERY', RecoverySettingsScreen],
 	])(
 		'renders only the %s screen when the native menu owns navigation',

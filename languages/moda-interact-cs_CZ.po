@@ -1339,3 +1339,72 @@ msgstr "Zkusit znovu načíst kupóny"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce určuje, zda lze kupón uplatnit."
+
+msgid "Contact Moda support and review your messages."
+msgstr "Kontaktujte podporu Moda a prohlédněte si své zprávy."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "Zprávy podpory zatím nejsou pro WooCommerce dostupné."
+
+msgid "Support messages could not be loaded."
+msgstr "Zprávy podpory se nepodařilo načíst."
+
+msgid "No messages yet."
+msgstr "Zatím žádné zprávy."
+
+msgid "Support thread"
+msgstr "Konverzace s podporou"
+
+msgid "Support pages"
+msgstr "Stránky podpory"
+
+msgid "You"
+msgstr "Vy"
+
+msgid "System"
+msgstr "Systém"
+
+msgid "Moda Support"
+msgstr "Podpora Moda"
+
+msgid "Unread"
+msgstr "Nepřečtené"
+
+msgid "Translation unavailable"
+msgstr "Překlad není dostupný"
+
+msgid "Translation pending"
+msgstr "Čeká na překlad"
+
+msgid "View translation"
+msgstr "Zobrazit překlad"
+
+msgid "View original"
+msgstr "Zobrazit originál"
+
+msgid "View billing"
+msgstr "Zobrazit fakturaci"
+
+msgid "Contact support"
+msgstr "Kontaktovat podporu"
+
+msgid "Message"
+msgstr "Zpráva"
+
+msgid "Sending…"
+msgstr "Odesílání…"
+
+msgid "Send"
+msgstr "Odeslat"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "Odesílání zpráv podpoře zatím není pro WooCommerce dostupné."
+
+msgid "Enter 1 to 500 characters."
+msgstr "Zadejte 1 až 500 znaků."
+
+msgid "The message could not be sent."
+msgstr "Zprávu se nepodařilo odeslat."
+
+msgid "You do not have permission to view support messages."
+msgstr "Nemáte oprávnění prohlížet zprávy podpory."

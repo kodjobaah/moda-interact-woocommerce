@@ -1417,3 +1417,95 @@ msgstr ""
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr ""
+
+#: src/support/support-screen.js:13
+msgid "Contact Moda support and review your messages."
+msgstr ""
+
+#: src/support/support-thread.js:8
+msgid "Support messages are not yet available for WooCommerce."
+msgstr ""
+
+#: src/support/support-thread.js:10
+msgid "Support messages could not be loaded."
+msgstr ""
+
+#: src/support/support-thread.js:11
+msgid "No messages yet."
+msgstr ""
+
+#: src/support/support-thread.js:14
+msgid "Support thread"
+msgstr ""
+
+#: src/support/support-thread.js:22
+msgid "Support pages"
+msgstr ""
+
+#: src/support/support-message-card.js:20
+msgid "You"
+msgstr ""
+
+#: src/support/support-message-card.js:21
+msgid "System"
+msgstr ""
+
+#: src/support/support-message-card.js:22
+msgid "Moda Support"
+msgstr ""
+
+#: src/support/support-message-card.js:34
+msgid "Unread"
+msgstr ""
+
+#: src/support/support-message-card.js:37
+msgid "Translation unavailable"
+msgstr ""
+
+#: src/support/support-message-card.js:38
+msgid "Translation pending"
+msgstr ""
+
+#: src/support/support-message-card.js:42
+msgid "View translation"
+msgstr ""
+
+#: src/support/support-message-card.js:42
+msgid "View original"
+msgstr ""
+
+#: src/support/support-message-card.js:43
+msgid "View billing"
+msgstr ""
+
+#: src/support/support-composer.js:20
+msgid "Contact support"
+msgstr ""
+
+#: src/support/support-composer.js:22
+msgid "Message"
+msgstr ""
+
+#: src/support/support-composer.js:30
+msgid "Sending…"
+msgstr ""
+
+#: src/support/support-composer.js:30
+msgid "Send"
+msgstr ""
+
+#: src/support/support-composer.js:32
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr ""
+
+#: src/support/support-composer.js:34
+msgid "Enter 1 to 500 characters."
+msgstr ""
+
+#: src/support/support-composer.js:36
+msgid "The message could not be sent."
+msgstr ""
+
+#: src/support/support-thread.js:9
+msgid "You do not have permission to view support messages."
+msgstr ""

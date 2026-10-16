@@ -3,11 +3,13 @@ import { ConnectedBillingScreen } from '../billing/connected-billing-screen';
 import { OverviewScreen } from '../overview-screen';
 import { RecoveriesScreen } from '../recoveries/recoveries-screen';
 import { RecoverySettingsScreen } from '../recovery-settings/recovery-settings-screen';
+import { SupportScreen } from '../support/support-screen';
 import { SurfaceNavigation } from './surface-navigation';
 
 // Connected-only screens, separate from the connection status panel.
 export function ConnectedWorkspace({
 	activeSurface,
+	connectionIdentity = '',
 	merchantState,
 	billingState,
 	syncState,
@@ -28,6 +30,8 @@ export function ConnectedWorkspace({
 			key: 'recoveries',
 			timeZone,
 		});
+	} else if (activeSurface === 'SUPPORT') {
+		activeContent = createElement(SupportScreen, { key: `support:${connectionIdentity}` });
 	} else if (activeSurface === 'BILLING') {
 		activeContent = createElement(ConnectedBillingScreen, {
 			key: 'billing',
