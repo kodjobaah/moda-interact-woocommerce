@@ -1408,3 +1408,51 @@ msgstr "Viestiä ei voitu lähettää."
 
 msgid "You do not have permission to view support messages."
 msgstr "Sinulla ei ole oikeutta tarkastella tukiviestejä."
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "Ominaisuusasetukset eivät ole vielä käytettävissä tässä WooCommerce-kaupassa. Asetuksia ei ole muutettu."
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "Sinulla ei ole oikeutta tarkastella näitä ominaisuusasetuksia."
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "Ominaisuusasetuksia on muutettu muualla. Päivitä nähdäksesi uusimmat asetukset."
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "Ominaisuusasetusten lataaminen tai tallentaminen epäonnistui. Päivitä ja yritä uudelleen."
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "Keskustelutoiminnot"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "Keskustelun ydintoiminnot ovat aina käytössä. Voit ottaa valinnaisia toimintoja käyttöön tai pois käytöstä; muutokset koskevat vain uusia keskusteluja."
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "Nykyisessä tilauksessasi ei ole saatavilla sopivia toimintoja."
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "Valinnainen"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "Aina käytössä"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "Käytössä nyt"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "Pois käytöstä nyt"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "Päivitä ominaisuudet"

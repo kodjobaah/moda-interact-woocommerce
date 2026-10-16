@@ -5,6 +5,7 @@ import { MerchantBootstrapController } from '../merchant-bootstrap-controller';
 import { StoreCategoryController } from '../store-category-controller';
 import { RecoverySummaryController } from '../recovery-summary-controller';
 import { RecoveryPolicyController } from '../recovery-policy-controller';
+import { FeaturePreferencesController } from '../recovery-settings/feature-preferences-controller';
 import { StoreContextSyncController } from '../store-context-sync-controller';
 
 /** Create controllers with the same cross-controller callbacks as the original page. */
@@ -30,6 +31,7 @@ export function createPageControllers() {
 		recoverySummary.refresh(true)
 	);
 	const readAccess = new ReadAccessController();
+	const featurePreferences = new FeaturePreferencesController();
 	return {
 		connection,
 		merchant,
@@ -39,5 +41,6 @@ export function createPageControllers() {
 		recoverySummary,
 		recoveryPolicy,
 		readAccess,
+		featurePreferences,
 	};
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
+import { FeaturePreferencesPanel } from '../../src/recovery-settings/feature-preferences-panel';
 import { RecoveryNavigation } from '../../src/recovery-settings/recovery-navigation';
 import { categoriesFixture } from './store-category-fixtures';
 
@@ -45,6 +46,18 @@ function buttons(node, found = []) {
 }
 
 describe('Woo Recovery Settings category presentation', () => {
+	it('orders cards like Shopify: summary, recovery controls, conversation features, then store context', () => {
+		const view = RecoverySettingsScreen({
+			state: { status: 'IDLE', data: null },
+			featurePreferencesState: { status: 'UNAVAILABLE', data: null },
+		});
+		const children = view.props.children;
+		expect(children[1].type).toBe(RecoveryBehaviourPanel);
+		expect(children[2].type).toBe(FeaturePreferencesPanel);
+		expect(children[3].type).toBe('details');
+		expect(children[3].props.children[0].props.children).toBe('Store & assistant context');
+	});
+
 	it('matches Shopify conceptual hierarchy with a separate navigation and explicit save', () => {
 		const nav = RecoveryNavigation({
 			selected: 'recovery',
