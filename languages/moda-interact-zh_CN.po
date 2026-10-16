@@ -29,7 +29,9 @@ msgid "A WooCommerce Admin extension foundation for Moda Interact."
 msgstr "Moda Interact 的 WooCommerce 管理后台扩展基础组件。"
 
 #: src/billing-screen.js:23 src/billing-screen.js:27
-msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+msgid ""
+"A billing change is already in progress. Refresh the billing summary before "
+"trying again."
 msgstr "已有账单变更正在处理。再次尝试前请刷新账单摘要。"
 
 #: src/recovery-settings/category-profile-summary.js:45
@@ -54,7 +56,9 @@ msgid "Active mapping count"
 msgstr "生效的映射数量"
 
 #: src/read-access/read-access-panel.js:35
-msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
+msgid ""
+"Allow Moda Interact to read store data. WooCommerce will ask you to approve "
+"read-only access."
 msgstr "允许 Moda Interact 读取商店数据。WooCommerce 将要求您批准只读权限。"
 
 #: src/read-access/read-access-panel.js:50
@@ -62,7 +66,9 @@ msgid "Allow read access"
 msgstr "允许读取权限"
 
 #: src/recovery-settings/recovery-settings-screen.js:9
-msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
+msgid ""
+"Another administrator changed the store category. Refresh the categories, "
+"review the latest selection, then save again."
 msgstr "另一位管理员更改了店铺类别。请刷新类别、检查最新选择，然后重新保存。"
 
 #: src/read-access/read-access-panel.js:43
@@ -91,11 +97,15 @@ msgid "Billing data could not be verified. Try again later."
 msgstr "无法核实账单数据。请稍后重试。"
 
 #: src/billing-screen.js:11
-msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+msgid ""
+"Billing is temporarily unavailable. Your current billing state has not "
+"changed."
 msgstr "账单服务暂时不可用。您当前的账单状态未发生变化。"
 
 #: src/billing/notices.js:30
-msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
+msgid ""
+"Billing needs attention. Plan changes are unavailable while Moda verifies "
+"billing status."
 msgstr "账单状态需要处理。Moda 核实账单状态期间无法更改套餐。"
 
 #: src/billing/summary.js:111
@@ -151,7 +161,9 @@ msgid "Checking…"
 msgstr "正在检查…"
 
 #: src/billing/top-up-section.js
-msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
+msgid ""
+"Choose one bundle. WooCommerce will show the final charge and any applicable "
+"tax for confirmation."
 msgstr "选择一个套餐。WooCommerce 将显示最终费用和适用税额供你确认。"
 
 #: src/billing/plan-catalogue.js:34
@@ -159,8 +171,11 @@ msgid "Choose plan"
 msgstr "选择套餐"
 
 #: src/recovery-settings/recovery-settings-screen.js:107
-msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
-msgstr "选择店铺类型，以定制您的 CommerceAgent 助手。您的 Free 套餐将保持有效。"
+msgid ""
+"Choose the type of store to personalize your CommerceAgent assistant. Your "
+"Free plan stays active."
+msgstr ""
+"选择店铺类型，以定制您的 CommerceAgent 助手。您的 Free 套餐将保持有效。"
 
 #: src/billing/cancel-dialog.js:93
 msgid "Confirm cancellation"
@@ -282,17 +297,22 @@ msgid "Moda Interact"
 msgstr "Moda Interact"
 
 #: src/page/connection-panel.js:94
-msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
+msgid ""
+"Moda Interact cannot be reached right now. The local connection has not been "
+"removed."
 msgstr "目前无法连接到 Moda Interact。本地连接未被删除。"
 
 #. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
 #: includes/Runtime.php:93
 #, php-format
-msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
-msgstr "Moda Interact 要求使用 WooCommerce %1$s 或更高版本。检测到的版本：%2$s。"
+msgid ""
+"Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr ""
+"Moda Interact 要求使用 WooCommerce %1$s 或更高版本。检测到的版本：%2$s。"
 
 #: includes/Runtime.php:86
-msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgid ""
+"Moda Interact requires WooCommerce 11.0 or later to be installed and active."
 msgstr "Moda Interact 要求安装并启用 WooCommerce 11.0 或更高版本。"
 
 #: src/recovery-settings/recovery-navigation.js:9
@@ -300,7 +320,9 @@ msgid "Moda Interact sections"
 msgstr "Moda Interact 版块"
 
 #: src/page/connection-panel.js:127
-msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
+msgid ""
+"Moda Interact service connectivity is not configured for this plugin "
+"installation. Contact your site administrator."
 msgstr "此插件安装尚未配置 Moda Interact 服务连接。请联系站点管理员。"
 
 #: src/overview-screen.js:32
@@ -364,12 +386,21 @@ msgid "Overview"
 msgstr "概览"
 
 #: src/billing/cancel-dialog.js:60
-msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
-msgstr "取消操作经核实且预付期限结束前，您仍可使用付费服务。此请求不会立即更改您当前的套餐。"
+msgid ""
+"Paid access remains available until cancellation is verified and the prepaid "
+"term ends. This request does not immediately change your current plan."
+msgstr ""
+"取消操作经核实且预付期限结束前，您仍可使用付费服务。此请求不会立即更改您当前"
+"的套餐。"
 
 #: src/billing/notices.js:21
-msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
-msgstr "付费套餐包含的额度暂时不可用。已购买的额度和剩余的终身 Free 额度仍可使用；促销额度仍遵循现有使用资格条件。"
+msgid ""
+"Paid included credits are temporarily unavailable. Purchased credits and "
+"remaining lifetime Free credits remain usable; promotional credits follow "
+"their existing eligibility."
+msgstr ""
+"付费套餐包含的额度暂时不可用。已购买的额度和剩余的终身 Free 额度仍可使用；促"
+"销额度仍遵循现有使用资格条件。"
 
 #: src/billing/capacity-summary.js:16
 msgid "Paid included credits remaining"
@@ -630,7 +661,9 @@ msgid "Store category and assistant prompt activated."
 msgstr "店铺类别和助手提示词已启用。"
 
 #: src/recovery-settings/recovery-settings-screen.js:37
-msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
+msgid ""
+"Store category saved, but the updated settings could not be loaded. Refresh "
+"to confirm the active category."
 msgstr "店铺类别已保存，但无法加载更新后的设置。请刷新以确认生效的类别。"
 
 #: src/overview-screen.js:114
@@ -650,7 +683,9 @@ msgid "Store read access"
 msgstr "商店读取权限"
 
 #: src/overview-screen.js:241
-msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
+msgid ""
+"Store settings could not be synchronized. Your connection is unchanged. "
+"Please retry."
 msgstr "无法同步店铺设置。您的连接未发生变化。请重试。"
 
 #: src/overview-screen.js:251
@@ -694,19 +729,25 @@ msgid "Temporarily unavailable"
 msgstr "暂时不可用"
 
 #: src/billing-screen.js:76
-msgid "The Moda Interact connection needs attention before billing can be loaded."
+msgid ""
+"The Moda Interact connection needs attention before billing can be loaded."
 msgstr "加载账单前，需要先检查 Moda Interact 连接。"
 
 #: src/recovery-settings/recovery-settings-screen.js:17
-msgid "The Moda Interact connection needs attention before categories can be updated."
+msgid ""
+"The Moda Interact connection needs attention before categories can be "
+"updated."
 msgstr "更新类别前，需要先检查 Moda Interact 连接。"
 
 #: src/overview-screen.js:162
-msgid "The Moda Interact connection needs attention before store data can be loaded."
+msgid ""
+"The Moda Interact connection needs attention before store data can be loaded."
 msgstr "加载店铺数据前，需要先检查 Moda Interact 连接。"
 
 #: src/billing-screen.js:35
-msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgid ""
+"The billing change could not be completed. Your current plan remains "
+"unchanged."
 msgstr "无法完成账单变更。您当前的套餐保持不变。"
 
 #: src/billing-screen.js:46
@@ -718,7 +759,8 @@ msgid "The cancellation needs reconciliation. Do not retry it automatically."
 msgstr "取消操作需要核对状态。请勿自动重试。"
 
 #: src/page/connection-panel.js:211
-msgid "The connection could not be completed. Check your connection and try again."
+msgid ""
+"The connection could not be completed. Check your connection and try again."
 msgstr "无法完成连接。请检查网络连接后重试。"
 
 #: src/page/connection-panel.js:150
@@ -730,11 +772,15 @@ msgid "The connection status is unavailable. Contact support for help."
 msgstr "无法获取连接状态。请联系支持团队寻求帮助。"
 
 #: src/recovery-settings/recovery-settings-screen.js:25
-msgid "The latest store settings do not show your change. Review the selection and try saving again."
+msgid ""
+"The latest store settings do not show your change. Review the selection and "
+"try saving again."
 msgstr "最新店铺设置中未显示您的更改。请检查所选内容并重新保存。"
 
 #: src/page/connection-panel.js:54
-msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
+msgid ""
+"The local connection needs to be re-established. Your Moda account and store "
+"data have not been removed."
 msgstr "需要重新建立本地连接。您的 Moda 账户和店铺数据未被删除。"
 
 #: src/billing/plan-catalogue.js:142
@@ -746,19 +792,26 @@ msgid "The plan change needs reconciliation. Do not retry it automatically."
 msgstr "套餐变更需要核对状态。请勿自动重试。"
 
 #: src/billing-screen.js:31
-msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
-msgstr "服务提供方的处理结果尚不明确。请刷新账单摘要或联系支持团队；请勿自动重试。"
+msgid ""
+"The provider result is not yet known. Refresh the billing summary or contact "
+"support; do not retry automatically."
+msgstr ""
+"服务提供方的处理结果尚不明确。请刷新账单摘要或联系支持团队；请勿自动重试。"
 
 #: src/billing/top-up-section.js
 msgid "The purchase could not be started."
 msgstr "无法开始购买。"
 
 #: src/page/connection-panel.js:137
-msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
+msgid ""
+"The saved local connection could not be verified. Contact support for help "
+"restoring the connection."
 msgstr "无法核实已保存的本地连接。请联系支持团队协助恢复连接。"
 
 #: src/recovery-settings/recovery-settings-screen.js:13
-msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
+msgid ""
+"The selected category or prompt is no longer available. Refresh the "
+"catalogue and choose an available category."
 msgstr "所选类别或提示词已不可用。请刷新目录并选择可用类别。"
 
 #: src/overview-screen.js:182
@@ -766,7 +819,9 @@ msgid "The store overview could not be verified. Try again."
 msgstr "无法核实店铺概览。请重试。"
 
 #: src/overview-screen.js:172
-msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
+msgid ""
+"The store overview is temporarily unavailable. Your connection and store "
+"data have not been changed."
 msgstr "店铺概览暂时不可用。您的连接和店铺数据均未更改。"
 
 #: src/recovery-settings/recovery-settings-screen.js:137
@@ -774,11 +829,17 @@ msgid "There are currently no selectable store categories."
 msgstr "目前没有可选择的店铺类别。"
 
 #: src/page/connection-panel.js:117
-msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
-msgstr "此 WordPress 站点地址与连接 Moda Interact 时使用的地址不同。更改连接前，请联系支持团队。"
+msgid ""
+"This WordPress site address differs from the address used for the Moda "
+"Interact connection. Contact support before changing the connection."
+msgstr ""
+"此 WordPress 站点地址与连接 Moda Interact 时使用的地址不同。更改连接前，请联"
+"系支持团队。"
 
 #: src/billing/top-up-section.js
-msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
+msgid ""
+"This bundle already has a pending purchase. Refresh the billing summary "
+"before trying again."
 msgstr "此套餐已有待处理的购买。再次尝试前请刷新账单摘要。"
 
 #: src/billing/top-up-section.js
@@ -790,7 +851,9 @@ msgid "This plan is no longer available. Refresh the plan catalogue."
 msgstr "此套餐已不可用。请刷新套餐目录。"
 
 #: src/billing/top-up-section.js
-msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
+msgid ""
+"This purchase attempt could not be verified. Refresh the billing summary "
+"before trying again."
 msgstr "无法验证此次购买尝试。再次尝试前请刷新账单摘要。"
 
 #: includes/Admin/NativeNavigation.php:85
@@ -806,7 +869,9 @@ msgid "Time zone"
 msgstr "时区"
 
 #: src/read-access/read-access-panel.js:46
-msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
+msgid ""
+"To revoke the key at the store, open WooCommerce > Settings > Advanced > "
+"REST API."
 msgstr "要在商店中撤销密钥，请打开 WooCommerce > 设置 > 高级 > REST API。"
 
 #: src/billing/plan-catalogue.js:26
@@ -824,11 +889,14 @@ msgid "Waiting for Woo confirmation"
 msgstr "正在等待 Woo 确认"
 
 #: src/recovery-settings/recovery-settings-screen.js:29
-msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
+msgid ""
+"We could not confirm whether your category was saved. Refresh categories "
+"before trying again."
 msgstr "无法确认您的类别是否已保存。再次尝试前请先刷新类别。"
 
 #: src/billing/notices.js:86
-msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
+msgid ""
+"Woo accepted the request. Moda is waiting for verified cancellation details."
 msgstr "Woo 已接受请求。Moda 正在等待经过核实的取消详情。"
 
 #: src/page.js:21
@@ -972,8 +1040,13 @@ msgstr "没有与此视图匹配的购买。"
 msgid "Back to billing"
 msgstr "返回账单"
 
-msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
-msgstr "请打开 WooCommerce.com 的订单页面，针对 Moda Interact 购买申请退款。只有在支付平台和卖家核实结果后，Moda 才会更新额度。"
+msgid ""
+"Open WooCommerce.com Orders to request a refund for a Moda Interact "
+"purchase. Moda updates credits only after the provider and vendor verify the "
+"outcome."
+msgstr ""
+"请打开 WooCommerce.com 的订单页面，针对 Moda Interact 购买申请退款。只有在支"
+"付平台和卖家核实结果后，Moda 才会更新额度。"
 
 #: src/recoveries/filters/recovery-filter-form.js:5
 msgid "All statuses"
@@ -1224,14 +1297,18 @@ msgid "Review the recovery settings and try again."
 msgstr "请检查恢复设置后重试。"
 
 #: src/recovery-settings/recovery-behaviour-fields.js:89
-msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
+msgid ""
+"Discount assistance follows the offer choice below, for both Free and Paid "
+"plans. Follow-ups remain separately chargeable."
 msgstr "免费和付费套餐的折扣辅助均遵循下方选择。后续提醒单独收费。"
 
-#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+#: src/recovery-settings/recovery-behaviour-fields.js:104
+#: src/recovery-settings/recovery-behaviour-fields.js:118
 msgid "Start recovery after (minutes) of checkout inactivity"
 msgstr "结账不活跃（分钟）后开始恢复"
 
-#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+#: src/recovery-settings/recovery-behaviour-fields.js:151
+#: src/recovery-settings/recovery-behaviour-fields.js:169
 msgid "Send one follow-up when the customer has not replied"
 msgstr "客户未回复时发送一次跟进消息"
 
@@ -1240,21 +1317,30 @@ msgid "After (minutes)"
 msgstr "经过（分钟）"
 
 #: src/recovery-settings/recovery-behaviour-fields.js:195
-msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
-msgstr "如果客户回复，继续恢复对话不会使用额外恢复积分。如果 Moda 发送计划中的跟进消息，该跟进是新的主动恢复尝试，会使用额外恢复积分。时间从上次发送主动恢复消息开始计算。"
+msgid ""
+"If the customer replies, continuing the recovery conversation does not use "
+"another recovery credit. If Moda sends the scheduled follow-up, that follow-"
+"up is a new proactive recovery attempt and uses another recovery credit. "
+"Follow-up timing is measured from the last proactive recovery message sent."
+msgstr ""
+"如果客户回复，继续恢复对话不会使用额外恢复积分。如果 Moda 发送计划中的跟进消"
+"息，该跟进是新的主动恢复尝试，会使用额外恢复积分。时间从上次发送主动恢复消息"
+"开始计算。"
 
 #: src/recovery-settings/recovery-offer-choices.js:63
 msgid "WooCommerce coupon selection is not yet available."
 msgstr "目前尚无法选择 WooCommerce 优惠券。"
-
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour saved."
 msgstr "恢复行为已保存。"
 
 #: src/recovery-settings/recovery-behaviour-panel.js
-msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
-msgstr "恢复设置已在其他位置更改。请刷新并查看最新策略后再保存。您的修改仍会显示。"
+msgid ""
+"Recovery settings changed elsewhere. Refresh to review the latest policy "
+"before saving again. Your edits are still visible."
+msgstr ""
+"恢复设置已在其他位置更改。请刷新并查看最新策略后再保存。您的修改仍会显示。"
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour could not be saved. Your edits are still visible."
@@ -1281,7 +1367,8 @@ msgid "Browse coupons"
 msgstr "浏览优惠券"
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
-msgid "Preview only. Coupon choices are not saved or used in recovery messages."
+msgid ""
+"Preview only. Coupon choices are not saved or used in recovery messages."
 msgstr "仅供预览。所选优惠券不会保存，也不会用于挽回消息。"
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
@@ -1403,3 +1490,72 @@ msgstr "已使用：%s"
 #: src/promotions/presentation.js
 msgid "Selected %s"
 msgstr "选择时间 %s"
+
+msgid "Contact Moda support and review your messages."
+msgstr "联系 Moda 支持并查看您的消息。"
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "WooCommerce 暂不支持查看支持消息。"
+
+msgid "Support messages could not be loaded."
+msgstr "无法加载支持消息。"
+
+msgid "No messages yet."
+msgstr "暂无消息。"
+
+msgid "Support thread"
+msgstr "支持会话"
+
+msgid "Support pages"
+msgstr "支持页面"
+
+msgid "You"
+msgstr "您"
+
+msgid "System"
+msgstr "系统"
+
+msgid "Moda Support"
+msgstr "Moda 支持"
+
+msgid "Unread"
+msgstr "未读"
+
+msgid "Translation unavailable"
+msgstr "翻译不可用"
+
+msgid "Translation pending"
+msgstr "等待翻译"
+
+msgid "View translation"
+msgstr "查看译文"
+
+msgid "View original"
+msgstr "查看原文"
+
+msgid "View billing"
+msgstr "查看账单"
+
+msgid "Contact support"
+msgstr "联系支持"
+
+msgid "Message"
+msgstr "消息"
+
+msgid "Sending…"
+msgstr "发送中…"
+
+msgid "Send"
+msgstr "发送"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "WooCommerce 暂不支持发送支持消息。"
+
+msgid "Enter 1 to 500 characters."
+msgstr "请输入 1 至 500 个字符。"
+
+msgid "The message could not be sent."
+msgstr "无法发送消息。"
+
+msgid "You do not have permission to view support messages."
+msgstr "您没有权限查看支持消息。"

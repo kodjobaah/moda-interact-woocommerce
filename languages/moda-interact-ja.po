@@ -29,7 +29,9 @@ msgid "A WooCommerce Admin extension foundation for Moda Interact."
 msgstr "Moda Interact 用の WooCommerce 管理画面拡張機能の基盤です。"
 
 #: src/billing-screen.js:23 src/billing-screen.js:27
-msgid "A billing change is already in progress. Refresh the billing summary before trying again."
+msgid ""
+"A billing change is already in progress. Refresh the billing summary before "
+"trying again."
 msgstr "すでに請求変更が進行中です。再試行する前に請求概要を更新してください。"
 
 #: src/recovery-settings/category-profile-summary.js:45
@@ -54,20 +56,29 @@ msgid "Active mapping count"
 msgstr "有効なマッピング数"
 
 #: src/read-access/read-access-panel.js:35
-msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
-msgstr "Moda Interact がストアデータを読み取ることを許可します。WooCommerce で読み取り専用アクセスの承認を求められます。"
+msgid ""
+"Allow Moda Interact to read store data. WooCommerce will ask you to approve "
+"read-only access."
+msgstr ""
+"Moda Interact がストアデータを読み取ることを許可します。WooCommerce で読み取"
+"り専用アクセスの承認を求められます。"
 
 #: src/read-access/read-access-panel.js:50
 msgid "Allow read access"
 msgstr "読み取りアクセスを許可"
 
 #: src/recovery-settings/recovery-settings-screen.js:9
-msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
-msgstr "別の管理者がストアのカテゴリを変更しました。カテゴリを更新し、最新の選択内容を確認してから、もう一度保存してください。"
+msgid ""
+"Another administrator changed the store category. Refresh the categories, "
+"review the latest selection, then save again."
+msgstr ""
+"別の管理者がストアのカテゴリを変更しました。カテゴリを更新し、最新の選択内容"
+"を確認してから、もう一度保存してください。"
 
 #: src/read-access/read-access-panel.js:43
 msgid "Approval opens in a new tab. Return here to check the result."
-msgstr "承認画面は新しいタブで開きます。結果を確認するにはここに戻ってください。"
+msgstr ""
+"承認画面は新しいタブで開きます。結果を確認するにはここに戻ってください。"
 
 #: src/read-access/read-access-panel.js:20
 msgid "Approval was not completed or has expired"
@@ -91,12 +102,18 @@ msgid "Billing data could not be verified. Try again later."
 msgstr "請求データを検証できませんでした。後ほどもう一度お試しください。"
 
 #: src/billing-screen.js:11
-msgid "Billing is temporarily unavailable. Your current billing state has not changed."
+msgid ""
+"Billing is temporarily unavailable. Your current billing state has not "
+"changed."
 msgstr "請求機能は一時的に利用できません。現在の請求状態は変更されていません。"
 
 #: src/billing/notices.js:30
-msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
-msgstr "請求状況の確認が必要です。Moda が請求状態を検証している間、プランは変更できません。"
+msgid ""
+"Billing needs attention. Plan changes are unavailable while Moda verifies "
+"billing status."
+msgstr ""
+"請求状況の確認が必要です。Moda が請求状態を検証している間、プランは変更できま"
+"せん。"
 
 #: src/billing/summary.js:111
 msgid "Billing period"
@@ -132,7 +149,8 @@ msgstr "カテゴリ ID"
 
 #: src/recovery-settings/recovery-settings-screen.js:21
 msgid "Category settings could not be loaded. Refresh categories to retry."
-msgstr "カテゴリ設定を読み込めませんでした。カテゴリを更新して再試行してください。"
+msgstr ""
+"カテゴリ設定を読み込めませんでした。カテゴリを更新して再試行してください。"
 
 #: src/read-access/read-access-panel.js:54
 msgid "Check access"
@@ -151,16 +169,24 @@ msgid "Checking…"
 msgstr "確認中…"
 
 #: src/billing/top-up-section.js
-msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
-msgstr "バンドルを1つ選択してください。WooCommerceで最終金額と適用される税金を確認できます。"
+msgid ""
+"Choose one bundle. WooCommerce will show the final charge and any applicable "
+"tax for confirmation."
+msgstr ""
+"バンドルを1つ選択してください。WooCommerceで最終金額と適用される税金を確認で"
+"きます。"
 
 #: src/billing/plan-catalogue.js:34
 msgid "Choose plan"
 msgstr "プランを選択"
 
 #: src/recovery-settings/recovery-settings-screen.js:107
-msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
-msgstr "ストアの種類を選択すると、CommerceAgent アシスタントをカスタマイズできます。Free プランはそのまま有効です。"
+msgid ""
+"Choose the type of store to personalize your CommerceAgent assistant. Your "
+"Free plan stays active."
+msgstr ""
+"ストアの種類を選択すると、CommerceAgent アシスタントをカスタマイズできます。"
+"Free プランはそのまま有効です。"
 
 #: src/billing/cancel-dialog.js:93
 msgid "Confirm cancellation"
@@ -282,26 +308,39 @@ msgid "Moda Interact"
 msgstr "Moda Interact"
 
 #: src/page/connection-panel.js:94
-msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
-msgstr "現在 Moda Interact にアクセスできません。ローカル接続は削除されていません。"
+msgid ""
+"Moda Interact cannot be reached right now. The local connection has not been "
+"removed."
+msgstr ""
+"現在 Moda Interact にアクセスできません。ローカル接続は削除されていません。"
 
 #. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
 #: includes/Runtime.php:93
 #, php-format
-msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
-msgstr "Moda Interact には WooCommerce %1$s 以降が必要です。検出されたバージョン: %2$s。"
+msgid ""
+"Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr ""
+"Moda Interact には WooCommerce %1$s 以降が必要です。検出されたバージョン: "
+"%2$s。"
 
 #: includes/Runtime.php:86
-msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
-msgstr "Moda Interact を利用するには、WooCommerce 11.0 以降をインストールして有効化する必要があります。"
+msgid ""
+"Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr ""
+"Moda Interact を利用するには、WooCommerce 11.0 以降をインストールして有効化す"
+"る必要があります。"
 
 #: src/recovery-settings/recovery-navigation.js:9
 msgid "Moda Interact sections"
 msgstr "Moda Interact のセクション"
 
 #: src/page/connection-panel.js:127
-msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
-msgstr "このプラグインのインストールには、Moda Interact サービスへの接続設定がありません。サイト管理者にお問い合わせください。"
+msgid ""
+"Moda Interact service connectivity is not configured for this plugin "
+"installation. Contact your site administrator."
+msgstr ""
+"このプラグインのインストールには、Moda Interact サービスへの接続設定がありま"
+"せん。サイト管理者にお問い合わせください。"
 
 #: src/overview-screen.js:32
 msgid "Name"
@@ -364,12 +403,22 @@ msgid "Overview"
 msgstr "概要"
 
 #: src/billing/cancel-dialog.js:60
-msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
-msgstr "解約が確認され、前払い期間が終了するまで有料機能を利用できます。このリクエストによって現在のプランが直ちに変更されることはありません。"
+msgid ""
+"Paid access remains available until cancellation is verified and the prepaid "
+"term ends. This request does not immediately change your current plan."
+msgstr ""
+"解約が確認され、前払い期間が終了するまで有料機能を利用できます。このリクエス"
+"トによって現在のプランが直ちに変更されることはありません。"
 
 #: src/billing/notices.js:21
-msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
-msgstr "有料プランに含まれるクレジットは一時的に利用できません。購入済みクレジットと残りの生涯 Free クレジットは引き続き利用できます。プロモーションクレジットには既存の利用条件が適用されます。"
+msgid ""
+"Paid included credits are temporarily unavailable. Purchased credits and "
+"remaining lifetime Free credits remain usable; promotional credits follow "
+"their existing eligibility."
+msgstr ""
+"有料プランに含まれるクレジットは一時的に利用できません。購入済みクレジットと"
+"残りの生涯 Free クレジットは引き続き利用できます。プロモーションクレジットに"
+"は既存の利用条件が適用されます。"
 
 #: src/billing/capacity-summary.js:16
 msgid "Paid included credits remaining"
@@ -458,7 +507,8 @@ msgstr "読み取りアクセスが承認されました"
 
 #: src/read-access/read-access-panel.js:14
 msgid "Read access could not be checked. Your Moda connection is unchanged."
-msgstr "読み取りアクセスを確認できませんでした。Moda との接続は変更されていません。"
+msgstr ""
+"読み取りアクセスを確認できませんでした。Moda との接続は変更されていません。"
 
 #: src/read-access/read-access-panel.js:20
 msgid "Read access needs approval again"
@@ -630,8 +680,12 @@ msgid "Store category and assistant prompt activated."
 msgstr "ストアのカテゴリとアシスタントのプロンプトを有効化しました。"
 
 #: src/recovery-settings/recovery-settings-screen.js:37
-msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
-msgstr "ストアのカテゴリは保存されましたが、更新後の設定を読み込めませんでした。有効なカテゴリを確認するには更新してください。"
+msgid ""
+"Store category saved, but the updated settings could not be loaded. Refresh "
+"to confirm the active category."
+msgstr ""
+"ストアのカテゴリは保存されましたが、更新後の設定を読み込めませんでした。有効"
+"なカテゴリを確認するには更新してください。"
 
 #: src/overview-screen.js:114
 msgid "Store context"
@@ -650,8 +704,12 @@ msgid "Store read access"
 msgstr "ストアの読み取りアクセス"
 
 #: src/overview-screen.js:241
-msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
-msgstr "ストア設定を同期できませんでした。接続は変更されていません。再試行してください。"
+msgid ""
+"Store settings could not be synchronized. Your connection is unchanged. "
+"Please retry."
+msgstr ""
+"ストア設定を同期できませんでした。接続は変更されていません。再試行してくださ"
+"い。"
 
 #: src/overview-screen.js:251
 msgid "Store settings synchronized."
@@ -694,19 +752,28 @@ msgid "Temporarily unavailable"
 msgstr "一時的に利用できません"
 
 #: src/billing-screen.js:76
-msgid "The Moda Interact connection needs attention before billing can be loaded."
-msgstr "請求情報を読み込むには、Moda Interact への接続を確認する必要があります。"
+msgid ""
+"The Moda Interact connection needs attention before billing can be loaded."
+msgstr ""
+"請求情報を読み込むには、Moda Interact への接続を確認する必要があります。"
 
 #: src/recovery-settings/recovery-settings-screen.js:17
-msgid "The Moda Interact connection needs attention before categories can be updated."
-msgstr "カテゴリを更新する前に、Moda Interact への接続を確認する必要があります。"
+msgid ""
+"The Moda Interact connection needs attention before categories can be "
+"updated."
+msgstr ""
+"カテゴリを更新する前に、Moda Interact への接続を確認する必要があります。"
 
 #: src/overview-screen.js:162
-msgid "The Moda Interact connection needs attention before store data can be loaded."
-msgstr "ストアデータを読み込むには、Moda Interact への接続を確認する必要があります。"
+msgid ""
+"The Moda Interact connection needs attention before store data can be loaded."
+msgstr ""
+"ストアデータを読み込むには、Moda Interact への接続を確認する必要があります。"
 
 #: src/billing-screen.js:35
-msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgid ""
+"The billing change could not be completed. Your current plan remains "
+"unchanged."
 msgstr "請求の変更を完了できませんでした。現在のプランは変更されていません。"
 
 #: src/billing-screen.js:46
@@ -718,7 +785,8 @@ msgid "The cancellation needs reconciliation. Do not retry it automatically."
 msgstr "解約の照合が必要です。自動的に再試行しないでください。"
 
 #: src/page/connection-panel.js:211
-msgid "The connection could not be completed. Check your connection and try again."
+msgid ""
+"The connection could not be completed. Check your connection and try again."
 msgstr "接続を完了できませんでした。接続環境を確認して再試行してください。"
 
 #: src/page/connection-panel.js:150
@@ -730,12 +798,20 @@ msgid "The connection status is unavailable. Contact support for help."
 msgstr "接続状態を取得できません。サポートにお問い合わせください。"
 
 #: src/recovery-settings/recovery-settings-screen.js:25
-msgid "The latest store settings do not show your change. Review the selection and try saving again."
-msgstr "最新のストア設定に変更が反映されていません。選択内容を確認して、もう一度保存してください。"
+msgid ""
+"The latest store settings do not show your change. Review the selection and "
+"try saving again."
+msgstr ""
+"最新のストア設定に変更が反映されていません。選択内容を確認して、もう一度保存"
+"してください。"
 
 #: src/page/connection-panel.js:54
-msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
-msgstr "ローカル接続を再確立する必要があります。Moda アカウントとストアデータは削除されていません。"
+msgid ""
+"The local connection needs to be re-established. Your Moda account and store "
+"data have not been removed."
+msgstr ""
+"ローカル接続を再確立する必要があります。Moda アカウントとストアデータは削除さ"
+"れていません。"
 
 #: src/billing/plan-catalogue.js:142
 msgid "The plan catalogue could not be loaded."
@@ -746,40 +822,64 @@ msgid "The plan change needs reconciliation. Do not retry it automatically."
 msgstr "プラン変更の照合が必要です。自動的に再試行しないでください。"
 
 #: src/billing-screen.js:31
-msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
-msgstr "プロバイダー側の結果はまだ不明です。請求概要を更新するか、サポートにお問い合わせください。自動的に再試行しないでください。"
+msgid ""
+"The provider result is not yet known. Refresh the billing summary or contact "
+"support; do not retry automatically."
+msgstr ""
+"プロバイダー側の結果はまだ不明です。請求概要を更新するか、サポートにお問い合"
+"わせください。自動的に再試行しないでください。"
 
 #: src/billing/top-up-section.js
 msgid "The purchase could not be started."
 msgstr "購入を開始できませんでした。"
 
 #: src/page/connection-panel.js:137
-msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
-msgstr "保存済みのローカル接続を検証できませんでした。接続を復元するにはサポートにお問い合わせください。"
+msgid ""
+"The saved local connection could not be verified. Contact support for help "
+"restoring the connection."
+msgstr ""
+"保存済みのローカル接続を検証できませんでした。接続を復元するにはサポートにお"
+"問い合わせください。"
 
 #: src/recovery-settings/recovery-settings-screen.js:13
-msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
-msgstr "選択したカテゴリまたはプロンプトは利用できなくなりました。一覧を更新して、利用可能なカテゴリを選んでください。"
+msgid ""
+"The selected category or prompt is no longer available. Refresh the "
+"catalogue and choose an available category."
+msgstr ""
+"選択したカテゴリまたはプロンプトは利用できなくなりました。一覧を更新して、利"
+"用可能なカテゴリを選んでください。"
 
 #: src/overview-screen.js:182
 msgid "The store overview could not be verified. Try again."
 msgstr "ストアの概要を検証できませんでした。もう一度お試しください。"
 
 #: src/overview-screen.js:172
-msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
-msgstr "ストアの概要は一時的に利用できません。接続やストアデータは変更されていません。"
+msgid ""
+"The store overview is temporarily unavailable. Your connection and store "
+"data have not been changed."
+msgstr ""
+"ストアの概要は一時的に利用できません。接続やストアデータは変更されていませ"
+"ん。"
 
 #: src/recovery-settings/recovery-settings-screen.js:137
 msgid "There are currently no selectable store categories."
 msgstr "現在選択できるストアカテゴリはありません。"
 
 #: src/page/connection-panel.js:117
-msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
-msgstr "この WordPress サイトのアドレスは、Moda Interact の接続時に使用したアドレスと異なります。接続を変更する前にサポートにお問い合わせください。"
+msgid ""
+"This WordPress site address differs from the address used for the Moda "
+"Interact connection. Contact support before changing the connection."
+msgstr ""
+"この WordPress サイトのアドレスは、Moda Interact の接続時に使用したアドレスと"
+"異なります。接続を変更する前にサポートにお問い合わせください。"
 
 #: src/billing/top-up-section.js
-msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
-msgstr "このバンドルはすでに購入処理中です。再試行する前に請求概要を更新してください。"
+msgid ""
+"This bundle already has a pending purchase. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"このバンドルはすでに購入処理中です。再試行する前に請求概要を更新してくださ"
+"い。"
 
 #: src/billing/top-up-section.js
 msgid "This bundle is no longer available."
@@ -790,8 +890,12 @@ msgid "This plan is no longer available. Refresh the plan catalogue."
 msgstr "このプランは利用できなくなりました。プラン一覧を更新してください。"
 
 #: src/billing/top-up-section.js
-msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
-msgstr "この購入試行を確認できませんでした。再試行する前に請求概要を更新してください。"
+msgid ""
+"This purchase attempt could not be verified. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"この購入試行を確認できませんでした。再試行する前に請求概要を更新してくださ"
+"い。"
 
 #: includes/Admin/NativeNavigation.php:85
 msgid "This section is not yet available for WooCommerce."
@@ -806,8 +910,12 @@ msgid "Time zone"
 msgstr "タイムゾーン"
 
 #: src/read-access/read-access-panel.js:46
-msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
-msgstr "ストア側でキーを取り消すには、WooCommerce > 設定 > 詳細 > REST API を開いてください。"
+msgid ""
+"To revoke the key at the store, open WooCommerce > Settings > Advanced > "
+"REST API."
+msgstr ""
+"ストア側でキーを取り消すには、WooCommerce > 設定 > 詳細 > REST API を開いてく"
+"ださい。"
 
 #: src/billing/plan-catalogue.js:26
 #: src/recovery-settings/recovery-effective-summary.js:13
@@ -824,12 +932,18 @@ msgid "Waiting for Woo confirmation"
 msgstr "Woo からの確認を待っています"
 
 #: src/recovery-settings/recovery-settings-screen.js:29
-msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
-msgstr "カテゴリが保存されたかどうかを確認できませんでした。再試行する前にカテゴリを更新してください。"
+msgid ""
+"We could not confirm whether your category was saved. Refresh categories "
+"before trying again."
+msgstr ""
+"カテゴリが保存されたかどうかを確認できませんでした。再試行する前にカテゴリを"
+"更新してください。"
 
 #: src/billing/notices.js:86
-msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
-msgstr "Woo がリクエストを受け付けました。Moda は確認済みの解約詳細を待っています。"
+msgid ""
+"Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr ""
+"Woo がリクエストを受け付けました。Moda は確認済みの解約詳細を待っています。"
 
 #: src/page.js:21
 msgid "WooCommerce"
@@ -849,7 +963,8 @@ msgstr "購入済みクレジットの履歴"
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Review purchased credit lots and request refunds for unused credits."
-msgstr "購入したクレジットの内訳を確認し、未使用のクレジットの返金を申請できます。"
+msgstr ""
+"購入したクレジットの内訳を確認し、未使用のクレジットの返金を申請できます。"
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Manage purchased credits"
@@ -972,8 +1087,14 @@ msgstr "この表示に一致する購入はありません。"
 msgid "Back to billing"
 msgstr "請求画面に戻る"
 
-msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
-msgstr "WooCommerce.com の注文ページで Moda Interact の購入に対する返金を申請してください。Moda はプロバイダーと販売者が結果を確認した後にのみクレジットを更新します。"
+msgid ""
+"Open WooCommerce.com Orders to request a refund for a Moda Interact "
+"purchase. Moda updates credits only after the provider and vendor verify the "
+"outcome."
+msgstr ""
+"WooCommerce.com の注文ページで Moda Interact の購入に対する返金を申請してくだ"
+"さい。Moda はプロバイダーと販売者が結果を確認した後にのみクレジットを更新しま"
+"す。"
 
 #: src/recoveries/filters/recovery-filter-form.js:5
 msgid "All statuses"
@@ -1224,14 +1345,20 @@ msgid "Review the recovery settings and try again."
 msgstr "回復設定を確認して、もう一度お試しください。"
 
 #: src/recovery-settings/recovery-behaviour-fields.js:89
-msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
-msgstr "割引支援は無料・有料プランとも下の選択に従います。フォローアップは別途課金されます。"
+msgid ""
+"Discount assistance follows the offer choice below, for both Free and Paid "
+"plans. Follow-ups remain separately chargeable."
+msgstr ""
+"割引支援は無料・有料プランとも下の選択に従います。フォローアップは別途課金さ"
+"れます。"
 
-#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+#: src/recovery-settings/recovery-behaviour-fields.js:104
+#: src/recovery-settings/recovery-behaviour-fields.js:118
 msgid "Start recovery after (minutes) of checkout inactivity"
 msgstr "チェックアウトが非アクティブになってから（分）後に回復を開始"
 
-#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+#: src/recovery-settings/recovery-behaviour-fields.js:151
+#: src/recovery-settings/recovery-behaviour-fields.js:169
 msgid "Send one follow-up when the customer has not replied"
 msgstr "顧客が返信しない場合にフォローアップを1回送信"
 
@@ -1240,25 +1367,36 @@ msgid "After (minutes)"
 msgstr "（分）後"
 
 #: src/recovery-settings/recovery-behaviour-fields.js:195
-msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
-msgstr "顧客が返信した場合、会話の継続に追加の回復クレジットは使いません。予定されたフォローアップは新しい積極的な回復試行となり、追加クレジットを使います。時間は最後に送信した積極的な回復メッセージから測定します。"
+msgid ""
+"If the customer replies, continuing the recovery conversation does not use "
+"another recovery credit. If Moda sends the scheduled follow-up, that follow-"
+"up is a new proactive recovery attempt and uses another recovery credit. "
+"Follow-up timing is measured from the last proactive recovery message sent."
+msgstr ""
+"顧客が返信した場合、会話の継続に追加の回復クレジットは使いません。予定された"
+"フォローアップは新しい積極的な回復試行となり、追加クレジットを使います。時間"
+"は最後に送信した積極的な回復メッセージから測定します。"
 
 #: src/recovery-settings/recovery-offer-choices.js:63
 msgid "WooCommerce coupon selection is not yet available."
 msgstr "WooCommerceのクーポン選択はまだ利用できません。"
-
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour saved."
 msgstr "リカバリー動作を保存しました。"
 
 #: src/recovery-settings/recovery-behaviour-panel.js
-msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
-msgstr "リカバリー設定が別の場所で変更されました。再度保存する前に更新して最新の設定を確認してください。編集内容は引き続き表示されています。"
+msgid ""
+"Recovery settings changed elsewhere. Refresh to review the latest policy "
+"before saving again. Your edits are still visible."
+msgstr ""
+"リカバリー設定が別の場所で変更されました。再度保存する前に更新して最新の設定"
+"を確認してください。編集内容は引き続き表示されています。"
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour could not be saved. Your edits are still visible."
-msgstr "リカバリー動作を保存できませんでした。編集内容は引き続き表示されています。"
+msgstr ""
+"リカバリー動作を保存できませんでした。編集内容は引き続き表示されています。"
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery settings could not be loaded. Refresh to retry."
@@ -1281,8 +1419,11 @@ msgid "Browse coupons"
 msgstr "クーポンを閲覧"
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
-msgid "Preview only. Coupon choices are not saved or used in recovery messages."
-msgstr "プレビューのみです。選択したクーポンは保存されず、リカバリーメッセージにも使用されません。"
+msgid ""
+"Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr ""
+"プレビューのみです。選択したクーポンは保存されず、リカバリーメッセージにも使"
+"用されません。"
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Search coupons"
@@ -1342,7 +1483,8 @@ msgstr "クーポンを利用できるかどうかは WooCommerce が判断し�
 
 #: src/promotions/presentation.js src/promotions/promotions-screen.js
 msgid "Choose promotional recovery credits available to your store."
-msgstr "ストアで利用可能なリカバリー用プロモーションクレジットを選択してください。"
+msgstr ""
+"ストアで利用可能なリカバリー用プロモーションクレジットを選択してください。"
 
 #: src/promotions/presentation.js src/promotions/promotions-screen.js
 msgid "Current promotion"
@@ -1403,3 +1545,72 @@ msgstr "使用: %s"
 #: src/promotions/presentation.js
 msgid "Selected %s"
 msgstr "選択日 %s"
+
+msgid "Contact Moda support and review your messages."
+msgstr "Modaサポートへのお問い合わせとメッセージの確認ができます。"
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "WooCommerceではサポートメッセージはまだ利用できません。"
+
+msgid "Support messages could not be loaded."
+msgstr "サポートメッセージを読み込めませんでした。"
+
+msgid "No messages yet."
+msgstr "メッセージはまだありません。"
+
+msgid "Support thread"
+msgstr "サポートスレッド"
+
+msgid "Support pages"
+msgstr "サポートのページ"
+
+msgid "You"
+msgstr "あなた"
+
+msgid "System"
+msgstr "システム"
+
+msgid "Moda Support"
+msgstr "Modaサポート"
+
+msgid "Unread"
+msgstr "未読"
+
+msgid "Translation unavailable"
+msgstr "翻訳を利用できません"
+
+msgid "Translation pending"
+msgstr "翻訳待ち"
+
+msgid "View translation"
+msgstr "翻訳を表示"
+
+msgid "View original"
+msgstr "原文を表示"
+
+msgid "View billing"
+msgstr "請求情報を見る"
+
+msgid "Contact support"
+msgstr "サポートに連絡"
+
+msgid "Message"
+msgstr "メッセージ"
+
+msgid "Sending…"
+msgstr "送信中…"
+
+msgid "Send"
+msgstr "送信"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr "WooCommerceではサポートメッセージの送信はまだ利用できません。"
+
+msgid "Enter 1 to 500 characters."
+msgstr "1〜500文字を入力してください。"
+
+msgid "The message could not be sent."
+msgstr "メッセージを送信できませんでした。"
+
+msgid "You do not have permission to view support messages."
+msgstr "サポートメッセージを表示する権限がありません。"

@@ -26,11 +26,16 @@ msgstr "%1$s: %2$s"
 #. Description of the plugin
 #: moda-interact.php
 msgid "A WooCommerce Admin extension foundation for Moda Interact."
-msgstr "En WooCommerce-administrationsudvidelse som grundlag for Moda Interact."
+msgstr ""
+"En WooCommerce-administrationsudvidelse som grundlag for Moda Interact."
 
 #: src/billing-screen.js:23 src/billing-screen.js:27
-msgid "A billing change is already in progress. Refresh the billing summary before trying again."
-msgstr "En faktureringsændring er allerede i gang. Opdater faktureringsoversigten, før du prøver igen."
+msgid ""
+"A billing change is already in progress. Refresh the billing summary before "
+"trying again."
+msgstr ""
+"En faktureringsændring er allerede i gang. Opdater faktureringsoversigten, "
+"før du prøver igen."
 
 #: src/recovery-settings/category-profile-summary.js:45
 msgid "A category change is pending publication."
@@ -54,20 +59,30 @@ msgid "Active mapping count"
 msgstr "Antal aktive tilknytninger"
 
 #: src/read-access/read-access-panel.js:35
-msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
-msgstr "Giv Moda Interact adgang til at læse butiksdata. WooCommerce beder dig godkende skrivebeskyttet adgang."
+msgid ""
+"Allow Moda Interact to read store data. WooCommerce will ask you to approve "
+"read-only access."
+msgstr ""
+"Giv Moda Interact adgang til at læse butiksdata. WooCommerce beder dig "
+"godkende skrivebeskyttet adgang."
 
 #: src/read-access/read-access-panel.js:50
 msgid "Allow read access"
 msgstr "Tillad læseadgang"
 
 #: src/recovery-settings/recovery-settings-screen.js:9
-msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
-msgstr "En anden administrator har ændret butikskategorien. Opdater kategorierne, gennemgå det seneste valg, og gem derefter igen."
+msgid ""
+"Another administrator changed the store category. Refresh the categories, "
+"review the latest selection, then save again."
+msgstr ""
+"En anden administrator har ændret butikskategorien. Opdater kategorierne, "
+"gennemgå det seneste valg, og gem derefter igen."
 
 #: src/read-access/read-access-panel.js:43
 msgid "Approval opens in a new tab. Return here to check the result."
-msgstr "Godkendelsen åbnes i en ny fane. Vend tilbage hertil for at kontrollere resultatet."
+msgstr ""
+"Godkendelsen åbnes i en ny fane. Vend tilbage hertil for at kontrollere "
+"resultatet."
 
 #: src/read-access/read-access-panel.js:20
 msgid "Approval was not completed or has expired"
@@ -91,12 +106,20 @@ msgid "Billing data could not be verified. Try again later."
 msgstr "Faktureringsoplysningerne kunne ikke bekræftes. Prøv igen senere."
 
 #: src/billing-screen.js:11
-msgid "Billing is temporarily unavailable. Your current billing state has not changed."
-msgstr "Fakturering er midlertidigt utilgængelig. Din aktuelle faktureringsstatus er ikke ændret."
+msgid ""
+"Billing is temporarily unavailable. Your current billing state has not "
+"changed."
+msgstr ""
+"Fakturering er midlertidigt utilgængelig. Din aktuelle faktureringsstatus er "
+"ikke ændret."
 
 #: src/billing/notices.js:30
-msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
-msgstr "Faktureringen kræver opmærksomhed. Abonnementsændringer er ikke tilgængelige, mens Moda bekræfter faktureringsstatus."
+msgid ""
+"Billing needs attention. Plan changes are unavailable while Moda verifies "
+"billing status."
+msgstr ""
+"Faktureringen kræver opmærksomhed. Abonnementsændringer er ikke "
+"tilgængelige, mens Moda bekræfter faktureringsstatus."
 
 #: src/billing/summary.js:111
 msgid "Billing period"
@@ -132,7 +155,9 @@ msgstr "Kategori-id"
 
 #: src/recovery-settings/recovery-settings-screen.js:21
 msgid "Category settings could not be loaded. Refresh categories to retry."
-msgstr "Kategoriindstillingerne kunne ikke indlæses. Opdater kategorierne for at prøve igen."
+msgstr ""
+"Kategoriindstillingerne kunne ikke indlæses. Opdater kategorierne for at "
+"prøve igen."
 
 #: src/read-access/read-access-panel.js:54
 msgid "Check access"
@@ -151,16 +176,24 @@ msgid "Checking…"
 msgstr "Kontrollerer…"
 
 #: src/billing/top-up-section.js
-msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
-msgstr "Vælg én pakke. WooCommerce viser det endelige beløb og eventuel skat til bekræftelse."
+msgid ""
+"Choose one bundle. WooCommerce will show the final charge and any applicable "
+"tax for confirmation."
+msgstr ""
+"Vælg én pakke. WooCommerce viser det endelige beløb og eventuel skat til "
+"bekræftelse."
 
 #: src/billing/plan-catalogue.js:34
 msgid "Choose plan"
 msgstr "Vælg abonnement"
 
 #: src/recovery-settings/recovery-settings-screen.js:107
-msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
-msgstr "Vælg butikstypen for at tilpasse din CommerceAgent-assistent. Dit Free-abonnement forbliver aktivt."
+msgid ""
+"Choose the type of store to personalize your CommerceAgent assistant. Your "
+"Free plan stays active."
+msgstr ""
+"Vælg butikstypen for at tilpasse din CommerceAgent-assistent. Dit Free-"
+"abonnement forbliver aktivt."
 
 #: src/billing/cancel-dialog.js:93
 msgid "Confirm cancellation"
@@ -282,26 +315,39 @@ msgid "Moda Interact"
 msgstr "Moda Interact"
 
 #: src/page/connection-panel.js:94
-msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
-msgstr "Moda Interact kan ikke kontaktes lige nu. Den lokale forbindelse er ikke blevet fjernet."
+msgid ""
+"Moda Interact cannot be reached right now. The local connection has not been "
+"removed."
+msgstr ""
+"Moda Interact kan ikke kontaktes lige nu. Den lokale forbindelse er ikke "
+"blevet fjernet."
 
 #. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
 #: includes/Runtime.php:93
 #, php-format
-msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
-msgstr "Moda Interact kræver WooCommerce %1$s eller nyere. Registreret version: %2$s."
+msgid ""
+"Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr ""
+"Moda Interact kræver WooCommerce %1$s eller nyere. Registreret version: %2$s."
 
 #: includes/Runtime.php:86
-msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
-msgstr "Moda Interact kræver, at WooCommerce 11.0 eller nyere er installeret og aktiveret."
+msgid ""
+"Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr ""
+"Moda Interact kræver, at WooCommerce 11.0 eller nyere er installeret og "
+"aktiveret."
 
 #: src/recovery-settings/recovery-navigation.js:9
 msgid "Moda Interact sections"
 msgstr "Moda Interact-sektioner"
 
 #: src/page/connection-panel.js:127
-msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
-msgstr "Forbindelsen til Moda Interact-tjenesten er ikke konfigureret til denne plugininstallation. Kontakt webstedsadministratoren."
+msgid ""
+"Moda Interact service connectivity is not configured for this plugin "
+"installation. Contact your site administrator."
+msgstr ""
+"Forbindelsen til Moda Interact-tjenesten er ikke konfigureret til denne "
+"plugininstallation. Kontakt webstedsadministratoren."
 
 #: src/overview-screen.js:32
 msgid "Name"
@@ -321,7 +367,8 @@ msgstr "Der findes ingen valgfrie taksonomitilknytninger til denne kategori."
 
 #: src/billing/notices.js:38
 msgid "No recurring billing contract is available for this store."
-msgstr "Der findes ingen aftale om tilbagevendende fakturering for denne butik."
+msgstr ""
+"Der findes ingen aftale om tilbagevendende fakturering for denne butik."
 
 #: src/billing/summary.js:103
 msgid "No recurring charge"
@@ -329,7 +376,8 @@ msgstr "Ingen tilbagevendende opkrævning"
 
 #: src/billing/top-up-section.js:262
 msgid "No top-ups are currently available for this subscription."
-msgstr "Der er i øjeblikket ingen optankninger tilgængelige for dette abonnement."
+msgstr ""
+"Der er i øjeblikket ingen optankninger tilgængelige for dette abonnement."
 
 #: src/recovery-settings/recovery-effective-summary.js:61
 msgid "No-response follow-up"
@@ -364,12 +412,23 @@ msgid "Overview"
 msgstr "Oversigt"
 
 #: src/billing/cancel-dialog.js:60
-msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
-msgstr "Betalt adgang forbliver tilgængelig, indtil opsigelsen er bekræftet, og den forudbetalte periode slutter. Denne anmodning ændrer ikke straks dit nuværende abonnement."
+msgid ""
+"Paid access remains available until cancellation is verified and the prepaid "
+"term ends. This request does not immediately change your current plan."
+msgstr ""
+"Betalt adgang forbliver tilgængelig, indtil opsigelsen er bekræftet, og den "
+"forudbetalte periode slutter. Denne anmodning ændrer ikke straks dit "
+"nuværende abonnement."
 
 #: src/billing/notices.js:21
-msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
-msgstr "Inkluderede kreditter på det betalte abonnement er midlertidigt utilgængelige. Købte kreditter og resterende livsvarige Free-kreditter kan stadig bruges; kampagnekreditter følger deres eksisterende betingelser."
+msgid ""
+"Paid included credits are temporarily unavailable. Purchased credits and "
+"remaining lifetime Free credits remain usable; promotional credits follow "
+"their existing eligibility."
+msgstr ""
+"Inkluderede kreditter på det betalte abonnement er midlertidigt "
+"utilgængelige. Købte kreditter og resterende livsvarige Free-kreditter kan "
+"stadig bruges; kampagnekreditter følger deres eksisterende betingelser."
 
 #: src/billing/capacity-summary.js:16
 msgid "Paid included credits remaining"
@@ -406,7 +465,8 @@ msgstr "Abonnement"
 
 #: src/billing/plan-catalogue.js:122
 msgid "Plan management is unavailable for the current billing state."
-msgstr "Abonnementer kan ikke administreres med den aktuelle faktureringsstatus."
+msgstr ""
+"Abonnementer kan ikke administreres med den aktuelle faktureringsstatus."
 
 #: src/billing/notices.js:68
 msgid "Plan status unavailable"
@@ -630,8 +690,12 @@ msgid "Store category and assistant prompt activated."
 msgstr "Butikskategori og assistentprompt aktiveret."
 
 #: src/recovery-settings/recovery-settings-screen.js:37
-msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
-msgstr "Butikskategorien blev gemt, men de opdaterede indstillinger kunne ikke indlæses. Opdater for at bekræfte den aktive kategori."
+msgid ""
+"Store category saved, but the updated settings could not be loaded. Refresh "
+"to confirm the active category."
+msgstr ""
+"Butikskategorien blev gemt, men de opdaterede indstillinger kunne ikke "
+"indlæses. Opdater for at bekræfte den aktive kategori."
 
 #: src/overview-screen.js:114
 msgid "Store context"
@@ -650,8 +714,12 @@ msgid "Store read access"
 msgstr "Læseadgang til butik"
 
 #: src/overview-screen.js:241
-msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
-msgstr "Butiksindstillingerne kunne ikke synkroniseres. Din forbindelse er uændret. Prøv igen."
+msgid ""
+"Store settings could not be synchronized. Your connection is unchanged. "
+"Please retry."
+msgstr ""
+"Butiksindstillingerne kunne ikke synkroniseres. Din forbindelse er uændret. "
+"Prøv igen."
 
 #: src/overview-screen.js:251
 msgid "Store settings synchronized."
@@ -694,20 +762,34 @@ msgid "Temporarily unavailable"
 msgstr "Midlertidigt ikke tilgængelig"
 
 #: src/billing-screen.js:76
-msgid "The Moda Interact connection needs attention before billing can be loaded."
-msgstr "Forbindelsen til Moda Interact kræver opmærksomhed, før fakturering kan indlæses."
+msgid ""
+"The Moda Interact connection needs attention before billing can be loaded."
+msgstr ""
+"Forbindelsen til Moda Interact kræver opmærksomhed, før fakturering kan "
+"indlæses."
 
 #: src/recovery-settings/recovery-settings-screen.js:17
-msgid "The Moda Interact connection needs attention before categories can be updated."
-msgstr "Forbindelsen til Moda Interact kræver opmærksomhed, før kategorier kan opdateres."
+msgid ""
+"The Moda Interact connection needs attention before categories can be "
+"updated."
+msgstr ""
+"Forbindelsen til Moda Interact kræver opmærksomhed, før kategorier kan "
+"opdateres."
 
 #: src/overview-screen.js:162
-msgid "The Moda Interact connection needs attention before store data can be loaded."
-msgstr "Forbindelsen til Moda Interact kræver opmærksomhed, før butiksdata kan indlæses."
+msgid ""
+"The Moda Interact connection needs attention before store data can be loaded."
+msgstr ""
+"Forbindelsen til Moda Interact kræver opmærksomhed, før butiksdata kan "
+"indlæses."
 
 #: src/billing-screen.js:35
-msgid "The billing change could not be completed. Your current plan remains unchanged."
-msgstr "Faktureringsændringen kunne ikke gennemføres. Dit nuværende abonnement er uændret."
+msgid ""
+"The billing change could not be completed. Your current plan remains "
+"unchanged."
+msgstr ""
+"Faktureringsændringen kunne ikke gennemføres. Dit nuværende abonnement er "
+"uændret."
 
 #: src/billing-screen.js:46
 msgid "The billing request failed. Try again."
@@ -718,8 +800,10 @@ msgid "The cancellation needs reconciliation. Do not retry it automatically."
 msgstr "Opsigelsen skal afstemmes. Forsøg ikke automatisk igen."
 
 #: src/page/connection-panel.js:211
-msgid "The connection could not be completed. Check your connection and try again."
-msgstr "Forbindelsen kunne ikke oprettes. Kontroller din forbindelse, og prøv igen."
+msgid ""
+"The connection could not be completed. Check your connection and try again."
+msgstr ""
+"Forbindelsen kunne ikke oprettes. Kontroller din forbindelse, og prøv igen."
 
 #: src/page/connection-panel.js:150
 msgid "The connection status could not be checked. Try again."
@@ -727,15 +811,24 @@ msgstr "Forbindelsesstatus kunne ikke kontrolleres. Prøv igen."
 
 #: src/page/connection-panel.js:173
 msgid "The connection status is unavailable. Contact support for help."
-msgstr "Forbindelsesstatus er ikke tilgængelig. Kontakt support for at få hjælp."
+msgstr ""
+"Forbindelsesstatus er ikke tilgængelig. Kontakt support for at få hjælp."
 
 #: src/recovery-settings/recovery-settings-screen.js:25
-msgid "The latest store settings do not show your change. Review the selection and try saving again."
-msgstr "De seneste butiksindstillinger viser ikke din ændring. Gennemgå valget, og prøv at gemme igen."
+msgid ""
+"The latest store settings do not show your change. Review the selection and "
+"try saving again."
+msgstr ""
+"De seneste butiksindstillinger viser ikke din ændring. Gennemgå valget, og "
+"prøv at gemme igen."
 
 #: src/page/connection-panel.js:54
-msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
-msgstr "Den lokale forbindelse skal genoprettes. Din Moda-konto og dine butiksdata er ikke blevet fjernet."
+msgid ""
+"The local connection needs to be re-established. Your Moda account and store "
+"data have not been removed."
+msgstr ""
+"Den lokale forbindelse skal genoprettes. Din Moda-konto og dine butiksdata "
+"er ikke blevet fjernet."
 
 #: src/billing/plan-catalogue.js:142
 msgid "The plan catalogue could not be loaded."
@@ -746,40 +839,65 @@ msgid "The plan change needs reconciliation. Do not retry it automatically."
 msgstr "Abonnementsændringen skal afstemmes. Forsøg ikke automatisk igen."
 
 #: src/billing-screen.js:31
-msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
-msgstr "Resultatet hos udbyderen kendes endnu ikke. Opdater faktureringsoversigten, eller kontakt support; forsøg ikke automatisk igen."
+msgid ""
+"The provider result is not yet known. Refresh the billing summary or contact "
+"support; do not retry automatically."
+msgstr ""
+"Resultatet hos udbyderen kendes endnu ikke. Opdater faktureringsoversigten, "
+"eller kontakt support; forsøg ikke automatisk igen."
 
 #: src/billing/top-up-section.js
 msgid "The purchase could not be started."
 msgstr "Købet kunne ikke startes."
 
 #: src/page/connection-panel.js:137
-msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
-msgstr "Den gemte lokale forbindelse kunne ikke bekræftes. Kontakt support for at få hjælp til at genoprette forbindelsen."
+msgid ""
+"The saved local connection could not be verified. Contact support for help "
+"restoring the connection."
+msgstr ""
+"Den gemte lokale forbindelse kunne ikke bekræftes. Kontakt support for at få "
+"hjælp til at genoprette forbindelsen."
 
 #: src/recovery-settings/recovery-settings-screen.js:13
-msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
-msgstr "Den valgte kategori eller prompt er ikke længere tilgængelig. Opdater kataloget, og vælg en tilgængelig kategori."
+msgid ""
+"The selected category or prompt is no longer available. Refresh the "
+"catalogue and choose an available category."
+msgstr ""
+"Den valgte kategori eller prompt er ikke længere tilgængelig. Opdater "
+"kataloget, og vælg en tilgængelig kategori."
 
 #: src/overview-screen.js:182
 msgid "The store overview could not be verified. Try again."
 msgstr "Butiksoversigten kunne ikke bekræftes. Prøv igen."
 
 #: src/overview-screen.js:172
-msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
-msgstr "Butiksoversigten er midlertidigt utilgængelig. Din forbindelse og dine butiksdata er ikke ændret."
+msgid ""
+"The store overview is temporarily unavailable. Your connection and store "
+"data have not been changed."
+msgstr ""
+"Butiksoversigten er midlertidigt utilgængelig. Din forbindelse og dine "
+"butiksdata er ikke ændret."
 
 #: src/recovery-settings/recovery-settings-screen.js:137
 msgid "There are currently no selectable store categories."
 msgstr "Der er i øjeblikket ingen butikskategorier, der kan vælges."
 
 #: src/page/connection-panel.js:117
-msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
-msgstr "Adressen til dette WordPress-websted er forskellig fra den adresse, der blev brugt til at forbinde til Moda Interact. Kontakt support, før du ændrer forbindelsen."
+msgid ""
+"This WordPress site address differs from the address used for the Moda "
+"Interact connection. Contact support before changing the connection."
+msgstr ""
+"Adressen til dette WordPress-websted er forskellig fra den adresse, der blev "
+"brugt til at forbinde til Moda Interact. Kontakt support, før du ændrer "
+"forbindelsen."
 
 #: src/billing/top-up-section.js
-msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
-msgstr "Denne pakke har allerede et afventende køb. Opdater faktureringsoversigten, før du prøver igen."
+msgid ""
+"This bundle already has a pending purchase. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"Denne pakke har allerede et afventende køb. Opdater faktureringsoversigten, "
+"før du prøver igen."
 
 #: src/billing/top-up-section.js
 msgid "This bundle is no longer available."
@@ -787,11 +905,16 @@ msgstr "Denne pakke er ikke længere tilgængelig."
 
 #: src/billing-screen.js:39
 msgid "This plan is no longer available. Refresh the plan catalogue."
-msgstr "Dette abonnement er ikke længere tilgængeligt. Opdater abonnementskataloget."
+msgstr ""
+"Dette abonnement er ikke længere tilgængeligt. Opdater abonnementskataloget."
 
 #: src/billing/top-up-section.js
-msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
-msgstr "Købsforsøget kunne ikke bekræftes. Opdater faktureringsoversigten, før du prøver igen."
+msgid ""
+"This purchase attempt could not be verified. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"Købsforsøget kunne ikke bekræftes. Opdater faktureringsoversigten, før du "
+"prøver igen."
 
 #: includes/Admin/NativeNavigation.php:85
 msgid "This section is not yet available for WooCommerce."
@@ -806,8 +929,12 @@ msgid "Time zone"
 msgstr "Tidszone"
 
 #: src/read-access/read-access-panel.js:46
-msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
-msgstr "For at tilbagekalde nøglen i butikken skal du åbne WooCommerce > Indstillinger > Avanceret > REST API."
+msgid ""
+"To revoke the key at the store, open WooCommerce > Settings > Advanced > "
+"REST API."
+msgstr ""
+"For at tilbagekalde nøglen i butikken skal du åbne WooCommerce > "
+"Indstillinger > Avanceret > REST API."
 
 #: src/billing/plan-catalogue.js:26
 #: src/recovery-settings/recovery-effective-summary.js:13
@@ -824,12 +951,19 @@ msgid "Waiting for Woo confirmation"
 msgstr "Venter på bekræftelse fra WooCommerce"
 
 #: src/recovery-settings/recovery-settings-screen.js:29
-msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
-msgstr "Vi kunne ikke bekræfte, om din kategori blev gemt. Opdater kategorierne, før du prøver igen."
+msgid ""
+"We could not confirm whether your category was saved. Refresh categories "
+"before trying again."
+msgstr ""
+"Vi kunne ikke bekræfte, om din kategori blev gemt. Opdater kategorierne, før "
+"du prøver igen."
 
 #: src/billing/notices.js:86
-msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
-msgstr "WooCommerce har accepteret anmodningen. Moda afventer bekræftede oplysninger om opsigelsen."
+msgid ""
+"Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr ""
+"WooCommerce har accepteret anmodningen. Moda afventer bekræftede oplysninger "
+"om opsigelsen."
 
 #: src/page.js:21
 msgid "WooCommerce"
@@ -849,7 +983,8 @@ msgstr "Historik over købte kreditter"
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Review purchased credit lots and request refunds for unused credits."
-msgstr "Gennemse købte kreditpakker, og anmod om refusion for ubrugte kreditter."
+msgstr ""
+"Gennemse købte kreditpakker, og anmod om refusion for ubrugte kreditter."
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Manage purchased credits"
@@ -972,8 +1107,14 @@ msgstr "Ingen køb matcher denne visning."
 msgid "Back to billing"
 msgstr "Tilbage til fakturering"
 
-msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
-msgstr "Åbn Ordrer på WooCommerce.com for at anmode om refusion af et Moda Interact-køb. Moda opdaterer først kreditter, når udbyderen og sælgeren har bekræftet resultatet."
+msgid ""
+"Open WooCommerce.com Orders to request a refund for a Moda Interact "
+"purchase. Moda updates credits only after the provider and vendor verify the "
+"outcome."
+msgstr ""
+"Åbn Ordrer på WooCommerce.com for at anmode om refusion af et Moda Interact-"
+"køb. Moda opdaterer først kreditter, når udbyderen og sælgeren har bekræftet "
+"resultatet."
 
 #: src/recoveries/filters/recovery-filter-form.js:5
 msgid "All statuses"
@@ -1224,14 +1365,20 @@ msgid "Review the recovery settings and try again."
 msgstr "Kontrollér indstillingerne, og prøv igen."
 
 #: src/recovery-settings/recovery-behaviour-fields.js:89
-msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
-msgstr "Rabathjælp følger valget nedenfor på både gratis og betalte abonnementer. Opfølgninger afregnes separat."
+msgid ""
+"Discount assistance follows the offer choice below, for both Free and Paid "
+"plans. Follow-ups remain separately chargeable."
+msgstr ""
+"Rabathjælp følger valget nedenfor på både gratis og betalte abonnementer. "
+"Opfølgninger afregnes separat."
 
-#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+#: src/recovery-settings/recovery-behaviour-fields.js:104
+#: src/recovery-settings/recovery-behaviour-fields.js:118
 msgid "Start recovery after (minutes) of checkout inactivity"
 msgstr "Start gendannelse efter (minutter) uden aktivitet ved kassen"
 
-#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+#: src/recovery-settings/recovery-behaviour-fields.js:151
+#: src/recovery-settings/recovery-behaviour-fields.js:169
 msgid "Send one follow-up when the customer has not replied"
 msgstr "Send én opfølgning, når kunden ikke har svaret"
 
@@ -1240,29 +1387,42 @@ msgid "After (minutes)"
 msgstr "Efter (minutter)"
 
 #: src/recovery-settings/recovery-behaviour-fields.js:195
-msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
-msgstr "Et kundesvar bruger ikke en ekstra gendannelseskredit. En planlagt opfølgning er et nyt proaktivt gendannelsesforsøg og bruger en ekstra kredit. Tiden måles fra den senest sendte proaktive besked."
+msgid ""
+"If the customer replies, continuing the recovery conversation does not use "
+"another recovery credit. If Moda sends the scheduled follow-up, that follow-"
+"up is a new proactive recovery attempt and uses another recovery credit. "
+"Follow-up timing is measured from the last proactive recovery message sent."
+msgstr ""
+"Et kundesvar bruger ikke en ekstra gendannelseskredit. En planlagt "
+"opfølgning er et nyt proaktivt gendannelsesforsøg og bruger en ekstra "
+"kredit. Tiden måles fra den senest sendte proaktive besked."
 
 #: src/recovery-settings/recovery-offer-choices.js:63
 msgid "WooCommerce coupon selection is not yet available."
 msgstr "Valg af WooCommerce-rabatkuponer er endnu ikke tilgængeligt."
-
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour saved."
 msgstr "Gendannelsesadfærd gemt."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
-msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
-msgstr "Gendannelsesindstillingerne er ændret et andet sted. Opdater for at gennemgå de seneste indstillinger, før du gemmer igen. Dine ændringer er stadig synlige."
+msgid ""
+"Recovery settings changed elsewhere. Refresh to review the latest policy "
+"before saving again. Your edits are still visible."
+msgstr ""
+"Gendannelsesindstillingerne er ændret et andet sted. Opdater for at gennemgå "
+"de seneste indstillinger, før du gemmer igen. Dine ændringer er stadig "
+"synlige."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour could not be saved. Your edits are still visible."
-msgstr "Gendannelsesadfærden kunne ikke gemmes. Dine ændringer er stadig synlige."
+msgstr ""
+"Gendannelsesadfærden kunne ikke gemmes. Dine ændringer er stadig synlige."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery settings could not be loaded. Refresh to retry."
-msgstr "Gendannelsesindstillingerne kunne ikke indlæses. Opdater for at prøve igen."
+msgstr ""
+"Gendannelsesindstillingerne kunne ikke indlæses. Opdater for at prøve igen."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Refreshing will replace unsaved recovery changes."
@@ -1281,8 +1441,11 @@ msgid "Browse coupons"
 msgstr "Gennemse kuponer"
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
-msgid "Preview only. Coupon choices are not saved or used in recovery messages."
-msgstr "Kun forhåndsvisning. Valgte kuponer gemmes ikke og bruges ikke i gendannelsesbeskeder."
+msgid ""
+"Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr ""
+"Kun forhåndsvisning. Valgte kuponer gemmes ikke og bruges ikke i "
+"gendannelsesbeskeder."
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Search coupons"
@@ -1326,7 +1489,8 @@ msgstr "Der tilbydes ingen rabat."
 
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "This saves your preference; it does not send or redeem a coupon."
-msgstr "Dette gemmer kun din præference; der sendes eller indløses ingen kupon."
+msgstr ""
+"Dette gemmer kun din præference; der sendes eller indløses ingen kupon."
 
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "Coupon synchronisation is pending or unavailable."
@@ -1342,7 +1506,8 @@ msgstr "WooCommerce afgør, om en kupon kan indløses."
 
 #: src/promotions/presentation.js src/promotions/promotions-screen.js
 msgid "Choose promotional recovery credits available to your store."
-msgstr "Vælg kampagnekreditter til gendannelse, der er tilgængelige for din butik."
+msgstr ""
+"Vælg kampagnekreditter til gendannelse, der er tilgængelige for din butik."
 
 #: src/promotions/presentation.js src/promotions/promotions-screen.js
 msgid "Current promotion"
@@ -1403,3 +1568,73 @@ msgstr "Brugt: %s"
 #: src/promotions/presentation.js
 msgid "Selected %s"
 msgstr "Valgt den %s"
+
+msgid "Contact Moda support and review your messages."
+msgstr "Kontakt Moda-support, og se dine beskeder."
+
+msgid "Support messages are not yet available for WooCommerce."
+msgstr "Supportbeskeder er endnu ikke tilgængelige for WooCommerce."
+
+msgid "Support messages could not be loaded."
+msgstr "Supportbeskeder kunne ikke indlæses."
+
+msgid "No messages yet."
+msgstr "Ingen beskeder endnu."
+
+msgid "Support thread"
+msgstr "Supporttråd"
+
+msgid "Support pages"
+msgstr "Supportsider"
+
+msgid "You"
+msgstr "Dig"
+
+msgid "System"
+msgstr "Systembesked"
+
+msgid "Moda Support"
+msgstr "Moda-support"
+
+msgid "Unread"
+msgstr "Ulæst"
+
+msgid "Translation unavailable"
+msgstr "Oversættelse ikke tilgængelig"
+
+msgid "Translation pending"
+msgstr "Oversættelse afventer"
+
+msgid "View translation"
+msgstr "Vis oversættelse"
+
+msgid "View original"
+msgstr "Vis original"
+
+msgid "View billing"
+msgstr "Vis fakturering"
+
+msgid "Contact support"
+msgstr "Kontakt support"
+
+msgid "Message"
+msgstr "Besked"
+
+msgid "Sending…"
+msgstr "Sender…"
+
+msgid "Send"
+msgstr "Send besked"
+
+msgid "Sending support messages is not yet available for WooCommerce."
+msgstr ""
+"Afsendelse af supportbeskeder er endnu ikke tilgængelig for WooCommerce."
+
+msgid "Enter 1 to 500 characters."
+msgstr "Indtast 1 til 500 tegn."
+
+msgid "The message could not be sent."
+msgstr "Beskeden kunne ikke sendes."
+
+msgid "You do not have permission to view support messages."
+msgstr "Du har ikke tilladelse til at se supportbeskeder."

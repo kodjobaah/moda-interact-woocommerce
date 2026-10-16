@@ -4,6 +4,7 @@ import { OverviewScreen } from '../../src/overview-screen';
 import { RecoveriesScreen } from '../../src/recoveries/recoveries-screen';
 import { ConnectedWorkspace } from '../../src/page/connected-workspace';
 import { SurfaceNavigation } from '../../src/page/surface-navigation';
+import { SupportScreen } from '../../src/support/support-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { PromotionsScreen } from '../../src/promotions/promotions-screen';
 
@@ -37,6 +38,7 @@ describe('connected workspace composition', () => {
 		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
 		['PROMOTIONS', PromotionsScreen],
+		['SUPPORT', SupportScreen],
 		['RECOVERY', RecoverySettingsScreen],
 	])('mounts only the %s screen next to the tablist', (surface, Screen) => {
 		const workspace = renderWorkspace(surface);
