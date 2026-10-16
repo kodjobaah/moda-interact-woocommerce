@@ -1339,3 +1339,67 @@ msgstr "쿠폰 다시 불러오기"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "쿠폰을 사용할 수 있는지는 WooCommerce에서 결정합니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "스토어에서 사용할 수 있는 복구 프로모션 크레딧을 선택하세요."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "현재 프로모션"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "사용 가능한 프로모션"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "프로모션 내역"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "WooCommerce에서는 아직 프로모션 혜택을 사용할 수 없습니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "프로모션 선택"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "사용 가능한 프로모션이 없습니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "프로모션 내역이 없습니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s 크레딧"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "만료일 %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "남은 수량 %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "이미 사용함"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "모두 소진됨"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "지급: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "사용: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "선택일 %s"

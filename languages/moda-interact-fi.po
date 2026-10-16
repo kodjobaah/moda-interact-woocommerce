@@ -1339,3 +1339,67 @@ msgstr "Yritä ladata kupongit uudelleen"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce määrittää, voiko kupongin lunastaa."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "Valitse kaupallesi saatavilla olevat palautuksen kampanjakrediitit."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "Nykyinen kampanja"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "Saatavilla olevat kampanjat"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "Kampanjahistoria"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "Kampanjatarjoukset eivät ole vielä saatavilla WooCommercessa."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "Valitse kampanja"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "Ei saatavilla olevia kampanjoita."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "Ei kampanjahistoriaa."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s krediittiä"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "Päättyy %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "Jäljellä: %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "Lunastettu aiemmin"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "Loppuun käytetty"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "Myönnetty: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "Käytetty: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "Valittu %s"

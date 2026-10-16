@@ -1339,3 +1339,67 @@ msgstr "クーポンを再読み込み"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "クーポンを利用できるかどうかは WooCommerce が判断します。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "ストアで利用可能なリカバリー用プロモーションクレジットを選択してください。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "現在のプロモーション"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "利用可能なプロモーション"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "プロモーション履歴"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "WooCommerce ではプロモーションオファーをまだ利用できません。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "プロモーションを選択"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "利用可能なプロモーションはありません。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "プロモーション履歴はありません。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s クレジット"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "有効期限 %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "残り %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "以前に利用済み"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "使い切りました"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "付与: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "使用: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "選択日 %s"

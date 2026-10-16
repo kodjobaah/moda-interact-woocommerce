@@ -1339,3 +1339,67 @@ msgstr "ลองโหลดคูปองอีกครั้ง"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce เป็นผู้กำหนดว่าสามารถใช้คูปองได้หรือไม่"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "เลือกเครดิตโปรโมชันสำหรับการกู้คืนที่พร้อมใช้งานสำหรับร้านค้าของคุณ"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "โปรโมชันปัจจุบัน"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "โปรโมชันที่พร้อมใช้งาน"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "ประวัติโปรโมชัน"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "ข้อเสนอโปรโมชันยังไม่พร้อมใช้งานสำหรับ WooCommerce"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "เลือกโปรโมชัน"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "ไม่มีโปรโมชันที่พร้อมใช้งาน"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "ไม่มีประวัติโปรโมชัน"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s เครดิต"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "หมดอายุ %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "คงเหลือ %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "เคยใช้แล้ว"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "ใช้หมดแล้ว"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "ได้รับ: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "ใช้แล้ว: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "เลือกเมื่อ %s"

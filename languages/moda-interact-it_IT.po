@@ -1339,3 +1339,67 @@ msgstr "Riprova a caricare i coupon"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce determina se un coupon può essere utilizzato."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "Scegli i crediti promozionali per il recupero disponibili per il tuo negozio."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "Promozione corrente"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "Promozioni disponibili"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "Cronologia promozioni"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "Le offerte promozionali non sono ancora disponibili per WooCommerce."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "Seleziona promozione"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "Nessuna promozione disponibile."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "Nessuna cronologia promozioni."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s crediti"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "Scade il %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "Rimanenti: %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "Già richiesta"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "Esaurita"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "Assegnati: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "Utilizzati: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "Selezionata il %s"

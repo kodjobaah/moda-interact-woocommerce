@@ -1,6 +1,7 @@
 import { createElement } from '@wordpress/element';
 import { ConnectedBillingScreen } from '../billing/connected-billing-screen';
 import { OverviewScreen } from '../overview-screen';
+import { PromotionsScreen } from '../promotions/promotions-screen';
 import { RecoveriesScreen } from '../recoveries/recoveries-screen';
 import { RecoverySettingsScreen } from '../recovery-settings/recovery-settings-screen';
 import { SurfaceNavigation } from './surface-navigation';
@@ -39,6 +40,8 @@ export function ConnectedWorkspace({
 			onPurchaseTopUp: actions.purchaseRecoveryCredits,
 			onSetView: actions.setBillingView,
 		});
+	} else if (activeSurface === 'PROMOTIONS') {
+		activeContent = createElement(PromotionsScreen, { key: 'promotions' });
 	} else if (activeSurface === 'RECOVERY') {
 		activeContent = createElement(RecoverySettingsScreen, {
 			key: 'recovery-settings',

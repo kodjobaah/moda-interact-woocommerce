@@ -1339,3 +1339,67 @@ msgstr "Kuponları yeniden yükle"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "Bir kuponun kullanılıp kullanılamayacağını WooCommerce belirler."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "Mağazanız için mevcut promosyon kurtarma kredilerini seçin."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "Mevcut promosyon"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "Mevcut promosyonlar"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "Promosyon geçmişi"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "Promosyon teklifleri henüz WooCommerce için kullanılamıyor."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "Promosyon seç"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "Kullanılabilir promosyon yok."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "Promosyon geçmişi yok."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s kredi"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "Bitiş: %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "Kalan: %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "Daha önce kullanıldı"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "Tükendi"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "Verilen: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "Kullanılan: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "Seçildi: %s"

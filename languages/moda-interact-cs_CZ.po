@@ -1339,3 +1339,67 @@ msgstr "Zkusit znovu načíst kupóny"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce určuje, zda lze kupón uplatnit."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "Vyberte propagační kredity na obnovení dostupné pro váš obchod."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "Aktuální akce"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "Dostupné akce"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "Historie akcí"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "Propagační nabídky zatím nejsou pro WooCommerce dostupné."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "Vybrat akci"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "Žádné dostupné akce."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "Žádná historie akcí."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s kreditů"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "Platí do %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "Zbývá: %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "Již využito"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "Vyčerpáno"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "Přiděleno: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "Využito: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "Vybráno %s"

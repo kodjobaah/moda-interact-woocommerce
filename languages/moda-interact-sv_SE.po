@@ -1339,3 +1339,67 @@ msgstr "Försök läsa in kuponger igen"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce avgör om en kupong kan lösas in."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "Välj kampanjkrediter för återhämtning som är tillgängliga för din butik."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "Aktuell kampanj"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "Tillgängliga kampanjer"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "Kampanjhistorik"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "Kampanjerbjudanden är ännu inte tillgängliga för WooCommerce."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "Välj kampanj"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "Inga tillgängliga kampanjer."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "Ingen kampanjhistorik."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s krediter"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "Löper ut %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "Återstår: %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "Tidigare utnyttjad"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "Förbrukad"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "Beviljade: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "Använda: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "Vald %s"

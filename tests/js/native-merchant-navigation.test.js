@@ -9,6 +9,7 @@ import { OverviewScreen } from '../../src/overview-screen';
 import { RecoveriesScreen } from '../../src/recoveries/recoveries-screen';
 import { ConnectedBillingScreen } from '../../src/billing/connected-billing-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
+import { PromotionsScreen } from '../../src/promotions/promotions-screen';
 
 const actions = {
 	selectSurface: vi.fn(),
@@ -30,6 +31,7 @@ describe('native merchant navigation', () => {
 		['?page=moda-interact', 'OVERVIEW'],
 		['?page=moda-interact-recoveries', 'RECOVERIES'],
 		['?page=moda-interact-billing', 'BILLING'],
+		['?page=moda-interact-promotions', 'PROMOTIONS'],
 		['?page=moda-interact-recovery-settings', 'RECOVERY'],
 	])(
 		'resolves %s to %s without another navigation bar',
@@ -56,6 +58,7 @@ describe('native merchant navigation', () => {
 		['OVERVIEW', OverviewScreen],
 		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
+		['PROMOTIONS', PromotionsScreen],
 		['RECOVERY', RecoverySettingsScreen],
 	])(
 		'renders only the %s screen when the native menu owns navigation',

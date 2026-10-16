@@ -1339,3 +1339,67 @@ msgstr "重新載入優惠券"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "優惠券能否兌換由 WooCommerce 決定。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "選擇適用於您商店的促銷恢復點數。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "目前促銷活動"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "可用促銷活動"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "促銷活動歷史記錄"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "WooCommerce 尚未提供促銷優惠。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "選擇促銷活動"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "目前沒有可用的促銷活動。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "沒有促銷活動歷史記錄。"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s 點"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "到期日 %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "剩餘 %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "先前已領取"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "已用盡"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "已發放：%s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "已使用：%s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "選擇時間 %s"
