@@ -35,6 +35,13 @@ describe('usage history presentation', () => {
 		expect(elements.some((node) => node.type === 'div' && ['status', 'alert'].includes(node.props.role))).toBe(true);
 	});
 
+	it('announces an empty usage period without presenting it as unavailable', () => {
+		const emptyData = { ...data, usageEvents: [] };
+		const result = UsageHistoryResults({ history: history('READY', emptyData), locale: 'en-GB' });
+		const elements = walk(result);
+		expect(elements.some((node) => node.type === 'p' && node.props.role === 'status')).toBe(true);
+	});
+
 	it('exposes period tabs, controlled filters and safe pagination', () => {
 		const h = history('READY', data);
 		const controls = UsageHistoryToolbar({ history: h, locale: 'de-DE' });
