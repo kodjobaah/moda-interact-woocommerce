@@ -65,25 +65,37 @@ describe('ARCH-036 Woo merchant offers', () => {
 
 	it('accepts unknown types, expired/zero metadata and complete >255-character codes', () => {
 		const longCode = 'Z'.repeat(4096);
-		const rows = [row('coupon_5'), row('coupon_6'), row('coupon_7')].map((item, i) => ({
-			...item,
-			providerType: ['WooCoupon:plugin_custom', 'WooCoupon:fixed_cart', 'WooCoupon:percent'][i],
-			code: i === 0 ? longCode : item.code,
-			title: i === 0 ? longCode : item.title,
-			summary: ['0', 'expired', 'usage limit reached'][i],
-			endsAt: i === 1 ? '2025-01-01T00:00:00.000Z' : null,
-		}));
-		expect(parseCatalogue({ ...first, items: rows, hasMore: false, nextCursor: null }).items).toEqual(rows);
+		const rows = [row('coupon_5'), row('coupon_6'), row('coupon_7')].map(
+			(item, i) => ({
+				...item,
+				providerType: [
+					'WooCoupon:plugin_custom',
+					'WooCoupon:fixed_cart',
+					'WooCoupon:percent',
+				][i],
+				code: i === 0 ? longCode : item.code,
+				title: i === 0 ? longCode : item.title,
+				summary: ['0', 'expired', 'usage limit reached'][i],
+				endsAt: i === 1 ? '2025-01-01T00:00:00.000Z' : null,
+			})
+		);
+		expect(
+			parseCatalogue({
+				...first,
+				items: rows,
+				hasMore: false,
+				nextCursor: null,
+			}).items
+		).toEqual(rows);
 	});
 
 	it('uses only privileged WordPress endpoints and sends no CAS token', async () => {
-		const fetcher = vi.fn(async ({ method, path }) =>
-			method === 'PUT'
-				? offers()
-				: path.includes('discount-catalogue')
-					? first
-					: offers()
-		);
+		const fetcher = vi.fn(async ({ method, path }) => {
+			if (method === 'PUT') {
+				return offers();
+			}
+			return path.includes('discount-catalogue') ? first : offers();
+		});
 		const client = createMerchantOffersClient(fetcher);
 		await client.readOffers();
 		await client.readCatalogue({ search: 'SAVE' });
@@ -112,7 +124,9 @@ describe('ARCH-036 Woo merchant offers', () => {
 			saveOffers,
 		});
 		await controller.refresh();
-		await vi.waitFor(() => expect(controller.state.catalogueStatus).toBe('READY'));
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('READY')
+		);
 		expect(controller.state.selectedIds).toEqual(selected);
 		await controller.next();
 		controller.toggle('coupon_4');
@@ -147,7 +161,9 @@ describe('ARCH-036 Woo merchant offers', () => {
 			saveOffers,
 		});
 		await controller.refresh();
-		await vi.waitFor(() => expect(controller.state.catalogueStatus).toBe('READY'));
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('READY')
+		);
 		controller.toggle('coupon_1');
 		controller.setMode('NONE');
 		controller.setMode('FIXED');
@@ -164,10 +180,16 @@ describe('ARCH-036 Woo merchant offers', () => {
 	});
 
 	it('loads NONE without reading a catalogue and saves AI even when coupon fetch would fail', async () => {
-		const readCatalogue = vi.fn(async () => { throw new Error('CATALOGUE_NOT_CURRENT'); });
-		const saveOffers = vi.fn(async (draft) => offers(draft.recoveryOfferMode, draft.selectedDiscountIds));
+		const readCatalogue = vi.fn(async () => {
+			throw new Error('CATALOGUE_NOT_CURRENT');
+		});
+		const saveOffers = vi.fn(async (draft) =>
+			offers(draft.recoveryOfferMode, draft.selectedDiscountIds)
+		);
 		const controller = new MerchantOffersController({
-			readOffers: async () => offers('NONE', []), readCatalogue, saveOffers,
+			readOffers: async () => offers('NONE', []),
+			readCatalogue,
+			saveOffers,
 		});
 		await controller.refresh();
 		expect(controller.state.status).toBe('READY');
@@ -177,38 +199,59 @@ describe('ARCH-036 Woo merchant offers', () => {
 		expect(controller.isDirty()).toBe(true);
 		await controller.save();
 		expect(saveOffers).toHaveBeenCalledWith({
-			recoveryOfferMode: 'AI_BEST_APPLICABLE', selectedDiscountIds: [],
+			recoveryOfferMode: 'AI_BEST_APPLICABLE',
+			selectedDiscountIds: [],
 		});
 		expect(readCatalogue).not.toHaveBeenCalled();
 		controller.dispose();
 	});
 
 	it('does not erase FIXED preferences when catalogue is not current; NONE remains savable', async () => {
-		const readCatalogue = vi.fn(async () => { throw new Error('CATALOGUE_NOT_CURRENT'); });
-		const saveOffers = vi.fn(async (draft) => offers(draft.recoveryOfferMode, draft.selectedDiscountIds));
-		const controller = new MerchantOffersController({ readOffers: async () => offers(), readCatalogue, saveOffers });
+		const readCatalogue = vi.fn(async () => {
+			throw new Error('CATALOGUE_NOT_CURRENT');
+		});
+		const saveOffers = vi.fn(async (draft) =>
+			offers(draft.recoveryOfferMode, draft.selectedDiscountIds)
+		);
+		const controller = new MerchantOffersController({
+			readOffers: async () => offers(),
+			readCatalogue,
+			saveOffers,
+		});
 		await controller.refresh();
-		await vi.waitFor(() => expect(controller.state.catalogueStatus).toBe('NOT_READY'));
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('NOT_READY')
+		);
 		expect(controller.state.status).toBe('READY');
 		expect(controller.state.selectedIds).toEqual(selected);
 		controller.setMode('NONE');
 		await controller.save();
-		expect(saveOffers).toHaveBeenCalledWith({ recoveryOfferMode: 'NONE', selectedDiscountIds: selected });
+		expect(saveOffers).toHaveBeenCalledWith({
+			recoveryOfferMode: 'NONE',
+			selectedDiscountIds: selected,
+		});
 		controller.dispose();
 	});
 
 	it('allows a FIXED retry without discarding draft and blocks duplicate catalogue requests', async () => {
 		const gate = deferred();
 		let calls = 0;
-		const readCatalogue = vi.fn(() => ++calls === 1
-			? Promise.reject(new Error('CATALOGUE_NOT_CURRENT')) : gate.promise);
+		const readCatalogue = vi.fn(() =>
+			++calls === 1
+				? Promise.reject(new Error('CATALOGUE_NOT_CURRENT'))
+				: gate.promise
+		);
 		const saveOffers = vi.fn();
 		const controller = new MerchantOffersController({
-			readOffers: async () => offers('NONE', []), readCatalogue, saveOffers,
+			readOffers: async () => offers('NONE', []),
+			readCatalogue,
+			saveOffers,
 		});
 		await controller.refresh();
 		controller.setMode('FIXED');
-		await vi.waitFor(() => expect(controller.state.catalogueStatus).toBe('NOT_READY'));
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('NOT_READY')
+		);
 		expect(controller.state.mode).toBe('FIXED');
 		const retry = controller.retryCoupons();
 		await controller.retryCoupons();
@@ -227,11 +270,15 @@ describe('ARCH-036 Woo merchant offers', () => {
 	it('keeps saved selected IDs across a catalogue failure, mode changes and Discard', async () => {
 		const controller = new MerchantOffersController({
 			readOffers: async () => offers(),
-			readCatalogue: async () => { throw new Error('CATALOGUE_NOT_CURRENT'); },
+			readCatalogue: async () => {
+				throw new Error('CATALOGUE_NOT_CURRENT');
+			},
 			saveOffers: vi.fn(),
 		});
 		await controller.refresh();
-		await vi.waitFor(() => expect(controller.state.catalogueStatus).toBe('NOT_READY'));
+		await vi.waitFor(() =>
+			expect(controller.state.catalogueStatus).toBe('NOT_READY')
+		);
 		controller.setMode('NONE');
 		expect(controller.isDirty()).toBe(true);
 		controller.cancel();

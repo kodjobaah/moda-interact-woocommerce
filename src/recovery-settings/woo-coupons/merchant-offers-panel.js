@@ -2,7 +2,11 @@ import { createElement, useEffect, useRef, useState } from '@wordpress/element';
 import { MerchantOffersController } from './offer-controller';
 import { MerchantOffersView } from './merchant-offers-view';
 
-/** Owns only the lifecycle. Mode-specific presentation lives in MerchantOffersView. */
+/**
+ * Owns only the lifecycle. Mode-specific presentation lives in MerchantOffersView.
+ * @param {Object} root0
+ * @param {Object} root0.controller
+ */
 export function MerchantOffersPanel({ controller: injected }) {
 	const holder = useRef(null);
 	if (!holder.current) {

@@ -86,11 +86,10 @@ export function parseCatalogue(value) {
 				(item.summary !== null &&
 					(typeof item.summary !== 'string' ||
 						item.summary.length > 2048)) ||
-				(typeof item.providerType !== 'string' ||
-					!/^WooCoupon:[^\x00-\x1f\x7f]+$/.test(item.providerType) ||
-					item.providerType.length > 128) ||
-				(item.code !== null &&
-					typeof item.code !== 'string') ||
+				typeof item.providerType !== 'string' ||
+				!/^WooCoupon:[^\x00-\x1f\x7f]+$/.test(item.providerType) ||
+				item.providerType.length > 128 ||
+				(item.code !== null && typeof item.code !== 'string') ||
 				!['startsAt', 'endsAt'].every(
 					(name) =>
 						item[name] === null ||

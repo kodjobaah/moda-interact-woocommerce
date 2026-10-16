@@ -31,26 +31,36 @@ export class MerchantOffersController {
 	}
 
 	subscribe(listener) {
-		if (this.disposed) return () => {};
+		if (this.disposed) {
+			return () => {};
+		}
 		this.listeners.add(listener);
 		listener(this.state);
 		return () => this.listeners.delete(listener);
 	}
 
 	publish(patch) {
-		if (this.disposed) return;
+		if (this.disposed) {
+			return;
+		}
 		this.state = { ...this.state, ...patch };
-		for (const listener of this.listeners) listener(this.state);
+		for (const listener of this.listeners) {
+			listener(this.state);
+		}
 	}
 
 	async refresh() {
-		if (this.state.saving) return;
+		if (this.state.saving) {
+			return;
+		}
 		const epoch = ++this.epoch;
 		++this.catalogueEpoch;
 		this.publish(empty());
 		try {
 			const offers = await this.client.readOffers();
-			if (this.disposed || epoch !== this.epoch) return;
+			if (this.disposed || epoch !== this.epoch) {
+				return;
+			}
 			this.publish({
 				status: 'READY',
 				offers,
@@ -68,7 +78,13 @@ export class MerchantOffersController {
 	}
 
 	setMode(mode) {
-		if (this.state.status !== 'READY' || this.state.saving || !MODES.includes(mode)) return;
+		if (
+			this.state.status !== 'READY' ||
+			this.state.saving ||
+			!MODES.includes(mode)
+		) {
+			return;
+		}
 		this.publish({ mode, error: null });
 		if (mode === 'FIXED' && this.state.catalogueStatus === 'IDLE') {
 			void this.fetchPage('', []);
@@ -76,13 +92,21 @@ export class MerchantOffersController {
 	}
 
 	toggle(id) {
-		if (this.state.status !== 'READY' || this.state.mode !== 'FIXED' ||
-			this.state.catalogueStatus !== 'READY' || this.state.saving ||
-			!this.state.page?.items.some((item) => item.id === id)) return;
+		if (
+			this.state.status !== 'READY' ||
+			this.state.mode !== 'FIXED' ||
+			this.state.catalogueStatus !== 'READY' ||
+			this.state.saving ||
+			!this.state.page?.items.some((item) => item.id === id)
+		) {
+			return;
+		}
 		const selected = new Set(this.state.selectedIds);
-		if (selected.has(id)) selected.delete(id);
-		else if (selected.size < 50) selected.add(id);
-		else {
+		if (selected.has(id)) {
+			selected.delete(id);
+		} else if (selected.size < 50) {
+			selected.add(id);
+		} else {
 			this.publish({ error: 'SELECTION_LIMIT_EXCEEDED' });
 			return;
 		}
@@ -90,14 +114,25 @@ export class MerchantOffersController {
 	}
 
 	async search(term) {
-		if (this.state.mode !== 'FIXED' || this.state.catalogueStatus !== 'READY' ||
-			this.state.saving) return;
+		if (
+			this.state.mode !== 'FIXED' ||
+			this.state.catalogueStatus !== 'READY' ||
+			this.state.saving
+		) {
+			return;
+		}
 		await this.fetchPage(term.trim(), []);
 	}
 
 	async next() {
-		if (this.state.mode !== 'FIXED' || this.state.catalogueStatus !== 'READY' ||
-			!this.state.page?.nextCursor || this.state.saving) return;
+		if (
+			this.state.mode !== 'FIXED' ||
+			this.state.catalogueStatus !== 'READY' ||
+			!this.state.page?.nextCursor ||
+			this.state.saving
+		) {
+			return;
+		}
 		await this.fetchPage(this.state.search, [
 			...this.state.history,
 			this.state.page.nextCursor,
@@ -105,20 +140,40 @@ export class MerchantOffersController {
 	}
 
 	async previous() {
-		if (this.state.mode !== 'FIXED' || this.state.catalogueStatus !== 'READY' ||
-			!this.state.history.length || this.state.saving) return;
-		await this.fetchPage(this.state.search, this.state.history.slice(0, -1));
+		if (
+			this.state.mode !== 'FIXED' ||
+			this.state.catalogueStatus !== 'READY' ||
+			!this.state.history.length ||
+			this.state.saving
+		) {
+			return;
+		}
+		await this.fetchPage(
+			this.state.search,
+			this.state.history.slice(0, -1)
+		);
 	}
 
 	async retryCoupons() {
-		if (this.state.status !== 'READY' || this.state.mode !== 'FIXED' ||
-			this.state.saving || this.state.catalogueStatus === 'LOADING') return;
+		if (
+			this.state.status !== 'READY' ||
+			this.state.mode !== 'FIXED' ||
+			this.state.saving ||
+			this.state.catalogueStatus === 'LOADING'
+		) {
+			return;
+		}
 		await this.fetchPage(this.state.search, []);
 	}
 
 	async fetchPage(search, history) {
-		if (this.state.status !== 'READY' || this.state.saving ||
-			this.state.catalogueStatus === 'LOADING') return;
+		if (
+			this.state.status !== 'READY' ||
+			this.state.saving ||
+			this.state.catalogueStatus === 'LOADING'
+		) {
+			return;
+		}
 		const epoch = ++this.catalogueEpoch;
 		this.publish({ catalogueStatus: 'LOADING', catalogueError: null });
 		try {
@@ -126,12 +181,25 @@ export class MerchantOffersController {
 				cursor: history.at(-1) ?? null,
 				search,
 			});
-			if (this.disposed || epoch !== this.catalogueEpoch) return;
-			this.publish({ catalogueStatus: 'READY', page, search, history, catalogueError: null });
-		} catch (error) {
-			if (this.disposed || epoch !== this.catalogueEpoch) return;
+			if (this.disposed || epoch !== this.catalogueEpoch) {
+				return;
+			}
 			this.publish({
-				catalogueStatus: error.message === 'CATALOGUE_NOT_CURRENT' ? 'NOT_READY' : 'ERROR',
+				catalogueStatus: 'READY',
+				page,
+				search,
+				history,
+				catalogueError: null,
+			});
+		} catch (error) {
+			if (this.disposed || epoch !== this.catalogueEpoch) {
+				return;
+			}
+			this.publish({
+				catalogueStatus:
+					error.message === 'CATALOGUE_NOT_CURRENT'
+						? 'NOT_READY'
+						: 'ERROR',
 				page: null,
 				catalogueError: error.message,
 			});
@@ -139,7 +207,13 @@ export class MerchantOffersController {
 	}
 
 	cancel() {
-		if (!this.state.offers || this.state.saving || this.state.status !== 'READY') return;
+		if (
+			!this.state.offers ||
+			this.state.saving ||
+			this.state.status !== 'READY'
+		) {
+			return;
+		}
 		const mode = this.state.offers.merchant.recoveryOfferMode;
 		this.publish({
 			mode,
@@ -153,17 +227,26 @@ export class MerchantOffersController {
 
 	isDirty() {
 		const { offers, mode, selectedIds } = this.state;
-		return !!offers && (
-			offers.merchant.recoveryOfferMode !== mode ||
-			JSON.stringify([...offers.merchant.selectedDiscountIds].sort()) !==
-			JSON.stringify([...selectedIds].sort())
+		return (
+			!!offers &&
+			(offers.merchant.recoveryOfferMode !== mode ||
+				JSON.stringify(
+					[...offers.merchant.selectedDiscountIds].sort()
+				) !== JSON.stringify([...selectedIds].sort()))
 		);
 	}
 
 	save() {
-		if (this.pendingSave) return this.pendingSave;
-		if (this.state.status !== 'READY' || this.state.saving || !this.isDirty() ||
-			(this.state.mode === 'FIXED' && this.state.catalogueStatus !== 'READY')) {
+		if (this.pendingSave) {
+			return this.pendingSave;
+		}
+		if (
+			this.state.status !== 'READY' ||
+			this.state.saving ||
+			!this.isDirty() ||
+			(this.state.mode === 'FIXED' &&
+				this.state.catalogueStatus !== 'READY')
+		) {
 			return Promise.resolve();
 		}
 		let update;
@@ -197,7 +280,9 @@ export class MerchantOffersController {
 				}
 			})
 			.finally(() => {
-				if (this.pendingSave === task) this.pendingSave = null;
+				if (this.pendingSave === task) {
+					this.pendingSave = null;
+				}
 			});
 		this.pendingSave = task;
 		return task;
