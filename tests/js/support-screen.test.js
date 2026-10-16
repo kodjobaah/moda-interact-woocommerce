@@ -72,5 +72,6 @@ describe('Support native merchant presentation', () => {
     expect(css).toContain('@media (max-width: 600px)');
     expect(css).toContain(':focus-visible');
     expect(css).toContain('.moda-interact-page .moda-support');
+    expect(css).toMatch(/\.moda-interact-page--support\s*\{\s*box-sizing:\s*border-box;/);
   });
 });
