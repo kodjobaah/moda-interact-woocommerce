@@ -1,33 +1,100 @@
 .moda-interact-page--support {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .moda-interact-page .moda-support {
-  max-width: 860px;
-  margin: 0 auto;
-  display: grid;
-  gap: 18px;
-  &__header h1 { margin: 0 0 8px; }
-  &__header p { margin: 0; color: #50575e; }
-  &__panel { background: #fff; border: 1px solid #c3c4c7; border-radius: 5px; padding: 20px; }
-  &__section-title, &__message-head, &__compose-footer, &__pager {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
-  }
-  &__section-title h2, &__panel h2 { font-size: 1.15rem; margin: 0 0 12px; }
-  &__section-title h2 { margin: 0; }
-  &__thread { padding: 0; margin: 20px 0 0; list-style: none; display: grid; gap: 12px; }
-  &__message { padding: 14px; background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 4px; overflow-wrap: anywhere; }
-  &__message--merchant { background: #f0f6fc; }
-  &__message p { white-space: pre-wrap; }
-  &__message time { color: #50575e; font-size: 0.85rem; }
-  &__unread { font-weight: 600; }
-  &__pager { margin-top: 20px; }
-  textarea { display: block; width: 100%; max-width: 100%; margin: 8px 0 12px; box-sizing: border-box; }
-  label { display: block; font-weight: 600; }
-  button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 2px solid #2271b1; outline-offset: 2px; }
-  @media (max-width: 600px) {
-    &__panel { padding: 14px; }
-    &__section-title, &__compose-footer { align-items: flex-start; }
-    &__message-head { align-items: baseline; }
-  }
+	max-width: 860px;
+	margin: 0 auto;
+	display: grid;
+	gap: 18px;
+	&__header h1 {
+		margin: 0 0 8px;
+	}
+	&__header p {
+		margin: 0;
+		color: #50575e;
+	}
+	&__panel {
+		background: #fff;
+		border: 1px solid #c3c4c7;
+		border-radius: 5px;
+		padding: 20px;
+	}
+	&__section-title,
+	&__message-head,
+	&__compose-footer,
+	&__pager {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	&__section-title h2,
+	&__panel h2 {
+		font-size: 1.15rem;
+		margin: 0 0 12px;
+	}
+	&__section-title h2 {
+		margin: 0;
+	}
+	&__thread {
+		padding: 0;
+		margin: 20px 0 0;
+		list-style: none;
+		display: grid;
+		gap: 12px;
+	}
+	&__message {
+		padding: 14px;
+		background: #f6f7f7;
+		border: 1px solid #dcdcde;
+		border-radius: 4px;
+		overflow-wrap: anywhere;
+	}
+	&__message--merchant {
+		background: #f0f6fc;
+	}
+	&__message p {
+		white-space: pre-wrap;
+	}
+	&__message time {
+		color: #50575e;
+		font-size: 0.85rem;
+	}
+	&__unread {
+		font-weight: 600;
+	}
+	&__pager {
+		margin-top: 20px;
+	}
+	textarea {
+		display: block;
+		width: 100%;
+		max-width: 100%;
+		margin: 8px 0 12px;
+		box-sizing: border-box;
+	}
+	label {
+		display: block;
+		font-weight: 600;
+	}
+	button:focus-visible,
+	a:focus-visible,
+	textarea:focus-visible {
+		outline: 2px solid #2271b1;
+		outline-offset: 2px;
+	}
+	@media (max-width: 600px) {
+		&__panel {
+			padding: 14px;
+		}
+		&__section-title,
+		&__compose-footer {
+			align-items: flex-start;
+		}
+		&__message-head {
+			align-items: baseline;
+		}
+	}
 }

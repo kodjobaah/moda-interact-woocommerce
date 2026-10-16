@@ -29,8 +29,12 @@ msgid "A WooCommerce Admin extension foundation for Moda Interact."
 msgstr "Moda Interact용 WooCommerce 관리자 확장 프로그램의 기반입니다."
 
 #: src/billing-screen.js:23 src/billing-screen.js:27
-msgid "A billing change is already in progress. Refresh the billing summary before trying again."
-msgstr "이미 청구 변경이 진행 중입니다. 다시 시도하기 전에 청구 요약을 새로고침하세요."
+msgid ""
+"A billing change is already in progress. Refresh the billing summary before "
+"trying again."
+msgstr ""
+"이미 청구 변경이 진행 중입니다. 다시 시도하기 전에 청구 요약을 새로고침하세"
+"요."
 
 #: src/recovery-settings/category-profile-summary.js:45
 msgid "A category change is pending publication."
@@ -54,16 +58,24 @@ msgid "Active mapping count"
 msgstr "활성 매핑 수"
 
 #: src/read-access/read-access-panel.js:35
-msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
-msgstr "Moda Interact가 상점 데이터를 읽도록 허용합니다. WooCommerce에서 읽기 전용 권한 승인을 요청합니다."
+msgid ""
+"Allow Moda Interact to read store data. WooCommerce will ask you to approve "
+"read-only access."
+msgstr ""
+"Moda Interact가 상점 데이터를 읽도록 허용합니다. WooCommerce에서 읽기 전용 권"
+"한 승인을 요청합니다."
 
 #: src/read-access/read-access-panel.js:50
 msgid "Allow read access"
 msgstr "읽기 권한 허용"
 
 #: src/recovery-settings/recovery-settings-screen.js:9
-msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
-msgstr "다른 관리자가 스토어 카테고리를 변경했습니다. 카테고리를 새로고침하고 최신 선택을 확인한 다음 다시 저장하세요."
+msgid ""
+"Another administrator changed the store category. Refresh the categories, "
+"review the latest selection, then save again."
+msgstr ""
+"다른 관리자가 스토어 카테고리를 변경했습니다. 카테고리를 새로고침하고 최신 선"
+"택을 확인한 다음 다시 저장하세요."
 
 #: src/read-access/read-access-panel.js:43
 msgid "Approval opens in a new tab. Return here to check the result."
@@ -91,12 +103,20 @@ msgid "Billing data could not be verified. Try again later."
 msgstr "청구 데이터를 검증하지 못했습니다. 나중에 다시 시도하세요."
 
 #: src/billing-screen.js:11
-msgid "Billing is temporarily unavailable. Your current billing state has not changed."
-msgstr "청구 서비스를 일시적으로 사용할 수 없습니다. 현재 청구 상태는 변경되지 않았습니다."
+msgid ""
+"Billing is temporarily unavailable. Your current billing state has not "
+"changed."
+msgstr ""
+"청구 서비스를 일시적으로 사용할 수 없습니다. 현재 청구 상태는 변경되지 않았습"
+"니다."
 
 #: src/billing/notices.js:30
-msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
-msgstr "청구 상태를 확인해야 합니다. Moda에서 청구 상태를 검증하는 동안 요금제를 변경할 수 없습니다."
+msgid ""
+"Billing needs attention. Plan changes are unavailable while Moda verifies "
+"billing status."
+msgstr ""
+"청구 상태를 확인해야 합니다. Moda에서 청구 상태를 검증하는 동안 요금제를 변경"
+"할 수 없습니다."
 
 #: src/billing/summary.js:111
 msgid "Billing period"
@@ -132,7 +152,8 @@ msgstr "카테고리 ID"
 
 #: src/recovery-settings/recovery-settings-screen.js:21
 msgid "Category settings could not be loaded. Refresh categories to retry."
-msgstr "카테고리 설정을 불러오지 못했습니다. 카테고리를 새로고침하고 다시 시도하세요."
+msgstr ""
+"카테고리 설정을 불러오지 못했습니다. 카테고리를 새로고침하고 다시 시도하세요."
 
 #: src/read-access/read-access-panel.js:54
 msgid "Check access"
@@ -151,16 +172,24 @@ msgid "Checking…"
 msgstr "확인하는 중…"
 
 #: src/billing/top-up-section.js
-msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
-msgstr "묶음 하나를 선택하세요. WooCommerce에서 최종 청구 금액과 적용 가능한 세금을 확인할 수 있습니다."
+msgid ""
+"Choose one bundle. WooCommerce will show the final charge and any applicable "
+"tax for confirmation."
+msgstr ""
+"묶음 하나를 선택하세요. WooCommerce에서 최종 청구 금액과 적용 가능한 세금을 "
+"확인할 수 있습니다."
 
 #: src/billing/plan-catalogue.js:34
 msgid "Choose plan"
 msgstr "요금제 선택"
 
 #: src/recovery-settings/recovery-settings-screen.js:107
-msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
-msgstr "스토어 유형을 선택하여 CommerceAgent 어시스턴트를 맞춤 설정하세요. Free 요금제는 계속 활성 상태로 유지됩니다."
+msgid ""
+"Choose the type of store to personalize your CommerceAgent assistant. Your "
+"Free plan stays active."
+msgstr ""
+"스토어 유형을 선택하여 CommerceAgent 어시스턴트를 맞춤 설정하세요. Free 요금"
+"제는 계속 활성 상태로 유지됩니다."
 
 #: src/billing/cancel-dialog.js:93
 msgid "Confirm cancellation"
@@ -282,26 +311,39 @@ msgid "Moda Interact"
 msgstr "Moda Interact"
 
 #: src/page/connection-panel.js:94
-msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
-msgstr "현재 Moda Interact에 연결할 수 없습니다. 로컬 연결은 삭제되지 않았습니다."
+msgid ""
+"Moda Interact cannot be reached right now. The local connection has not been "
+"removed."
+msgstr ""
+"현재 Moda Interact에 연결할 수 없습니다. 로컬 연결은 삭제되지 않았습니다."
 
 #. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
 #: includes/Runtime.php:93
 #, php-format
-msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
-msgstr "Moda Interact를 사용하려면 WooCommerce %1$s 이상이 필요합니다. 감지된 버전: %2$s."
+msgid ""
+"Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr ""
+"Moda Interact를 사용하려면 WooCommerce %1$s 이상이 필요합니다. 감지된 버전: "
+"%2$s."
 
 #: includes/Runtime.php:86
-msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
-msgstr "Moda Interact를 사용하려면 WooCommerce 11.0 이상이 설치되어 활성화되어 있어야 합니다."
+msgid ""
+"Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr ""
+"Moda Interact를 사용하려면 WooCommerce 11.0 이상이 설치되어 활성화되어 있어"
+"야 합니다."
 
 #: src/recovery-settings/recovery-navigation.js:9
 msgid "Moda Interact sections"
 msgstr "Moda Interact 섹션"
 
 #: src/page/connection-panel.js:127
-msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
-msgstr "이 플러그인 설치에는 Moda Interact 서비스 연결이 구성되어 있지 않습니다. 사이트 관리자에게 문의하세요."
+msgid ""
+"Moda Interact service connectivity is not configured for this plugin "
+"installation. Contact your site administrator."
+msgstr ""
+"이 플러그인 설치에는 Moda Interact 서비스 연결이 구성되어 있지 않습니다. 사이"
+"트 관리자에게 문의하세요."
 
 #: src/overview-screen.js:32
 msgid "Name"
@@ -364,12 +406,22 @@ msgid "Overview"
 msgstr "개요"
 
 #: src/billing/cancel-dialog.js:60
-msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
-msgstr "구독 취소가 검증되고 선결제 기간이 종료될 때까지 유료 기능을 계속 이용할 수 있습니다. 이 요청으로 현재 요금제가 즉시 변경되지는 않습니다."
+msgid ""
+"Paid access remains available until cancellation is verified and the prepaid "
+"term ends. This request does not immediately change your current plan."
+msgstr ""
+"구독 취소가 검증되고 선결제 기간이 종료될 때까지 유료 기능을 계속 이용할 수 "
+"있습니다. 이 요청으로 현재 요금제가 즉시 변경되지는 않습니다."
 
 #: src/billing/notices.js:21
-msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
-msgstr "유료 요금제에 포함된 크레딧을 일시적으로 사용할 수 없습니다. 구매한 크레딧과 남은 평생 Free 크레딧은 계속 사용할 수 있으며, 프로모션 크레딧에는 기존 사용 조건이 적용됩니다."
+msgid ""
+"Paid included credits are temporarily unavailable. Purchased credits and "
+"remaining lifetime Free credits remain usable; promotional credits follow "
+"their existing eligibility."
+msgstr ""
+"유료 요금제에 포함된 크레딧을 일시적으로 사용할 수 없습니다. 구매한 크레딧과 "
+"남은 평생 Free 크레딧은 계속 사용할 수 있으며, 프로모션 크레딧에는 기존 사용 "
+"조건이 적용됩니다."
 
 #: src/billing/capacity-summary.js:16
 msgid "Paid included credits remaining"
@@ -630,8 +682,12 @@ msgid "Store category and assistant prompt activated."
 msgstr "스토어 카테고리와 어시스턴트 프롬프트가 활성화되었습니다."
 
 #: src/recovery-settings/recovery-settings-screen.js:37
-msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
-msgstr "스토어 카테고리가 저장되었지만 업데이트된 설정을 불러오지 못했습니다. 활성 카테고리를 확인하려면 새로고침하세요."
+msgid ""
+"Store category saved, but the updated settings could not be loaded. Refresh "
+"to confirm the active category."
+msgstr ""
+"스토어 카테고리가 저장되었지만 업데이트된 설정을 불러오지 못했습니다. 활성 카"
+"테고리를 확인하려면 새로고침하세요."
 
 #: src/overview-screen.js:114
 msgid "Store context"
@@ -650,8 +706,12 @@ msgid "Store read access"
 msgstr "상점 읽기 권한"
 
 #: src/overview-screen.js:241
-msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
-msgstr "스토어 설정을 동기화하지 못했습니다. 연결은 변경되지 않았습니다. 다시 시도하세요."
+msgid ""
+"Store settings could not be synchronized. Your connection is unchanged. "
+"Please retry."
+msgstr ""
+"스토어 설정을 동기화하지 못했습니다. 연결은 변경되지 않았습니다. 다시 시도하"
+"세요."
 
 #: src/overview-screen.js:251
 msgid "Store settings synchronized."
@@ -694,19 +754,25 @@ msgid "Temporarily unavailable"
 msgstr "일시적으로 사용할 수 없음"
 
 #: src/billing-screen.js:76
-msgid "The Moda Interact connection needs attention before billing can be loaded."
+msgid ""
+"The Moda Interact connection needs attention before billing can be loaded."
 msgstr "청구 정보를 불러오려면 Moda Interact 연결을 확인해야 합니다."
 
 #: src/recovery-settings/recovery-settings-screen.js:17
-msgid "The Moda Interact connection needs attention before categories can be updated."
+msgid ""
+"The Moda Interact connection needs attention before categories can be "
+"updated."
 msgstr "카테고리를 업데이트하려면 먼저 Moda Interact 연결을 확인해야 합니다."
 
 #: src/overview-screen.js:162
-msgid "The Moda Interact connection needs attention before store data can be loaded."
+msgid ""
+"The Moda Interact connection needs attention before store data can be loaded."
 msgstr "스토어 데이터를 불러오려면 Moda Interact 연결을 확인해야 합니다."
 
 #: src/billing-screen.js:35
-msgid "The billing change could not be completed. Your current plan remains unchanged."
+msgid ""
+"The billing change could not be completed. Your current plan remains "
+"unchanged."
 msgstr "청구 변경을 완료하지 못했습니다. 현재 요금제는 변경되지 않았습니다."
 
 #: src/billing-screen.js:46
@@ -718,7 +784,8 @@ msgid "The cancellation needs reconciliation. Do not retry it automatically."
 msgstr "구독 취소 내역을 대조해야 합니다. 자동으로 다시 시도하지 마세요."
 
 #: src/page/connection-panel.js:211
-msgid "The connection could not be completed. Check your connection and try again."
+msgid ""
+"The connection could not be completed. Check your connection and try again."
 msgstr "연결을 완료하지 못했습니다. 연결 상태를 확인하고 다시 시도하세요."
 
 #: src/page/connection-panel.js:150
@@ -730,12 +797,20 @@ msgid "The connection status is unavailable. Contact support for help."
 msgstr "연결 상태를 확인할 수 없습니다. 지원팀에 문의하세요."
 
 #: src/recovery-settings/recovery-settings-screen.js:25
-msgid "The latest store settings do not show your change. Review the selection and try saving again."
-msgstr "최신 스토어 설정에 변경 사항이 반영되지 않았습니다. 선택을 검토하고 다시 저장하세요."
+msgid ""
+"The latest store settings do not show your change. Review the selection and "
+"try saving again."
+msgstr ""
+"최신 스토어 설정에 변경 사항이 반영되지 않았습니다. 선택을 검토하고 다시 저장"
+"하세요."
 
 #: src/page/connection-panel.js:54
-msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
-msgstr "로컬 연결을 다시 설정해야 합니다. Moda 계정과 스토어 데이터는 삭제되지 않았습니다."
+msgid ""
+"The local connection needs to be re-established. Your Moda account and store "
+"data have not been removed."
+msgstr ""
+"로컬 연결을 다시 설정해야 합니다. Moda 계정과 스토어 데이터는 삭제되지 않았습"
+"니다."
 
 #: src/billing/plan-catalogue.js:142
 msgid "The plan catalogue could not be loaded."
@@ -746,40 +821,64 @@ msgid "The plan change needs reconciliation. Do not retry it automatically."
 msgstr "요금제 변경 내역을 대조해야 합니다. 자동으로 다시 시도하지 마세요."
 
 #: src/billing-screen.js:31
-msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
-msgstr "제공업체의 처리 결과가 아직 확인되지 않았습니다. 청구 요약을 새로고침하거나 지원팀에 문의하세요. 자동으로 다시 시도하지 마세요."
+msgid ""
+"The provider result is not yet known. Refresh the billing summary or contact "
+"support; do not retry automatically."
+msgstr ""
+"제공업체의 처리 결과가 아직 확인되지 않았습니다. 청구 요약을 새로고침하거나 "
+"지원팀에 문의하세요. 자동으로 다시 시도하지 마세요."
 
 #: src/billing/top-up-section.js
 msgid "The purchase could not be started."
 msgstr "구매를 시작할 수 없습니다."
 
 #: src/page/connection-panel.js:137
-msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
-msgstr "저장된 로컬 연결을 검증하지 못했습니다. 연결 복원에 도움이 필요하면 지원팀에 문의하세요."
+msgid ""
+"The saved local connection could not be verified. Contact support for help "
+"restoring the connection."
+msgstr ""
+"저장된 로컬 연결을 검증하지 못했습니다. 연결 복원에 도움이 필요하면 지원팀에 "
+"문의하세요."
 
 #: src/recovery-settings/recovery-settings-screen.js:13
-msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
-msgstr "선택한 카테고리 또는 프롬프트를 더 이상 사용할 수 없습니다. 목록을 새로고침하고 사용 가능한 카테고리를 선택하세요."
+msgid ""
+"The selected category or prompt is no longer available. Refresh the "
+"catalogue and choose an available category."
+msgstr ""
+"선택한 카테고리 또는 프롬프트를 더 이상 사용할 수 없습니다. 목록을 새로고침하"
+"고 사용 가능한 카테고리를 선택하세요."
 
 #: src/overview-screen.js:182
 msgid "The store overview could not be verified. Try again."
 msgstr "스토어 개요를 검증하지 못했습니다. 다시 시도하세요."
 
 #: src/overview-screen.js:172
-msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
-msgstr "스토어 개요를 일시적으로 사용할 수 없습니다. 연결과 스토어 데이터는 변경되지 않았습니다."
+msgid ""
+"The store overview is temporarily unavailable. Your connection and store "
+"data have not been changed."
+msgstr ""
+"스토어 개요를 일시적으로 사용할 수 없습니다. 연결과 스토어 데이터는 변경되지 "
+"않았습니다."
 
 #: src/recovery-settings/recovery-settings-screen.js:137
 msgid "There are currently no selectable store categories."
 msgstr "현재 선택할 수 있는 스토어 카테고리가 없습니다."
 
 #: src/page/connection-panel.js:117
-msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
-msgstr "이 WordPress 사이트 주소는 Moda Interact 연결에 사용한 주소와 다릅니다. 연결을 변경하기 전에 지원팀에 문의하세요."
+msgid ""
+"This WordPress site address differs from the address used for the Moda "
+"Interact connection. Contact support before changing the connection."
+msgstr ""
+"이 WordPress 사이트 주소는 Moda Interact 연결에 사용한 주소와 다릅니다. 연결"
+"을 변경하기 전에 지원팀에 문의하세요."
 
 #: src/billing/top-up-section.js
-msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
-msgstr "이 묶음은 이미 구매 대기 중입니다. 다시 시도하기 전에 결제 요약을 새로 고치세요."
+msgid ""
+"This bundle already has a pending purchase. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"이 묶음은 이미 구매 대기 중입니다. 다시 시도하기 전에 결제 요약을 새로 고치세"
+"요."
 
 #: src/billing/top-up-section.js
 msgid "This bundle is no longer available."
@@ -790,8 +889,12 @@ msgid "This plan is no longer available. Refresh the plan catalogue."
 msgstr "이 요금제는 더 이상 제공되지 않습니다. 요금제 목록을 새로고침하세요."
 
 #: src/billing/top-up-section.js
-msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
-msgstr "이 구매 시도를 확인할 수 없습니다. 다시 시도하기 전에 결제 요약을 새로 고치세요."
+msgid ""
+"This purchase attempt could not be verified. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"이 구매 시도를 확인할 수 없습니다. 다시 시도하기 전에 결제 요약을 새로 고치세"
+"요."
 
 #: includes/Admin/NativeNavigation.php:85
 msgid "This section is not yet available for WooCommerce."
@@ -806,8 +909,11 @@ msgid "Time zone"
 msgstr "시간대"
 
 #: src/read-access/read-access-panel.js:46
-msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
-msgstr "상점에서 키를 취소하려면 WooCommerce > 설정 > 고급 > REST API로 이동하세요."
+msgid ""
+"To revoke the key at the store, open WooCommerce > Settings > Advanced > "
+"REST API."
+msgstr ""
+"상점에서 키를 취소하려면 WooCommerce > 설정 > 고급 > REST API로 이동하세요."
 
 #: src/billing/plan-catalogue.js:26
 #: src/recovery-settings/recovery-effective-summary.js:13
@@ -824,12 +930,19 @@ msgid "Waiting for Woo confirmation"
 msgstr "Woo의 확인을 기다리는 중"
 
 #: src/recovery-settings/recovery-settings-screen.js:29
-msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
-msgstr "카테고리가 저장되었는지 확인하지 못했습니다. 다시 시도하기 전에 카테고리를 새로고침하세요."
+msgid ""
+"We could not confirm whether your category was saved. Refresh categories "
+"before trying again."
+msgstr ""
+"카테고리가 저장되었는지 확인하지 못했습니다. 다시 시도하기 전에 카테고리를 새"
+"로고침하세요."
 
 #: src/billing/notices.js:86
-msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
-msgstr "Woo에서 요청을 접수했습니다. Moda는 검증된 구독 취소 세부 정보를 기다리고 있습니다."
+msgid ""
+"Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr ""
+"Woo에서 요청을 접수했습니다. Moda는 검증된 구독 취소 세부 정보를 기다리고 있"
+"습니다."
 
 #: src/page.js:21
 msgid "WooCommerce"
@@ -849,7 +962,8 @@ msgstr "구매한 크레딧 내역"
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Review purchased credit lots and request refunds for unused credits."
-msgstr "구매한 크레딧 묶음을 확인하고 사용하지 않은 크레딧의 환불을 요청하세요."
+msgstr ""
+"구매한 크레딧 묶음을 확인하고 사용하지 않은 크레딧의 환불을 요청하세요."
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Manage purchased credits"
@@ -972,8 +1086,14 @@ msgstr "이 보기에 해당하는 구매가 없습니다."
 msgid "Back to billing"
 msgstr "청구 페이지로 돌아가기"
 
-msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
-msgstr "WooCommerce.com의 주문 페이지에서 Moda Interact 구매에 대한 환불을 요청하세요. Moda는 결제 제공업체와 판매자가 결과를 확인한 후에만 크레딧을 업데이트합니다."
+msgid ""
+"Open WooCommerce.com Orders to request a refund for a Moda Interact "
+"purchase. Moda updates credits only after the provider and vendor verify the "
+"outcome."
+msgstr ""
+"WooCommerce.com의 주문 페이지에서 Moda Interact 구매에 대한 환불을 요청하세"
+"요. Moda는 결제 제공업체와 판매자가 결과를 확인한 후에만 크레딧을 업데이트합"
+"니다."
 
 #: src/recoveries/filters/recovery-filter-form.js:5
 msgid "All statuses"
@@ -1224,14 +1344,20 @@ msgid "Review the recovery settings and try again."
 msgstr "설정을 확인한 후 다시 시도하세요."
 
 #: src/recovery-settings/recovery-behaviour-fields.js:89
-msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
-msgstr "할인 지원은 무료 및 유료 요금제 모두 아래 선택을 따릅니다. 후속 메시지는 별도로 청구됩니다."
+msgid ""
+"Discount assistance follows the offer choice below, for both Free and Paid "
+"plans. Follow-ups remain separately chargeable."
+msgstr ""
+"할인 지원은 무료 및 유료 요금제 모두 아래 선택을 따릅니다. 후속 메시지는 별도"
+"로 청구됩니다."
 
-#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+#: src/recovery-settings/recovery-behaviour-fields.js:104
+#: src/recovery-settings/recovery-behaviour-fields.js:118
 msgid "Start recovery after (minutes) of checkout inactivity"
 msgstr "결제 비활성 후 (분) 지나면 복구 시작"
 
-#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+#: src/recovery-settings/recovery-behaviour-fields.js:151
+#: src/recovery-settings/recovery-behaviour-fields.js:169
 msgid "Send one follow-up when the customer has not replied"
 msgstr "고객이 응답하지 않으면 후속 메시지 한 번 보내기"
 
@@ -1240,21 +1366,31 @@ msgid "After (minutes)"
 msgstr "(분) 후"
 
 #: src/recovery-settings/recovery-behaviour-fields.js:195
-msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
-msgstr "고객이 응답하면 대화를 계속해도 추가 복구 크레딧을 사용하지 않습니다. 예약된 후속 메시지는 새로운 선제적 복구 시도이며 추가 크레딧을 사용합니다. 시간은 마지막으로 보낸 선제적 복구 메시지부터 측정됩니다."
+msgid ""
+"If the customer replies, continuing the recovery conversation does not use "
+"another recovery credit. If Moda sends the scheduled follow-up, that follow-"
+"up is a new proactive recovery attempt and uses another recovery credit. "
+"Follow-up timing is measured from the last proactive recovery message sent."
+msgstr ""
+"고객이 응답하면 대화를 계속해도 추가 복구 크레딧을 사용하지 않습니다. 예약된 "
+"후속 메시지는 새로운 선제적 복구 시도이며 추가 크레딧을 사용합니다. 시간은 마"
+"지막으로 보낸 선제적 복구 메시지부터 측정됩니다."
 
 #: src/recovery-settings/recovery-offer-choices.js:63
 msgid "WooCommerce coupon selection is not yet available."
 msgstr "WooCommerce 쿠폰 선택 기능은 아직 사용할 수 없습니다."
-
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour saved."
 msgstr "복구 동작이 저장되었습니다."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
-msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
-msgstr "복구 설정이 다른 곳에서 변경되었습니다. 다시 저장하기 전에 새로고침하여 최신 정책을 확인하세요. 입력한 변경 사항은 계속 표시됩니다."
+msgid ""
+"Recovery settings changed elsewhere. Refresh to review the latest policy "
+"before saving again. Your edits are still visible."
+msgstr ""
+"복구 설정이 다른 곳에서 변경되었습니다. 다시 저장하기 전에 새로고침하여 최신 "
+"정책을 확인하세요. 입력한 변경 사항은 계속 표시됩니다."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour could not be saved. Your edits are still visible."
@@ -1281,8 +1417,11 @@ msgid "Browse coupons"
 msgstr "쿠폰 찾아보기"
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
-msgid "Preview only. Coupon choices are not saved or used in recovery messages."
-msgstr "미리보기 전용입니다. 선택한 쿠폰은 저장되거나 복구 메시지에 사용되지 않습니다."
+msgid ""
+"Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr ""
+"미리보기 전용입니다. 선택한 쿠폰은 저장되거나 복구 메시지에 사용되지 않습니"
+"다."
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Search coupons"
@@ -1339,6 +1478,70 @@ msgstr "쿠폰 다시 불러오기"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "쿠폰을 사용할 수 있는지는 WooCommerce에서 결정합니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr "스토어에서 사용할 수 있는 복구 프로모션 크레딧을 선택하세요."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "현재 프로모션"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "사용 가능한 프로모션"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "프로모션 내역"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "WooCommerce에서는 아직 프로모션 혜택을 사용할 수 없습니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "프로모션 선택"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "사용 가능한 프로모션이 없습니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "프로모션 내역이 없습니다."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s 크레딧"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "만료일 %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "남은 수량 %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "이미 사용함"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "모두 소진됨"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "지급: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "사용: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "선택일 %s"
 
 msgid "Contact Moda support and review your messages."
 msgstr "Moda 지원팀에 문의하고 메시지를 확인하세요."

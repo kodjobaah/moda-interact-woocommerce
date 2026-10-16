@@ -29,8 +29,12 @@ msgid "A WooCommerce Admin extension foundation for Moda Interact."
 msgstr "Una extensión de administración de WooCommerce para Moda Interact."
 
 #: src/billing-screen.js:23 src/billing-screen.js:27
-msgid "A billing change is already in progress. Refresh the billing summary before trying again."
-msgstr "Ya hay un cambio de facturación en curso. Actualiza el resumen de facturación antes de volver a intentarlo."
+msgid ""
+"A billing change is already in progress. Refresh the billing summary before "
+"trying again."
+msgstr ""
+"Ya hay un cambio de facturación en curso. Actualiza el resumen de "
+"facturación antes de volver a intentarlo."
 
 #: src/recovery-settings/category-profile-summary.js:45
 msgid "A category change is pending publication."
@@ -54,20 +58,30 @@ msgid "Active mapping count"
 msgstr "Número de asignaciones activas"
 
 #: src/read-access/read-access-panel.js:35
-msgid "Allow Moda Interact to read store data. WooCommerce will ask you to approve read-only access."
-msgstr "Permite que Moda Interact lea los datos de la tienda. WooCommerce te pedirá que autorices el acceso de solo lectura."
+msgid ""
+"Allow Moda Interact to read store data. WooCommerce will ask you to approve "
+"read-only access."
+msgstr ""
+"Permite que Moda Interact lea los datos de la tienda. WooCommerce te pedirá "
+"que autorices el acceso de solo lectura."
 
 #: src/read-access/read-access-panel.js:50
 msgid "Allow read access"
 msgstr "Permitir acceso de lectura"
 
 #: src/recovery-settings/recovery-settings-screen.js:9
-msgid "Another administrator changed the store category. Refresh the categories, review the latest selection, then save again."
-msgstr "Otro administrador ha cambiado la categoría de la tienda. Actualiza las categorías, revisa la selección más reciente y vuelve a guardar."
+msgid ""
+"Another administrator changed the store category. Refresh the categories, "
+"review the latest selection, then save again."
+msgstr ""
+"Otro administrador ha cambiado la categoría de la tienda. Actualiza las "
+"categorías, revisa la selección más reciente y vuelve a guardar."
 
 #: src/read-access/read-access-panel.js:43
 msgid "Approval opens in a new tab. Return here to check the result."
-msgstr "La autorización se abre en una pestaña nueva. Vuelve aquí para comprobar el resultado."
+msgstr ""
+"La autorización se abre en una pestaña nueva. Vuelve aquí para comprobar el "
+"resultado."
 
 #: src/read-access/read-access-panel.js:20
 msgid "Approval was not completed or has expired"
@@ -88,15 +102,25 @@ msgstr "Cambio de facturación en curso"
 
 #: src/billing-screen.js:15
 msgid "Billing data could not be verified. Try again later."
-msgstr "No se han podido verificar los datos de facturación. Vuelve a intentarlo más tarde."
+msgstr ""
+"No se han podido verificar los datos de facturación. Vuelve a intentarlo más "
+"tarde."
 
 #: src/billing-screen.js:11
-msgid "Billing is temporarily unavailable. Your current billing state has not changed."
-msgstr "La facturación no está disponible temporalmente. Tu estado de facturación actual no ha cambiado."
+msgid ""
+"Billing is temporarily unavailable. Your current billing state has not "
+"changed."
+msgstr ""
+"La facturación no está disponible temporalmente. Tu estado de facturación "
+"actual no ha cambiado."
 
 #: src/billing/notices.js:30
-msgid "Billing needs attention. Plan changes are unavailable while Moda verifies billing status."
-msgstr "La facturación requiere atención. Los cambios de plan no están disponibles mientras Moda verifica el estado de facturación."
+msgid ""
+"Billing needs attention. Plan changes are unavailable while Moda verifies "
+"billing status."
+msgstr ""
+"La facturación requiere atención. Los cambios de plan no están disponibles "
+"mientras Moda verifica el estado de facturación."
 
 #: src/billing/summary.js:111
 msgid "Billing period"
@@ -132,7 +156,9 @@ msgstr "ID de categoría"
 
 #: src/recovery-settings/recovery-settings-screen.js:21
 msgid "Category settings could not be loaded. Refresh categories to retry."
-msgstr "No se ha podido cargar la configuración de categorías. Actualiza las categorías para volver a intentarlo."
+msgstr ""
+"No se ha podido cargar la configuración de categorías. Actualiza las "
+"categorías para volver a intentarlo."
 
 #: src/read-access/read-access-panel.js:54
 msgid "Check access"
@@ -151,16 +177,24 @@ msgid "Checking…"
 msgstr "Comprobando…"
 
 #: src/billing/top-up-section.js
-msgid "Choose one bundle. WooCommerce will show the final charge and any applicable tax for confirmation."
-msgstr "Elige un paquete. WooCommerce mostrará el importe final y los impuestos aplicables para que los confirmes."
+msgid ""
+"Choose one bundle. WooCommerce will show the final charge and any applicable "
+"tax for confirmation."
+msgstr ""
+"Elige un paquete. WooCommerce mostrará el importe final y los impuestos "
+"aplicables para que los confirmes."
 
 #: src/billing/plan-catalogue.js:34
 msgid "Choose plan"
 msgstr "Elegir plan"
 
 #: src/recovery-settings/recovery-settings-screen.js:107
-msgid "Choose the type of store to personalize your CommerceAgent assistant. Your Free plan stays active."
-msgstr "Elige el tipo de tienda para personalizar tu asistente CommerceAgent. Tu plan Free sigue activo."
+msgid ""
+"Choose the type of store to personalize your CommerceAgent assistant. Your "
+"Free plan stays active."
+msgstr ""
+"Elige el tipo de tienda para personalizar tu asistente CommerceAgent. Tu "
+"plan Free sigue activo."
 
 #: src/billing/cancel-dialog.js:93
 msgid "Confirm cancellation"
@@ -168,7 +202,8 @@ msgstr "Confirmar cancelación"
 
 #: src/billing/top-up-section.js
 msgid "Confirmation needs reconciliation. Do not retry this bundle yet."
-msgstr "La confirmación debe revisarse. No vuelvas a intentar este paquete todavía."
+msgstr ""
+"La confirmación debe revisarse. No vuelvas a intentar este paquete todavía."
 
 #: src/page/connection-panel.js:43
 msgid "Connect Moda Interact"
@@ -282,26 +317,40 @@ msgid "Moda Interact"
 msgstr "Moda Interact"
 
 #: src/page/connection-panel.js:94
-msgid "Moda Interact cannot be reached right now. The local connection has not been removed."
-msgstr "No se puede acceder a Moda Interact en este momento. La conexión local no se ha eliminado."
+msgid ""
+"Moda Interact cannot be reached right now. The local connection has not been "
+"removed."
+msgstr ""
+"No se puede acceder a Moda Interact en este momento. La conexión local no se "
+"ha eliminado."
 
 #. translators: 1: minimum supported WooCommerce version, 2: detected WooCommerce version.
 #: includes/Runtime.php:93
 #, php-format
-msgid "Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
-msgstr "Moda Interact requiere WooCommerce %1$s o una versión posterior. Versión detectada: %2$s."
+msgid ""
+"Moda Interact requires WooCommerce %1$s or later. Detected version: %2$s."
+msgstr ""
+"Moda Interact requiere WooCommerce %1$s o una versión posterior. Versión "
+"detectada: %2$s."
 
 #: includes/Runtime.php:86
-msgid "Moda Interact requires WooCommerce 11.0 or later to be installed and active."
-msgstr "Moda Interact requiere que WooCommerce 11.0 o una versión posterior esté instalado y activo."
+msgid ""
+"Moda Interact requires WooCommerce 11.0 or later to be installed and active."
+msgstr ""
+"Moda Interact requiere que WooCommerce 11.0 o una versión posterior esté "
+"instalado y activo."
 
 #: src/recovery-settings/recovery-navigation.js:9
 msgid "Moda Interact sections"
 msgstr "Secciones de Moda Interact"
 
 #: src/page/connection-panel.js:127
-msgid "Moda Interact service connectivity is not configured for this plugin installation. Contact your site administrator."
-msgstr "La conectividad del servicio Moda Interact no está configurada para esta instalación del complemento. Contacta con el administrador del sitio."
+msgid ""
+"Moda Interact service connectivity is not configured for this plugin "
+"installation. Contact your site administrator."
+msgstr ""
+"La conectividad del servicio Moda Interact no está configurada para esta "
+"instalación del complemento. Contacta con el administrador del sitio."
 
 #: src/overview-screen.js:32
 msgid "Name"
@@ -317,11 +366,13 @@ msgstr "No hay detalles disponibles del plan actual."
 
 #: src/recovery-settings/category-mappings.js:14
 msgid "No optional taxonomy mappings are available for this category."
-msgstr "No hay asignaciones taxonómicas opcionales disponibles para esta categoría."
+msgstr ""
+"No hay asignaciones taxonómicas opcionales disponibles para esta categoría."
 
 #: src/billing/notices.js:38
 msgid "No recurring billing contract is available for this store."
-msgstr "No hay ningún contrato de facturación recurrente disponible para esta tienda."
+msgstr ""
+"No hay ningún contrato de facturación recurrente disponible para esta tienda."
 
 #: src/billing/summary.js:103
 msgid "No recurring charge"
@@ -364,12 +415,24 @@ msgid "Overview"
 msgstr "Resumen"
 
 #: src/billing/cancel-dialog.js:60
-msgid "Paid access remains available until cancellation is verified and the prepaid term ends. This request does not immediately change your current plan."
-msgstr "El acceso de pago sigue disponible hasta que se verifique la cancelación y finalice el periodo prepagado. Esta solicitud no cambia inmediatamente tu plan actual."
+msgid ""
+"Paid access remains available until cancellation is verified and the prepaid "
+"term ends. This request does not immediately change your current plan."
+msgstr ""
+"El acceso de pago sigue disponible hasta que se verifique la cancelación y "
+"finalice el periodo prepagado. Esta solicitud no cambia inmediatamente tu "
+"plan actual."
 
 #: src/billing/notices.js:21
-msgid "Paid included credits are temporarily unavailable. Purchased credits and remaining lifetime Free credits remain usable; promotional credits follow their existing eligibility."
-msgstr "Los créditos incluidos en el plan de pago no están disponibles temporalmente. Los créditos comprados y los créditos Free de por vida restantes se pueden seguir utilizando; los créditos promocionales mantienen sus condiciones de elegibilidad."
+msgid ""
+"Paid included credits are temporarily unavailable. Purchased credits and "
+"remaining lifetime Free credits remain usable; promotional credits follow "
+"their existing eligibility."
+msgstr ""
+"Los créditos incluidos en el plan de pago no están disponibles "
+"temporalmente. Los créditos comprados y los créditos Free de por vida "
+"restantes se pueden seguir utilizando; los créditos promocionales mantienen "
+"sus condiciones de elegibilidad."
 
 #: src/billing/capacity-summary.js:16
 msgid "Paid included credits remaining"
@@ -406,7 +469,8 @@ msgstr "Plan"
 
 #: src/billing/plan-catalogue.js:122
 msgid "Plan management is unavailable for the current billing state."
-msgstr "La gestión de planes no está disponible con el estado de facturación actual."
+msgstr ""
+"La gestión de planes no está disponible con el estado de facturación actual."
 
 #: src/billing/notices.js:68
 msgid "Plan status unavailable"
@@ -458,7 +522,9 @@ msgstr "Acceso de lectura aprobado"
 
 #: src/read-access/read-access-panel.js:14
 msgid "Read access could not be checked. Your Moda connection is unchanged."
-msgstr "No se ha podido comprobar el acceso de lectura. Tu conexión con Moda no ha cambiado."
+msgstr ""
+"No se ha podido comprobar el acceso de lectura. Tu conexión con Moda no ha "
+"cambiado."
 
 #: src/read-access/read-access-panel.js:20
 msgid "Read access needs approval again"
@@ -627,11 +693,16 @@ msgstr "Categoría de la tienda"
 
 #: src/recovery-settings/recovery-settings-screen.js:33
 msgid "Store category and assistant prompt activated."
-msgstr "La categoría de la tienda y las instrucciones del asistente se han activado."
+msgstr ""
+"La categoría de la tienda y las instrucciones del asistente se han activado."
 
 #: src/recovery-settings/recovery-settings-screen.js:37
-msgid "Store category saved, but the updated settings could not be loaded. Refresh to confirm the active category."
-msgstr "La categoría de la tienda se ha guardado, pero no se ha podido cargar la configuración actualizada. Actualiza para confirmar la categoría activa."
+msgid ""
+"Store category saved, but the updated settings could not be loaded. Refresh "
+"to confirm the active category."
+msgstr ""
+"La categoría de la tienda se ha guardado, pero no se ha podido cargar la "
+"configuración actualizada. Actualiza para confirmar la categoría activa."
 
 #: src/overview-screen.js:114
 msgid "Store context"
@@ -650,8 +721,12 @@ msgid "Store read access"
 msgstr "Acceso de lectura a la tienda"
 
 #: src/overview-screen.js:241
-msgid "Store settings could not be synchronized. Your connection is unchanged. Please retry."
-msgstr "No se han podido sincronizar los ajustes de la tienda. Tu conexión no ha cambiado. Vuelve a intentarlo."
+msgid ""
+"Store settings could not be synchronized. Your connection is unchanged. "
+"Please retry."
+msgstr ""
+"No se han podido sincronizar los ajustes de la tienda. Tu conexión no ha "
+"cambiado. Vuelve a intentarlo."
 
 #: src/overview-screen.js:251
 msgid "Store settings synchronized."
@@ -694,20 +769,34 @@ msgid "Temporarily unavailable"
 msgstr "Temporalmente no disponible"
 
 #: src/billing-screen.js:76
-msgid "The Moda Interact connection needs attention before billing can be loaded."
-msgstr "La conexión con Moda Interact requiere atención antes de poder cargar la facturación."
+msgid ""
+"The Moda Interact connection needs attention before billing can be loaded."
+msgstr ""
+"La conexión con Moda Interact requiere atención antes de poder cargar la "
+"facturación."
 
 #: src/recovery-settings/recovery-settings-screen.js:17
-msgid "The Moda Interact connection needs attention before categories can be updated."
-msgstr "La conexión con Moda Interact requiere atención antes de poder actualizar las categorías."
+msgid ""
+"The Moda Interact connection needs attention before categories can be "
+"updated."
+msgstr ""
+"La conexión con Moda Interact requiere atención antes de poder actualizar "
+"las categorías."
 
 #: src/overview-screen.js:162
-msgid "The Moda Interact connection needs attention before store data can be loaded."
-msgstr "La conexión con Moda Interact requiere atención antes de poder cargar los datos de la tienda."
+msgid ""
+"The Moda Interact connection needs attention before store data can be loaded."
+msgstr ""
+"La conexión con Moda Interact requiere atención antes de poder cargar los "
+"datos de la tienda."
 
 #: src/billing-screen.js:35
-msgid "The billing change could not be completed. Your current plan remains unchanged."
-msgstr "No se ha podido completar el cambio de facturación. Tu plan actual no ha cambiado."
+msgid ""
+"The billing change could not be completed. Your current plan remains "
+"unchanged."
+msgstr ""
+"No se ha podido completar el cambio de facturación. Tu plan actual no ha "
+"cambiado."
 
 #: src/billing-screen.js:46
 msgid "The billing request failed. Try again."
@@ -715,27 +804,42 @@ msgstr "La solicitud de facturación ha fallado. Vuelve a intentarlo."
 
 #: src/billing/notices.js:82
 msgid "The cancellation needs reconciliation. Do not retry it automatically."
-msgstr "La cancelación requiere conciliación. No lo reintentes automáticamente."
+msgstr ""
+"La cancelación requiere conciliación. No lo reintentes automáticamente."
 
 #: src/page/connection-panel.js:211
-msgid "The connection could not be completed. Check your connection and try again."
-msgstr "No se ha podido completar la conexión. Comprueba tu conexión y vuelve a intentarlo."
+msgid ""
+"The connection could not be completed. Check your connection and try again."
+msgstr ""
+"No se ha podido completar la conexión. Comprueba tu conexión y vuelve a "
+"intentarlo."
 
 #: src/page/connection-panel.js:150
 msgid "The connection status could not be checked. Try again."
-msgstr "No se ha podido comprobar el estado de la conexión. Vuelve a intentarlo."
+msgstr ""
+"No se ha podido comprobar el estado de la conexión. Vuelve a intentarlo."
 
 #: src/page/connection-panel.js:173
 msgid "The connection status is unavailable. Contact support for help."
-msgstr "El estado de la conexión no está disponible. Contacta con soporte para obtener ayuda."
+msgstr ""
+"El estado de la conexión no está disponible. Contacta con soporte para "
+"obtener ayuda."
 
 #: src/recovery-settings/recovery-settings-screen.js:25
-msgid "The latest store settings do not show your change. Review the selection and try saving again."
-msgstr "La configuración más reciente de la tienda no refleja tu cambio. Revisa la selección e intenta guardarla de nuevo."
+msgid ""
+"The latest store settings do not show your change. Review the selection and "
+"try saving again."
+msgstr ""
+"La configuración más reciente de la tienda no refleja tu cambio. Revisa la "
+"selección e intenta guardarla de nuevo."
 
 #: src/page/connection-panel.js:54
-msgid "The local connection needs to be re-established. Your Moda account and store data have not been removed."
-msgstr "Es necesario restablecer la conexión local. Tu cuenta de Moda y los datos de la tienda no se han eliminado."
+msgid ""
+"The local connection needs to be re-established. Your Moda account and store "
+"data have not been removed."
+msgstr ""
+"Es necesario restablecer la conexión local. Tu cuenta de Moda y los datos de "
+"la tienda no se han eliminado."
 
 #: src/billing/plan-catalogue.js:142
 msgid "The plan catalogue could not be loaded."
@@ -743,43 +847,70 @@ msgstr "No se ha podido cargar el catálogo de planes."
 
 #: src/billing/notices.js:57
 msgid "The plan change needs reconciliation. Do not retry it automatically."
-msgstr "El cambio de plan requiere conciliación. No lo reintentes automáticamente."
+msgstr ""
+"El cambio de plan requiere conciliación. No lo reintentes automáticamente."
 
 #: src/billing-screen.js:31
-msgid "The provider result is not yet known. Refresh the billing summary or contact support; do not retry automatically."
-msgstr "Todavía no se conoce el resultado del proveedor. Actualiza el resumen de facturación o contacta con soporte; no lo reintentes automáticamente."
+msgid ""
+"The provider result is not yet known. Refresh the billing summary or contact "
+"support; do not retry automatically."
+msgstr ""
+"Todavía no se conoce el resultado del proveedor. Actualiza el resumen de "
+"facturación o contacta con soporte; no lo reintentes automáticamente."
 
 #: src/billing/top-up-section.js
 msgid "The purchase could not be started."
 msgstr "No se pudo iniciar la compra."
 
 #: src/page/connection-panel.js:137
-msgid "The saved local connection could not be verified. Contact support for help restoring the connection."
-msgstr "No se ha podido verificar la conexión local guardada. Contacta con soporte para obtener ayuda y restablecerla."
+msgid ""
+"The saved local connection could not be verified. Contact support for help "
+"restoring the connection."
+msgstr ""
+"No se ha podido verificar la conexión local guardada. Contacta con soporte "
+"para obtener ayuda y restablecerla."
 
 #: src/recovery-settings/recovery-settings-screen.js:13
-msgid "The selected category or prompt is no longer available. Refresh the catalogue and choose an available category."
-msgstr "La categoría o las instrucciones seleccionadas ya no están disponibles. Actualiza el catálogo y elige una categoría disponible."
+msgid ""
+"The selected category or prompt is no longer available. Refresh the "
+"catalogue and choose an available category."
+msgstr ""
+"La categoría o las instrucciones seleccionadas ya no están disponibles. "
+"Actualiza el catálogo y elige una categoría disponible."
 
 #: src/overview-screen.js:182
 msgid "The store overview could not be verified. Try again."
-msgstr "No se ha podido verificar el resumen de la tienda. Vuelve a intentarlo."
+msgstr ""
+"No se ha podido verificar el resumen de la tienda. Vuelve a intentarlo."
 
 #: src/overview-screen.js:172
-msgid "The store overview is temporarily unavailable. Your connection and store data have not been changed."
-msgstr "El resumen de la tienda no está disponible temporalmente. La conexión y los datos de la tienda no han cambiado."
+msgid ""
+"The store overview is temporarily unavailable. Your connection and store "
+"data have not been changed."
+msgstr ""
+"El resumen de la tienda no está disponible temporalmente. La conexión y los "
+"datos de la tienda no han cambiado."
 
 #: src/recovery-settings/recovery-settings-screen.js:137
 msgid "There are currently no selectable store categories."
 msgstr "Actualmente no hay categorías de tienda que se puedan seleccionar."
 
 #: src/page/connection-panel.js:117
-msgid "This WordPress site address differs from the address used for the Moda Interact connection. Contact support before changing the connection."
-msgstr "La dirección de este sitio de WordPress es diferente de la utilizada para conectar con Moda Interact. Contacta con soporte antes de cambiar la conexión."
+msgid ""
+"This WordPress site address differs from the address used for the Moda "
+"Interact connection. Contact support before changing the connection."
+msgstr ""
+"La dirección de este sitio de WordPress es diferente de la utilizada para "
+"conectar con Moda Interact. Contacta con soporte antes de cambiar la "
+"conexión."
 
 #: src/billing/top-up-section.js
-msgid "This bundle already has a pending purchase. Refresh the billing summary before trying again."
-msgstr "Ya hay una compra pendiente de este paquete. Actualiza el resumen de facturación antes de volver a intentarlo."
+msgid ""
+"This bundle already has a pending purchase. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"Ya hay una compra pendiente de este paquete. Actualiza el resumen de "
+"facturación antes de volver a intentarlo."
 
 #: src/billing/top-up-section.js
 msgid "This bundle is no longer available."
@@ -790,8 +921,12 @@ msgid "This plan is no longer available. Refresh the plan catalogue."
 msgstr "Este plan ya no está disponible. Actualiza el catálogo de planes."
 
 #: src/billing/top-up-section.js
-msgid "This purchase attempt could not be verified. Refresh the billing summary before trying again."
-msgstr "No se pudo verificar este intento de compra. Actualiza el resumen de facturación antes de volver a intentarlo."
+msgid ""
+"This purchase attempt could not be verified. Refresh the billing summary "
+"before trying again."
+msgstr ""
+"No se pudo verificar este intento de compra. Actualiza el resumen de "
+"facturación antes de volver a intentarlo."
 
 #: includes/Admin/NativeNavigation.php:85
 msgid "This section is not yet available for WooCommerce."
@@ -806,8 +941,12 @@ msgid "Time zone"
 msgstr "Zona horaria"
 
 #: src/read-access/read-access-panel.js:46
-msgid "To revoke the key at the store, open WooCommerce > Settings > Advanced > REST API."
-msgstr "Para revocar la clave en la tienda, abre WooCommerce > Ajustes > Avanzado > API REST."
+msgid ""
+"To revoke the key at the store, open WooCommerce > Settings > Advanced > "
+"REST API."
+msgstr ""
+"Para revocar la clave en la tienda, abre WooCommerce > Ajustes > Avanzado > "
+"API REST."
 
 #: src/billing/plan-catalogue.js:26
 #: src/recovery-settings/recovery-effective-summary.js:13
@@ -824,12 +963,19 @@ msgid "Waiting for Woo confirmation"
 msgstr "Esperando la confirmación de WooCommerce"
 
 #: src/recovery-settings/recovery-settings-screen.js:29
-msgid "We could not confirm whether your category was saved. Refresh categories before trying again."
-msgstr "No hemos podido confirmar si se ha guardado tu categoría. Actualiza las categorías antes de volver a intentarlo."
+msgid ""
+"We could not confirm whether your category was saved. Refresh categories "
+"before trying again."
+msgstr ""
+"No hemos podido confirmar si se ha guardado tu categoría. Actualiza las "
+"categorías antes de volver a intentarlo."
 
 #: src/billing/notices.js:86
-msgid "Woo accepted the request. Moda is waiting for verified cancellation details."
-msgstr "WooCommerce ha aceptado la solicitud. Moda está esperando los detalles verificados de la cancelación."
+msgid ""
+"Woo accepted the request. Moda is waiting for verified cancellation details."
+msgstr ""
+"WooCommerce ha aceptado la solicitud. Moda está esperando los detalles "
+"verificados de la cancelación."
 
 #: src/page.js:21
 msgid "WooCommerce"
@@ -849,7 +995,9 @@ msgstr "Historial de créditos comprados"
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Review purchased credit lots and request refunds for unused credits."
-msgstr "Consulta los lotes de créditos comprados y solicita reembolsos de los créditos no utilizados."
+msgstr ""
+"Consulta los lotes de créditos comprados y solicita reembolsos de los "
+"créditos no utilizados."
 
 #: src/billing/purchased-credit-history-card.js
 msgid "Manage purchased credits"
@@ -865,7 +1013,8 @@ msgstr "Elige el plan que se adapte a tu volumen de recuperaciones"
 
 #: src/billing/plan-catalogue.js
 msgid "Plan changes are confirmed through WooCommerce billing."
-msgstr "Los cambios de plan se confirman a través de la facturación de WooCommerce."
+msgstr ""
+"Los cambios de plan se confirman a través de la facturación de WooCommerce."
 
 msgid "Awaiting confirmation"
 msgstr "Pendiente de confirmación"
@@ -972,8 +1121,14 @@ msgstr "No hay compras que coincidan con esta vista."
 msgid "Back to billing"
 msgstr "Volver a facturación"
 
-msgid "Open WooCommerce.com Orders to request a refund for a Moda Interact purchase. Moda updates credits only after the provider and vendor verify the outcome."
-msgstr "Abre los pedidos de WooCommerce.com para solicitar el reembolso de una compra de Moda Interact. Moda solo actualiza los créditos cuando el proveedor y el vendedor verifican el resultado."
+msgid ""
+"Open WooCommerce.com Orders to request a refund for a Moda Interact "
+"purchase. Moda updates credits only after the provider and vendor verify the "
+"outcome."
+msgstr ""
+"Abre los pedidos de WooCommerce.com para solicitar el reembolso de una "
+"compra de Moda Interact. Moda solo actualiza los créditos cuando el "
+"proveedor y el vendedor verifican el resultado."
 
 #: src/recoveries/filters/recovery-filter-form.js:5
 msgid "All statuses"
@@ -1073,7 +1228,8 @@ msgstr "Páginas de recuperaciones"
 
 #: src/recoveries/states/recovery-results-state.js:20
 msgid "Recovery records will appear after the read API is connected."
-msgstr "Los registros de recuperación aparecerán cuando se conecte la API de lectura."
+msgstr ""
+"Los registros de recuperación aparecerán cuando se conecte la API de lectura."
 
 #: src/recoveries/recoveries-header.js:22
 msgid "Refresh"
@@ -1224,14 +1380,21 @@ msgid "Review the recovery settings and try again."
 msgstr "Revisa la configuración e inténtalo de nuevo."
 
 #: src/recovery-settings/recovery-behaviour-fields.js:89
-msgid "Discount assistance follows the offer choice below, for both Free and Paid plans. Follow-ups remain separately chargeable."
-msgstr "La ayuda con descuentos sigue la opción inferior, en planes gratuitos y de pago. Los seguimientos se cobran por separado."
+msgid ""
+"Discount assistance follows the offer choice below, for both Free and Paid "
+"plans. Follow-ups remain separately chargeable."
+msgstr ""
+"La ayuda con descuentos sigue la opción inferior, en planes gratuitos y de "
+"pago. Los seguimientos se cobran por separado."
 
-#: src/recovery-settings/recovery-behaviour-fields.js:104 src/recovery-settings/recovery-behaviour-fields.js:118
+#: src/recovery-settings/recovery-behaviour-fields.js:104
+#: src/recovery-settings/recovery-behaviour-fields.js:118
 msgid "Start recovery after (minutes) of checkout inactivity"
-msgstr "Iniciar la recuperación después de (minutos) de inactividad del checkout"
+msgstr ""
+"Iniciar la recuperación después de (minutos) de inactividad del checkout"
 
-#: src/recovery-settings/recovery-behaviour-fields.js:151 src/recovery-settings/recovery-behaviour-fields.js:169
+#: src/recovery-settings/recovery-behaviour-fields.js:151
+#: src/recovery-settings/recovery-behaviour-fields.js:169
 msgid "Send one follow-up when the customer has not replied"
 msgstr "Enviar un seguimiento si el cliente no ha respondido"
 
@@ -1240,29 +1403,44 @@ msgid "After (minutes)"
 msgstr "Después de (minutos)"
 
 #: src/recovery-settings/recovery-behaviour-fields.js:195
-msgid "If the customer replies, continuing the recovery conversation does not use another recovery credit. If Moda sends the scheduled follow-up, that follow-up is a new proactive recovery attempt and uses another recovery credit. Follow-up timing is measured from the last proactive recovery message sent."
-msgstr "Si el cliente responde, continuar la conversación no usa otro crédito de recuperación. Un seguimiento programado es un nuevo intento proactivo y usa otro crédito. El tiempo se mide desde el último mensaje proactivo enviado."
+msgid ""
+"If the customer replies, continuing the recovery conversation does not use "
+"another recovery credit. If Moda sends the scheduled follow-up, that follow-"
+"up is a new proactive recovery attempt and uses another recovery credit. "
+"Follow-up timing is measured from the last proactive recovery message sent."
+msgstr ""
+"Si el cliente responde, continuar la conversación no usa otro crédito de "
+"recuperación. Un seguimiento programado es un nuevo intento proactivo y usa "
+"otro crédito. El tiempo se mide desde el último mensaje proactivo enviado."
 
 #: src/recovery-settings/recovery-offer-choices.js:63
 msgid "WooCommerce coupon selection is not yet available."
 msgstr "La selección de cupones de WooCommerce aún no está disponible."
-
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour saved."
 msgstr "Comportamiento de recuperación guardado."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
-msgid "Recovery settings changed elsewhere. Refresh to review the latest policy before saving again. Your edits are still visible."
-msgstr "La configuración de recuperación se ha modificado en otro lugar. Actualiza para revisar la política más reciente antes de volver a guardar. Tus cambios siguen visibles."
+msgid ""
+"Recovery settings changed elsewhere. Refresh to review the latest policy "
+"before saving again. Your edits are still visible."
+msgstr ""
+"La configuración de recuperación se ha modificado en otro lugar. Actualiza "
+"para revisar la política más reciente antes de volver a guardar. Tus cambios "
+"siguen visibles."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery behaviour could not be saved. Your edits are still visible."
-msgstr "No se pudo guardar el comportamiento de recuperación. Tus cambios siguen visibles."
+msgstr ""
+"No se pudo guardar el comportamiento de recuperación. Tus cambios siguen "
+"visibles."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Recovery settings could not be loaded. Refresh to retry."
-msgstr "No se pudo cargar la configuración de recuperación. Actualiza para intentarlo de nuevo."
+msgstr ""
+"No se pudo cargar la configuración de recuperación. Actualiza para "
+"intentarlo de nuevo."
 
 #: src/recovery-settings/recovery-behaviour-panel.js
 msgid "Refreshing will replace unsaved recovery changes."
@@ -1281,8 +1459,11 @@ msgid "Browse coupons"
 msgstr "Explorar cupones"
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
-msgid "Preview only. Coupon choices are not saved or used in recovery messages."
-msgstr "Solo vista previa. Los cupones elegidos no se guardan ni se usan en mensajes de recuperación."
+msgid ""
+"Preview only. Coupon choices are not saved or used in recovery messages."
+msgstr ""
+"Solo vista previa. Los cupones elegidos no se guardan ni se usan en mensajes "
+"de recuperación."
 
 #: src/recovery-settings/woo-coupons/coupon-preview.js
 msgid "Search coupons"
@@ -1339,6 +1520,71 @@ msgstr "Reintentar la carga de cupones"
 #: src/recovery-settings/woo-coupons/merchant-offers-view.js
 msgid "WooCommerce determines whether a coupon can be redeemed."
 msgstr "WooCommerce determina si se puede canjear un cupón."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Choose promotional recovery credits available to your store."
+msgstr ""
+"Elige los créditos promocionales de recuperación disponibles para tu tienda."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Current promotion"
+msgstr "Promoción actual"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Available promotions"
+msgstr "Promociones disponibles"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion history"
+msgstr "Historial de promociones"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Promotion offers are not yet available for WooCommerce."
+msgstr "Las ofertas promocionales aún no están disponibles para WooCommerce."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Select promotion"
+msgstr "Seleccionar promoción"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotions available."
+msgstr "No hay promociones disponibles."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "No promotion history."
+msgstr "No hay historial de promociones."
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "%s credits"
+msgstr "%s créditos"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Expires %s"
+msgstr "Caduca el %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Remaining %s"
+msgstr "Restantes: %s"
+
+#: src/promotions/presentation.js src/promotions/promotions-screen.js
+msgid "Previously claimed"
+msgstr "Ya solicitada"
+
+#: src/promotions/presentation.js
+msgid "Exhausted"
+msgstr "Agotada"
+
+#: src/promotions/presentation.js
+msgid "Granted %s"
+msgstr "Concedidos: %s"
+
+#: src/promotions/presentation.js
+msgid "Used %s"
+msgstr "Utilizados: %s"
+
+#: src/promotions/presentation.js
+msgid "Selected %s"
+msgstr "Seleccionada el %s"
 
 msgid "Contact Moda support and review your messages."
 msgstr "Contacta con el soporte de Moda y consulta tus mensajes."
@@ -1398,7 +1644,8 @@ msgid "Send"
 msgstr "Enviar"
 
 msgid "Sending support messages is not yet available for WooCommerce."
-msgstr "El envío de mensajes de soporte aún no está disponible para WooCommerce."
+msgstr ""
+"El envío de mensajes de soporte aún no está disponible para WooCommerce."
 
 msgid "Enter 1 to 500 characters."
 msgstr "Introduce entre 1 y 500 caracteres."

@@ -5,7 +5,11 @@
  * authenticated WordPress proxy before any capability becomes enabled.
  */
 export function createSupportClient() {
-  return Object.freeze({
-    capabilities: Object.freeze({ read: false, send: false, markRead: false }),
-  });
+	return Object.freeze({
+		capabilities: Object.freeze({
+			read: false,
+			send: false,
+			markRead: false,
+		}),
+	});
 }
