@@ -1408,3 +1408,51 @@ msgstr "Meddelandet kunde inte skickas."
 
 msgid "You do not have permission to view support messages."
 msgstr "Du har inte behörighet att visa supportmeddelanden."
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "Funktionsinställningar är ännu inte tillgängliga för denna WooCommerce-butik. Inga inställningar har ändrats."
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "Du har inte behörighet att visa dessa funktionsinställningar."
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "Funktionsinställningar har ändrats någon annanstans. Uppdatera för att se de senaste."
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "Det gick inte att läsa in eller spara funktionsinställningar. Uppdatera och försök igen."
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "Samtalsfunktioner"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "Grundläggande konversationsfunktioner är alltid aktiverade. Du kan slå på eller av valfria funktioner; ändringar gäller endast nya konversationer."
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "Inga tillgängliga funktioner i din nuvarande plan."
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "Valfri"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "Alltid aktiverad"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "Aktiverad nu"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "Inaktiverad nu"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "Uppdatera funktioner"

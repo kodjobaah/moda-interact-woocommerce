@@ -1408,3 +1408,51 @@ msgstr "Het bericht kon niet worden verzonden."
 
 msgid "You do not have permission to view support messages."
 msgstr "U hebt geen toestemming om supportberichten te bekijken."
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "Functievoorkeuren zijn nog niet beschikbaar voor deze WooCommerce-winkel. Er zijn geen instellingen gewijzigd."
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "Je hebt geen toestemming om deze functie-instellingen te bekijken."
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "Functie-instellingen zijn elders gewijzigd. Vernieuw om de laatste instellingen te zien."
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "Functie-instellingen konden niet worden geladen of opgeslagen. Vernieuw en probeer opnieuw."
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "Gespreksfuncties"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "Kernfuncties voor gesprekken zijn altijd ingeschakeld. Je kunt optionele functies in- of uitschakelen; wijzigingen gelden alleen voor nieuwe gesprekken."
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "Geen geschikte functies beschikbaar in uw huidige abonnement."
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "Optioneel"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "Altijd ingeschakeld"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "Momenteel ingeschakeld"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "Momenteel uitgeschakeld"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "Functies vernieuwen"

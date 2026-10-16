@@ -5,6 +5,7 @@ export function createControllerSession(controllers, listeners) {
 		controllers.category.subscribe(listeners.onCategory),
 		controllers.recoverySummary.subscribe(listeners.onRecoverySummary),
 		controllers.recoveryPolicy.subscribe(listeners.onRecoveryPolicy),
+		controllers.featurePreferences.subscribe(listeners.onFeaturePreferences),
 		controllers.readAccess.subscribe(listeners.onReadAccess),
 		controllers.sync.subscribe(listeners.onSync),
 		controllers.merchant.subscribe(listeners.onMerchant),
@@ -13,6 +14,7 @@ export function createControllerSession(controllers, listeners) {
 			listeners.onConnection(nextState);
 			const status = nextState.connection.status;
 			controllers.readAccess.setConnection(nextState.connection);
+			controllers.featurePreferences.setConnection(nextState.connection);
 			controllers.merchant.setConnectionStatus(status);
 			controllers.billing.setConnectionStatus(status);
 			controllers.sync.setConnectionStatus(status);
@@ -53,6 +55,7 @@ export function createControllerSession(controllers, listeners) {
 				'category',
 				'recoverySummary',
 				'recoveryPolicy',
+				'featurePreferences',
 				'readAccess',
 			]) {
 				controllers[name].dispose();

@@ -1408,3 +1408,51 @@ msgstr "メッセージを送信できませんでした。"
 
 msgid "You do not have permission to view support messages."
 msgstr "サポートメッセージを表示する権限がありません。"
+
+#: src/recovery-settings/feature-preferences-panel.js:8
+msgid "Feature preferences are not yet available for this WooCommerce store. No feature settings have been changed."
+msgstr "この WooCommerce ストアでは機能設定をまだ利用できません。設定は変更されていません。"
+
+#: src/recovery-settings/feature-preferences-panel.js:13
+msgid "You do not have permission to view these feature settings."
+msgstr "これらの機能設定を表示する権限がありません。"
+
+#: src/recovery-settings/feature-preferences-panel.js:18
+msgid "Feature settings changed elsewhere. Refresh to review the latest settings."
+msgstr "機能設定が別の場所で変更されました。更新して最新の設定を確認してください。"
+
+#: src/recovery-settings/feature-preferences-panel.js:23
+msgid "Feature settings could not be loaded or saved. Refresh to retry."
+msgstr "機能設定の読み込みまたは保存に失敗しました。更新して再試行してください。"
+
+#: src/recovery-settings/feature-preferences-panel.js:95
+msgid "Conversation features"
+msgstr "会話機能"
+
+#: src/recovery-settings/feature-preferences-panel.js:97
+msgid "Core conversation features are always enabled. You can switch optional features on or off; changes apply to new conversations only."
+msgstr "会話のコア機能は常に有効です。オプション機能はオン／オフを切り替えられ、変更は新しい会話にのみ適用されます。"
+
+#: src/recovery-settings/feature-preferences-panel.js:113
+msgid "No eligible features are available on your current plan."
+msgstr "現在のプランで利用できる機能はありません。"
+
+#: src/recovery-settings/feature-preferences-panel.js:141
+msgid "Optional"
+msgstr "任意"
+
+#: src/recovery-settings/feature-preferences-panel.js:41
+msgid "Always enabled"
+msgstr "常に有効"
+
+#: src/recovery-settings/feature-preferences-panel.js:44
+msgid "Currently enabled"
+msgstr "現在有効"
+
+#: src/recovery-settings/feature-preferences-panel.js:45
+msgid "Currently disabled"
+msgstr "現在無効"
+
+#: src/recovery-settings/feature-preferences-panel.js:160
+msgid "Refresh features"
+msgstr "機能を更新"
