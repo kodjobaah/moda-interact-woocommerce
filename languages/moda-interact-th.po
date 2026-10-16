@@ -1624,3 +1624,99 @@ msgstr "ปิดใช้งานอยู่"
 #: src/recovery-settings/feature-preferences-panel.js:160
 msgid "Refresh features"
 msgstr "รีเฟรชคุณสมบัติ"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "เหตุการณ์ทั้งหมด"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "รอบการเรียกเก็บเงิน"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "รอบปัจจุบัน"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "ประเภทเหตุการณ์"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "กำลังโหลดประวัติการใช้งาน…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "ไม่มีการบันทึกการใช้งานในรอบนี้"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "รอบที่ผ่านมา"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "จำนวน"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "บันทึกเมื่อ"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "การใช้งานที่บันทึกไว้"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "การกู้คืน"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "การสนทนาเพื่อกู้คืน"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "ตรวจสอบการใช้งานการสนทนาเพื่อกู้คืนที่บันทึกไว้ตามรอบการเรียกเก็บเงิน"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "แถวต่อหน้า"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "เลือกรอบ"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "รอบการเรียกเก็บเงินที่เลือกไม่พร้อมใช้งาน"
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "หน้าประวัตินี้ไม่ถูกต้องอีกต่อไป ล้างการเลือกเพื่อเริ่มใหม่"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "ไม่ได้เชื่อมโยง"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "ประวัติการใช้งาน"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "ไม่สามารถโหลดประวัติการใช้งานได้ โปรดลองอีกครั้ง"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "ประวัติการใช้งานยังไม่พร้อมสำหรับร้าน WooCommerce นี้ ไม่มีการแก้ไขบันทึกใด ๆ"
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "หน้าประวัติการใช้งาน"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "ดูการกู้คืน"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "คุณไม่มีสิทธิ์ดูประวัติการใช้งาน"

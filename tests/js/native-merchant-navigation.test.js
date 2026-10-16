@@ -11,6 +11,7 @@ import { ConnectedBillingScreen } from '../../src/billing/connected-billing-scre
 import { SupportScreen } from '../../src/support/support-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { PromotionsScreen } from '../../src/promotions/promotions-screen';
+import { UsageHistoryScreen } from '../../src/usage-history/usage-history-screen';
 
 const actions = {
 	selectSurface: vi.fn(),
@@ -32,6 +33,7 @@ describe('native merchant navigation', () => {
 		['?page=moda-interact', 'OVERVIEW'],
 		['?page=moda-interact-recoveries', 'RECOVERIES'],
 		['?page=moda-interact-billing', 'BILLING'],
+		['?page=moda-interact-usage-history', 'USAGE'],
 		['?page=moda-interact-promotions', 'PROMOTIONS'],
 		['?page=moda-interact-support', 'SUPPORT'],
 		['?page=moda-interact-recovery-settings', 'RECOVERY'],
@@ -60,6 +62,7 @@ describe('native merchant navigation', () => {
 		['OVERVIEW', OverviewScreen],
 		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
+		['USAGE', UsageHistoryScreen],
 		['PROMOTIONS', PromotionsScreen],
 		['SUPPORT', SupportScreen],
 		['RECOVERY', RecoverySettingsScreen],
