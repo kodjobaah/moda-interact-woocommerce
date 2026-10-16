@@ -1319,3 +1319,23 @@ msgstr "Vælg mindst én kupon."
 #: src/recovery-settings/woo-coupons/merchant-offers-panel.js
 msgid "Discard changes"
 msgstr "Kassér ændringer"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "No discount will be offered."
+msgstr "Der tilbydes ingen rabat."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "This saves your preference; it does not send or redeem a coupon."
+msgstr "Dette gemmer kun din præference; der sendes eller indløses ingen kupon."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Coupon synchronisation is pending or unavailable."
+msgstr "Synkronisering af kuponer afventer eller er utilgængelig."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Retry coupons"
+msgstr "Prøv at indlæse kuponer igen"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "WooCommerce determines whether a coupon can be redeemed."
+msgstr "WooCommerce afgør, om en kupon kan indløses."

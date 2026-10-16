@@ -1319,3 +1319,23 @@ msgstr "請至少選取一張優惠券。"
 #: src/recovery-settings/woo-coupons/merchant-offers-panel.js
 msgid "Discard changes"
 msgstr "捨棄變更"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "No discount will be offered."
+msgstr "不會提供折扣。"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "This saves your preference; it does not send or redeem a coupon."
+msgstr "這只會儲存您的偏好，不會傳送或兌換優惠券。"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Coupon synchronisation is pending or unavailable."
+msgstr "優惠券同步尚未完成或暫時無法使用。"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Retry coupons"
+msgstr "重新載入優惠券"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "WooCommerce determines whether a coupon can be redeemed."
+msgstr "優惠券能否兌換由 WooCommerce 決定。"

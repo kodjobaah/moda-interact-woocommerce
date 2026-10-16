@@ -1319,3 +1319,23 @@ msgstr "Selecione pelo menos um cupom."
 #: src/recovery-settings/woo-coupons/merchant-offers-panel.js
 msgid "Discard changes"
 msgstr "Descartar alterações"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "No discount will be offered."
+msgstr "Nenhum desconto será oferecido."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "This saves your preference; it does not send or redeem a coupon."
+msgstr "Isso apenas salva sua preferência; nenhum cupom é enviado ou resgatado."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Coupon synchronisation is pending or unavailable."
+msgstr "A sincronização de cupons está pendente ou indisponível."
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "Retry coupons"
+msgstr "Tentar carregar cupons novamente"
+
+#: src/recovery-settings/woo-coupons/merchant-offers-view.js
+msgid "WooCommerce determines whether a coupon can be redeemed."
+msgstr "O WooCommerce determina se um cupom pode ser resgatado."
