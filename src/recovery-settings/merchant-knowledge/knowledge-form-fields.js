@@ -18,17 +18,23 @@ export function languageSelect(data, disabled, initial) {
 		'select',
 		{
 			name: 'languageTag',
-			defaultValue: tags.includes(preferred) ? preferred : tags[0] ?? '',
+			defaultValue: tags.includes(preferred)
+				? preferred
+				: (tags[0] ?? ''),
 			disabled,
 			required: true,
 		},
-		...tags.map((tag) => createElement('option', { key: tag, value: tag }, tag))
+		...tags.map((tag) =>
+			createElement('option', { key: tag, value: tag }, tag)
+		)
 	);
 }
 
 export function purposeOptions(catalogue) {
 	return [
-		...new Map(catalogue.map((item) => [item.purpose.key, item.purpose])).values(),
+		...new Map(
+			catalogue.map((item) => [item.purpose.key, item.purpose])
+		).values(),
 	].map((item) =>
 		createElement(
 			'option',
@@ -40,7 +46,9 @@ export function purposeOptions(catalogue) {
 
 export function formatOptions(catalogue) {
 	return [
-		...new Map(catalogue.map((item) => [item.dataFormat.key, item.dataFormat])).values(),
+		...new Map(
+			catalogue.map((item) => [item.dataFormat.key, item.dataFormat])
+		).values(),
 	].map((item) =>
 		createElement(
 			'option',
@@ -51,8 +59,9 @@ export function formatOptions(catalogue) {
 }
 
 export function unavailableReason(kind) {
-	const label = kind === 'addUrl'
-		? __('Add web page', 'moda-interact')
-		: __('Upload file', 'moda-interact');
+	const label =
+		kind === 'addUrl'
+			? __('Add web page', 'moda-interact')
+			: __('Upload file', 'moda-interact');
 	return `${label} — ${__('Unavailable', 'moda-interact')}`;
 }

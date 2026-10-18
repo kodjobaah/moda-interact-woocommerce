@@ -74,17 +74,26 @@ export function sourceStatus(source) {
 			};
 		case 'NO_CURRENT_PLAN':
 			return {
-				label: __('Configured — unavailable on current plan', 'moda-interact'),
+				label: __(
+					'Configured — unavailable on current plan',
+					'moda-interact'
+				),
 				tone: 'inactive',
 			};
 		case 'SOURCE_TYPE':
 			return {
-				label: __('Configured — source type unavailable', 'moda-interact'),
+				label: __(
+					'Configured — source type unavailable',
+					'moda-interact'
+				),
 				tone: 'inactive',
 			};
 		case 'SOURCE_COUNT':
 			return {
-				label: __('Configured — over current source limit', 'moda-interact'),
+				label: __(
+					'Configured — over current source limit',
+					'moda-interact'
+				),
 				tone: 'inactive',
 			};
 		default:
@@ -96,11 +105,20 @@ export function sourceStatus(source) {
 		case 'FAILED':
 			return { label: __('Failed', 'moda-interact'), tone: 'failed' };
 		case 'SUPERSEDED':
-			return { label: __('Superseded', 'moda-interact'), tone: 'inactive' };
+			return {
+				label: __('Superseded', 'moda-interact'),
+				tone: 'inactive',
+			};
 		case 'PENDING':
 		case 'PROCESSING':
-			return { label: __('Processing', 'moda-interact'), tone: 'processing' };
+			return {
+				label: __('Processing', 'moda-interact'),
+				tone: 'processing',
+			};
 		default:
-			return { label: __('Unavailable', 'moda-interact'), tone: 'inactive' };
+			return {
+				label: __('Unavailable', 'moda-interact'),
+				tone: 'inactive',
+			};
 	}
 }

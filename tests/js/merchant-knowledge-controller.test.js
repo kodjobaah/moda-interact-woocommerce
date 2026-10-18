@@ -16,17 +16,58 @@ const fixture = () => ({
 	defaultLanguageTag: 'en',
 	supportedLanguageTags: ['en'],
 	permissions: {
-		addUrl: true, upload: true, moveSource: true, deleteSource: true,
-		replaceSource: true, editSource: true, refreshSource: true, reprocessSource: true,
+		addUrl: true,
+		upload: true,
+		moveSource: true,
+		deleteSource: true,
+		replaceSource: true,
+		editSource: true,
+		refreshSource: true,
+		reprocessSource: true,
 	},
 	catalogue: [
-		{ purpose: { key: 'FAQ', displayName: 'Frequently asked questions' }, dataFormat: { key: 'WEB_PAGE', inputKind: 'REMOTE_URL', canonicalExtension: null } },
-		{ purpose: { key: 'PRODUCT_INFORMATION', displayName: 'Product information' }, dataFormat: { key: 'XLSX', inputKind: 'UPLOAD', canonicalExtension: '.xlsx' } },
+		{
+			purpose: { key: 'FAQ', displayName: 'Frequently asked questions' },
+			dataFormat: {
+				key: 'WEB_PAGE',
+				inputKind: 'REMOTE_URL',
+				canonicalExtension: null,
+			},
+		},
+		{
+			purpose: {
+				key: 'PRODUCT_INFORMATION',
+				displayName: 'Product information',
+			},
+			dataFormat: {
+				key: 'XLSX',
+				inputKind: 'UPLOAD',
+				canonicalExtension: '.xlsx',
+			},
+		},
 	],
-	sources: [{ id: 'a', name: 'FAQ', purposeKey: 'FAQ', dataFormatKey: 'WEB_PAGE', languageTag: 'en', currentlyPlanEntitled: true, processingEligible: true, revision: { status: 'ACTIVE', requestedUrl: 'https://example.com/help' } }],
+	sources: [
+		{
+			id: 'a',
+			name: 'FAQ',
+			purposeKey: 'FAQ',
+			dataFormatKey: 'WEB_PAGE',
+			languageTag: 'en',
+			currentlyPlanEntitled: true,
+			processingEligible: true,
+			revision: {
+				status: 'ACTIVE',
+				requestedUrl: 'https://example.com/help',
+			},
+		},
+	],
 });
 const connected = (controller) => {
-	controller.setConnection({ status: 'CONNECTED', installationId: 'one', credentialVersion: 1 });
+	controller.setConnection({
+		status: 'CONNECTED',
+		installationId: 'one',
+		credentialVersion: 1,
+	});
 	controller.setActive(true);
 };
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -39,7 +80,10 @@ describe('Merchant Knowledge UI-only controller', () => {
 		connected(controller);
 		await settle();
 		expect(controller.state).toEqual({ status: 'UNAVAILABLE', data: null });
-		await controller.perform('addUrl', { url: 'https://example.com', name: 'Example' });
+		await controller.perform('addUrl', {
+			url: 'https://example.com',
+			name: 'Example',
+		});
 		expect(controller.state.status).toBe('UNAVAILABLE');
 		controller.dispose();
 	});
@@ -48,13 +92,23 @@ describe('Merchant Knowledge UI-only controller', () => {
 		let release;
 		const client = {
 			read: vi.fn(async () => fixture()),
-			addUrl: vi.fn(() => new Promise((resolve) => { release = resolve; })),
+			addUrl: vi.fn(
+				() =>
+					new Promise((resolve) => {
+						release = resolve;
+					})
+			),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
 		expect(controller.state.status).toBe('READY');
-		const payload = { name: 'Shop information', url: 'https://example.com/help', purpose: 'FAQ', languageTag: 'en' };
+		const payload = {
+			name: 'Shop information',
+			url: 'https://example.com/help',
+			purpose: 'FAQ',
+			languageTag: 'en',
+		};
 		const request = controller.perform('addUrl', payload);
 		const repeated = controller.perform('addUrl', payload);
 		await settle();
@@ -75,7 +129,11 @@ describe('Merchant Knowledge UI-only controller', () => {
 		});
 		connected(controller);
 		await settle();
-		controller.setConnection({ status: 'CONNECTED', installationId: 'two', credentialVersion: 2 });
+		controller.setConnection({
+			status: 'CONNECTED',
+			installationId: 'two',
+			credentialVersion: 2,
+		});
 		await settle();
 		callbacks[0](fixture());
 		await settle();
@@ -88,8 +146,16 @@ describe('Merchant Knowledge UI-only controller', () => {
 	});
 
 	it('maps denied/conflict/network errors without inventing source records', async () => {
-		for (const [code, status] of [['DENIED', 'DENIED'], ['CONFLICT', 'CONFLICT'], ['offline', 'ERROR']]) {
-			const controller = new MerchantKnowledgeController({ read: async () => { throw { code }; } });
+		for (const [code, status] of [
+			['DENIED', 'DENIED'],
+			['CONFLICT', 'CONFLICT'],
+			['offline', 'ERROR'],
+		]) {
+			const controller = new MerchantKnowledgeController({
+				read: async () => {
+					throw { code };
+				},
+			});
 			connected(controller);
 			await settle();
 			expect(controller.state).toEqual({ status, data: null });
@@ -100,26 +166,77 @@ describe('Merchant Knowledge UI-only controller', () => {
 	it('validates SSRF-prone URLs and matching file format/size before any action', () => {
 		expect(validKnowledgeUrl('https://example.com/faq')).toBe(true);
 		for (const url of [
-			'http://example.com', 'https://localhost/admin', 'https://127.0.0.1',
-			'https://10.0.1.1', 'https://[::1]', 'https://[fe80::1]',
-			'https://example.com:8443', 'https://user:pass@example.com',
-			'https://example.com/#fragment', 'https://backend.internal', 'broken',
-		]) expect(validKnowledgeUrl(url)).toBe(false);
-		expect(validKnowledgeFile({ name: 'catalogue.xlsx', size: 999 }, 1000, 'XLSX')).toBe(true);
-		expect(validKnowledgeFile({ name: 'catalogue.csv', size: 1 }, 1000, 'CSV')).toBe(true);
-		expect(validKnowledgeFile({ name: 'catalogue.csv', size: 100 }, 1000, 'XLSX')).toBe(false);
-		expect(validKnowledgeFile({ name: 'photo.png', size: 100 }, 1000, 'CSV')).toBe(false);
-		expect(validKnowledgeFile({ name: 'catalogue.xlsx', size: 1001 }, 1000, 'XLSX')).toBe(false);
+			'http://example.com',
+			'https://localhost/admin',
+			'https://127.0.0.1',
+			'https://10.0.1.1',
+			'https://[::1]',
+			'https://[fe80::1]',
+			'https://example.com:8443',
+			'https://user:pass@example.com',
+			'https://example.com/#fragment',
+			'https://backend.internal',
+			'broken',
+		]) {
+			expect(validKnowledgeUrl(url)).toBe(false);
+		}
+		expect(
+			validKnowledgeFile(
+				{ name: 'catalogue.xlsx', size: 999 },
+				1000,
+				'XLSX'
+			)
+		).toBe(true);
+		expect(
+			validKnowledgeFile({ name: 'catalogue.csv', size: 1 }, 1000, 'CSV')
+		).toBe(true);
+		expect(
+			validKnowledgeFile(
+				{ name: 'catalogue.csv', size: 100 },
+				1000,
+				'XLSX'
+			)
+		).toBe(false);
+		expect(
+			validKnowledgeFile({ name: 'photo.png', size: 100 }, 1000, 'CSV')
+		).toBe(false);
+		expect(
+			validKnowledgeFile(
+				{ name: 'catalogue.xlsx', size: 1001 },
+				1000,
+				'XLSX'
+			)
+		).toBe(false);
 	});
 
 	it('never starts a replace/edit/move without a valid payload or acknowledged write', async () => {
-		const client = { read: vi.fn(async () => fixture()), replaceSource: vi.fn(), editSource: vi.fn(), moveSource: vi.fn() };
+		const client = {
+			read: vi.fn(async () => fixture()),
+			replaceSource: vi.fn(),
+			editSource: vi.fn(),
+			moveSource: vi.fn(),
+		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
-		await controller.perform('replaceSource', { id: 'a', name: 'Bad', purpose: 'FAQ', languageTag: 'en', dataFormatKey: 'XLSX', file: { name: 'bad.csv', size: 22 } });
-		await controller.perform('editSource', { id: 'a', name: 'Bad', languageTag: 'en', url: 'http://127.0.0.1' });
-		await controller.perform('moveSource', { id: 'a', sourceIds: ['alien'] });
+		await controller.perform('replaceSource', {
+			id: 'a',
+			name: 'Bad',
+			purpose: 'FAQ',
+			languageTag: 'en',
+			dataFormatKey: 'XLSX',
+			file: { name: 'bad.csv', size: 22 },
+		});
+		await controller.perform('editSource', {
+			id: 'a',
+			name: 'Bad',
+			languageTag: 'en',
+			url: 'http://127.0.0.1',
+		});
+		await controller.perform('moveSource', {
+			id: 'a',
+			sourceIds: ['alien'],
+		});
 		expect(client.replaceSource).not.toHaveBeenCalled();
 		expect(client.editSource).not.toHaveBeenCalled();
 		expect(client.moveSource).not.toHaveBeenCalled();
@@ -130,7 +247,19 @@ describe('Merchant Knowledge UI-only controller', () => {
 		vi.useFakeTimers();
 		try {
 			let loading = true;
-			const client = { read: vi.fn(async () => ({ ...fixture(), sources: [{ ...fixture().sources[0], revision: { status: loading ? 'PROCESSING' : 'ACTIVE' } }] })) };
+			const client = {
+				read: vi.fn(async () => ({
+					...fixture(),
+					sources: [
+						{
+							...fixture().sources[0],
+							revision: {
+								status: loading ? 'PROCESSING' : 'ACTIVE',
+							},
+						},
+					],
+				})),
+			};
 			const controller = new MerchantKnowledgeController(client);
 			connected(controller);
 			await vi.advanceTimersByTimeAsync(0);

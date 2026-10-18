@@ -11,11 +11,14 @@ export function KnowledgeWebForm({ data, catalogue, disabled, onAction }) {
 			className: 'moda-knowledge__form moda-knowledge__form--web',
 			onSubmit: (event) => {
 				event.preventDefault();
-				if (disabled) return;
+				if (disabled) {
+					return;
+				}
 				const elements = event.currentTarget.elements;
 				const name = elements.namedItem('name')?.value?.trim() ?? '';
 				const purpose = elements.namedItem('purpose')?.value ?? '';
-				const languageTag = elements.namedItem('languageTag')?.value ?? '';
+				const languageTag =
+					elements.namedItem('languageTag')?.value ?? '';
 				const url = elements.namedItem('url')?.value ?? '';
 				if (name && purpose && languageTag && validKnowledgeUrl(url)) {
 					onAction('addUrl', { name, purpose, languageTag, url });
@@ -25,7 +28,11 @@ export function KnowledgeWebForm({ data, catalogue, disabled, onAction }) {
 		field(
 			__('Source name', 'moda-interact'),
 			createElement('input', {
-				name: 'name', type: 'text', maxLength: 160, required: true, disabled,
+				name: 'name',
+				type: 'text',
+				maxLength: 160,
+				required: true,
+				disabled,
 			})
 		),
 		field(
@@ -38,19 +45,33 @@ export function KnowledgeWebForm({ data, catalogue, disabled, onAction }) {
 		),
 		field(
 			__('Data format', 'moda-interact'),
-			createElement('input', { className: 'moda-knowledge__readonly', type: 'text', value: formatLabel('WEB_PAGE'), readOnly: true, tabIndex: -1 })
+			createElement('input', {
+				className: 'moda-knowledge__readonly',
+				type: 'text',
+				value: formatLabel('WEB_PAGE'),
+				readOnly: true,
+				tabIndex: -1,
+			})
 		),
 		field(
 			__('URL', 'moda-interact'),
 			createElement('input', {
-				name: 'url', type: 'url', maxLength: 2048, placeholder: 'https://',
-				required: true, disabled,
+				name: 'url',
+				type: 'url',
+				maxLength: 2048,
+				placeholder: 'https://',
+				required: true,
+				disabled,
 			})
 		),
 		field(__('Language', 'moda-interact'), languageSelect(data, disabled)),
 		createElement(
 			'button',
-			{ type: 'submit', className: 'button button-primary moda-knowledge__submit', disabled },
+			{
+				type: 'submit',
+				className: 'button button-primary moda-knowledge__submit',
+				disabled,
+			},
 			__('Add web page', 'moda-interact')
 		)
 	);

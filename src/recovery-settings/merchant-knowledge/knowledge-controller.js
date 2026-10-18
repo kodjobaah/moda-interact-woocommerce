@@ -82,30 +82,49 @@ export class MerchantKnowledgeController {
 	}
 
 	stopPolling() {
-		if (this.pollTimer !== null) clearTimeout(this.pollTimer);
+		if (this.pollTimer !== null) {
+			clearTimeout(this.pollTimer);
+		}
 		this.pollTimer = null;
 		this.pollUntil = null;
 	}
 
 	pollProcessing() {
-		if (this.pollTimer !== null) clearTimeout(this.pollTimer);
+		if (this.pollTimer !== null) {
+			clearTimeout(this.pollTimer);
+		}
 		this.pollTimer = null;
 		const processing = this.state.data?.sources?.some(
-			(source) => source.processingEligible &&
+			(source) =>
+				source.processingEligible &&
 				['PENDING', 'PROCESSING'].includes(source.revision?.status)
 		);
-		if (!this.active || !this.connected || this.disposed ||
-			this.state.status !== 'READY' || !processing) {
+		if (
+			!this.active ||
+			!this.connected ||
+			this.disposed ||
+			this.state.status !== 'READY' ||
+			!processing
+		) {
 			this.pollUntil = null;
 			return;
 		}
-		if (this.pollUntil === null) this.pollUntil = Date.now() + 60_000;
-		if (Date.now() >= this.pollUntil) return;
+		if (this.pollUntil === null) {
+			this.pollUntil = Date.now() + 60_000;
+		}
+		if (Date.now() >= this.pollUntil) {
+			return;
+		}
 		const epoch = this.epoch;
 		this.pollTimer = setTimeout(() => {
 			this.pollTimer = null;
-			if (!this.isCurrent(epoch)) return;
-			if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+			if (!this.isCurrent(epoch)) {
+				return;
+			}
+			if (
+				typeof document !== 'undefined' &&
+				document.visibilityState === 'hidden'
+			) {
 				this.pollProcessing();
 			} else {
 				void this.refresh();
@@ -120,7 +139,9 @@ export class MerchantKnowledgeController {
 		if (this.pending) {
 			return this.pending;
 		}
-		if (this.pollTimer !== null) clearTimeout(this.pollTimer);
+		if (this.pollTimer !== null) {
+			clearTimeout(this.pollTimer);
+		}
 		this.pollTimer = null;
 		const epoch = ++this.epoch;
 		this.publish({ status: 'LOADING', data: this.state.data });
@@ -138,8 +159,12 @@ export class MerchantKnowledgeController {
 			return this.state;
 		}
 		const data = this.state.data;
-		if (['addUrl', 'upload'].includes(action) &&
-			(!data.planEntitled || !sourceCapacityAvailable(data))) return this.state;
+		if (
+			['addUrl', 'upload'].includes(action) &&
+			(!data.planEntitled || !sourceCapacityAvailable(data))
+		) {
+			return this.state;
+		}
 		if (
 			!data?.permissions?.[action] ||
 			typeof this.client[action] !== 'function'
@@ -160,7 +185,11 @@ export class MerchantKnowledgeController {
 			(!payload?.name?.trim() ||
 				!payload.purpose ||
 				!payload.languageTag ||
-				!validKnowledgeFile(payload.file, data.maxUploadBytes, payload.dataFormatKey) ||
+				!validKnowledgeFile(
+					payload.file,
+					data.maxUploadBytes,
+					payload.dataFormatKey
+				) ||
 				!['CSV', 'XLSX'].includes(payload.dataFormatKey))
 		) {
 			return this.state;
@@ -179,34 +208,89 @@ export class MerchantKnowledgeController {
 			return this.state;
 		}
 		const source = data.sources?.find((item) => item.id === payload?.id);
-		if (action === 'addUrl' && !data.catalogue?.some((item) =>
-			item.purpose.key === payload.purpose && item.dataFormat.key === 'WEB_PAGE'
-		)) return this.state;
-		if (action === 'upload' && !data.catalogue?.some((item) =>
-			item.purpose.key === payload.purpose && item.dataFormat.key === payload.dataFormatKey &&
-			item.dataFormat.inputKind === 'UPLOAD'
-		)) return this.state;
-		if (['replaceSource', 'editSource'].includes(action) &&
-			source?.currentlyPlanEntitled === false) return this.state;
-		if (action === 'refreshSource' && source?.dataFormatKey !== 'WEB_PAGE') return this.state;
-		if (action === 'reprocessSource' &&
-			!['CSV', 'XLSX'].includes(source?.dataFormatKey)) return this.state;
-		if (action === 'replaceSource' &&
-			(!['CSV', 'XLSX'].includes(source?.dataFormatKey) ||
-				source.dataFormatKey !== payload?.dataFormatKey || source.purposeKey !== payload?.purpose))
+		if (
+			action === 'addUrl' &&
+			!data.catalogue?.some(
+				(item) =>
+					item.purpose.key === payload.purpose &&
+					item.dataFormat.key === 'WEB_PAGE'
+			)
+		) {
 			return this.state;
-		if (action === 'replaceSource' &&
-			(!payload?.name?.trim() || !payload.purpose || !payload.languageTag ||
-				!validKnowledgeFile(payload.file, data.maxUploadBytes, payload.dataFormatKey))) return this.state;
-		if (action === 'editSource' &&
-			(!payload?.name?.trim() || !payload.languageTag ||
-				(payload.url !== undefined && !validKnowledgeUrl(payload.url)))) return this.state;
-		if (action === 'moveSource' &&
+		}
+		if (
+			action === 'upload' &&
+			!data.catalogue?.some(
+				(item) =>
+					item.purpose.key === payload.purpose &&
+					item.dataFormat.key === payload.dataFormatKey &&
+					item.dataFormat.inputKind === 'UPLOAD'
+			)
+		) {
+			return this.state;
+		}
+		if (
+			['replaceSource', 'editSource'].includes(action) &&
+			source?.currentlyPlanEntitled === false
+		) {
+			return this.state;
+		}
+		if (
+			action === 'refreshSource' &&
+			source?.dataFormatKey !== 'WEB_PAGE'
+		) {
+			return this.state;
+		}
+		if (
+			action === 'reprocessSource' &&
+			!['CSV', 'XLSX'].includes(source?.dataFormatKey)
+		) {
+			return this.state;
+		}
+		if (
+			action === 'replaceSource' &&
+			(!['CSV', 'XLSX'].includes(source?.dataFormatKey) ||
+				source.dataFormatKey !== payload?.dataFormatKey ||
+				source.purposeKey !== payload?.purpose)
+		) {
+			return this.state;
+		}
+		if (
+			action === 'replaceSource' &&
+			(!payload?.name?.trim() ||
+				!payload.purpose ||
+				!payload.languageTag ||
+				!validKnowledgeFile(
+					payload.file,
+					data.maxUploadBytes,
+					payload.dataFormatKey
+				))
+		) {
+			return this.state;
+		}
+		if (
+			action === 'editSource' &&
+			(!payload?.name?.trim() ||
+				!payload.languageTag ||
+				(payload.url !== undefined && !validKnowledgeUrl(payload.url)))
+		) {
+			return this.state;
+		}
+		if (
+			action === 'moveSource' &&
 			(!Array.isArray(payload.sourceIds) ||
 				payload.sourceIds.length !== data.sources.length ||
 				new Set(payload.sourceIds).size !== data.sources.length ||
-				payload.sourceIds.some((id) => !data.sources.some((source) => source.id === id)))) return this.state;
-		if (this.pollTimer !== null) clearTimeout(this.pollTimer);
+				payload.sourceIds.some(
+					(id) =>
+						!data.sources.some((candidate) => candidate.id === id)
+				))
+		) {
+			return this.state;
+		}
+		if (this.pollTimer !== null) {
+			clearTimeout(this.pollTimer);
+		}
 		this.pollTimer = null;
 		const epoch = ++this.epoch;
 		this.publish({ status: 'SAVING', data });

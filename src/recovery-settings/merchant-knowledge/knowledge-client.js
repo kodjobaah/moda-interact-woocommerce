@@ -49,7 +49,9 @@ export function validKnowledgeFile(file, maxBytes, formatKey) {
 	return (
 		!!file &&
 		(formatKey === 'CSV' || formatKey === 'XLSX'
-			? (file.name ?? '').toLowerCase().endsWith(`.${formatKey.toLowerCase()}`)
+			? (file.name ?? '')
+					.toLowerCase()
+					.endsWith(`.${formatKey.toLowerCase()}`)
 			: /\.(csv|xlsx)$/i.test(file.name ?? '')) &&
 		Number.isSafeInteger(file.size) &&
 		file.size > 0 &&
