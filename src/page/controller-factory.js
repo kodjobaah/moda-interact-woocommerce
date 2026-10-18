@@ -6,6 +6,7 @@ import { StoreCategoryController } from '../store-category-controller';
 import { RecoverySummaryController } from '../recovery-summary-controller';
 import { RecoveryPolicyController } from '../recovery-policy-controller';
 import { FeaturePreferencesController } from '../recovery-settings/feature-preferences-controller';
+import { MerchantKnowledgeController } from '../recovery-settings/merchant-knowledge/knowledge-controller';
 import { StoreContextSyncController } from '../store-context-sync-controller';
 
 /** Create controllers with the same cross-controller callbacks as the original page. */
@@ -32,6 +33,7 @@ export function createPageControllers() {
 	);
 	const readAccess = new ReadAccessController();
 	const featurePreferences = new FeaturePreferencesController();
+	const merchantKnowledge = new MerchantKnowledgeController();
 	return {
 		connection,
 		merchant,
@@ -42,5 +44,6 @@ export function createPageControllers() {
 		recoveryPolicy,
 		readAccess,
 		featurePreferences,
+		merchantKnowledge,
 	};
 }

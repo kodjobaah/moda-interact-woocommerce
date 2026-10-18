@@ -5,6 +5,7 @@ import { CategorySelector } from './category-selector';
 import { RecoverySettingsHeader } from './recovery-settings-header';
 import { RecoveryBehaviourPanel } from './recovery-behaviour-panel';
 import { FeaturePreferencesPanel } from './feature-preferences-panel';
+import { MerchantKnowledgePanel } from './merchant-knowledge/knowledge-panel';
 
 function Feedback({ status }) {
 	const messages = {
@@ -70,6 +71,9 @@ export function RecoverySettingsScreen({
 	featurePreferencesState,
 	onRefreshFeatures,
 	onToggleFeature,
+	knowledgeState,
+	onRefreshKnowledge,
+	onKnowledgeAction,
 }) {
 	const loading = state.status === 'LOADING';
 	const saving = state.status === 'SAVING';
@@ -194,7 +198,12 @@ export function RecoverySettingsScreen({
 							? __('Saving…', 'moda-interact')
 							: __('Save category', 'moda-interact')
 					)
-				)
+				),
+				createElement(MerchantKnowledgePanel, {
+					state: knowledgeState,
+					onRefresh: onRefreshKnowledge,
+					onAction: onKnowledgeAction,
+				})
 			)
 		)
 	);

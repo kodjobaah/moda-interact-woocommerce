@@ -69,7 +69,14 @@ describe('Shopify-inspired Recovery Settings presentation', () => {
 			onToggleMapping: () => {},
 			onSave: save,
 		});
-		expect(all(view, 'details')).toHaveLength(1);
+		// Merchant Knowledge adds its own form disclosures. The original
+		// Recovery Settings panel must remain the single outer disclosure.
+		expect(
+			all(view, 'details').filter(
+				(details) =>
+					details.props.className === 'moda-interact-recovery__panel'
+			)
+		).toHaveLength(1);
 		expect(
 			all(view, 'button').find((button) => button.props.onClick === save)
 		).toBeDefined();

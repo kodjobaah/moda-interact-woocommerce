@@ -86,6 +86,7 @@ function ModaInteractPage() {
 						recoverySummaryState: page.recoverySummaryState,
 						recoveryPolicyState: page.recoveryPolicyState,
 						featurePreferencesState: page.featurePreferencesState,
+						knowledgeState: page.knowledgeState,
 						actions: page.actions,
 						showSurfaceNavigation: !isNativeMerchantPage(
 							globalThis.location?.search ?? ''
