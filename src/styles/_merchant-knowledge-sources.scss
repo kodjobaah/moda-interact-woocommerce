@@ -1,0 +1,145 @@
+.moda-knowledge__sources {
+	display: grid;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+// An integration failure is not an empty source list. Keep a clearly labelled
+// list region without manufacturing records, counts or permissions.
+.moda-knowledge__sources-placeholder {
+	min-width: 0;
+	margin-top: 10px;
+	padding: 14px;
+	border: 1px dashed var(--moda-border);
+	border-radius: 13px;
+	background: #f7faf8;
+}
+
+.moda-knowledge__sources-placeholder h3 {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+
+.moda-knowledge__sources-empty-shape {
+	height: 26px;
+	max-width: 320px;
+	margin-top: 12px;
+	border: 1px solid var(--moda-border);
+	border-radius: 8px;
+	background: #fff;
+}
+
+.moda-knowledge__source {
+	padding: 13px;
+}
+
+.moda-knowledge__source-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 9px;
+}
+
+.moda-knowledge__source-header strong,
+.moda-knowledge__source-details p {
+	overflow-wrap: anywhere;
+}
+
+.moda-knowledge__badge {
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 650;
+	background: #f1f2f1;
+	color: #4c6155;
+}
+
+.moda-knowledge__badge.is-ready {
+	background: #e4f5e9;
+	color: #185335;
+}
+
+.moda-knowledge__badge.is-processing {
+	background: #fff4db;
+	color: #806113;
+}
+
+.moda-knowledge__badge.is-failed {
+	background: #fbe9e6;
+	color: #92372e;
+}
+
+.moda-knowledge__badge.is-paused {
+	background: #fff5e5;
+	color: #86621e;
+}
+
+.moda-knowledge__source-details p,
+.moda-knowledge__processing-note {
+	margin: 7px 0 0;
+	color: var(--moda-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.moda-knowledge__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.moda-interact-recovery .moda-knowledge__action-disclosure > summary {
+	padding: 5px 10px;
+	border: 1px solid #c3cdc6;
+	border-radius: 4px;
+	background: #f6f7f7;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.moda-knowledge__action-disclosure[open] {
+	flex-basis: 100%;
+}
+
+.moda-knowledge__edit-form {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	padding: 12px 0;
+}
+
+.moda-knowledge__edit-form > button {
+	align-self: end;
+}
+
+.moda-knowledge :is(summary, button, input, select):focus-visible {
+	outline: 2px solid var(--moda-forest-700);
+	outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+
+	.moda-knowledge__edit-form {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 600px) {
+
+	.moda-knowledge__edit-form {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.moda-knowledge__heading small {
+		max-width: 110px;
+	}
+}
