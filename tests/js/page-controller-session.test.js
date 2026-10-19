@@ -47,6 +47,7 @@ function controllers() {
 		recoverySummary: fakeController(),
 		recoveryPolicy: fakeController(),
 		featurePreferences: fakeController(),
+		merchantKnowledge: fakeController(),
 		readAccess: fakeController(),
 	};
 }
@@ -65,6 +66,7 @@ describe('page controller session', () => {
 			onRecoverySummary: vi.fn(),
 			onRecoveryPolicy: vi.fn(),
 			onFeaturePreferences: vi.fn(),
+			onMerchantKnowledge: vi.fn(),
 			onReadAccess: vi.fn(),
 			onConnectionLost,
 		});
@@ -74,7 +76,12 @@ describe('page controller session', () => {
 		expect(items.readAccess.setConnection).toHaveBeenCalledWith({
 			status: 'CONNECTED',
 		});
-		expect(items.featurePreferences.setConnection).toHaveBeenCalledWith({ status: 'CONNECTED' });
+		expect(items.featurePreferences.setConnection).toHaveBeenCalledWith({
+			status: 'CONNECTED',
+		});
+		expect(items.merchantKnowledge.setConnection).toHaveBeenCalledWith({
+			status: 'CONNECTED',
+		});
 		// Read access receives the connection object, not a legacy status-only update.
 		expect(items.readAccess.setConnectionStatus).not.toHaveBeenCalled();
 		for (const name of [
@@ -106,6 +113,7 @@ describe('page controller session', () => {
 			onRecoverySummary: vi.fn(),
 			onRecoveryPolicy: vi.fn(),
 			onFeaturePreferences: vi.fn(),
+			onMerchantKnowledge: vi.fn(),
 			onReadAccess: vi.fn(),
 			onConnectionLost,
 		});
@@ -131,6 +139,7 @@ describe('page controller session', () => {
 			onRecoverySummary: vi.fn(),
 			onRecoveryPolicy: vi.fn(),
 			onFeaturePreferences: vi.fn(),
+			onMerchantKnowledge: vi.fn(),
 			onReadAccess: vi.fn(),
 			onConnectionLost: vi.fn(),
 		});
@@ -161,7 +170,12 @@ describe('page actions', () => {
 		expect(items.category.refresh).toHaveBeenCalledTimes(1);
 		expect(items.recoverySummary.setActive).toHaveBeenLastCalledWith(true);
 		expect(items.recoveryPolicy.setActive).toHaveBeenLastCalledWith(true);
-		expect(items.featurePreferences.setActive).toHaveBeenLastCalledWith(true);
+		expect(items.featurePreferences.setActive).toHaveBeenLastCalledWith(
+			true
+		);
+		expect(items.merchantKnowledge.setActive).toHaveBeenLastCalledWith(
+			true
+		);
 		expect(setActiveSurface).toHaveBeenLastCalledWith('RECOVERY');
 	});
 
@@ -174,7 +188,10 @@ describe('page actions', () => {
 		actions.refreshFeaturePreferences();
 		actions.toggleFeaturePreference('example', true);
 		expect(items.featurePreferences.refresh).toHaveBeenCalledTimes(1);
-		expect(items.featurePreferences.save).toHaveBeenCalledWith('example', true);
+		expect(items.featurePreferences.save).toHaveBeenCalledWith(
+			'example',
+			true
+		);
 		actions.refreshRecoveryPolicy();
 		actions.saveRecoveryPolicy({ recoveryDelayMinutes: '45' });
 		expect(items.recoveryPolicy.refresh).toHaveBeenCalledTimes(1);

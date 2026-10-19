@@ -19,7 +19,12 @@ export function createPageActions(sessionRef, setActiveSurface) {
 		refreshCategory: () => controllers()?.category.refresh(),
 		refreshRecoverySummary: () => controllers()?.recoverySummary.refresh(),
 		refreshRecoveryPolicy: () => controllers()?.recoveryPolicy.refresh(),
-		refreshFeaturePreferences: () => controllers()?.featurePreferences.refresh(),
+		refreshFeaturePreferences: () =>
+			controllers()?.featurePreferences.refresh(),
+		refreshMerchantKnowledge: () =>
+			controllers()?.merchantKnowledge.refresh(),
+		merchantKnowledgeAction: (action, payload) =>
+			controllers()?.merchantKnowledge.perform(action, payload),
 		toggleFeaturePreference: (id, enabled) =>
 			controllers()?.featurePreferences.save(id, enabled),
 		saveRecoveryPolicy: (draft) =>
@@ -35,6 +40,7 @@ export function createPageActions(sessionRef, setActiveSurface) {
 			controllers()?.recoverySummary.setActive(surface === 'RECOVERY');
 			controllers()?.recoveryPolicy.setActive(surface === 'RECOVERY');
 			controllers()?.featurePreferences.setActive(surface === 'RECOVERY');
+			controllers()?.merchantKnowledge.setActive(surface === 'RECOVERY');
 			if (surface === 'RECOVERY') {
 				controllers()?.category.refresh();
 			}

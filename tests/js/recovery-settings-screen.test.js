@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
 import { FeaturePreferencesPanel } from '../../src/recovery-settings/feature-preferences-panel';
+import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
 import { RecoveryNavigation } from '../../src/recovery-settings/recovery-navigation';
 import { categoriesFixture } from './store-category-fixtures';
 
@@ -55,7 +56,12 @@ describe('Woo Recovery Settings category presentation', () => {
 		expect(children[1].type).toBe(RecoveryBehaviourPanel);
 		expect(children[2].type).toBe(FeaturePreferencesPanel);
 		expect(children[3].type).toBe('details');
-		expect(children[3].props.children[0].props.children).toBe('Store & assistant context');
+		expect(children[3].props.children[0].props.children).toBe(
+			'Store & assistant context'
+		);
+		expect(children[3].props.children[1].props.children.at(-1).type).toBe(
+			MerchantKnowledgePanel
+		);
 	});
 
 	it('matches Shopify conceptual hierarchy with a separate navigation and explicit save', () => {

@@ -1611,6 +1611,203 @@ msgstr "目前已停用"
 msgid "Refresh features"
 msgstr "重新整理功能"
 
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:28
+msgid "Source name"
+msgstr "來源名稱"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:30
+msgid "Purpose"
+msgstr "用途"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:36
+msgid "URL"
+msgstr "URL (https)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:45
+msgid "Add web page"
+msgstr "新增網頁"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:46
+msgid "Upload file"
+msgstr "上傳檔案"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:16
+msgid "You do not have permission to manage knowledge sources."
+msgstr "您沒有權限管理知識來源。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:17
+msgid "Knowledge sources changed elsewhere. Refresh to review them."
+msgstr "知識來源已在其他地方變更。請重新整理以查看。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:18
+msgid "Knowledge sources could not be loaded. Try again later."
+msgstr "無法載入知識來源。請稍後再試。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:24
+msgid "Merchant Knowledge"
+msgstr "商店知識"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "Merchant Knowledge configuration is unavailable on the current plan."
+msgstr "目前方案不支援設定商店知識。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:7
+msgid "Ready"
+msgstr "就緒"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:10
+msgid "Processing"
+msgstr "處理中"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:18
+msgid "No knowledge sources configured."
+msgstr "尚未設定知識來源。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:20
+msgid "Move source up"
+msgstr "上移來源"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:21
+msgid "Move source down"
+msgstr "下移來源"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:23
+msgid "Edit"
+msgstr "編輯"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:24
+msgid "Replace file"
+msgstr "取代檔案"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:25
+msgid "Delete"
+msgstr "刪除"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:38
+msgid "Processing failed"
+msgstr "處理失敗"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "%1$s of %2$s sources configured"
+msgstr "已設定 %1$s/%2$s 個來源"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:62
+msgid "%s active content units"
+msgstr "%s 個有效內容單位"
+
+msgid "CSV spreadsheet"
+msgstr "CSV 試算表"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:37
+msgid "Company information"
+msgstr "公司資訊"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:87
+msgid "Configured — over current source limit"
+msgstr "已設定 — 超出目前來源上限"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:72
+msgid "Configured — processing paused"
+msgstr "已設定 — 處理已暫停"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:82
+msgid "Configured — source type unavailable"
+msgstr "已設定 — 來源類型不可用"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:77
+msgid "Configured — unavailable on current plan"
+msgstr "已設定 — 目前方案不可用"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:39
+msgid "Customer support"
+msgstr "客戶支援"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:79
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:40
+msgid "Data format"
+msgstr "資料格式"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:62
+msgid "Excel spreadsheet (.xlsx)"
+msgstr "Excel 試算表（.xlsx）"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:3
+msgid "File"
+msgstr "檔案"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:43
+msgid "Frequently asked questions"
+msgstr "常見問題"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:56
+msgid "Ingestion and retrieval are disabled until Merchant Knowledge is enabled in Conversation Features. Configured sources are retained."
+msgstr "在「對話功能」中啟用商店知識之前，內容擷取和檢索將維持停用。已設定的來源會保留。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:37
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:27
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:50
+msgid "Language"
+msgstr "語言"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:68
+msgid "Last processed %s"
+msgstr "上次處理：%s"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:108
+msgid "Maximum upload size: %s bytes"
+msgstr "最大上傳大小：%s 位元組"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:57
+msgid "No URL recorded"
+msgstr "未記錄 URL"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:50
+msgid "No web page source types are available for this plan."
+msgstr "此方案沒有可用的網頁來源類型。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:41
+msgid "Policies"
+msgstr "政策"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:49
+msgid "Pricing"
+msgstr "價格"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:45
+msgid "Product information"
+msgstr "產品資訊"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:119
+msgid "Reprocess"
+msgstr "重新處理"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:38
+msgid "Save"
+msgstr "儲存"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:47
+msgid "Shipping and delivery"
+msgstr "運送與配送"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:99
+msgid "Superseded"
+msgstr "已被取代"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:92
+msgid "This page updates automatically while the source is processing."
+msgstr "處理來源時，此頁面會自動更新。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:58
+msgid "Web page"
+msgstr "網頁"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "已截斷"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "已截斷"
 #: src/usage-history/usage-history-toolbar.js
 msgid "All events"
 msgstr "所有事件"

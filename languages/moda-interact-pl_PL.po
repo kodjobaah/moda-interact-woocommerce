@@ -1688,6 +1688,203 @@ msgstr "Obecnie wyłączona"
 msgid "Refresh features"
 msgstr "Odśwież funkcje"
 
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:28
+msgid "Source name"
+msgstr "Nazwa źródła"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:30
+msgid "Purpose"
+msgstr "Cel"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:36
+msgid "URL"
+msgstr "URL (https)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:45
+msgid "Add web page"
+msgstr "Dodaj stronę internetową"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:46
+msgid "Upload file"
+msgstr "Prześlij plik"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:16
+msgid "You do not have permission to manage knowledge sources."
+msgstr "Nie masz uprawnień do zarządzania źródłami wiedzy."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:17
+msgid "Knowledge sources changed elsewhere. Refresh to review them."
+msgstr "Źródła wiedzy zostały zmienione w innym miejscu. Odśwież, aby je sprawdzić."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:18
+msgid "Knowledge sources could not be loaded. Try again later."
+msgstr "Nie udało się wczytać źródeł wiedzy. Spróbuj ponownie później."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:24
+msgid "Merchant Knowledge"
+msgstr "Wiedza o sklepie"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "Merchant Knowledge configuration is unavailable on the current plan."
+msgstr "Konfiguracja wiedzy o sklepie nie jest dostępna w bieżącym planie."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:7
+msgid "Ready"
+msgstr "Gotowe"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:10
+msgid "Processing"
+msgstr "Przetwarzanie"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:18
+msgid "No knowledge sources configured."
+msgstr "Nie skonfigurowano źródeł wiedzy."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:20
+msgid "Move source up"
+msgstr "Przenieś źródło wyżej"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:21
+msgid "Move source down"
+msgstr "Przenieś źródło niżej"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:23
+msgid "Edit"
+msgstr "Edytuj"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:24
+msgid "Replace file"
+msgstr "Zastąp plik"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:25
+msgid "Delete"
+msgstr "Usuń"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:38
+msgid "Processing failed"
+msgstr "Przetwarzanie nie powiodło się"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "%1$s of %2$s sources configured"
+msgstr "Skonfigurowano %1$s z %2$s źródeł"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:62
+msgid "%s active content units"
+msgstr "%s aktywnych jednostek treści"
+
+msgid "CSV spreadsheet"
+msgstr "Arkusz CSV"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:37
+msgid "Company information"
+msgstr "Informacje o firmie"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:87
+msgid "Configured — over current source limit"
+msgstr "Skonfigurowano — przekroczono bieżący limit źródeł"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:72
+msgid "Configured — processing paused"
+msgstr "Skonfigurowano — przetwarzanie wstrzymane"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:82
+msgid "Configured — source type unavailable"
+msgstr "Skonfigurowano — typ źródła niedostępny"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:77
+msgid "Configured — unavailable on current plan"
+msgstr "Skonfigurowano — niedostępne w bieżącym planie"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:39
+msgid "Customer support"
+msgstr "Obsługa klienta"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:79
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:40
+msgid "Data format"
+msgstr "Format danych"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:62
+msgid "Excel spreadsheet (.xlsx)"
+msgstr "Arkusz Excel (.xlsx)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:3
+msgid "File"
+msgstr "Plik"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:43
+msgid "Frequently asked questions"
+msgstr "Często zadawane pytania"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:56
+msgid "Ingestion and retrieval are disabled until Merchant Knowledge is enabled in Conversation Features. Configured sources are retained."
+msgstr "Pobieranie i wyszukiwanie są wyłączone do czasu włączenia Wiedzy o sklepie w Funkcjach rozmowy. Skonfigurowane źródła zostaną zachowane."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:37
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:27
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:50
+msgid "Language"
+msgstr "Język"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:68
+msgid "Last processed %s"
+msgstr "Ostatnio przetworzono: %s"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:108
+msgid "Maximum upload size: %s bytes"
+msgstr "Maksymalny rozmiar przesyłanego pliku: %s bajtów"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:57
+msgid "No URL recorded"
+msgstr "Nie zapisano adresu URL"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:50
+msgid "No web page source types are available for this plan."
+msgstr "W tym planie nie są dostępne typy źródeł stron internetowych."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:41
+msgid "Policies"
+msgstr "Zasady"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:49
+msgid "Pricing"
+msgstr "Cennik"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:45
+msgid "Product information"
+msgstr "Informacje o produktach"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:119
+msgid "Reprocess"
+msgstr "Przetwórz ponownie"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:38
+msgid "Save"
+msgstr "Zapisz"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:47
+msgid "Shipping and delivery"
+msgstr "Wysyłka i dostawa"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:99
+msgid "Superseded"
+msgstr "Zastąpione"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:92
+msgid "This page updates automatically while the source is processing."
+msgstr "Ta strona aktualizuje się automatycznie podczas przetwarzania źródła."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:58
+msgid "Web page"
+msgstr "Strona internetowa"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "skrócono"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "skrócono"
 #: src/usage-history/usage-history-toolbar.js
 msgid "All events"
 msgstr "Wszystkie zdarzenia"

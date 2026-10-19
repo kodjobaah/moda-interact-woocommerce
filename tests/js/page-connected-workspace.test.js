@@ -49,10 +49,16 @@ describe('connected workspace composition', () => {
 		expect(content.type).toBe(Screen);
 		expect(navigation.props.activeSurface).toBe(surface);
 		expect(workspace.props.className).toBe('moda-interact-surfaces');
-		if (surface === 'RECOVERY') {
-			expect(content.props).toHaveProperty('featurePreferencesState');
-			expect(content.props).toHaveProperty('onRefreshFeatures');
-			expect(content.props).toHaveProperty('onToggleFeature');
-		}
+	});
+
+	it('passes feature preferences and Merchant Knowledge controls to Recovery Settings', () => {
+		const workspace = renderWorkspace('RECOVERY');
+		const [, content] = workspace.props.children;
+		expect(content.type).toBe(RecoverySettingsScreen);
+		expect(content.props).toHaveProperty('featurePreferencesState');
+		expect(content.props).toHaveProperty('knowledgeState');
+		expect(content.props).toHaveProperty('onRefreshKnowledge');
+		expect(content.props).toHaveProperty('onRefreshFeatures');
+		expect(content.props).toHaveProperty('onToggleFeature');
 	});
 });

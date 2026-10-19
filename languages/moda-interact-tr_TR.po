@@ -1672,6 +1672,203 @@ msgstr "Şu anda devre dışı"
 msgid "Refresh features"
 msgstr "Özellikleri yenile"
 
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:28
+msgid "Source name"
+msgstr "Kaynak adı"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:30
+msgid "Purpose"
+msgstr "Amaç"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:36
+msgid "URL"
+msgstr "URL (https)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:45
+msgid "Add web page"
+msgstr "Web sayfası ekle"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:46
+msgid "Upload file"
+msgstr "Dosya yükle"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:16
+msgid "You do not have permission to manage knowledge sources."
+msgstr "Bilgi kaynaklarını yönetme izniniz yok."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:17
+msgid "Knowledge sources changed elsewhere. Refresh to review them."
+msgstr "Bilgi kaynakları başka bir yerde değiştirildi. İncelemek için yenileyin."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:18
+msgid "Knowledge sources could not be loaded. Try again later."
+msgstr "Bilgi kaynakları yüklenemedi. Daha sonra tekrar deneyin."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:24
+msgid "Merchant Knowledge"
+msgstr "Mağaza bilgisi"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "Merchant Knowledge configuration is unavailable on the current plan."
+msgstr "Mağaza bilgisi yapılandırması mevcut planda kullanılamıyor."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:7
+msgid "Ready"
+msgstr "Hazır"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:10
+msgid "Processing"
+msgstr "İşleniyor"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:18
+msgid "No knowledge sources configured."
+msgstr "Yapılandırılmış bilgi kaynağı yok."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:20
+msgid "Move source up"
+msgstr "Kaynağı yukarı taşı"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:21
+msgid "Move source down"
+msgstr "Kaynağı aşağı taşı"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:23
+msgid "Edit"
+msgstr "Düzenle"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:24
+msgid "Replace file"
+msgstr "Dosyayı değiştir"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:25
+msgid "Delete"
+msgstr "Sil"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:38
+msgid "Processing failed"
+msgstr "İşleme başarısız oldu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "%1$s of %2$s sources configured"
+msgstr "%2$s kaynaktan %1$s tanesi yapılandırıldı"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:62
+msgid "%s active content units"
+msgstr "%s etkin içerik birimi"
+
+msgid "CSV spreadsheet"
+msgstr "CSV tablosu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:37
+msgid "Company information"
+msgstr "Şirket bilgileri"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:87
+msgid "Configured — over current source limit"
+msgstr "Yapılandırıldı — mevcut kaynak sınırı aşıldı"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:72
+msgid "Configured — processing paused"
+msgstr "Yapılandırıldı — işleme duraklatıldı"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:82
+msgid "Configured — source type unavailable"
+msgstr "Yapılandırıldı — kaynak türü kullanılamıyor"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:77
+msgid "Configured — unavailable on current plan"
+msgstr "Yapılandırıldı — mevcut planda kullanılamıyor"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:39
+msgid "Customer support"
+msgstr "Müşteri desteği"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:79
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:40
+msgid "Data format"
+msgstr "Veri biçimi"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:62
+msgid "Excel spreadsheet (.xlsx)"
+msgstr "Excel tablosu (.xlsx)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:3
+msgid "File"
+msgstr "Dosya"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:43
+msgid "Frequently asked questions"
+msgstr "Sık sorulan sorular"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:56
+msgid "Ingestion and retrieval are disabled until Merchant Knowledge is enabled in Conversation Features. Configured sources are retained."
+msgstr "Mağaza bilgisi Sohbet özelliklerinde etkinleştirilene kadar alma ve erişim devre dışıdır. Yapılandırılmış kaynaklar korunur."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:37
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:27
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:50
+msgid "Language"
+msgstr "Dil"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:68
+msgid "Last processed %s"
+msgstr "Son işlenme: %s"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:108
+msgid "Maximum upload size: %s bytes"
+msgstr "Maksimum yükleme boyutu: %s bayt"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:57
+msgid "No URL recorded"
+msgstr "URL kaydedilmemiş"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:50
+msgid "No web page source types are available for this plan."
+msgstr "Bu plan için kullanılabilir web sayfası kaynak türü yok."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:41
+msgid "Policies"
+msgstr "Politikalar"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:49
+msgid "Pricing"
+msgstr "Fiyatlandırma"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:45
+msgid "Product information"
+msgstr "Ürün bilgileri"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:119
+msgid "Reprocess"
+msgstr "Yeniden işle"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:38
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:47
+msgid "Shipping and delivery"
+msgstr "Kargo ve teslimat"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:99
+msgid "Superseded"
+msgstr "Yerine yenisi geçti"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:92
+msgid "This page updates automatically while the source is processing."
+msgstr "Kaynak işlenirken bu sayfa otomatik olarak güncellenir."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:58
+msgid "Web page"
+msgstr "Web sayfası"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "kısaltıldı"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "kısaltıldı"
 #: src/usage-history/usage-history-toolbar.js
 msgid "All events"
 msgstr "Tüm etkinlikler"

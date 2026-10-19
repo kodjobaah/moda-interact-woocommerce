@@ -19,6 +19,7 @@ export function ConnectedWorkspace({
 	recoverySummaryState,
 	recoveryPolicyState,
 	featurePreferencesState,
+	knowledgeState,
 	actions,
 	showSurfaceNavigation = true,
 }) {
@@ -66,6 +67,9 @@ export function ConnectedWorkspace({
 			onRefreshPolicy: actions.refreshRecoveryPolicy,
 			onSavePolicy: actions.saveRecoveryPolicy,
 			featurePreferencesState,
+			knowledgeState,
+			onRefreshKnowledge: actions.refreshMerchantKnowledge,
+			onKnowledgeAction: actions.merchantKnowledgeAction,
 			onRefreshFeatures: actions.refreshFeaturePreferences,
 			onToggleFeature: actions.toggleFeaturePreference,
 		});

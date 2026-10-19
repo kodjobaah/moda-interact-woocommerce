@@ -85,12 +85,12 @@ function moEntries(buffer) {
 }
 
 test('WOO-010 covers every current gettext key without untranslated English fallbacks', () => {
-	assert.equal(sourceKeys.size, 407);
+	assert.equal(sourceKeys.size, 455);
 	const unchangedNames = new Set(['Moda Interact', 'WooCommerce', 'Free']);
 	const validSharedTerms = new Map([
 		['fr_FR', new Set(['Promotions', 'Conversation'])],
 		['de_DE', new Set(['%1$s: %2$s', 'Name', 'Checkout · %s', 'Status'])],
-		['it_IT', new Set(['%1$s: %2$s', 'Checkout · %s'])],
+		['it_IT', new Set(['%1$s: %2$s', 'Checkout · %s', 'File'])],
 		['es_ES', new Set(['%1$s: %2$s', 'Plan'])],
 	]);
 	for (const { code } of locales) {

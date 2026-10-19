@@ -1663,6 +1663,203 @@ msgstr "現在無効"
 msgid "Refresh features"
 msgstr "機能を更新"
 
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:28
+msgid "Source name"
+msgstr "ソース名"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:30
+msgid "Purpose"
+msgstr "目的"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:36
+msgid "URL"
+msgstr "URL (https)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:45
+msgid "Add web page"
+msgstr "Webページを追加"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:46
+msgid "Upload file"
+msgstr "ファイルをアップロード"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:16
+msgid "You do not have permission to manage knowledge sources."
+msgstr "ナレッジソースを管理する権限がありません。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:17
+msgid "Knowledge sources changed elsewhere. Refresh to review them."
+msgstr "ナレッジソースが別の場所で変更されました。更新して確認してください。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:18
+msgid "Knowledge sources could not be loaded. Try again later."
+msgstr "ナレッジソースを読み込めませんでした。後でもう一度お試しください。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:24
+msgid "Merchant Knowledge"
+msgstr "ストアナレッジ"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "Merchant Knowledge configuration is unavailable on the current plan."
+msgstr "現在のプランではストアナレッジを設定できません。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:7
+msgid "Ready"
+msgstr "準備完了"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:10
+msgid "Processing"
+msgstr "処理中"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:18
+msgid "No knowledge sources configured."
+msgstr "ナレッジソースは設定されていません。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:20
+msgid "Move source up"
+msgstr "ソースを上へ移動"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:21
+msgid "Move source down"
+msgstr "ソースを下へ移動"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:23
+msgid "Edit"
+msgstr "編集"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:24
+msgid "Replace file"
+msgstr "ファイルを置き換え"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:25
+msgid "Delete"
+msgstr "削除"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:38
+msgid "Processing failed"
+msgstr "処理に失敗しました"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "%1$s of %2$s sources configured"
+msgstr "%2$s件中%1$s件のソースを設定済み"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:62
+msgid "%s active content units"
+msgstr "有効なコンテンツ単位: %s"
+
+msgid "CSV spreadsheet"
+msgstr "CSVスプレッドシート"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:37
+msgid "Company information"
+msgstr "会社情報"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:87
+msgid "Configured — over current source limit"
+msgstr "設定済み — 現在のソース上限を超過"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:72
+msgid "Configured — processing paused"
+msgstr "設定済み — 処理は一時停止中"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:82
+msgid "Configured — source type unavailable"
+msgstr "設定済み — ソース種類は利用不可"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:77
+msgid "Configured — unavailable on current plan"
+msgstr "設定済み — 現在のプランでは利用不可"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:39
+msgid "Customer support"
+msgstr "カスタマーサポート"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:79
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:40
+msgid "Data format"
+msgstr "データ形式"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:62
+msgid "Excel spreadsheet (.xlsx)"
+msgstr "Excelスプレッドシート（.xlsx）"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:3
+msgid "File"
+msgstr "ファイル"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:43
+msgid "Frequently asked questions"
+msgstr "よくある質問"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:56
+msgid "Ingestion and retrieval are disabled until Merchant Knowledge is enabled in Conversation Features. Configured sources are retained."
+msgstr "会話機能でストアナレッジを有効にするまで、取り込みと検索は無効です。設定済みのソースは保持されます。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:37
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:27
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:50
+msgid "Language"
+msgstr "言語"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:68
+msgid "Last processed %s"
+msgstr "最終処理: %s"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:108
+msgid "Maximum upload size: %s bytes"
+msgstr "アップロードの最大サイズ: %s バイト"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:57
+msgid "No URL recorded"
+msgstr "URLは記録されていません"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:50
+msgid "No web page source types are available for this plan."
+msgstr "このプランでは利用できるWebページのソース種類がありません。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:41
+msgid "Policies"
+msgstr "ポリシー"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:49
+msgid "Pricing"
+msgstr "価格"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:45
+msgid "Product information"
+msgstr "商品情報"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:119
+msgid "Reprocess"
+msgstr "再処理"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:38
+msgid "Save"
+msgstr "保存"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:47
+msgid "Shipping and delivery"
+msgstr "配送"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:99
+msgid "Superseded"
+msgstr "置き換え済み"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:92
+msgid "This page updates automatically while the source is processing."
+msgstr "ソースの処理中はこのページが自動的に更新されます。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:58
+msgid "Web page"
+msgstr "ウェブページ"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "切り詰め済み"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "切り詰め済み"
 #: src/usage-history/usage-history-toolbar.js
 msgid "All events"
 msgstr "すべてのイベント"

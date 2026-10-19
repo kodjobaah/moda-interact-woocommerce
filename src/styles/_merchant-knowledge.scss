@@ -1,0 +1,239 @@
+// Recovery Settings must remain within the viewport even when the WordPress
+// host does not supply border-box sizing for the outer Moda page wrapper.
+.moda-interact-page--recovery-settings {
+	box-sizing: border-box;
+}
+
+// Shopify-aligned nested knowledge disclosure inside Store & assistant context.
+.moda-interact-recovery .moda-knowledge {
+	margin-top: 20px;
+	border: 1px solid var(--moda-border);
+	border-radius: 15px;
+	background: #fff;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.moda-interact-recovery .moda-knowledge > summary,
+.moda-interact-recovery .moda-knowledge__disclosure > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	padding: 13px 16px;
+	border-bottom: 1px solid transparent;
+	background: #fff;
+	color: var(--moda-forest-900);
+	font-size: 13px;
+	font-weight: 650;
+	cursor: pointer;
+	list-style: none;
+}
+
+.moda-interact-recovery .moda-knowledge > summary::-webkit-details-marker,
+.moda-interact-recovery .moda-knowledge__disclosure > summary::-webkit-details-marker {
+	display: none;
+}
+
+.moda-interact-recovery .moda-knowledge > summary::after,
+.moda-interact-recovery .moda-knowledge__disclosure > summary::after {
+	content: "+";
+	width: 24px;
+	height: 24px;
+	flex: 0 0 24px;
+	display: grid;
+	place-items: center;
+	border-radius: 50%;
+	background: #edf5ef;
+	color: var(--moda-forest-900);
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.moda-interact-recovery .moda-knowledge[open] > summary,
+.moda-interact-recovery .moda-knowledge__disclosure[open] > summary {
+	border-bottom-color: var(--moda-border);
+}
+
+.moda-interact-recovery .moda-knowledge[open] > summary::after,
+.moda-interact-recovery .moda-knowledge__disclosure[open] > summary::after {
+	content: "−";
+}
+
+.moda-knowledge__heading > strong {
+	margin-right: auto;
+}
+
+.moda-knowledge__heading small,
+.moda-knowledge__disclosure small {
+	font-size: 11px;
+	font-weight: 550;
+	color: var(--moda-muted);
+	text-align: right;
+}
+
+.moda-knowledge__body {
+	padding: 14px;
+}
+
+.moda-knowledge__notice {
+	padding: 13px 14px;
+	margin: 0 0 12px;
+	border: 1px solid #e7dbbb;
+	border-radius: 12px;
+	background: #fdfbf3;
+	color: #66592c;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.moda-knowledge__capacity {
+	padding: 11px 14px;
+	margin: 0 0 10px;
+	border: 1px solid #d6e6dc;
+	border-radius: 12px;
+	background: #edf5f0;
+	color: var(--moda-forest-900);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.moda-knowledge__add-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 10px;
+	min-width: 0;
+	margin-bottom: 12px;
+}
+
+.moda-knowledge__disclosure,
+.moda-knowledge__source {
+	min-width: 0;
+	border: 1px solid var(--moda-border);
+	border-radius: 13px;
+	background: #fff;
+	overflow: hidden;
+}
+
+.moda-interact-recovery .moda-knowledge__disclosure > summary {
+	padding: 12px 14px;
+}
+
+.moda-knowledge__disclosure > summary > strong {
+	margin-right: auto;
+}
+
+.moda-knowledge__form {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	padding: 12px;
+	background: #f5faf7;
+}
+
+.moda-knowledge__field {
+	min-width: 0;
+	display: grid;
+	align-content: start;
+	gap: 7px;
+	color: var(--moda-forest-900);
+	font-size: 12px;
+	font-weight: 650;
+}
+
+.moda-knowledge__field input,
+.moda-knowledge__field select,
+.moda-knowledge__readonly {
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+	min-height: 39px;
+	padding: 8px 11px;
+	border: 1px solid #bfcec5;
+	border-radius: 10px;
+	background: #fff;
+	color: #27382f;
+	font-size: 13px;
+}
+
+.moda-knowledge__readonly {
+	display: flex;
+	align-items: center;
+	background: #f0f4f1;
+	color: var(--moda-muted);
+}
+
+.moda-knowledge__field input:disabled,
+.moda-knowledge__field select:disabled {
+	background: #eff2ef;
+	color: #64736a;
+}
+
+.moda-knowledge__field input[type="file"] {
+	height: auto;
+	min-height: 49px;
+	border-style: dashed;
+	background: #fff;
+}
+
+.moda-knowledge__form--upload .moda-knowledge__file {
+	grid-column: span 2;
+}
+
+.moda-knowledge__max-upload {
+	align-self: center;
+	margin: 0;
+	color: var(--moda-muted);
+	font-size: 11px;
+	line-height: 1.5;
+}
+
+.moda-knowledge__submit.button.button-primary {
+	align-self: end;
+	width: 100%;
+	min-height: 40px;
+	border: 0;
+	border-radius: 999px;
+	background: var(--moda-forest-700);
+	color: #fff;
+	font-weight: 700;
+}
+
+.moda-knowledge__submit.button.button-primary:disabled {
+	background: #9bb8aa;
+	color: #fff;
+	cursor: not-allowed;
+}
+
+.moda-knowledge__hint {
+	margin: 0;
+	padding: 10px 14px;
+	color: var(--moda-muted);
+	font-size: 12px;
+}
+
+@media (max-width: 900px) {
+
+	.moda-knowledge__form {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.moda-knowledge__form--upload .moda-knowledge__file {
+		grid-column: span 2;
+	}
+}
+
+@media (max-width: 600px) {
+
+	.moda-knowledge__body {
+		padding: 10px;
+	}
+
+	.moda-knowledge__form {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.moda-knowledge__form--upload .moda-knowledge__file {
+		grid-column: auto;
+	}
+}

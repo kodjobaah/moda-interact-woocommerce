@@ -1678,6 +1678,203 @@ msgstr "Pois käytöstä nyt"
 msgid "Refresh features"
 msgstr "Päivitä ominaisuudet"
 
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:28
+msgid "Source name"
+msgstr "Lähteen nimi"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:30
+msgid "Purpose"
+msgstr "Tarkoitus"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:36
+msgid "URL"
+msgstr "URL (https)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:45
+msgid "Add web page"
+msgstr "Lisää verkkosivu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:42 src/recovery-settings/merchant-knowledge/knowledge-forms.js:46
+msgid "Upload file"
+msgstr "Lataa tiedosto"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:16
+msgid "You do not have permission to manage knowledge sources."
+msgstr "Sinulla ei ole oikeutta hallita tietolähteitä."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:17
+msgid "Knowledge sources changed elsewhere. Refresh to review them."
+msgstr "Tietolähteitä on muutettu muualla. Päivitä ja tarkista ne."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:18
+msgid "Knowledge sources could not be loaded. Try again later."
+msgstr "Tietolähteitä ei voitu ladata. Yritä myöhemmin uudelleen."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:24
+msgid "Merchant Knowledge"
+msgstr "Kaupan tietopohja"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "Merchant Knowledge configuration is unavailable on the current plan."
+msgstr "Kaupan tietopohjan määritys ei ole käytettävissä nykyisessä paketissa."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:7
+msgid "Ready"
+msgstr "Valmis"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:10
+msgid "Processing"
+msgstr "Käsitellään"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:18
+msgid "No knowledge sources configured."
+msgstr "Tietolähteitä ei ole määritetty."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:20
+msgid "Move source up"
+msgstr "Siirrä lähdettä ylöspäin"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:21
+msgid "Move source down"
+msgstr "Siirrä lähdettä alaspäin"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:23
+msgid "Edit"
+msgstr "Muokkaa"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:24
+msgid "Replace file"
+msgstr "Korvaa tiedosto"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:25
+msgid "Delete"
+msgstr "Poista"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-list.js:38
+msgid "Processing failed"
+msgstr "Käsittely epäonnistui"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:32
+msgid "%1$s of %2$s sources configured"
+msgstr "%1$s/%2$s lähdettä määritetty"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:62
+msgid "%s active content units"
+msgstr "%s aktiivista sisältöyksikköä"
+
+msgid "CSV spreadsheet"
+msgstr "CSV-taulukko"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:37
+msgid "Company information"
+msgstr "Yrityksen tiedot"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:87
+msgid "Configured — over current source limit"
+msgstr "Määritetty — nykyinen lähderaja ylitetty"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:72
+msgid "Configured — processing paused"
+msgstr "Määritetty — käsittely keskeytetty"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:82
+msgid "Configured — source type unavailable"
+msgstr "Määritetty — lähdetyyppi ei ole käytettävissä"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:77
+msgid "Configured — unavailable on current plan"
+msgstr "Määritetty — ei käytettävissä nykyisessä paketissa"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:39
+msgid "Customer support"
+msgstr "Asiakastuki"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:79
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:40
+msgid "Data format"
+msgstr "Tietomuoto"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:62
+msgid "Excel spreadsheet (.xlsx)"
+msgstr "Excel-taulukko (.xlsx)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:3
+msgid "File"
+msgstr "Tiedosto"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:43
+msgid "Frequently asked questions"
+msgstr "Usein kysytyt kysymykset"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:56
+msgid "Ingestion and retrieval are disabled until Merchant Knowledge is enabled in Conversation Features. Configured sources are retained."
+msgstr "Sisällön käsittely ja haku ovat poissa käytöstä, kunnes Kaupan tietopohja otetaan käyttöön Keskustelutoiminnoissa. Määritetyt lähteet säilytetään."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:37
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:27
+#: src/recovery-settings/merchant-knowledge/knowledge-web-form.js:50
+msgid "Language"
+msgstr "Kieli"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:68
+msgid "Last processed %s"
+msgstr "Viimeksi käsitelty: %s"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:108
+msgid "Maximum upload size: %s bytes"
+msgstr "Latauksen enimmäiskoko: %s tavua"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:57
+msgid "No URL recorded"
+msgstr "URL-osoitetta ei ole tallennettu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:50
+msgid "No web page source types are available for this plan."
+msgstr "Tälle paketille ei ole saatavilla verkkosivulähteitä."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:41
+msgid "Policies"
+msgstr "Käytännöt"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:49
+msgid "Pricing"
+msgstr "Hinnoittelu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:45
+msgid "Product information"
+msgstr "Tuotetiedot"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:119
+msgid "Reprocess"
+msgstr "Käsittele uudelleen"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:38
+msgid "Save"
+msgstr "Tallenna"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:47
+msgid "Shipping and delivery"
+msgstr "Toimitus"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:99
+msgid "Superseded"
+msgstr "Korvattu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:92
+msgid "This page updates automatically while the source is processing."
+msgstr "Tämä sivu päivittyy automaattisesti lähteen käsittelyn aikana."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-display.js:58
+msgid "Web page"
+msgstr "Verkkosivu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "katkaistu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "katkaistu"
 #: src/usage-history/usage-history-toolbar.js
 msgid "All events"
 msgstr "Kaikki tapahtumat"

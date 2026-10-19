@@ -27,6 +27,7 @@
 		"i18n:compile": "node scripts/i18n/compile.mjs",
 		"i18n:verify:20": "node scripts/i18n/verify-source.mjs && node scripts/i18n/compile.mjs --strict",
 		"test:i18n": "node --test tests/i18n/*.test.mjs",
+		"test:knowledge-browser": "node --test tests/browser/merchant-knowledge-accessibility.mjs",
 		"test:js": "wp-scripts test-unit-js tests/js && node --test tests/integration/*.test.mjs tests/i18n/*.test.mjs",
 		"test:php": "composer test",
 		"test:integration:wordpress": "node tests/integration/run-wordpress.mjs",
