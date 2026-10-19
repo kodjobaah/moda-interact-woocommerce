@@ -13,6 +13,7 @@ export class MerchantKnowledgeController {
 		this.disposed = false;
 		this.epoch = 0;
 		this.pending = null;
+		this.currentAbort = null;
 		this.pollTimer = null;
 		this.pollUntil = null;
 	}
@@ -62,6 +63,8 @@ export class MerchantKnowledgeController {
 	}
 
 	invalidate() {
+		this.currentAbort?.abort();
+		this.currentAbort = null;
 		this.stopPolling();
 		++this.epoch;
 		this.pending = null;
@@ -141,10 +144,17 @@ export class MerchantKnowledgeController {
 		this.pollTimer = null;
 		const epoch = ++this.epoch;
 		this.publish({ status: 'LOADING', data: this.state.data });
-		return this.request(epoch, () => this.client.read(), 'READY');
+		return this.request(epoch, (context) => this.client.read(context), 'READY');
 	}
 
 	async perform(action, payload) {
+		if (action === 'cancelUpload') {
+			if (this.state.status === 'SAVING' &&
+				['upload', 'replaceSource'].includes(this.state.activeAction)) {
+				this.currentAbort?.abort();
+			}
+			return this.state;
+		}
 		if (
 			!this.active ||
 			!this.connected ||
@@ -163,22 +173,34 @@ export class MerchantKnowledgeController {
 		}
 		this.pollTimer = null;
 		const epoch = ++this.epoch;
-		this.publish({ status: 'SAVING', data });
+		this.publish({ status: 'SAVING', data, activeAction: action });
 		return this.request(
 			epoch,
-			async () => {
-				await this.client[action](payload);
-				return this.client.read(); // Only server-acknowledged data becomes visible.
+			async (context) => {
+				await this.client[action](payload, {
+					...context, snapshot: data,
+					onProgress: (phase) => {
+						if (this.isCurrent(epoch)) {
+							this.publish({ status: 'SAVING', data, activeAction: action, phase });
+						}
+					},
+				});
+				if (context.signal.aborted) {
+					throw Object.assign(new Error('ABORTED'), { code: 'ABORTED' });
+				}
+				return this.client.read(context); // Only server-acknowledged data becomes visible.
 			},
-			'READY'
+			'READY', data
 		);
 	}
 
-	request(epoch, operation, successStatus) {
+	request(epoch, operation, successStatus, originalData = null) {
+		const controller = new AbortController();
+		this.currentAbort = controller;
 		const request = Promise.resolve()
-			.then(operation)
+			.then(() => operation({ signal: controller.signal }))
 			.then((data) => {
-				if (this.isCurrent(epoch)) {
+				if (this.isCurrent(epoch) && !controller.signal.aborted) {
 					this.publish({ status: successStatus, data });
 					this.pollProcessing();
 				}
@@ -187,19 +209,31 @@ export class MerchantKnowledgeController {
 			.catch((error) => {
 				if (this.isCurrent(epoch)) {
 					const code = error?.code ?? error?.message;
-					let status = 'ERROR';
-					if (code === 'KNOWLEDGE_UNAVAILABLE') {
-						status = 'UNAVAILABLE';
-					} else if (code === 'DENIED' || code === 'FORBIDDEN') {
-						status = 'DENIED';
-					} else if (code === 'CONFLICT') {
-						status = 'CONFLICT';
+					if (originalData && code === 'ABORTED') {
+						this.publish({ status: 'READY', data: originalData });
+					} else if (originalData) {
+						// Keep edit/upload forms mounted with their unsaved drafts.
+						// A conflict freezes further writes until a fresh read.
+						this.publish({
+							status: 'READY', data: originalData,
+							error: code === 'CONFLICT' ? 'CONFLICT' :
+								code === 'DENIED' || code === 'FORBIDDEN' ? 'DENIED' : 'ERROR',
+							needsRefresh: code === 'CONFLICT',
+						});
+					} else {
+						const status = ['KNOWLEDGE_UNAVAILABLE', 'RECONNECT_REQUIRED',
+							'REMOTE_UNAVAILABLE', 'API_NOT_CONFIGURED'].includes(code) ? 'UNAVAILABLE' :
+							code === 'DENIED' || code === 'FORBIDDEN' ? 'DENIED' :
+							code === 'CONFLICT' ? 'CONFLICT' : 'ERROR';
+						this.publish({ status, data: null });
 					}
-					this.publish({ status, data: null });
 				}
 				return this.state;
 			})
 			.finally(() => {
+				if (this.currentAbort === controller) {
+					this.currentAbort = null;
+				}
 				if (this.pending === request) {
 					this.pending = null;
 				}
@@ -210,6 +244,8 @@ export class MerchantKnowledgeController {
 
 	dispose() {
 		this.stopPolling();
+		this.currentAbort?.abort();
+		this.currentAbort = null;
 		this.disposed = true;
 		++this.epoch;
 		this.pending = null;

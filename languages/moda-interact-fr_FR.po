@@ -134,6 +134,10 @@ msgid "Buy %s credits"
 msgstr "Acheter %s crédits"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Annuler le téléversement"
+
 msgid "Cancel recurring plan?"
 msgstr "Résilier le forfait récurrent ?"
 
@@ -2004,3 +2008,7 @@ msgstr "Voir la récupération"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Vous n’êtes pas autorisé à consulter l’historique d’utilisation."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Classification de la boutique et ressources de référence utilisées par l’assistant."

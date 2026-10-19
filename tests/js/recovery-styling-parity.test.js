@@ -69,14 +69,20 @@ describe('Shopify-inspired Recovery Settings presentation', () => {
 			onToggleMapping: () => {},
 			onSave: save,
 		});
-		// Merchant Knowledge adds its own form disclosures. The original
-		// Recovery Settings panel must remain the single outer disclosure.
+		// The parent context is a static section, never an outer disclosure.
+		// Each child has its own native, initially collapsed details element.
 		expect(
-			all(view, 'details').filter(
-				(details) =>
-					details.props.className === 'moda-interact-recovery__panel'
+			all(view, 'section').filter((section) =>
+				section.props.className?.includes('moda-interact-store-context')
 			)
 		).toHaveLength(1);
+		for (const id of ['store-profile', 'merchant-knowledge']) {
+			const disclosure = all(view, 'details').find(
+				(details) => details.props.id === id
+			);
+			expect(disclosure).toBeDefined();
+			expect(disclosure.props.open).toBeUndefined();
+		}
 		expect(
 			all(view, 'button').find((button) => button.props.onClick === save)
 		).toBeDefined();

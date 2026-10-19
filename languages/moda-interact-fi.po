@@ -131,6 +131,10 @@ msgid "Buy %s credits"
 msgstr "Osta %s krediittiä"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Peruuta lataus"
+
 msgid "Cancel recurring plan?"
 msgstr "Peruutetaanko jatkuva tilauspaketti?"
 
@@ -1970,3 +1974,7 @@ msgstr "Näytä palautus"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Sinulla ei ole oikeutta nähdä käyttöhistoriaa."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Kaupan luokitus ja avustajan käyttämä viitemateriaali."

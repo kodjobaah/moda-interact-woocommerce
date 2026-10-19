@@ -19,7 +19,7 @@ import {
 const repository = resolve(import.meta.dirname, '../..');
 
 test('WOO-014 source template covers all current PHP and React literals', () => {
-	assert.equal(verifyTranslationSources().sourceMessages, 455);
+	assert.equal(verifyTranslationSources().sourceMessages, 457);
 });
 
 test('WOO-014 recognizes new literal labels but rejects unreviewed dynamic calls', () => {

@@ -131,6 +131,10 @@ msgid "Buy %s credits"
 msgstr "크레딧 %s개 구매"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "업로드 취소"
+
 msgid "Cancel recurring plan?"
 msgstr "정기 요금제를 취소하시겠습니까?"
 
@@ -1952,3 +1956,7 @@ msgstr "복구 보기"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "사용 내역을 볼 권한이 없습니다."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "어시스턴트가 사용하는 스토어 분류 및 참고 자료입니다."

@@ -130,6 +130,10 @@ msgid "Buy %s credits"
 msgstr "Koupit %s kreditů"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Zrušit nahrávání"
+
 msgid "Cancel recurring plan?"
 msgstr "Zrušit opakovaný tarif?"
 
@@ -1961,3 +1965,7 @@ msgstr "Zobrazit obnovení"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Nemáte oprávnění zobrazit historii využití."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Klasifikace obchodu a referenční materiály používané asistentem."

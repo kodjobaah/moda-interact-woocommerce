@@ -121,6 +121,10 @@ msgid "Buy %s credits"
 msgstr "购买 %s 个额度"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "取消上传"
+
 msgid "Cancel recurring plan?"
 msgstr "取消定期付费套餐？"
 
@@ -1900,3 +1904,7 @@ msgstr "查看恢复记录"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "您无权查看使用记录。"
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "助手使用的商店分类和参考资料。"

@@ -447,4 +447,32 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		).toBe(true);
 		expect(text(form)).toContain('Maximum upload size: 2048 bytes');
 	});
+
+	it('offers explicit upload cancellation without exposing unsupported file deletion', () => {
+		const onAction = vi.fn();
+		const uploading = MerchantKnowledgePanel({
+			state: { status: 'SAVING', data, activeAction: 'upload', phase: 'UPLOADING' },
+			onAction,
+		});
+		const cancel = nodes(uploading, 'button').find(
+			(node) => text(node) === 'Cancel upload'
+		);
+		expect(cancel).toBeDefined();
+		cancel.props.onClick();
+		expect(onAction).toHaveBeenCalledWith('cancelUpload');
+
+		const fileSource = {
+			id: 'file_1', name: 'CSV', dataFormatKey: 'CSV', purposeKey: 'FAQ',
+			languageTag: 'en', uploadedFileName: 'faq.csv',
+			currentlyPlanEntitled: true, revision: { status: 'ACTIVE' },
+		};
+		const listing = KnowledgeSourceList({
+			data, sources: [fileSource],
+			permissions: { deleteSource: true }, onAction,
+		});
+		const deletion = nodes(listing, 'button').find(
+			(node) => text(node) === 'Delete'
+		);
+		expect(deletion.props.disabled).toBe(true);
+	});
 });

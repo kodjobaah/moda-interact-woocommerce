@@ -73,9 +73,11 @@ const connected = (controller) => {
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('Merchant Knowledge UI-only controller', () => {
-	it('refuses unapproved production read/write operations and never calls a hosted endpoint', async () => {
-		const client = createMerchantKnowledgeClient();
-		expect(client).not.toHaveProperty('upload');
+	it('does not invent source state when the approved WordPress broker is unavailable', async () => {
+		const client = createMerchantKnowledgeClient(async () => {
+			throw { status: 503 };
+		});
+		expect(client).toHaveProperty('upload');
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
@@ -274,5 +276,55 @@ describe('Merchant Knowledge UI-only controller', () => {
 		} finally {
 			vi.useRealTimers();
 		}
+	});
+});
+
+describe('ARCH-035-WOOCOMMERCE-015 command failure and cancellation', () => {
+	it('keeps the source UI and unsaved edits after a failed command', async () => {
+		const original = fixture();
+		const client = {
+			read: vi.fn(async () => original),
+			addUrl: vi.fn(async () => { throw { code: 'REMOTE_UNAVAILABLE' }; }),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		await controller.perform('addUrl', {
+			name: 'Draft', purpose: 'FAQ', languageTag: 'en',
+			url: 'https://example.org/help',
+		});
+		expect(controller.state.status).toBe('READY');
+		expect(controller.state.error).toBe('ERROR');
+		expect(controller.state.data).toBe(original);
+		controller.dispose();
+	});
+
+	it('aborts active upload on credential rotation and ignores late finalisation', async () => {
+		let release;
+		const client = {
+			read: vi.fn(async () => fixture()),
+			upload: vi.fn((_payload, { signal }) => new Promise((resolve) => {
+				release = () => resolve({ status: 'ACCEPTED' });
+				signal.addEventListener('abort', () => resolve({ status: 'ACCEPTED' }));
+			})),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		const saved = controller.perform('upload', {
+			name: 'Source', purpose: 'PRODUCT_INFORMATION',
+			languageTag: 'en', dataFormatKey: 'XLSX',
+			file: { name: 'item.xlsx', size: 40 },
+		});
+		await settle();
+		expect(controller.state.status).toBe('SAVING');
+		controller.setConnection({
+			status: 'CONNECTED', installationId: 'rotated', credentialVersion: 2,
+		});
+		await saved;
+		expect(client.read).toHaveBeenCalledTimes(2);
+		expect(controller.state.status).toBe('READY');
+		release();
+		controller.dispose();
 	});
 });

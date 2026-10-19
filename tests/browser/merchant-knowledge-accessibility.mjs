@@ -53,8 +53,10 @@ test('native disclosures respond to Enter and Space; unavailable sources and for
 	try {
 		const merchant = page.locator('#merchant-knowledge');
 		const outerSummary = merchant.locator(':scope > summary');
-		assert.equal(await merchant.evaluate((node) => node.open), true);
+		assert.equal(await merchant.evaluate((node) => node.open), false);
 		await outerSummary.focus();
+		await page.keyboard.press('Enter');
+		assert.equal(await merchant.evaluate((node) => node.open), true);
 		await page.keyboard.press('Enter');
 		assert.equal(await merchant.evaluate((node) => node.open), false);
 		await page.keyboard.press('Enter');
@@ -100,6 +102,7 @@ test('native disclosures respond to Enter and Space; unavailable sources and for
 test('denied state stays fail-closed rather than displaying source controls', async () => {
 	const page = await openFixture('DENIED');
 	try {
+		await page.locator('#merchant-knowledge > summary').click();
 		assert.equal(
 			await page.locator('.moda-knowledge__disclosure').count(),
 			0
@@ -121,6 +124,7 @@ test('denied state stays fail-closed rather than displaying source controls', as
 test('real source component and SCSS stack forms and fields at narrow widths', async () => {
 	const page = await openFixture('READY');
 	try {
+		await page.locator('#merchant-knowledge > summary').click();
 		const form = page.locator('.moda-knowledge__form--web');
 		const columns = async () =>
 			form.evaluate(
@@ -157,6 +161,50 @@ test('real source component and SCSS stack forms and fields at narrow widths', a
 			viewport.scrollWidth <= viewport.innerWidth + 1,
 			`Horizontal overflow: ${viewport.scrollWidth}px at ${viewport.innerWidth}px viewport`
 		);
+	} finally {
+		await page.close();
+	}
+});
+
+test('permanent context and independent native disclosures retain drafts', async () => {
+	const page = await openFixture('READY');
+	try {
+		const context = page.locator('.moda-interact-store-context');
+		const profile = page.locator('#store-profile');
+		const knowledge = page.locator('#merchant-knowledge');
+		assert.equal(await context.locator(':scope > summary').count(), 0);
+		assert.equal(
+			await context.locator(':scope > header > h2').innerText(),
+			'Store & assistant context'
+		);
+		assert.equal(await profile.evaluate((node) => node.open), false);
+		assert.equal(await knowledge.evaluate((node) => node.open), false);
+		assert.match(
+			await profile.locator(':scope > summary').innerText(),
+			/Animals & Pet Supplies/
+		);
+		assert.match(
+			await knowledge.locator(':scope > summary').innerText(),
+			/0 of 3 sources configured/
+		);
+
+		await profile.locator(':scope > summary').focus();
+		await page.keyboard.press('Enter');
+		assert.equal(await profile.evaluate((node) => node.open), true);
+		assert.equal(await knowledge.evaluate((node) => node.open), false);
+
+		await knowledge.locator(':scope > summary').focus();
+		await page.keyboard.press('Space');
+		assert.equal(await knowledge.evaluate((node) => node.open), true);
+		assert.equal(await profile.evaluate((node) => node.open), true);
+
+		const draft = knowledge.locator('input[name="name"]').first();
+		await draft.fill('Unsaved local draft');
+		await knowledge.locator(':scope > summary').click();
+		assert.equal(await knowledge.evaluate((node) => node.open), false);
+		assert.equal(await profile.evaluate((node) => node.open), true);
+		await knowledge.locator(':scope > summary').click();
+		assert.equal(await draft.inputValue(), 'Unsaved local draft');
 	} finally {
 		await page.close();
 	}

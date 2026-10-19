@@ -278,8 +278,15 @@ export function KnowledgeSourceCard({
 				{
 					type: 'button',
 					className: 'button',
-					disabled: busy || !permissions.deleteSource,
-					onClick: () => onAction('deleteSource', { id: source.id }),
+					disabled: busy || !permissions.deleteSource ||
+					source.dataFormatKey !== 'WEB_PAGE' ||
+					source.currentlyPlanEntitled === false,
+					onClick: () => {
+						const confirm = typeof window !== 'undefined' &&
+							typeof window.confirm === 'function' &&
+							window.confirm(`${__('Delete', 'moda-interact')} — ${source.name}?`);
+						if (confirm) onAction('deleteSource', { id: source.id });
+					},
 				},
 				__('Delete', 'moda-interact')
 			)

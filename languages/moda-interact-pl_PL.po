@@ -135,6 +135,10 @@ msgid "Buy %s credits"
 msgstr "Kup %s kredytów"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Anuluj przesyłanie"
+
 msgid "Cancel recurring plan?"
 msgstr "Anulować plan cykliczny?"
 
@@ -1980,3 +1984,7 @@ msgstr "Zobacz odzyskiwanie"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Nie masz uprawnień do przeglądania historii użycia."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Klasyfikacja sklepu i materiały referencyjne wykorzystywane przez asystenta."

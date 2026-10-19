@@ -128,6 +128,10 @@ msgid "Buy %s credits"
 msgstr "%s クレジットを購入"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "アップロードをキャンセル"
+
 msgid "Cancel recurring plan?"
 msgstr "定期プランを解約しますか？"
 
@@ -1955,3 +1959,7 @@ msgstr "リカバリーを表示"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "利用履歴を表示する権限がありません。"
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "アシスタントが使用するストアの分類と参照資料。"

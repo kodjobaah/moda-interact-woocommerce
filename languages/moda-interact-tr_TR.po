@@ -132,6 +132,10 @@ msgid "Buy %s credits"
 msgstr "%s kredi satın al"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Yüklemeyi iptal et"
+
 msgid "Cancel recurring plan?"
 msgstr "Yinelenen plan iptal edilsin mi?"
 
@@ -1964,3 +1968,7 @@ msgstr "Kurtarmayı görüntüle"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Kullanım geçmişini görüntüleme izniniz yok."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Asistanın kullandığı mağaza sınıflandırması ve başvuru materyalleri."

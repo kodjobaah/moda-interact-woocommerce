@@ -125,6 +125,10 @@ msgstr ""
 msgid "Refresh billing"
 msgstr ""
 
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr ""
+
 #: src/billing/cancel-dialog.js:55
 msgid "Cancel recurring plan?"
 msgstr ""
@@ -1957,4 +1961,8 @@ msgstr ""
 
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
+msgstr ""
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
 msgstr ""

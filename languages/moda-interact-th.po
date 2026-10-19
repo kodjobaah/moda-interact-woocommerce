@@ -126,6 +126,10 @@ msgid "Buy %s credits"
 msgstr "ซื้อ %s เครดิต"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "ยกเลิกการอัปโหลด"
+
 msgid "Cancel recurring plan?"
 msgstr "ยกเลิกแผนแบบประจำหรือไม่?"
 
@@ -1917,3 +1921,7 @@ msgstr "ดูการกู้คืน"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "คุณไม่มีสิทธิ์ดูประวัติการใช้งาน"
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "การจัดประเภทของร้านค้าและข้อมูลอ้างอิงที่ผู้ช่วยใช้"

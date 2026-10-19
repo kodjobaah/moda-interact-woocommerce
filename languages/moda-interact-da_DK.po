@@ -134,6 +134,10 @@ msgid "Buy %s credits"
 msgstr "Køb %s kreditter"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Annuller upload"
+
 msgid "Cancel recurring plan?"
 msgstr "Opsig løbende abonnement?"
 
@@ -1979,3 +1983,7 @@ msgstr "Vis gendannelse"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Du har ikke tilladelse til at se forbrugshistorikken."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Butiksklassificering og referencemateriale, som assistenten bruger."

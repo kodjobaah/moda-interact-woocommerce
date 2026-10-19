@@ -49,13 +49,13 @@ export function MerchantKnowledgePanel({
 					String(limit)
 				)
 			: null;
-	const permissions = !busy && ready ? (data?.permissions ?? {}) : {};
+	const permissions = !busy && ready && !state.needsRefresh
+		? (data?.permissions ?? {}) : {};
 	return createElement(
 		'details',
 		{
 			id: 'merchant-knowledge',
 			className: 'moda-knowledge',
-			open: true,
 			'aria-labelledby': 'merchant-knowledge-title',
 			'aria-busy': busy,
 		},
@@ -106,11 +106,22 @@ export function MerchantKnowledgePanel({
 				? createElement(
 						'p',
 						{ role: 'status' },
-						status === 'LOADING'
+						status === 'LOADING' || state.phase === 'HASHING'
 							? __('Loading…', 'moda-interact')
 							: __('Saving…', 'moda-interact')
 					)
 				: null,
+			state.error
+				? createElement(
+						'p', { role: 'alert', className: 'moda-knowledge__status-error' },
+						knowledgeErrorMessage(state.error)
+					) : null,
+			busy && ['upload', 'replaceSource'].includes(state.activeAction)
+				? createElement(
+						'button', { type: 'button', className: 'button',
+							onClick: () => onAction('cancelUpload') },
+						__('Cancel upload', 'moda-interact')
+					) : null,
 			!ready && !busy
 				? createElement(
 						'p',
@@ -142,7 +153,7 @@ export function MerchantKnowledgePanel({
 						onAction,
 					})
 				: null,
-			['ERROR', 'CONFLICT', 'DENIED', 'UNAVAILABLE'].includes(status)
+			(state.needsRefresh || ['ERROR', 'CONFLICT', 'DENIED', 'UNAVAILABLE'].includes(status))
 				? createElement(
 						'button',
 						{
