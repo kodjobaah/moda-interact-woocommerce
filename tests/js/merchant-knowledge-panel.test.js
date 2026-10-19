@@ -208,6 +208,53 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		expect(controls.length).toBeGreaterThan(0);
 		expect(controls.every((control) => control.props.disabled)).toBe(true);
 		expect(nodes(view, 'li')).toHaveLength(0);
+		const placeholders = nodes(view, 'section').filter(
+			(node) =>
+				node.props.className === 'moda-knowledge__sources-placeholder'
+		);
+		expect(placeholders).toHaveLength(1);
+		expect(placeholders[0].props['aria-labelledby']).toBe(
+			'merchant-knowledge-sources-unavailable'
+		);
+		expect(text(placeholders[0])).toContain(
+			'Knowledge sources could not be loaded'
+		);
+		expect(text(view)).not.toContain('No knowledge sources configured.');
+		expect(text(view)).not.toContain('sources configured');
+		const inaccessible = MerchantKnowledgePanel({
+			state: { status: 'DENIED', data: null },
+		});
+		expect(
+			nodes(inaccessible, 'section').filter(
+				(node) =>
+					node.props.className ===
+					'moda-knowledge__sources-placeholder'
+			)
+		).toHaveLength(0);
+	});
+
+	it('preserves browser-native keyboard disclosure semantics in the unavailable state', () => {
+		const view = MerchantKnowledgePanel({
+			state: { status: 'UNAVAILABLE', data: null },
+		});
+		const details = nodes(view, 'details');
+		const summaries = nodes(view, 'summary');
+		expect(details).toHaveLength(3); // Section, web, file.
+		expect(summaries).toHaveLength(3);
+		for (const summary of summaries) {
+			// <summary> is keyboard focusable/activatable natively; custom
+			// button roles or key handlers would undermine that behaviour.
+			expect(summary.props.tabIndex).toBeUndefined();
+			expect(summary.props.role).toBeUndefined();
+			expect(summary.props.onKeyDown).toBeUndefined();
+			expect(summary.props.onClick).toBeUndefined();
+		}
+		const buttons = nodes(view, 'button');
+		expect(
+			buttons
+				.filter((node) => node.props.type === 'submit')
+				.every((node) => node.props.disabled === true)
+		).toBe(true);
 	});
 
 	it('uses nested native disclosure, clear disabled notice, header count, stacked add forms and metadata', () => {

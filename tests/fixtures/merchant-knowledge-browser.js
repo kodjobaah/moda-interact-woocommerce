@@ -1,0 +1,47 @@
+// Fixture-only entrypoint: actual UI components and stylesheet, no live
+// WordPress connection, merchant credentials, or production mock data.
+import { createElement, createRoot } from '@wordpress/element';
+import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
+import '../../src/index.scss';
+
+const status = new URLSearchParams(window.location.search).get('status');
+const readyFixture = {
+	planEntitled: true,
+	merchantEnabled: false,
+	configuredCount: 0,
+	maxKnowledgeSources: 3,
+	maxUploadBytes: 2048,
+	defaultLanguageTag: 'en',
+	supportedLanguageTags: ['en'],
+	permissions: { addUrl: true, upload: true },
+	catalogue: [
+		{
+			purpose: { key: 'FAQ', displayName: 'Frequently asked questions' },
+			dataFormat: {
+				key: 'WEB_PAGE',
+				inputKind: 'REMOTE_URL',
+				canonicalExtension: null,
+			},
+		},
+		{
+			purpose: { key: 'FAQ', displayName: 'Frequently asked questions' },
+			dataFormat: {
+				key: 'CSV',
+				inputKind: 'UPLOAD',
+				canonicalExtension: '.csv',
+			},
+		},
+	],
+	sources: [],
+};
+const state =
+	status === 'READY'
+		? { status: 'READY', data: readyFixture }
+		: {
+				status: status === 'DENIED' ? 'DENIED' : 'UNAVAILABLE',
+				data: null,
+			};
+
+createRoot(document.getElementById('merchant-knowledge-fixture')).render(
+	createElement(MerchantKnowledgePanel, { state })
+);

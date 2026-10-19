@@ -7,8 +7,30 @@ export function KnowledgeSourceList({
 	data = {},
 	permissions = {},
 	busy = false,
+	unavailable = false,
 	onAction = () => {},
 }) {
+	if (unavailable) {
+		return createElement(
+			'section',
+			{
+				className: 'moda-knowledge__sources-placeholder',
+				'aria-labelledby': 'merchant-knowledge-sources-unavailable',
+			},
+			createElement(
+				'h3',
+				{ id: 'merchant-knowledge-sources-unavailable' },
+				__(
+					'Knowledge sources could not be loaded. Try again later.',
+					'moda-interact'
+				)
+			),
+			createElement('div', {
+				className: 'moda-knowledge__sources-empty-shape',
+				'aria-hidden': true,
+			})
+		);
+	}
 	if (!sources.length) {
 		return createElement(
 			'p',

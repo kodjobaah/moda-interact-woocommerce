@@ -132,12 +132,13 @@ export function MerchantKnowledgePanel({
 						onAction,
 					})
 				: null,
-			entitled
+			entitled || status === 'UNAVAILABLE'
 				? createElement(KnowledgeSourceList, {
-						data,
-						sources: data.sources ?? [],
+						data: data ?? {},
+						sources: entitled ? (data.sources ?? []) : [],
 						permissions,
 						busy,
+						unavailable: status === 'UNAVAILABLE',
 						onAction,
 					})
 				: null,
