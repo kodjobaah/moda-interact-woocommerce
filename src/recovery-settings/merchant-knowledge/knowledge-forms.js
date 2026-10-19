@@ -10,7 +10,12 @@ import { KnowledgeUploadForm } from './knowledge-upload-form';
 import { KnowledgeWebForm } from './knowledge-web-form';
 
 // Native details/summary implements keyboard interaction without a custom toggle.
-export function KnowledgeAddForms({ data, busy = false, onAction = () => {} }) {
+export function KnowledgeAddForms({
+	data,
+	busy = false,
+	preserveUnavailable = false,
+	onAction = () => {},
+}) {
 	const web = catalogueFor(data, 'REMOTE_URL').filter(
 		(item) => item.dataFormat.key === 'WEB_PAGE'
 	);
@@ -26,7 +31,7 @@ export function KnowledgeAddForms({ data, busy = false, onAction = () => {} }) {
 	return createElement(
 		'div',
 		{ className: 'moda-knowledge__add-grid' },
-		web.length
+		web.length || preserveUnavailable
 			? createElement(
 					'details',
 					{ className: 'moda-knowledge__disclosure', open: true },
@@ -65,7 +70,7 @@ export function KnowledgeAddForms({ data, busy = false, onAction = () => {} }) {
 						'moda-interact'
 					)
 				),
-		uploads.length
+		uploads.length || preserveUnavailable
 			? createElement(
 					'details',
 					{ className: 'moda-knowledge__disclosure', open: true },

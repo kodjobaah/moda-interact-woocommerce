@@ -124,10 +124,11 @@ export function MerchantKnowledgePanel({
 							: knowledgeErrorMessage(status)
 					)
 				: null,
-			entitled
+			entitled || status === 'UNAVAILABLE'
 				? createElement(KnowledgeAddForms, {
-						data: { ...data, permissions },
+						data: data ? { ...data, permissions } : {},
 						busy,
+						preserveUnavailable: status === 'UNAVAILABLE',
 						onAction,
 					})
 				: null,

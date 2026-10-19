@@ -186,6 +186,30 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		}
 	);
 
+	it('keeps unavailable add disclosures visible with all configuration controls disabled', () => {
+		const view = MerchantKnowledgePanel({
+			state: { status: 'UNAVAILABLE', data: null },
+		});
+		const summaries = nodes(view, 'summary');
+		const controls = [
+			...nodes(view, 'input'),
+			...nodes(view, 'select'),
+			...nodes(view, 'button').filter(
+				(button) => button.props.type === 'submit'
+			),
+		];
+
+		expect(
+			summaries.slice(1).map((summary) => text(summary).trim())
+		).toEqual(['Add web page Web page', 'Upload file']);
+		expect(nodes(view, 'form')).toHaveLength(1);
+		expect(nodes(view, KnowledgeUploadForm)).toHaveLength(1);
+		expect(nodes(view, KnowledgeUploadForm)[0].props.enabled).toBe(false);
+		expect(controls.length).toBeGreaterThan(0);
+		expect(controls.every((control) => control.props.disabled)).toBe(true);
+		expect(nodes(view, 'li')).toHaveLength(0);
+	});
+
 	it('uses nested native disclosure, clear disabled notice, header count, stacked add forms and metadata', () => {
 		const view = MerchantKnowledgePanel({
 			state: { status: 'READY', data },

@@ -50,6 +50,7 @@ export function KnowledgeWebForm({ data, catalogue, disabled, onAction }) {
 				type: 'text',
 				value: formatLabel('WEB_PAGE'),
 				readOnly: true,
+				disabled,
 				tabIndex: -1,
 			})
 		),
