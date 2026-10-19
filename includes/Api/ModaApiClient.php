@@ -618,6 +618,56 @@ final class ModaApiClient {
 		}
 	}
 
+	/** API-014..017 hosted operations; installation auth is never supplied by browser input. */
+	public function merchantKnowledgeExchange( array $connection, string $path, string $method, ?array $data = null ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
+		$paths = array(
+			'/v1/merchant/feature-preferences' => array( 'GET', 'PUT' ),
+			'/v1/merchant/merchant-knowledge' => array( 'GET' ),
+			'/v1/merchant/merchant-knowledge/sources' => array( 'POST' ),
+			'/v1/merchant/merchant-knowledge/order' => array( 'PUT' ),
+			'/v1/merchant/merchant-knowledge/upload-intents' => array( 'POST' ),
+			'/v1/merchant/merchant-knowledge/upload-finalize' => array( 'POST' ),
+		);
+		$valid = isset( $paths[ $path ] ) && in_array( $method, $paths[ $path ], true );
+		if ( ! $valid && preg_match( '#^/v1/merchant/merchant-knowledge/sources/[A-Za-z0-9_-]{1,128}(/refresh)?$#D', $path ) ) {
+			$valid = str_ends_with( $path, '/refresh' ) ? 'POST' === $method : in_array( $method, array( 'PATCH', 'DELETE' ), true );
+		}
+		if ( ! $valid && preg_match( '#^/v1/merchant/merchant-knowledge/uploads/[A-Za-z0-9_-]{1,128}(/reprocess)?$#D', $path ) ) {
+			$valid = str_ends_with( $path, '/reprocess' ) ? 'POST' === $method : 'PATCH' === $method;
+		}
+		if ( ! $valid && preg_match( '#^/v1/merchant/merchant-knowledge\?afterPosition=(0|[1-9][0-9]{0,9})$#D', $path ) ) {
+			$valid = 'GET' === $method && (int) substr( $path, strlen( '/v1/merchant/merchant-knowledge?afterPosition=' ) ) <= 2147483647;
+		}
+		if ( ! $valid || ( 'GET' === $method && null !== $data ) ||
+			( 'GET' !== $method && null === $data && ! str_ends_with( $path, '/reprocess' ) ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = null === $data ? null : wp_json_encode( $data );
+		$max_request = str_contains( $path, 'upload-' ) || str_contains( $path, '/uploads/' ) ? 4096 : 65536;
+		if ( null !== $data && ( ! is_string( $body ) || strlen( $body ) > $max_request ) ) throw new ModaApiClientException( 'invalid_request' );
+		$headers = self::installationHeaders( $connection );
+		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
+		$response = $this->request( $path, $method, $headers, $body, self::DEFAULT_TIMEOUT_SECONDS, 262145 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( in_array( $status, array( 400, 403, 404, 409, 413 ), true ) ) {
+			$codes = array( 'invalid_request', 'request_too_large', 'feature_preferences_conflict',
+				'feature_preferences_denied', 'feature_preferences_unavailable', 'feature_preferences_integrity_invalid',
+				'merchant_knowledge_integrity_invalid', 'merchant_knowledge_unavailable', 'merchant_knowledge_denied',
+				'merchant_knowledge_source_not_found', 'merchant_knowledge_conflict', 'knowledge_upload_denied',
+				'knowledge_upload_conflict', 'knowledge_upload_expired', 'knowledge_upload_not_found',
+				'knowledge_upload_integrity_mismatch', 'knowledge_upload_unavailable' );
+			try { $error = self::decodeErrorBody( $response )['error'] ?? null; }
+			catch ( ModaApiClientException $exception ) { $error = null; }
+			throw new ModaApiClientException( 'remote_rejected', $status,
+				is_string( $error ) && in_array( $error, $codes, true ) ? $error : null );
+		}
+		if ( ! in_array( $status, array( 200, 201 ), true ) ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try { return $this->jsonBody( $response, 262144 ); }
+		catch ( ModaApiClientException $error ) { throw new ModaApiClientException( 'remote_response_invalid', $status ); }
+	}
+
 	private function request( string $path, string $method, array $headers, ?string $body = null, int $timeout = self::DEFAULT_TIMEOUT_SECONDS, int $response_limit = 8193 ): mixed {
 		$url = $this->configuration->base_url . $path;
 		$args = array(
