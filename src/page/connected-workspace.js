@@ -5,6 +5,7 @@ import { PromotionsScreen } from '../promotions/promotions-screen';
 import { RecoveriesScreen } from '../recoveries/recoveries-screen';
 import { RecoverySettingsScreen } from '../recovery-settings/recovery-settings-screen';
 import { SupportScreen } from '../support/support-screen';
+import { UsageHistoryScreen } from '../usage-history/usage-history-screen';
 import { SurfaceNavigation } from './surface-navigation';
 
 // Connected-only screens, separate from the connection status panel.
@@ -33,6 +34,8 @@ export function ConnectedWorkspace({
 			key: 'recoveries',
 			timeZone,
 		});
+	} else if (activeSurface === 'USAGE') {
+		activeContent = createElement(UsageHistoryScreen, { key: `usage:${connectionIdentity}` });
 	} else if (activeSurface === 'SUPPORT') {
 		activeContent = createElement(SupportScreen, {
 			key: `support:${connectionIdentity}`,

@@ -1751,12 +1751,15 @@ msgstr ""
 msgid "%s active content units"
 msgstr ""
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr ""
 
 #: src/recovery-settings/merchant-knowledge/knowledge-display.js:37
 msgid "Company information"
+msgstr ""
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
 msgstr ""
 
 #: src/recovery-settings/merchant-knowledge/knowledge-display.js:87
@@ -1860,4 +1863,98 @@ msgstr ""
 
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr ""
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr ""
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr ""
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr ""
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr ""
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr ""
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr ""
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr ""
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr ""
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr ""
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr ""
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr ""
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr ""
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr ""
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr ""
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
 msgstr ""

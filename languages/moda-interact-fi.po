@@ -1762,7 +1762,6 @@ msgstr "%1$s/%2$s lähdettä määritetty"
 msgid "%s active content units"
 msgstr "%s aktiivista sisältöyksikköä"
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr "CSV-taulukko"
 
@@ -1872,3 +1871,102 @@ msgstr "Verkkosivu"
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
 msgstr "katkaistu"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "katkaistu"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Kaikki tapahtumat"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Laskutusjaksot"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Nykyinen jakso"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Tapahtumatyyppi"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Ladataan käyttöhistoriaa…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Tälle jaksolle ei ole kirjattu käyttöä."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Aiemmat jaksot"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Määrä"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Kirjattu"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Kirjattu käyttö"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Palautus"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Palautuskeskustelu"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Tarkastele palautuskeskustelujen kirjattua käyttöä laskutusjaksoittain."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Rivejä sivulla"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Valitse jakso"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "Valittu laskutusjakso ei ole saatavilla."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Tämä historiasivu ei ole enää voimassa. Tyhjennä valinta ja aloita alusta."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Ei linkitetty"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Käyttöhistoria"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Käyttöhistorian lataus epäonnistui. Yritä uudelleen."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "Käyttöhistoria ei ole vielä saatavilla tässä WooCommerce-kaupassa. Tietoja ei muutettu."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Käyttöhistorian sivut"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Näytä palautus"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Sinulla ei ole oikeutta nähdä käyttöhistoriaa."

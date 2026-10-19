@@ -40,6 +40,7 @@ final class NativeNavigation {
 
 		$this->register_application( 'moda-interact-recoveries', __( 'Recoveries', 'moda-interact' ) );
 		$this->register_application( 'moda-interact-billing', __( 'Billing', 'moda-interact' ) );
+		$this->register_application( 'moda-interact-usage-history', __( 'Usage history', 'moda-interact' ) );
 		$this->register_application( 'moda-interact-promotions', __( 'Promotions', 'moda-interact' ) );
 		$this->register_application( 'moda-interact-support', __( 'Support', 'moda-interact' ) );
 		$this->register_application( 'moda-interact-recovery-settings', __( 'Recovery settings', 'moda-interact' ) );

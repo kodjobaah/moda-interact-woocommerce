@@ -1695,7 +1695,6 @@ msgstr "已設定 %1$s/%2$s 個來源"
 msgid "%s active content units"
 msgstr "%s 個有效內容單位"
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr "CSV 試算表"
 
@@ -1805,3 +1804,102 @@ msgstr "網頁"
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
 msgstr "已截斷"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "已截斷"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "所有事件"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "計費週期"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "目前週期"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "事件類型"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "正在載入使用紀錄…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "此週期沒有已記錄的使用量。"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "過往週期"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "數量"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "記錄時間"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "已記錄使用量"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "恢復"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "恢復對話"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "依計費週期檢視恢復對話的使用紀錄。"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "每頁列數"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "選擇週期"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "所選計費週期無法使用。"
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "此歷史紀錄頁面已失效。請清除選取後重新開始。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "未關聯"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "使用紀錄"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "無法載入使用紀錄，請再試一次。"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "此 WooCommerce 商店尚無法檢視使用紀錄。未變更任何使用資料。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "使用紀錄頁面"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "檢視恢復紀錄"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "您沒有權限檢視使用紀錄。"

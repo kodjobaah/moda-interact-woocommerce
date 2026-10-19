@@ -1770,7 +1770,6 @@ msgstr "%1$s av %2$s källor konfigurerade"
 msgid "%s active content units"
 msgstr "%s aktiva innehållsenheter"
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr "CSV-kalkylblad"
 
@@ -1880,3 +1879,102 @@ msgstr "Webbsida"
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
 msgstr "avkortad"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "avkortad"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Alla händelser"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Faktureringsperioder"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Aktuell period"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Händelsetyp"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Läser in användningshistorik…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Ingen användning registrerad för denna period."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Tidigare perioder"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Antal"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Registrerad den"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Registrerad användning"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Återställning"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Återställningskonversation"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Visa registrerad användning av återställningskonversationer per faktureringsperiod."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Rader per sida"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Välj period"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "Den valda faktureringsperioden är inte tillgänglig."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Den här historiksidan är inte längre giltig. Rensa valet och börja om."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Inte länkad"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Användningshistorik"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Det gick inte att läsa in användningshistoriken. Försök igen."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "Användningshistorik är ännu inte tillgänglig för den här WooCommerce-butiken. Inga uppgifter har ändrats."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Sidor med användningshistorik"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Visa återställning"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Du har inte behörighet att visa användningshistorik."

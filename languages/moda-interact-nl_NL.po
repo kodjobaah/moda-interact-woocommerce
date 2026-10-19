@@ -1789,7 +1789,6 @@ msgstr "%1$s van %2$s bronnen geconfigureerd"
 msgid "%s active content units"
 msgstr "%s actieve inhoudseenheden"
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr "CSV-spreadsheet"
 
@@ -1899,3 +1898,102 @@ msgstr "Webpagina"
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
 msgstr "afgekapt"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "afgekapt"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Alle gebeurtenissen"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Factureringsperioden"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Huidige periode"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Gebeurtenistype"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Gebruiksgeschiedenis laden…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Geen gebruik geregistreerd voor deze periode."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Vorige perioden"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Aantal"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Geregistreerd op"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Geregistreerd gebruik"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Herstel"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Herstelgesprek"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Bekijk geregistreerd gebruik van herstelgesprekken per factureringsperiode."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Rijen per pagina"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Selecteer een periode"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "De geselecteerde factureringsperiode is niet beschikbaar."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Deze geschiedenispagina is niet meer geldig. Wis de selectie en begin opnieuw."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Niet gekoppeld"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Gebruiksgeschiedenis"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Gebruiksgeschiedenis kon niet worden geladen. Probeer opnieuw."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "Gebruiksgeschiedenis is nog niet beschikbaar voor deze WooCommerce-winkel. Er zijn geen gegevens gewijzigd."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Pagina’s met gebruiksgeschiedenis"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Herstel bekijken"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Je hebt geen toestemming om de gebruiksgeschiedenis te bekijken."

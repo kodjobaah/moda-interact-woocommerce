@@ -18,6 +18,9 @@ function ModaInteractPage() {
 	const connectedPromotions =
 		page.activeSurface === 'PROMOTIONS' &&
 		page.connectionState.connection.status === 'CONNECTED';
+	const connectedUsage =
+		page.activeSurface === 'USAGE' &&
+		page.connectionState.connection.status === 'CONNECTED';
 	const connectedSupport =
 		page.activeSurface === 'SUPPORT' &&
 		page.connectionState.connection.status === 'CONNECTED';
@@ -26,7 +29,9 @@ function ModaInteractPage() {
 		page.connectionState.connection.status === 'CONNECTED';
 
 	let pageClassName = 'moda-interact-page';
-	if (connectedSupport) {
+	if (connectedUsage) {
+		pageClassName += ' moda-interact-page--usage';
+	} else if (connectedSupport) {
 		pageClassName += ' moda-interact-page--support';
 	} else if (connectedBilling) {
 		pageClassName += ' moda-interact-page--billing';
@@ -45,7 +50,8 @@ function ModaInteractPage() {
 			connectedRecoveries ||
 			connectedRecoverySettings ||
 			connectedPromotions ||
-			connectedSupport
+			connectedSupport ||
+			connectedUsage
 			? null
 			: createElement(
 					'header',
@@ -68,7 +74,8 @@ function ModaInteractPage() {
 				connectedRecoveries ||
 				connectedRecoverySettings ||
 				connectedPromotions ||
-				connectedSupport
+				connectedSupport ||
+				connectedUsage
 				? null
 				: createElement(ConnectionPanel, {
 						state: page.connectionState,

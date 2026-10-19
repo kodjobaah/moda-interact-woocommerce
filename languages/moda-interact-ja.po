@@ -1747,7 +1747,6 @@ msgstr "%2$s件中%1$s件のソースを設定済み"
 msgid "%s active content units"
 msgstr "有効なコンテンツ単位: %s"
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr "CSVスプレッドシート"
 
@@ -1857,3 +1856,102 @@ msgstr "ウェブページ"
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
 msgstr "切り詰め済み"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "切り詰め済み"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "すべてのイベント"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "請求期間"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "現在の期間"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "イベントの種類"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "利用履歴を読み込み中…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "この期間の利用記録はありません。"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "過去の期間"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "数量"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "記録日時"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "記録された利用量"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "リカバリー"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "リカバリー会話"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "請求期間ごとのリカバリー会話の利用記録を確認します。"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "1ページの行数"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "期間を選択"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "選択した請求期間は利用できません。"
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "この履歴ページは無効になりました。選択を解除してやり直してください。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "未関連付け"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "利用履歴"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "利用履歴を読み込めませんでした。もう一度お試しください。"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "このWooCommerceストアでは利用履歴をまだ表示できません。利用記録は変更されていません。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "利用履歴のページ"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "リカバリーを表示"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "利用履歴を表示する権限がありません。"

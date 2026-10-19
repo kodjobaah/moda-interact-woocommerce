@@ -1798,7 +1798,6 @@ msgstr "%1$s von %2$s Quellen konfiguriert"
 msgid "%s active content units"
 msgstr "%s aktive Inhaltseinheiten"
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr "CSV-Tabelle"
 
@@ -1908,3 +1907,102 @@ msgstr "Webseite"
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
 msgstr "gekürzt"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "gekürzt"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "Alle Ereignisse"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "Abrechnungszeiträume"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "Aktueller Zeitraum"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "Ereignistyp"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "Nutzungsverlauf wird geladen…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "Für diesen Zeitraum wurde keine Nutzung erfasst."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "Vergangene Zeiträume"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "Menge"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "Erfasst am"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "Erfasste Nutzung"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "Wiederherstellung"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "Wiederherstellungsgespräch"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "Prüfen Sie die erfasste Nutzung von Wiederherstellungsgesprächen nach Abrechnungszeitraum."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "Zeilen pro Seite"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "Zeitraum wählen"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "Der ausgewählte Abrechnungszeitraum ist nicht verfügbar."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "Diese Verlaufsseite ist nicht mehr gültig. Auswahl löschen und erneut beginnen."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "Nicht zugeordnet"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "Nutzungsverlauf"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "Der Nutzungsverlauf konnte nicht geladen werden. Bitte erneut versuchen."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "Der Nutzungsverlauf ist für diesen WooCommerce-Shop noch nicht verfügbar. Keine Nutzungsdaten wurden geändert."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "Nutzungsverlaufsseiten"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "Wiederherstellung anzeigen"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "Sie dürfen den Nutzungsverlauf nicht anzeigen."

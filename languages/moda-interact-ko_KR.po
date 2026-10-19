@@ -1744,7 +1744,6 @@ msgstr "%2$s개 중 %1$s개 소스 구성됨"
 msgid "%s active content units"
 msgstr "활성 콘텐츠 단위 %s개"
 
-#: src/recovery-settings/merchant-knowledge/knowledge-display.js:60
 msgid "CSV spreadsheet"
 msgstr "CSV 스프레드시트"
 
@@ -1854,3 +1853,102 @@ msgstr "웹페이지"
 #: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
 msgid "truncated"
 msgstr "잘림"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-source-card.js:44
+msgid "truncated"
+msgstr "잘림"
+#: src/usage-history/usage-history-toolbar.js
+msgid "All events"
+msgstr "모든 이벤트"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Billing periods"
+msgstr "청구 기간"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Current period"
+msgstr "현재 기간"
+
+#: src/usage-history/usage-history-results.js
+msgid "Event type"
+msgstr "이벤트 유형"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Loading usage history…"
+msgstr "사용 내역 불러오는 중…"
+
+#: src/usage-history/usage-history-results.js
+msgid "No recorded usage for this period."
+msgstr "이 기간에 기록된 사용량이 없습니다."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Past periods"
+msgstr "지난 기간"
+
+#: src/billing-screen.js
+msgid "Quantity"
+msgstr "수량"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded at"
+msgstr "기록 일시"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recorded usage"
+msgstr "기록된 사용량"
+
+#: src/recovery-summary-client.js
+msgid "Recovery"
+msgstr "복구"
+
+#: src/usage-history/usage-history-results.js
+msgid "Recovery conversation"
+msgstr "복구 대화"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Review your recorded recovery conversation usage by billing period."
+msgstr "청구 기간별 복구 대화의 기록된 사용량을 확인하세요."
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Rows per page"
+msgstr "페이지당 행 수"
+
+#: src/usage-history/usage-history-toolbar.js
+msgid "Select a period"
+msgstr "기간 선택"
+
+#: src/usage-history/usage-history-screen.js
+msgid "The selected billing period is unavailable."
+msgstr "선택한 청구 기간을 사용할 수 없습니다."
+
+#: src/usage-history/usage-history-screen.js
+msgid "This usage history page is no longer valid. Clear the selection to start again."
+msgstr "이 내역 페이지는 더 이상 유효하지 않습니다. 선택을 지우고 다시 시작하세요."
+
+#: src/usage-history/usage-history-results.js
+msgid "Unlinked"
+msgstr "연결되지 않음"
+
+#: src/billing-screen.js
+msgid "Usage history"
+msgstr "사용 내역"
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history could not be loaded. Please try again."
+msgstr "사용 내역을 불러오지 못했습니다. 다시 시도하세요."
+
+#: src/usage-history/usage-history-screen.js
+msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
+msgstr "이 WooCommerce 스토어에서는 아직 사용 내역을 볼 수 없습니다. 사용 기록은 변경되지 않았습니다."
+
+#: src/usage-history/usage-history-results.js
+msgid "Usage history pages"
+msgstr "사용 내역 페이지"
+
+#: src/usage-history/usage-history-results.js
+msgid "View recovery"
+msgstr "복구 보기"
+
+#: src/usage-history/usage-history-screen.js
+msgid "You do not have permission to view usage history."
+msgstr "사용 내역을 볼 권한이 없습니다."

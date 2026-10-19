@@ -184,11 +184,11 @@ final class PluginTest extends TestCase {
 		self::assertSame( 'manage_woocommerce', $GLOBALS['moda_interact_native_menu'][0]['capability'] );
 		self::assertSame( 'dashicons-store', $GLOBALS['moda_interact_native_menu'][0]['icon'] );
 		self::assertSame(
-			array( 'Overview', 'Recoveries', 'Billing', 'Promotions', 'Support', 'Recovery settings' ),
+			array( 'Overview', 'Recoveries', 'Billing', 'Usage history', 'Promotions', 'Support', 'Recovery settings' ),
 			array_column( $GLOBALS['moda_interact_native_submenus'], 'menu_title' )
 		);
 		self::assertSame(
-			array( 'moda-interact', 'moda-interact-recoveries', 'moda-interact-billing', 'moda-interact-promotions', 'moda-interact-support', 'moda-interact-recovery-settings' ),
+			array( 'moda-interact', 'moda-interact-recoveries', 'moda-interact-billing', 'moda-interact-usage-history', 'moda-interact-promotions', 'moda-interact-support', 'moda-interact-recovery-settings' ),
 			array_column( $GLOBALS['moda_interact_native_submenus'], 'slug' )
 		);
 		foreach ( $GLOBALS['moda_interact_native_submenus'] as $submenu ) {
@@ -208,11 +208,16 @@ final class PluginTest extends TestCase {
 
 		ob_start();
 		call_user_func( $GLOBALS['moda_interact_native_submenus'][3]['callback'] );
+		$usage = ob_get_clean();
+		self::assertStringContainsString( 'id="moda-interact-native-root"', $usage );
+
+		ob_start();
+		call_user_func( $GLOBALS['moda_interact_native_submenus'][4]['callback'] );
 		$promotions = ob_get_clean();
 		self::assertStringContainsString( 'id="moda-interact-native-root"', $promotions );
 
 		ob_start();
-		call_user_func( $GLOBALS['moda_interact_native_submenus'][4]['callback'] );
+		call_user_func( $GLOBALS['moda_interact_native_submenus'][5]['callback'] );
 		$support = ob_get_clean();
 		self::assertStringContainsString( 'id="moda-interact-native-root"', $support );
 	}
@@ -221,11 +226,11 @@ final class PluginTest extends TestCase {
 		$setup = new Setup();
 		$setup->register_page();
 
-		foreach ( array( 'toplevel_page_moda-interact', 'moda-interact_page_moda-interact-billing', 'moda-interact_page_moda-interact-recoveries', 'moda-interact_page_moda-interact-recovery-settings', 'moda-interact_page_moda-interact-promotions', 'moda-interact_page_moda-interact-support' ) as $screen ) {
+		foreach ( array( 'toplevel_page_moda-interact', 'moda-interact_page_moda-interact-billing', 'moda-interact_page_moda-interact-recoveries', 'moda-interact_page_moda-interact-recovery-settings', 'moda-interact_page_moda-interact-promotions', 'moda-interact_page_moda-interact-support', 'moda-interact_page_moda-interact-usage-history' ) as $screen ) {
 			$GLOBALS['moda_interact_current_screen_id'] = $screen;
 			$setup->register_scripts();
 		}
-		self::assertCount( 6, $GLOBALS['moda_interact_enqueued_scripts'] );
+		self::assertCount( 7, $GLOBALS['moda_interact_enqueued_scripts'] );
 
 		$GLOBALS['moda_interact_can_manage_woocommerce'] = false;
 		ob_start();
