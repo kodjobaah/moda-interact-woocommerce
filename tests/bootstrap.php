@@ -290,7 +290,11 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		public function get_query_params(): array { return $this->query; }
 		public function get_json_params(): ?array { return $this->json; }
 		public function get_body_params(): array { return $this->body; }
+		private array $files = array();
+		public function set_file_params( array $files ): void { $this->files = $files; }
+		public function get_file_params(): array { return $this->files; }
 		public function get_method(): string { return $this->method; }
+		public function set_header( string $name, string $value ): void { $this->headers[ $name ] = $value; }
 		public function get_header( $name ): ?string {
 			foreach ( $this->headers as $key => $value ) { if ( strtolower( $key ) === strtolower( $name ) ) return $value; }
 			return null;
@@ -321,6 +325,9 @@ class WooCommerce {}
 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 require_once dirname( __DIR__ ) . '/includes/Api/DiscountOffersContracts.php';
+require_once dirname( __DIR__ ) . '/includes/Api/MerchantKnowledgeContracts.php';
+require_once dirname( __DIR__ ) . '/includes/Api/MerchantKnowledgeUploadCapability.php';
+require_once dirname( __DIR__ ) . '/includes/Rest/MerchantKnowledgeController.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/RecoveryDiscountOffersController.php';
 require_once dirname( __DIR__ ) . '/moda-interact.php';
 $GLOBALS['moda_interact_initial_hooks'] = $GLOBALS['moda_interact_test_hooks'];

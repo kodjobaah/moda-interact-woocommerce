@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || exit;
 // This bounded feature is explicitly loaded without requiring a vendor rebuild.
 require_once __DIR__ . '/Api/DiscountOffersContracts.php';
 require_once __DIR__ . '/Rest/RecoveryDiscountOffersController.php';
+require_once __DIR__ . '/Api/MerchantKnowledgeContracts.php';
+require_once __DIR__ . '/Api/MerchantKnowledgeUploadCapability.php';
+require_once __DIR__ . '/Rest/MerchantKnowledgeController.php';
 
 use ModaInteract\WooCommerce\Admin\Setup;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
@@ -24,6 +27,7 @@ use ModaInteract\WooCommerce\Rest\RecoveryDiscountOffersController;
 use ModaInteract\WooCommerce\Rest\RecoveryListController;
 use ModaInteract\WooCommerce\Rest\RecoveryDetailController;
 use ModaInteract\WooCommerce\Rest\ReadAccessController;
+use ModaInteract\WooCommerce\Rest\MerchantKnowledgeController;
 
 final class Runtime {
 	private const MINIMUM_WOOCOMMERCE_VERSION = '11.0';
@@ -89,6 +93,7 @@ final class Runtime {
 		( new RecoveryListController( null, new SiteIdentity( $mode ) ) )->register();
 		( new RecoveryDetailController( null, new SiteIdentity( $mode ) ) )->register();
 		( new ReadAccessController( null, new SiteIdentity( $mode ) ) )->register();
+		( new MerchantKnowledgeController( null, new SiteIdentity( $mode ) ) )->register();
 		if ( is_admin() ) {
 			new Setup();
 		}

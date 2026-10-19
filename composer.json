@@ -12,6 +12,9 @@
 			"@php -l includes/Plugin.php",
 			"@php -l includes/Runtime.php",
 			"@php -l includes/Api/ModaApiClient.php",
+            "@php -l includes/Api/MerchantKnowledgeContracts.php",
+            "@php -l includes/Api/MerchantKnowledgeUploadCapability.php",
+            "@php -l includes/Rest/MerchantKnowledgeController.php",
 			"@php -l includes/Api/RestReadResponseValidator.php",
 			"@php -l includes/Api/DiscountOffersContracts.php",
 			"@php -l includes/Api/BillingResponseValidator.php",
@@ -61,7 +64,10 @@
 			"@php -l tests/RecoveryCouponCatalogueControllerTest.php",
 			"@php -l tests/RecoveryDiscountOffersControllerTest.php",
 			"@php -l tests/RecoveryListControllerTest.php",
-			"@php -l tests/RecoveryDetailControllerTest.php"
+			"@php -l tests/RecoveryDetailControllerTest.php",
+            "@php -l tests/MerchantKnowledgeControllerTest.php",
+            "@php -l tests/MerchantKnowledgeUploadControllerTest.php",
+            "@php -l tests/fixtures/MerchantKnowledgeTestBase.php"
 		],
 		"test": "@php vendor/bin/phpunit"
 	},

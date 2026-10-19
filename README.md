@@ -165,3 +165,55 @@ assets; plugin packaging recompiles these automatically. Until the final WOO-014
 coverage gate, missing locale batches are allowed, but supplied catalogues
 must be complete. `npm run i18n:verify:20` enables the final strict gate.
 See `languages/README.md` for the translation-batch contract.
+
+### Merchant Knowledge WordPress proxy (ARCH-035-WOOCOMMERCE-014)
+
+All `moda-interact/v1/merchant/feature-preferences` and
+`moda-interact/v1/merchant/merchant-knowledge` WordPress routes require
+`manage_woocommerce`, a valid `X-WP-Nonce` REST nonce, an active connected
+installation and the unchanged canonical site identity. The server, never
+browser JavaScript, sends the installation credential to the authenticated
+Moda API-014..017 endpoints. Responses are bounded, schema-validated and
+`Cache-Control: private, no-store`; failure responses never reflect hosted
+payloads or signed URLs.
+
+File transport uses the 17 October ARCH-035 **browser-direct** amendment:
+
+1. `POST /wp-json/moda-interact/v1/merchant/merchant-knowledge/upload-intents`
+   accepts only JSON metadata: `idempotencyKey` (UUID), `purposeKey`,
+   `dataFormatKey` (`CSV` or `XLSX`), `originalFileName`, `contentType`,
+   `sizeBytes`, `sha256` (lowercase SHA-256). PHP obtains a version-1 presigned
+   capability from the hosted API and validates its exact approved destination,
+   shop-bound object path, TTL and signed headers before handing the URL/headers
+   to the authenticated administrator in a **no-store** response.
+2. **Browser (WOOCOMMERCE-015)** sends a Blob directly to the *unmodified* R2
+   HTTPS S3 API URL using `PUT`, exactly the supplied `requiredHeaders`,
+   `credentials: 'omit'` and `redirect: 'error'`. No WordPress cookie, REST
+   nonce, Moda installation credential or additional upload headers are sent.
+   WOO-014 does not handle, buffer, proxy or persist any binary bytes. R2 CORS
+   is separately configured for approved site origins by GATEWAY-001; it is
+   not bypassed using PHP.
+3. Only after a successful PUT may the browser call
+   `POST /wp-json/moda-interact/v1/merchant/merchant-knowledge/upload-finalize`
+   with JSON metadata (`assetId`, `purposeKey`, `name`, `languageTag`,
+   `contentType`, `sizeBytes`, `sha256` and optionally `sourceId`). The API
+   independently verifies actual object contents before accepting the revision.
+   A successful intent or PUT alone does **not** create an active source.
+
+WordPress requires only two **non-secret** deployment configuration values to
+pin the approved R2 destination: `MODA_MERCHANT_KNOWLEDGE_R2_ENDPOINT`, set to
+`https://<32-hex-account>.r2.cloudflarestorage.com`, and
+`MODA_MERCHANT_KNOWLEDGE_R2_BUCKET`, set to the exact approved bucket. These
+must match the hosted API's sealed database `merchant.knowledge.r2` settings;
+missing/mismatched WordPress values cause the intent handoff to **fail closed**
+without preventing knowledge reads/edits. WordPress does not need the R2 key,
+secret, max-upload setting, PHP cURL or writable upload directory. If the
+hosted R2 account/bucket is rotated, update the WordPress approved destination
+before new browser uploads; already-issued capabilities are not a fallback.
+
+WordPress rejects multipart/file-body submissions (including the obsolete
+`/merchant-knowledge/upload` route), unknown signed hosts and malformed
+responses. Signed capabilities must not be logged, cached, persisted or placed
+in page URLs. On failed/preflight-denied/aborted/redirected R2 PUT, the browser
+must not call finalise or assert upload success. The authorised user can retry
+using the API's documented idempotency and expiration behaviour.
