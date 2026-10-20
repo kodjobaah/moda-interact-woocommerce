@@ -3,6 +3,8 @@
 require_once __DIR__ . '/fixtures/MerchantKnowledgeTestBase.php';
 
 use ModaInteract\WooCommerce\Api\MerchantKnowledgeContracts;
+use ModaInteract\WooCommerce\Api\ModaApiClient;
+use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
 
 final class MerchantKnowledgeControllerTest extends MerchantKnowledgeTestBase {

@@ -300,7 +300,8 @@ describe('ARCH-035-WOOCOMMERCE-015 command failure and cancellation', () => {
 			url: 'https://example.org/help',
 		});
 		expect(controller.state.status).toBe('READY');
-		expect(controller.state.error).toBe('ERROR');
+		expect(controller.state.error).toBe('VERIFY_REQUIRED');
+		expect(controller.state.needsRefresh).toBe(true);
 		expect(controller.state.data).toBe(original);
 		controller.dispose();
 	});
