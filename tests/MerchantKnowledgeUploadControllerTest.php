@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/fixtures/MerchantKnowledgeTestBase.php';
 
-use ModaInteract\WooCommerce\Api\MerchantKnowledgeUploadCapability;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
 
 final class MerchantKnowledgeUploadControllerTest extends MerchantKnowledgeTestBase {
@@ -16,11 +15,6 @@ final class MerchantKnowledgeUploadControllerTest extends MerchantKnowledgeTestB
 		return array( 'assetId' => '12345678-1234-5123-a123-123456789abc', 'purposeKey' => 'FAQ',
 			'name' => 'FAQ', 'languageTag' => 'en', 'contentType' => 'text/csv',
 			'sizeBytes' => 3, 'sha256' => hash( 'sha256', 'a,b' ) );
-	}
-	private static function configureR2(): void {
-		// Only non-secret origin/bucket pinning is allowed in the WordPress environment.
-		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_ENDPOINT=https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.r2.cloudflarestorage.com' );
-		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_BUCKET=merchant-bucket' );
 	}
 	private static function intentResponse( array $request ): array {
 		$asset = self::finalizeRequest()['assetId'];
@@ -47,9 +41,10 @@ final class MerchantKnowledgeUploadControllerTest extends MerchantKnowledgeTestB
 	}
 
 	public function test_browser_intent_is_privileged_metadata_only_and_signed_capability_is_no_store(): void {
-		self::configureR2();
 		$metadata = self::intentRequest();
 		$intent = self::intentResponse( $metadata );
+		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_ENDPOINT' );
+		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_BUCKET' );
 		$requests = array();
 		$controller = $this->controller( static function ( $url, $args ) use ( $intent, &$requests ) {
 			$requests[] = array( $url, $args );
@@ -69,9 +64,23 @@ final class MerchantKnowledgeUploadControllerTest extends MerchantKnowledgeTestB
 		self::assertSame( $metadata, json_decode( $requests[0][1]['body'], true ) );
 		self::assertSame( 'Bearer ' . self::record()['credential'], $requests[0][1]['headers']['Authorization'] );
 		self::assertSame( 0, $requests[0][1]['redirection'] );
-		self::assertSame( 5, $requests[0][1]['timeout'] );
+		self::assertSame( 20, $requests[0][1]['timeout'] );
 		self::assertArrayNotHasKey( 'uploadUrl', json_decode( $requests[0][1]['body'], true ) );
-		self::assertTrue( MerchantKnowledgeUploadCapability::valid( $intent, $metadata, self::record() ) );
+		// WordPress must not require the merchant to configure an R2 endpoint or bucket.
+		self::assertSame( $intent['uploadUrl'], $response->get_data()['uploadUrl'] );
+	}
+
+	public function test_intent_passthrough_does_not_require_wordpress_r2_configuration_or_a_specific_object_key(): void {
+		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_ENDPOINT' );
+		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_BUCKET' );
+		$metadata = self::intentRequest();
+		$intent = self::intentResponse( $metadata );
+		$intent['uploadUrl'] = 'https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.r2.cloudflarestorage.com/opaque-new-path?signature=example';
+		$intent['requiredHeaders'] = array( 'Content-Type' => 'text/csv' );
+		$controller = $this->controller( static fn() => self::response( 200, $intent ) );
+		$response = $controller->handle( self::request( 'merchant-knowledge/upload-intents', 'POST', $metadata ) );
+		self::assertSame( 200, $response->get_status() );
+		self::assertSame( $intent, $response->get_data() );
 	}
 
 	public function test_finalize_brokers_only_metadata_after_rechecking_site_and_credentials(): void {
@@ -94,7 +103,6 @@ final class MerchantKnowledgeUploadControllerTest extends MerchantKnowledgeTestB
 	}
 
 	public function test_metadata_upload_auth_nonce_revocation_and_stale_identity_fail_closed(): void {
-		self::configureR2();
 		$calls = 0;
 		$controller = $this->controller( static function () use ( &$calls ) {
 			$calls++;
@@ -121,7 +129,6 @@ final class MerchantKnowledgeUploadControllerTest extends MerchantKnowledgeTestB
 	}
 
 	public function test_rotation_during_metadata_exchange_drops_capability_without_disclosure(): void {
-		self::configureR2();
 		$controller = $this->controller( static function () {
 			delete_option( InstallationStore::OPTION_NAME );
 			return self::response( 200, self::intentResponse( self::intentRequest() ) );
@@ -189,55 +196,40 @@ final class MerchantKnowledgeUploadControllerTest extends MerchantKnowledgeTestB
 		self::assertSame( 0, $calls );
 	}
 
-	public function test_presigned_destination_fails_closed_on_other_account_shop_bucket_path_headers_and_expiry(): void {
-		self::configureR2();
-		$metadata = self::intentRequest();
-		$good = self::intentResponse( $metadata );
-		$reject = array(
-			array( 'uploadUrl' => str_replace( 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.r2', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.r2', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( 'https://', 'http://', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( 'https://', 'https://user:pass@', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( '.com/', '.com:443/', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( '.com/', '.com.evil.test/', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( '/shop_456/', '/another_shop/', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( '/merchant-bucket/', '/foreign-bucket/', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( '/source.csv?', '/source.xlsx?', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( '/source.csv?', '/source.csv%2Fother?', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => $good['uploadUrl'] . '#fragment' ),
-			array( 'uploadUrl' => $good['uploadUrl'] . '&X-Amz-Expires=500' ),
-			array( 'uploadUrl' => str_replace( 'X-Amz-Expires=300', 'X-Amz-Expires=999', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( 'x-amz-meta-sha256', 'x-amz-meta-secret', $good['uploadUrl'] ) ),
-			array( 'uploadUrl' => str_replace( 'X-Amz-Signature=', 'X-Amz-Fake=', $good['uploadUrl'] ) ),
-			array( 'expiresAt' => gmdate( 'Y-m-d\TH:i:s\Z', time() - 30 ) ),
-			array( 'maxUploadBytes' => 2 ),
-			array( 'requiredHeaders' => array_replace( $good['requiredHeaders'], array( 'x-amz-meta-sha256' => str_repeat( 'a', 64 ) ) ) ),
-			array( 'requiredHeaders' => array_replace( $good['requiredHeaders'], array( 'Authorization' => 'Bearer anything' ) ) ),
-			array( 'token' => 'must-not-leak' ),
-		);
-		foreach ( $reject as $case ) {
-			$invalid = array_replace( $good, $case );
-			self::assertFalse( MerchantKnowledgeUploadCapability::valid( $invalid, $metadata, self::record() ), json_encode( array_keys( $case ) ) );
-		}
-		self::assertFalse( MerchantKnowledgeUploadCapability::valid( $good, $metadata, array_replace( self::record(), array( 'shopId' => 'another_shop' ) ) ) );
-	}
-
-	public function test_missing_or_mismatched_approved_destination_is_not_returned_to_browser(): void {
-		self::configureR2();
+	public function test_upload_intent_diagnostic_trace_records_safe_stages_only(): void {
 		$metadata = self::intentRequest();
 		$intent = self::intentResponse( $metadata );
-		$controller = $this->controller( static fn() => self::response( 200, $intent ) );
-		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_ENDPOINT=https://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.r2.cloudflarestorage.com' );
-		$response = $controller->handle( self::request( 'merchant-knowledge/upload-intents', 'POST', $metadata ) );
-		self::assertSame( 502, $response->get_status() );
-		self::assertSame( array( 'status' => 'REMOTE_RESPONSE_INVALID' ), $response->get_data() );
-		self::assertStringNotContainsString( 'X-Amz-Signature', wp_json_encode( $response->get_data() ) );
-		putenv( 'MODA_MERCHANT_KNOWLEDGE_R2_ENDPOINT' );
-		self::assertSame( 502, $controller->handle( self::request( 'merchant-knowledge/upload-intents', 'POST', $metadata ) )->get_status() );
-		self::configureR2();
+		$log_path = tempnam( sys_get_temp_dir(), 'moda-upload-trace-' );
+		self::assertNotFalse( $log_path );
+		$previous_log = ini_get( 'error_log' );
+		$previous_setting = getenv( 'MODA_INTERACT_WOO_UPLOAD_TRACE' );
+		try {
+			putenv( 'MODA_INTERACT_WOO_UPLOAD_TRACE=1' );
+			ini_set( 'error_log', $log_path );
+			$controller = $this->controller( static fn() => self::response( 200, $intent ) );
+			self::assertSame( 200, $controller->handle( self::request( 'merchant-knowledge/upload-intents', 'POST', $metadata ) )->get_status() );
+			$invalid = $this->controller( static fn() => self::response( 200, $intent + array( 'credential' => 'must-not-leak' ) ) );
+			self::assertSame( 502, $invalid->handle( self::request( 'merchant-knowledge/upload-intents', 'POST', $metadata ) )->get_status() );
+			$log = (string) file_get_contents( $log_path );
+			foreach ( array( 'request_received', 'upstream_request_started', 'upstream_response_decoded',
+				'intent_response_accepted', 'response_prepared', 'intent_response_invalid' ) as $stage ) {
+				self::assertStringContainsString( '"stage":"' . $stage . '"', $log );
+			}
+			self::assertStringContainsString( '"httpStatus":502', $log );
+			self::assertStringContainsString( '"apiEndpoint":"https:\/\/api.example.test\/v1\/merchant\/merchant-knowledge\/upload-intents"', $log );
+			self::assertStringNotContainsString( $intent['uploadUrl'], $log );
+			self::assertStringNotContainsString( self::record()['credential'], $log );
+			self::assertStringNotContainsString( str_repeat( 'a', 64 ), $log );
+			self::assertStringNotContainsString( 'TESTKEY', $log );
+			self::assertStringNotContainsString( 'must-not-leak', $log );
+		} finally {
+			false === $previous_setting ? putenv( 'MODA_INTERACT_WOO_UPLOAD_TRACE' ) : putenv( 'MODA_INTERACT_WOO_UPLOAD_TRACE=' . $previous_setting );
+			false === $previous_log ? ini_restore( 'error_log' ) : ini_set( 'error_log', $previous_log );
+			@unlink( $log_path );
+		}
 	}
 
 	public function test_malformed_upstream_response_and_upstream_errors_never_reflect_signed_url(): void {
-		self::configureR2();
 		$metadata = self::intentRequest();
 		$intent = self::intentResponse( $metadata );
 		$controller = $this->controller( static fn() => self::response( 200, $intent + array( 'secret' => 'should-not-leak' ) ) );

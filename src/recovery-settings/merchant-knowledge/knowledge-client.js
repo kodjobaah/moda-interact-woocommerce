@@ -20,8 +20,9 @@ function commandResult(value) {
 		(Object.hasOwn(value, 'created') && typeof value.created !== 'boolean') ||
 		(Object.hasOwn(value, 'sourceId') && !ID.test(value.sourceId))
 	) throw fail('KNOWLEDGE_INVALID');
-	parseKnowledgePage(value.knowledge);
-	return value;
+	const page = parseKnowledgePage(value.knowledge);
+	// Present only validated server data, with UI affordances derived from it.
+	return { ...value, knowledge: presentKnowledge(page) };
 }
 function editResult(value) {
 	if (!exact(value, ['schemaVersion', 'sourceId', 'updated']) ||

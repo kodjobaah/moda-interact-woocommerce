@@ -245,38 +245,44 @@ describe('Merchant Knowledge UI-only controller', () => {
 		controller.dispose();
 	});
 
-	it('polls eligible processing sources while active, stops after completion and on disconnect', async () => {
-		vi.useFakeTimers();
-		try {
-			let loading = true;
-			const client = {
-				read: vi.fn(async () => ({
-					...fixture(),
-					sources: [
-						{
-							...fixture().sources[0],
-							revision: {
-								status: loading ? 'PROCESSING' : 'ACTIVE',
+	it.each(['PENDING', 'PROCESSING'])(
+		'does not poll %s sources without a manual refresh',
+		async (processingStatus) => {
+			vi.useFakeTimers();
+			try {
+				let status = processingStatus;
+				const client = {
+					read: vi.fn(async () => ({
+						...fixture(),
+						sources: [
+							{
+								...fixture().sources[0],
+								revision: { status },
 							},
-						},
-					],
-				})),
-			};
-			const controller = new MerchantKnowledgeController(client);
-			connected(controller);
-			await vi.advanceTimersByTimeAsync(0);
-			expect(client.read).toHaveBeenCalledTimes(1);
-			loading = false;
-			await vi.advanceTimersByTimeAsync(4000);
-			expect(client.read).toHaveBeenCalledTimes(2);
-			await vi.advanceTimersByTimeAsync(8000);
-			expect(client.read).toHaveBeenCalledTimes(2);
-			controller.setConnection({ status: 'DISCONNECTED' });
-			controller.dispose();
-		} finally {
-			vi.useRealTimers();
+						],
+					})),
+				};
+				const controller = new MerchantKnowledgeController(client);
+				connected(controller);
+				await vi.advanceTimersByTimeAsync(0);
+				expect(client.read).toHaveBeenCalledTimes(1);
+				await vi.advanceTimersByTimeAsync(65_000);
+				expect(client.read).toHaveBeenCalledTimes(1);
+
+				status = 'ACTIVE';
+				await controller.refresh();
+				expect(client.read).toHaveBeenCalledTimes(2);
+				expect(controller.state.data.sources[0].revision.status).toBe(
+					'ACTIVE'
+				);
+				await vi.advanceTimersByTimeAsync(65_000);
+				expect(client.read).toHaveBeenCalledTimes(2);
+				controller.dispose();
+			} finally {
+				vi.useRealTimers();
+			}
 		}
-	});
+	);
 });
 
 describe('ARCH-035-WOOCOMMERCE-015 command failure and cancellation', () => {
@@ -325,6 +331,154 @@ describe('ARCH-035-WOOCOMMERCE-015 command failure and cancellation', () => {
 		expect(client.read).toHaveBeenCalledTimes(2);
 		expect(controller.state.status).toBe('READY');
 		release();
+		controller.dispose();
+	});
+});
+
+describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
+	const payload = {
+		name: 'New source', purpose: 'FAQ', languageTag: 'en',
+		url: 'https://example.org/new',
+	};
+
+	it('uses the authoritative complete command snapshot without a second GET', async () => {
+		const original = fixture();
+		const updated = {
+			...original, configuredCount: 2, nextPosition: null,
+			sources: [...original.sources, { ...original.sources[0], id: 'new_2' }],
+		};
+		const client = {
+			read: vi.fn(async () => original),
+			addUrl: vi.fn(async () => ({ created: true, sourceId: 'new_2', knowledge: updated })),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		await controller.perform('addUrl', payload);
+		expect(client.read).toHaveBeenCalledTimes(1);
+		expect(controller.state).toMatchObject({ status: 'READY', data: updated });
+		expect(controller.state.data.sources).toHaveLength(2);
+		controller.dispose();
+	});
+
+	it('fetches the complete list when command acknowledgement is paginated', async () => {
+		const original = fixture();
+		const updated = { ...original, configuredCount: 2, sources: original.sources };
+		const client = {
+			read: vi.fn().mockResolvedValueOnce(original).mockResolvedValueOnce(updated),
+			addUrl: vi.fn(async () => ({ knowledge: { ...updated, nextPosition: 1 } })),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		await controller.perform('addUrl', payload);
+		expect(client.read).toHaveBeenCalledTimes(2);
+		expect(controller.state.status).toBe('READY');
+		controller.dispose();
+	});
+
+	it('distinguishes a successful write from an unavailable follow-up read', async () => {
+		const original = fixture();
+		const updated = { ...original, configuredCount: 2 };
+		const client = {
+			read: vi.fn().mockResolvedValueOnce(original)
+				.mockRejectedValueOnce({ code: 'REMOTE_UNAVAILABLE' })
+				.mockResolvedValueOnce(updated),
+			addUrl: vi.fn(async () => ({ created: true })),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		await controller.perform('addUrl', payload);
+		expect(controller.state).toMatchObject({
+			status: 'READY', data: original, error: 'SAVED_NEEDS_REFRESH',
+			needsRefresh: true,
+		});
+		await controller.perform('addUrl', payload);
+		expect(client.addUrl).toHaveBeenCalledTimes(1);
+		await controller.refresh();
+		expect(controller.state).toMatchObject({ status: 'READY', data: updated });
+		expect(controller.state.needsRefresh).toBeUndefined();
+		controller.dispose();
+	});
+
+	it('reports upload completion only after finalisation, even if the next read fails', async () => {
+		const original = fixture();
+		const client = {
+			read: vi.fn().mockResolvedValueOnce(original)
+				.mockRejectedValueOnce({ code: 'REMOTE_UNAVAILABLE' }),
+			upload: vi.fn(async () => ({ status: 'ACCEPTED' })),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		const confirmed = await controller.perform('upload', {
+			name: 'Products', purpose: 'PRODUCT_INFORMATION',
+			dataFormatKey: 'XLSX', languageTag: 'en',
+			file: { name: 'products.xlsx', size: 40 },
+		});
+		expect(confirmed.confirmedAction).toBe('upload');
+		expect(controller.state).toMatchObject({
+			status: 'READY', error: 'SAVED_NEEDS_REFRESH', needsRefresh: true,
+		});
+		expect(controller.state).not.toHaveProperty('confirmedAction');
+		controller.dispose();
+	});
+
+	it('never signals upload completion after a failed finalisation', async () => {
+		const client = {
+			read: vi.fn(async () => fixture()),
+			upload: vi.fn(async () => { throw { code: 'UPLOAD_FAILED' }; }),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		const failed = await controller.perform('upload', {
+			name: 'Products', purpose: 'PRODUCT_INFORMATION',
+			dataFormatKey: 'XLSX', languageTag: 'en',
+			file: { name: 'products.xlsx', size: 40 },
+		});
+		expect(failed).not.toHaveProperty('confirmedAction');
+		expect(controller.state.error).toBe('ERROR');
+		controller.dispose();
+	});
+
+	it('preserves known data and blocks writes after a refresh failure', async () => {
+		const original = fixture();
+		const client = {
+			read: vi.fn().mockResolvedValueOnce(original)
+				.mockRejectedValueOnce({ code: 'REMOTE_UNAVAILABLE' }),
+			addUrl: vi.fn(),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		await controller.refresh();
+		expect(controller.state).toMatchObject({
+			status: 'READY', data: original, error: 'REFRESH_FAILED',
+			needsRefresh: true,
+		});
+		await controller.perform('addUrl', payload);
+		expect(client.addUrl).not.toHaveBeenCalled();
+		controller.dispose();
+	});
+
+	it('treats transport errors during a write as an unconfirmed outcome', async () => {
+		const original = fixture();
+		const client = {
+			read: vi.fn(async () => original),
+			addUrl: vi.fn(async () => { throw { code: 'KNOWLEDGE_UNAVAILABLE' }; }),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		await controller.perform('addUrl', payload);
+		expect(controller.state).toMatchObject({
+			status: 'READY', data: original, error: 'VERIFY_REQUIRED',
+			needsRefresh: true,
+		});
+		await controller.perform('addUrl', payload);
+		expect(client.addUrl).toHaveBeenCalledTimes(1);
 		controller.dispose();
 	});
 });

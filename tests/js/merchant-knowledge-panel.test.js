@@ -1,16 +1,20 @@
 import { describe, it, expect, vi } from 'vitest';
 import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
 import { KnowledgeSourceList } from '../../src/recovery-settings/merchant-knowledge/knowledge-source-list';
+import { KnowledgeAddForms } from '../../src/recovery-settings/merchant-knowledge/knowledge-forms';
 import { KnowledgeWebForm } from '../../src/recovery-settings/merchant-knowledge/knowledge-web-form';
 import {
 	KnowledgeUploadForm,
 	KnowledgeUploadFields,
+	matchingUploadFormat,
+	fileFormatDisallowedByPlan,
 } from '../../src/recovery-settings/merchant-knowledge/knowledge-upload-form';
 import {
 	catalogueFor,
 	sourceCapacityAvailable,
 	sourceStatus,
 } from '../../src/recovery-settings/merchant-knowledge/knowledge-display';
+import { planUploadFormatOptions } from '../../src/recovery-settings/merchant-knowledge/knowledge-form-fields';
 
 // No hook invocation outside a React renderer. The upload hook wrapper is
 // inspected separately through its pure, fixture-renderable Fields component.
@@ -298,6 +302,39 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		).toBe(true);
 	});
 
+	it('offers an explicit list refresh without enabling background polling', () => {
+		const onRefresh = vi.fn();
+		const view = MerchantKnowledgePanel({
+			state: { status: 'READY', data },
+			onRefresh,
+		});
+		const button = nodes(view, 'button').find(
+			(node) => node.props.className === 'button moda-knowledge__manual-refresh'
+		);
+		expect(button).toBeDefined();
+		expect(text(button)).toBe('Refresh');
+		expect(button.props.disabled).toBe(false);
+		button.props.onClick();
+		expect(onRefresh).toHaveBeenCalledTimes(1);
+
+		const saving = MerchantKnowledgePanel({
+			state: { status: 'SAVING', data },
+			onRefresh,
+		});
+		expect(nodes(saving, 'button').find(
+			(node) => node.props.className === 'button moda-knowledge__manual-refresh'
+		).props.disabled).toBe(true);
+
+		const stale = MerchantKnowledgePanel({
+			state: { status: 'READY', data, needsRefresh: true },
+			onRefresh,
+		});
+		expect(nodes(stale, 'button').some(
+			(node) => node.props.className === 'button moda-knowledge__manual-refresh'
+		)).toBe(false);
+		expect(text(stale)).toContain('Retry');
+	});
+
 	it('does not treat a disabled conversation feature as loss of plan entitlement', () => {
 		const view = MerchantKnowledgePanel({
 			state: { status: 'READY', data },
@@ -433,7 +470,7 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		const fileInput = nodes(form, 'input').find(
 			(node) => node.props.type === 'file'
 		);
-		expect(fileInput.props.accept).toBe('.xlsx');
+		expect(fileInput.props.accept).toBe('.xlsx,.csv');
 		fileInput.props.onChange({
 			currentTarget: { files: [{ name: 'products.xlsx', size: 600 }] },
 		});
@@ -446,6 +483,112 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 				.props.disabled
 		).toBe(true);
 		expect(text(form)).toContain('Maximum upload size: 2048 bytes');
+	});
+
+	it('detects dropped CSV/XLSX files only when allowed by the selected purpose', () => {
+		const choices = catalogueFor(data, 'UPLOAD');
+		expect(
+			matchingUploadFormat({ name: 'products.CSV' }, choices)
+		).toBe('CSV');
+		expect(
+			matchingUploadFormat({ name: 'products.xlsx' }, choices)
+		).toBe('XLSX');
+		expect(
+			matchingUploadFormat({ name: 'products.csv' }, choices.slice(0, 1))
+		).toBe(null);
+		expect(
+			matchingUploadFormat({ name: 'products.exe' }, choices)
+		).toBe(null);
+		expect(matchingUploadFormat(null, choices)).toBe(null);
+	});
+
+	it('disables CSV by plan while showing the permitted XLSX format and the shared file allowance', () => {
+		const permitted = catalogueFor(data, 'UPLOAD').filter(
+			(entry) => entry.dataFormat.key === 'XLSX'
+		);
+		const choices = planUploadFormatOptions(permitted);
+		const csv = choices.find((item) => item.props.value === 'CSV');
+		const xlsx = choices.find((item) => item.props.value === 'XLSX');
+		expect(csv.props.disabled).toBe(true);
+		expect(text(csv)).toContain('Not included in your plan');
+		expect(xlsx.props.disabled).toBe(false);
+		expect(fileFormatDisallowedByPlan({ name: 'items.csv' }, permitted)).toBe(true);
+		expect(fileFormatDisallowedByPlan({ name: 'items.xlsx' }, permitted)).toBe(false);
+		expect(matchingUploadFormat({ name: 'items.csv' }, permitted)).toBe(null);
+		const rendered = KnowledgeUploadFields({
+			data: { ...data, configuredCount: 2, maxKnowledgeSources: 10 },
+			all: permitted,
+			forPurpose: permitted,
+			purpose: 'PRODUCT_INFORMATION',
+			selectedFormat: 'XLSX',
+			name: 'Products',
+			file: { name: 'items.csv', size: 100 },
+			disabled: false,
+			canSubmit: false,
+			onPurposeChange: vi.fn(),
+			onFormatChange: vi.fn(),
+			onNameChange: vi.fn(),
+			onFileChange: vi.fn(),
+			onSubmit: vi.fn(),
+		});
+		expect(nodes(rendered, 'option').find((item) => item.props.value === 'CSV').props.disabled).toBe(true);
+		expect(nodes(rendered, 'input').find((item) => item.props.type === 'file').props.accept).toBe('.xlsx');
+		expect(text(rendered)).toContain('The selected file format is not included in your plan');
+		expect(text(rendered)).toContain('Remaining slots for file uploads: 8');
+		expect(text(rendered)).toContain('shared with web pages; 10 sources total');
+		expect(nodes(rendered, 'button').find((button) => button.props.type === 'submit').props.disabled).toBe(true);
+	});
+
+	it('enables CSV automatically when authorised without changing source limits', () => {
+		const permitted = catalogueFor(data, 'UPLOAD');
+		const choices = planUploadFormatOptions(permitted);
+		expect(choices.every((item) => !item.props.disabled)).toBe(true);
+		expect(matchingUploadFormat({ name: 'items.csv' }, permitted)).toBe('CSV');
+		expect(fileFormatDisallowedByPlan({ name: 'items.csv' }, permitted)).toBe(false);
+		const rendered = KnowledgeUploadFields({
+			data: { ...data, configuredCount: 9, maxKnowledgeSources: 10 },
+			all: permitted,
+			forPurpose: permitted,
+			purpose: 'PRODUCT_INFORMATION',
+			selectedFormat: 'CSV',
+			name: 'Products',
+			file: { name: 'items.csv', size: 100 },
+			disabled: false,
+			canSubmit: true,
+			onPurposeChange: vi.fn(),
+			onFormatChange: vi.fn(),
+			onNameChange: vi.fn(),
+			onFileChange: vi.fn(),
+			onSubmit: vi.fn(),
+		});
+		expect(text(rendered)).toContain('Remaining slots for file uploads: 1');
+		expect(text(rendered)).not.toContain('The selected file format is not included');
+		expect(nodes(rendered, 'button').find((button) => button.props.type === 'submit').props.disabled).toBe(false);
+	});
+
+	it('explains when the plan has no uploads or all shared source slots are occupied', () => {
+		const onlyWeb = {
+			...data,
+			catalogue: catalogueFor(data, 'REMOTE_URL'),
+		};
+		const blocked = KnowledgeAddForms({ data: onlyWeb });
+		expect(text(blocked)).toContain('Upload file — Not included in your plan');
+		expect(nodes(blocked, KnowledgeUploadForm)[0].props.enabled).toBe(false);
+		const full = KnowledgeAddForms({
+			data: { ...data, configuredCount: data.maxKnowledgeSources },
+		});
+		expect(text(full)).toContain('shared knowledge-source limit has been reached');
+		expect(nodes(full, KnowledgeUploadForm)[0].props.enabled).toBe(false);
+		const fullFields = KnowledgeUploadFields({
+			data: { ...data, configuredCount: data.maxKnowledgeSources },
+			all: catalogueFor(data, 'UPLOAD'),
+			forPurpose: catalogueFor(data, 'UPLOAD'),
+			selectedFormat: 'XLSX',
+			name: 'Products',
+			disabled: true,
+			canSubmit: false,
+		});
+		expect(text(fullFields)).toContain('Remaining slots for file uploads: 0');
 	});
 
 	it('offers explicit upload cancellation without exposing unsupported file deletion', () => {

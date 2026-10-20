@@ -16,6 +16,16 @@ function knowledgeErrorMessage(status) {
 				'You do not have permission to manage knowledge sources.',
 				'moda-interact'
 			);
+		case 'SAVED_NEEDS_REFRESH':
+			return __(
+				'The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list.',
+				'moda-interact'
+			);
+		case 'VERIFY_REQUIRED':
+			return __(
+				'We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again.',
+				'moda-interact'
+			);
 		case 'CONFLICT':
 			return __(
 				'Knowledge sources changed elsewhere. Refresh to review them.',
@@ -84,12 +94,28 @@ export function MerchantKnowledgePanel({
 				: null,
 			entitled && count
 				? createElement(
-						'p',
-						{
-							className: 'moda-knowledge__capacity',
-							role: 'status',
-						},
-						count
+						'div',
+						{ className: 'moda-knowledge__capacity-row' },
+						createElement(
+							'p',
+							{
+								className: 'moda-knowledge__capacity',
+								role: 'status',
+							},
+							count
+						),
+						!state.needsRefresh
+							? createElement(
+									'button',
+									{
+										type: 'button',
+										className: 'button moda-knowledge__manual-refresh',
+										disabled: busy,
+										onClick: onRefresh,
+									},
+									__('Refresh', 'moda-interact')
+								)
+							: null
 					)
 				: null,
 			ready && !entitled

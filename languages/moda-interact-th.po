@@ -1925,3 +1925,27 @@ msgstr "คุณไม่มีสิทธิ์ดูประวัติก
 #: src/recovery-settings/store-assistant-context.js:23
 msgid "Store classification and reference material used by the assistant."
 msgstr "การจัดประเภทของร้านค้าและข้อมูลอ้างอิงที่ผู้ช่วยใช้"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "บันทึกการเปลี่ยนแปลงแล้ว แต่ไม่สามารถรีเฟรชแหล่งความรู้ได้ โปรดลองอีกครั้งเพื่อโหลดรายการล่าสุด"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "ไม่สามารถยืนยันได้ว่าบันทึกการเปลี่ยนแปลงแหล่งความรู้แล้วหรือไม่ โปรดรีเฟรชรายการก่อนลองอีกครั้ง"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "ไม่รวมอยู่ในแพ็กเกจของคุณ"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "รูปแบบไฟล์ที่เลือกไม่รวมอยู่ในแพ็กเกจของคุณสำหรับวัตถุประสงค์นี้"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "จำนวนช่องที่เหลือสำหรับอัปโหลดไฟล์: %1$s (ใช้ร่วมกับหน้าเว็บ; รวมทั้งหมด %2$s แหล่งข้อมูล)"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "ถึงขีดจำกัดแหล่งข้อมูลความรู้ร่วมของแพ็กเกจคุณแล้ว"

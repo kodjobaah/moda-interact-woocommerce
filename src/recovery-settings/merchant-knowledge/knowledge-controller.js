@@ -1,6 +1,9 @@
 import { createMerchantKnowledgeClient } from './knowledge-client';
 import { knowledgeActionAllowed } from './knowledge-action-validation';
 
+// Internal marker: the command succeeded, but its follow-up read did not.
+const ACKNOWLEDGED_NEEDS_REFRESH = Symbol('acknowledged-needs-refresh');
+
 // Bounded, connection-aware state owner; no provider operations in React.
 export class MerchantKnowledgeController {
 	constructor(client = createMerchantKnowledgeClient()) {
@@ -14,8 +17,6 @@ export class MerchantKnowledgeController {
 		this.epoch = 0;
 		this.pending = null;
 		this.currentAbort = null;
-		this.pollTimer = null;
-		this.pollUntil = null;
 	}
 
 	subscribe(listener) {
@@ -65,7 +66,6 @@ export class MerchantKnowledgeController {
 	invalidate() {
 		this.currentAbort?.abort();
 		this.currentAbort = null;
-		this.stopPolling();
 		++this.epoch;
 		this.pending = null;
 		this.publish({ status: 'IDLE', data: null });
@@ -80,57 +80,6 @@ export class MerchantKnowledgeController {
 		);
 	}
 
-	stopPolling() {
-		if (this.pollTimer !== null) {
-			clearTimeout(this.pollTimer);
-		}
-		this.pollTimer = null;
-		this.pollUntil = null;
-	}
-
-	pollProcessing() {
-		if (this.pollTimer !== null) {
-			clearTimeout(this.pollTimer);
-		}
-		this.pollTimer = null;
-		const processing = this.state.data?.sources?.some(
-			(source) =>
-				source.processingEligible &&
-				['PENDING', 'PROCESSING'].includes(source.revision?.status)
-		);
-		if (
-			!this.active ||
-			!this.connected ||
-			this.disposed ||
-			this.state.status !== 'READY' ||
-			!processing
-		) {
-			this.pollUntil = null;
-			return;
-		}
-		if (this.pollUntil === null) {
-			this.pollUntil = Date.now() + 60_000;
-		}
-		if (Date.now() >= this.pollUntil) {
-			return;
-		}
-		const epoch = this.epoch;
-		this.pollTimer = setTimeout(() => {
-			this.pollTimer = null;
-			if (!this.isCurrent(epoch)) {
-				return;
-			}
-			if (
-				typeof document !== 'undefined' &&
-				document.visibilityState === 'hidden'
-			) {
-				this.pollProcessing();
-			} else {
-				void this.refresh();
-			}
-		}, 4_000);
-	}
-
 	async refresh() {
 		if (!this.active || !this.connected || this.disposed) {
 			return this.state;
@@ -138,13 +87,13 @@ export class MerchantKnowledgeController {
 		if (this.pending) {
 			return this.pending;
 		}
-		if (this.pollTimer !== null) {
-			clearTimeout(this.pollTimer);
-		}
-		this.pollTimer = null;
 		const epoch = ++this.epoch;
-		this.publish({ status: 'LOADING', data: this.state.data });
-		return this.request(epoch, (context) => this.client.read(context), 'READY');
+		const previousData = this.state.data;
+		this.publish({ status: 'LOADING', data: previousData });
+		return this.request(
+			epoch, (context) => this.client.read(context), 'READY',
+			previousData, 'read'
+		);
 	}
 
 	async perform(action, payload) {
@@ -160,7 +109,8 @@ export class MerchantKnowledgeController {
 			!this.connected ||
 			this.disposed ||
 			this.pending ||
-			this.state.status !== 'READY'
+			this.state.status !== 'READY' ||
+			this.state.needsRefresh
 		) {
 			return this.state;
 		}
@@ -168,16 +118,13 @@ export class MerchantKnowledgeController {
 		if (!knowledgeActionAllowed(data, this.client, action, payload)) {
 			return this.state;
 		}
-		if (this.pollTimer !== null) {
-			clearTimeout(this.pollTimer);
-		}
-		this.pollTimer = null;
 		const epoch = ++this.epoch;
 		this.publish({ status: 'SAVING', data, activeAction: action });
-		return this.request(
+		let finalized = false;
+		const result = await this.request(
 			epoch,
 			async (context) => {
-				await this.client[action](payload, {
+				const acknowledgement = await this.client[action](payload, {
 					...context, snapshot: data,
 					onProgress: (phase) => {
 						if (this.isCurrent(epoch)) {
@@ -188,21 +135,46 @@ export class MerchantKnowledgeController {
 				if (context.signal.aborted) {
 					throw Object.assign(new Error('ABORTED'), { code: 'ABORTED' });
 				}
-				return this.client.read(context); // Only server-acknowledged data becomes visible.
+				// The uploader returns only after Moda accepts finalisation.
+				finalized = ['upload', 'replaceSource'].includes(action);
+				// Web-source commands return a validated authoritative snapshot.
+				// An incomplete (paginated) snapshot must still be read fully.
+				if (acknowledgement?.knowledge?.nextPosition === null) {
+					return acknowledgement.knowledge;
+				}
+				try {
+					return await this.client.read(context);
+				} catch (error) {
+					if (context.signal.aborted) {
+						throw error;
+					}
+					// File commands return only an acknowledgement. Do not turn a
+					// successful write into a reported failed write if refresh fails.
+					return { [ACKNOWLEDGED_NEEDS_REFRESH]: data };
+				}
 			},
-			'READY', data
+			'READY', data, 'write'
 		);
+		return finalized && this.isCurrent(epoch)
+			? { ...result, confirmedAction: action }
+			: result;
 	}
 
-	request(epoch, operation, successStatus, originalData = null) {
+	request(epoch, operation, successStatus, originalData = null, kind = 'read') {
 		const controller = new AbortController();
 		this.currentAbort = controller;
 		const request = Promise.resolve()
 			.then(() => operation({ signal: controller.signal }))
 			.then((data) => {
 				if (this.isCurrent(epoch) && !controller.signal.aborted) {
-					this.publish({ status: successStatus, data });
-					this.pollProcessing();
+					if (data?.[ACKNOWLEDGED_NEEDS_REFRESH]) {
+						this.publish({
+							status: 'READY', data: data[ACKNOWLEDGED_NEEDS_REFRESH],
+							error: 'SAVED_NEEDS_REFRESH', needsRefresh: true,
+						});
+					} else {
+						this.publish({ status: successStatus, data });
+					}
 				}
 				return this.state;
 			})
@@ -212,13 +184,20 @@ export class MerchantKnowledgeController {
 					if (originalData && code === 'ABORTED') {
 						this.publish({ status: 'READY', data: originalData });
 					} else if (originalData) {
-						// Keep edit/upload forms mounted with their unsaved drafts.
-						// A conflict freezes further writes until a fresh read.
+						// A failed read keeps the last valid data but prevents stale writes.
+						// A transport failure during a write has an UNKNOWN outcome:
+						// refresh before allowing another submit, avoiding duplicates.
+						const uncertainWrite = kind === 'write' && [
+							'KNOWLEDGE_UNAVAILABLE', 'REMOTE_UNAVAILABLE',
+							'API_NOT_CONFIGURED',
+						].includes(code);
 						this.publish({
 							status: 'READY', data: originalData,
-							error: code === 'CONFLICT' ? 'CONFLICT' :
+							error: kind === 'read' ? 'REFRESH_FAILED' :
+								uncertainWrite ? 'VERIFY_REQUIRED' :
+								code === 'CONFLICT' ? 'CONFLICT' :
 								code === 'DENIED' || code === 'FORBIDDEN' ? 'DENIED' : 'ERROR',
-							needsRefresh: code === 'CONFLICT',
+							needsRefresh: kind === 'read' || code === 'CONFLICT' || uncertainWrite,
 						});
 					} else {
 						const status = ['KNOWLEDGE_UNAVAILABLE', 'RECONNECT_REQUIRED',
@@ -243,7 +222,6 @@ export class MerchantKnowledgeController {
 	}
 
 	dispose() {
-		this.stopPolling();
 		this.currentAbort?.abort();
 		this.currentAbort = null;
 		this.disposed = true;

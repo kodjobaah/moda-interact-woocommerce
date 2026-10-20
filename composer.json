@@ -13,7 +13,6 @@
 			"@php -l includes/Runtime.php",
 			"@php -l includes/Api/ModaApiClient.php",
             "@php -l includes/Api/MerchantKnowledgeContracts.php",
-            "@php -l includes/Api/MerchantKnowledgeUploadCapability.php",
             "@php -l includes/Rest/MerchantKnowledgeController.php",
 			"@php -l includes/Api/RestReadResponseValidator.php",
 			"@php -l includes/Api/DiscountOffersContracts.php",

@@ -2004,3 +2004,27 @@ msgstr "Você não tem permissão para visualizar o histórico de uso."
 #: src/recovery-settings/store-assistant-context.js:23
 msgid "Store classification and reference material used by the assistant."
 msgstr "Classificação da loja e material de referência usado pelo assistente."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "As alterações foram salvas, mas não foi possível atualizar as fontes de conhecimento. Tente novamente para carregar a lista mais recente."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "Não foi possível confirmar se suas alterações nas fontes de conhecimento foram salvas. Atualize a lista antes de tentar novamente."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "Não incluído no seu plano"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "O formato de arquivo selecionado não está incluído no seu plano para esta finalidade."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "Vagas restantes para envio de arquivos: %1$s (compartilhadas com páginas web; %2$s fontes no total)."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "O limite compartilhado de fontes de conhecimento do seu plano foi atingido."

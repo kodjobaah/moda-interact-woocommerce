@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/Api/DiscountOffersContracts.php';
 require_once __DIR__ . '/Rest/RecoveryDiscountOffersController.php';
 require_once __DIR__ . '/Api/MerchantKnowledgeContracts.php';
-require_once __DIR__ . '/Api/MerchantKnowledgeUploadCapability.php';
 require_once __DIR__ . '/Rest/MerchantKnowledgeController.php';
 
 use ModaInteract\WooCommerce\Admin\Setup;

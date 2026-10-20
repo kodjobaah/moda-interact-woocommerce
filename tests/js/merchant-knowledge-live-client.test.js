@@ -91,7 +91,9 @@ describe('ARCH-035-WOOCOMMERCE-015 knowledge client', () => {
 		const client = createMerchantKnowledgeClient(request);
 		const snapshot = { ...knowledge([source('web_1'), source('csv_1', 2, 'CSV')]) };
 		const context = { snapshot };
-		await client.addUrl({ name: 'New', purpose: 'FAQ', languageTag: 'en', url: 'https://example.org/help' }, context);
+		const acknowledged = await client.addUrl({ name: 'New', purpose: 'FAQ', languageTag: 'en', url: 'https://example.org/help' }, context);
+		expect(acknowledged.knowledge.permissions.addUrl).toBe(true);
+		expect(acknowledged.knowledge.nextPosition).toBe(null);
 		await client.editSource({ id: 'web_1', name: 'Updated', languageTag: 'en', url: 'https://example.org/help' }, context);
 		await client.refreshSource({ id: 'web_1' }, context);
 		await client.deleteSource({ id: 'web_1' }, context);

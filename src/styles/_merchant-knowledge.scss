@@ -87,15 +87,31 @@
 	line-height: 1.5;
 }
 
+.moda-knowledge__capacity-row {
+	display: flex;
+	align-items: stretch;
+	gap: 10px;
+	margin-bottom: 10px;
+	min-width: 0;
+}
+
 .moda-knowledge__capacity {
+	flex: 1;
+	min-width: 0;
 	padding: 11px 14px;
-	margin: 0 0 10px;
+	margin: 0;
 	border: 1px solid #d6e6dc;
 	border-radius: 12px;
 	background: #edf5f0;
 	color: var(--moda-forest-900);
 	font-size: 13px;
 	font-weight: 700;
+}
+
+.moda-knowledge__manual-refresh.button {
+	align-self: center;
+	flex-shrink: 0;
+	min-height: 40px;
 }
 
 .moda-knowledge__add-grid {
@@ -205,6 +221,27 @@
 	cursor: not-allowed;
 }
 
+// Read-only plan and capacity explanations must not compress the form grid.
+.moda-knowledge__plan-warning,
+.moda-knowledge__quota {
+	grid-column: 1 / -1;
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.moda-knowledge__plan-warning {
+	padding: 9px 12px;
+	border-radius: 9px;
+	border: 1px solid #e7dbbb;
+	background: #fdfbf3;
+	color: #66592c;
+}
+
+.moda-knowledge__quota {
+	color: var(--moda-muted);
+}
+
 .moda-knowledge__hint {
 	margin: 0;
 	padding: 10px 14px;
@@ -227,6 +264,14 @@
 
 	.moda-knowledge__body {
 		padding: 10px;
+	}
+
+	.moda-knowledge__capacity-row {
+		flex-wrap: wrap;
+	}
+
+	.moda-knowledge__capacity {
+		flex-basis: 100%;
 	}
 
 	.moda-knowledge__form {

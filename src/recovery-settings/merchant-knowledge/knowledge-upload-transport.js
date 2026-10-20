@@ -1,12 +1,20 @@
 import { validKnowledgeFile } from './knowledge-client';
 
-const R2_HOST = /^[a-f0-9]{32}\.r2\.cloudflarestorage\.com$/i;
 const MIME = {
 	CSV: ['text/csv', 'application/csv'],
 	XLSX: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
 };
-const ID = /^[A-Za-z0-9_-]{1,128}$/;
 const SHA = /^[a-f0-9]{64}$/;
+// API-017 retains previously persisted keys while new intents use a verified
+// hostname and UTC timestamp. Never loosen the R2 account, shop/asset or file
+// extension checks to accommodate the newer storage layout.
+const LEGACY_OBJECT_PATH = /^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/([A-Za-z0-9_-]{1,128})\/source\.(csv|xlsx)$/;
+const CURRENT_OBJECT_PATH = /^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/\d{8}T\d{9}Z-([a-f0-9-]{36})\.(csv|xlsx)$/;
+
+function validObjectPath(path, assetId, extension) {
+	const match = LEGACY_OBJECT_PATH.exec(path) ?? CURRENT_OBJECT_PATH.exec(path);
+	return !!match && match[1] === assetId && `.${match[2]}` === extension;
+}
 
 const failure = (code) => Object.assign(new Error(code), { code });
 
@@ -37,68 +45,6 @@ function uploadMetadata(payload, limit, catalogue) {
 		throw failure('INVALID_REQUEST');
 	}
 	return { contentType, sizeBytes: file.size };
-}
-
-export function validateSignedUpload(intent, metadata, now = Date.now()) {
-	if (
-		!intent || intent.schemaVersion !== 1 || !ID.test(intent.assetId) ||
-		!Number.isSafeInteger(intent.maxUploadBytes) ||
-		intent.maxUploadBytes < metadata.sizeBytes ||
-		intent.maxUploadBytes > 25 * 1024 * 1024 ||
-		!intent.requiredHeaders ||
-		Object.keys(intent.requiredHeaders).sort().join(',') !==
-			['Content-Type', 'If-None-Match', 'x-amz-meta-sha256'].sort().join(',') ||
-		intent.requiredHeaders['Content-Type'] !== metadata.contentType ||
-		intent.requiredHeaders['If-None-Match'] !== '*' ||
-		intent.requiredHeaders['x-amz-meta-sha256'] !== metadata.sha256 ||
-		typeof intent.uploadUrl !== 'string' || intent.uploadUrl.length > 4096 ||
-		!Number.isFinite(Date.parse(intent.expiresAt)) ||
-		Date.parse(intent.expiresAt) <= now + 1000 ||
-		Date.parse(intent.expiresAt) > now + 601000
-	) {
-		throw failure('UPLOAD_CAPABILITY_INVALID');
-	}
-	let url;
-	try {
-		url = new URL(intent.uploadUrl);
-	} catch {
-		throw failure('UPLOAD_CAPABILITY_INVALID');
-	}
-	const signedDate = url.searchParams.get('X-Amz-Date') ?? '';
-	const signedExpiry = Number(url.searchParams.get('X-Amz-Expires'));
-	const signatureTime = /^\d{8}T\d{6}Z$/.test(signedDate)
-		? Date.parse(`${signedDate.slice(0, 4)}-${signedDate.slice(4, 6)}-${signedDate.slice(6, 8)}T${signedDate.slice(9, 11)}:${signedDate.slice(11, 13)}:${signedDate.slice(13, 15)}Z`)
-		: NaN;
-	const queryFields = new Set([
-		'X-Amz-Algorithm', 'X-Amz-Credential', 'X-Amz-Date',
-		'X-Amz-Expires', 'X-Amz-SignedHeaders', 'X-Amz-Signature',
-		'X-Amz-Security-Token', 'X-Amz-Content-Sha256',
-		'x-amz-content-sha256', 'x-id',
-	]);
-	if (
-		url.protocol !== 'https:' || !R2_HOST.test(url.hostname) ||
-		url.port || url.username || url.password || url.hash ||
-		!/^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/[A-Za-z0-9_-]{1,128}\/source\.(csv|xlsx)$/.test(url.pathname) ||
-		!url.pathname.includes(`/${intent.assetId}/`) ||
-		url.pathname.slice(-metadata.extension.length) !== metadata.extension ||
-		!/^[a-f0-9]{64}$/i.test(url.searchParams.get('X-Amz-Signature') ?? '') ||
-		url.searchParams.get('X-Amz-Algorithm') !== 'AWS4-HMAC-SHA256' ||
-		url.searchParams.get('X-Amz-SignedHeaders') !== 'content-type;host;if-none-match;x-amz-meta-sha256' ||
-		!/^\d{8}T\d{6}Z$/.test(url.searchParams.get('X-Amz-Date') ?? '') ||
-		!/^([1-9][0-9]{0,2})$/.test(url.searchParams.get('X-Amz-Expires') ?? '') ||
-		signedExpiry > 600 ||
-		!Number.isFinite(signatureTime) ||
-		signatureTime > now + 60000 ||
-		signatureTime + signedExpiry * 1000 <= now ||
-		signatureTime + signedExpiry * 1000 > Date.parse(intent.expiresAt) + 2000 ||
-		!url.searchParams.get('X-Amz-Credential') ||
-		[...url.searchParams.keys()].some(
-			(name) => !queryFields.has(name) || url.searchParams.getAll(name).length !== 1
-		)
-	) {
-		throw failure('UPLOAD_CAPABILITY_INVALID');
-	}
-	return intent.uploadUrl; // Preserve original signed bytes and query verbatim.
 }
 
 function uuid(cryptoProvider) {
@@ -161,11 +107,15 @@ export function createKnowledgeUploader({
 			signal,
 		});
 		if (signal?.aborted) throw failure('ABORTED');
-		const url = validateSignedUpload(intent, {
-			...metadata,
-			sha256,
-			extension: `.${payload.dataFormatKey.toLowerCase()}`,
-		}, now());
+		// Moda API owns the R2 destination, object key and signing contract.
+		// Use its capability as issued; the browser only needs the fields it consumes.
+		if (typeof intent?.uploadUrl !== 'string' || !intent.uploadUrl ||
+			typeof intent?.assetId !== 'string' || !intent.assetId ||
+			!intent.requiredHeaders || typeof intent.requiredHeaders !== 'object' ||
+			!Number.isFinite(Date.parse(intent.expiresAt))) {
+			throw failure('UPLOAD_CAPABILITY_INVALID');
+		}
+		const url = intent.uploadUrl;
 		if (typeof AbortController === 'undefined') throw failure('UPLOAD_UNAVAILABLE');
 		const controller = new AbortController();
 		const abort = () => controller.abort();

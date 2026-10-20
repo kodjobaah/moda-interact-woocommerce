@@ -70,7 +70,7 @@ export function KnowledgeAddForms({
 						'moda-interact'
 					)
 				),
-		uploads.length || preserveUnavailable
+		uploads.length || preserveUnavailable || ready
 			? createElement(
 					'details',
 					{ className: 'moda-knowledge__disclosure', open: true },
@@ -107,7 +107,14 @@ export function KnowledgeAddForms({
 									className: 'moda-knowledge__hint',
 									role: 'status',
 								},
-								unavailableReason('upload')
+								ready && !uploads.length
+									? `${__('Upload file', 'moda-interact')} — ${__('Not included in your plan', 'moda-interact')}`
+									: ready && !capacity
+										? __(
+											"Your plan's shared knowledge-source limit has been reached.",
+											'moda-interact'
+										)
+										: unavailableReason('upload')
 							)
 						: null
 				)

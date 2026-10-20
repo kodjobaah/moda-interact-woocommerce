@@ -1,10 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createKnowledgeUploader, validateSignedUpload } from '../../src/recovery-settings/merchant-knowledge/knowledge-upload-transport';
+import { createKnowledgeUploader } from '../../src/recovery-settings/merchant-knowledge/knowledge-upload-transport';
 
 const NOW = Date.UTC(2026, 9, 19, 12, 0, 0);
 const DIGEST = 'a'.repeat(64);
 const URL_BASE = 'https://0123456789abcdef0123456789abcdef.r2.cloudflarestorage.com/knowledge-assets/merchant-knowledge/test-1/woocommerce/shop_1/asset_1/source.csv';
 const SIGNED = `${URL_BASE}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=example&X-Amz-Date=20261019T120000Z&X-Amz-Expires=60&X-Amz-SignedHeaders=content-type%3Bhost%3Bif-none-match%3Bx-amz-meta-sha256&X-Amz-Signature=${'b'.repeat(64)}`;
+const CURRENT_ASSET = '550e8400-e29b-41d4-a716-446655440000';
+const CURRENT_SIGNED = SIGNED.replace('/asset_1/source.csv', `/store.example.com/20261019T120000000Z-${CURRENT_ASSET}.csv`);
 const file = () => ({
 	name: 'faq.csv', size: 4, type: 'text/csv',
 	arrayBuffer: async () => new Uint8Array([1, 2, 3, 4]).buffer,
@@ -101,19 +103,34 @@ describe('ARCH-035-WOOCOMMERCE-015 browser direct R2 upload', () => {
 		expect(cancelled.request).toHaveBeenCalledTimes(1);
 	});
 
-	it('rejects unapproved host, missing headers, expired and malformed capability before PUT', async () => {
-		const bad = [
-			{ ...intent(), uploadUrl: SIGNED.replace('.r2.cloudflarestorage.com', '.example.org') },
-			{ ...intent(), uploadUrl: SIGNED.replace('source.csv', 'source.xlsx') },
-			{ ...intent(), requiredHeaders: { ...intent().requiredHeaders, Authorization: 'secret' } },
-			{ ...intent(), requiredHeaders: { ...intent().requiredHeaders, 'x-amz-meta-sha256': 'not-correct' } },
-			{ ...intent(), expiresAt: new Date(NOW - 1).toISOString() },
-		];
-		for (const intentValue of bad) {
-			const h = harness({ intentValue });
+	it('accepts the new immutable domain/timestamp object key and still finalises only after R2 PUT', async () => {
+		const current = { ...intent(), assetId: CURRENT_ASSET, uploadUrl: CURRENT_SIGNED };
+		const h = harness({ intentValue: current });
+		await expect(h.run()).resolves.toEqual(finalised());
+		expect(h.send).toHaveBeenCalledTimes(1);
+		expect(h.send.mock.calls[0][0]).toBe(CURRENT_SIGNED);
+		expect(h.request.mock.calls[1][0].data.assetId).toBe(CURRENT_ASSET);
+	});
+
+	it('uses the URL issued by the authenticated Moda API without parsing R2 object keys or signatures', async () => {
+		const alternateUrl = `${URL_BASE.replace('/asset_1/source.csv', '/opaque-provider-key')}?token=example`;
+		const alternate = { ...intent(), uploadUrl: alternateUrl };
+		const h = harness({ intentValue: alternate });
+		await expect(h.run()).resolves.toEqual(finalised());
+		expect(h.send.mock.calls[0][0]).toBe(alternate.uploadUrl);
+		expect(h.send.mock.calls[0][1].headers).toEqual(alternate.requiredHeaders);
+	});
+
+	it('requires the basic fields needed to execute the API-issued capability', async () => {
+		for (const broken of [
+			{ ...intent(), uploadUrl: '' },
+			{ ...intent(), assetId: '' },
+			{ ...intent(), requiredHeaders: null },
+			{ ...intent(), expiresAt: 'not-a-date' },
+		]) {
+			const h = harness({ intentValue: broken });
 			await expect(h.run()).rejects.toMatchObject({ code: 'UPLOAD_CAPABILITY_INVALID' });
 			expect(h.send).not.toHaveBeenCalled();
-			expect(h.request).toHaveBeenCalledTimes(1);
 		}
 	});
 
@@ -124,9 +141,9 @@ describe('ARCH-035-WOOCOMMERCE-015 browser direct R2 upload', () => {
 		expect(h.request).not.toHaveBeenCalled();
 	});
 
-	it('refuses upload after signed expiry even if metadata was previously valid', () => {
-		expect(() => validateSignedUpload(intent(), {
-			contentType: 'text/csv', sizeBytes: 4, sha256: DIGEST, extension: '.csv',
-		}, NOW + 60000)).toThrow('UPLOAD_CAPABILITY_INVALID');
+	it('does not upload when the server-issued intent has expired', async () => {
+		const h = harness({ clock: () => NOW + 60000 });
+		await expect(h.run()).rejects.toMatchObject({ code: 'UPLOAD_EXPIRED' });
+		expect(h.send).not.toHaveBeenCalled();
 	});
 });

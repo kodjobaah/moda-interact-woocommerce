@@ -1987,3 +1987,27 @@ msgstr "Du har ikke tilladelse til at se forbrugshistorikken."
 #: src/recovery-settings/store-assistant-context.js:23
 msgid "Store classification and reference material used by the assistant."
 msgstr "Butiksklassificering og referencemateriale, som assistenten bruger."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "Ændringerne blev gemt, men videnskilderne kunne ikke opdateres. Prøv igen for at hente den nyeste liste."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "Vi kunne ikke bekræfte, om ændringerne i videnskilderne blev gemt. Opdater listen, før du prøver igen."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "Ikke inkluderet i dit abonnement"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "Det valgte filformat er ikke inkluderet i dit abonnement til dette formål."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "Ledige pladser til filuploads: %1$s (deles med websider; i alt %2$s kilder)."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "Den fælles grænse for videnskilder i dit abonnement er nået."

@@ -183,8 +183,7 @@ File transport uses the 17 October ARCH-035 **browser-direct** amendment:
    accepts only JSON metadata: `idempotencyKey` (UUID), `purposeKey`,
    `dataFormatKey` (`CSV` or `XLSX`), `originalFileName`, `contentType`,
    `sizeBytes`, `sha256` (lowercase SHA-256). PHP obtains a version-1 presigned
-   capability from the hosted API and validates its exact approved destination,
-   shop-bound object path, TTL and signed headers before handing the URL/headers
+   capability from the hosted API and checks the response shape before handing the URL/headers
    to the authenticated administrator in a **no-store** response.
 2. **Browser (WOOCOMMERCE-015)** sends a Blob directly to the *unmodified* R2
    HTTPS S3 API URL using `PUT`, exactly the supplied `requiredHeaders`,
@@ -200,20 +199,13 @@ File transport uses the 17 October ARCH-035 **browser-direct** amendment:
    independently verifies actual object contents before accepting the revision.
    A successful intent or PUT alone does **not** create an active source.
 
-WordPress requires only two **non-secret** deployment configuration values to
-pin the approved R2 destination: `MODA_MERCHANT_KNOWLEDGE_R2_ENDPOINT`, set to
-`https://<32-hex-account>.r2.cloudflarestorage.com`, and
-`MODA_MERCHANT_KNOWLEDGE_R2_BUCKET`, set to the exact approved bucket. These
-must match the hosted API's sealed database `merchant.knowledge.r2` settings;
-missing/mismatched WordPress values cause the intent handoff to **fail closed**
-without preventing knowledge reads/edits. WordPress does not need the R2 key,
-secret, max-upload setting, PHP cURL or writable upload directory. If the
-hosted R2 account/bucket is rotated, update the WordPress approved destination
-before new browser uploads; already-issued capabilities are not a fallback.
+The hosted Moda API owns R2 account, bucket, object-key layout and signing.
+Merchants do not configure R2 in WordPress. WordPress authenticates
+the administrator, forwards metadata, checks the API response shape and
+returns the signed capability without parsing its R2 signing details.
 
 WordPress rejects multipart/file-body submissions (including the obsolete
-`/merchant-knowledge/upload` route), unknown signed hosts and malformed
-responses. Signed capabilities must not be logged, cached, persisted or placed
+`/merchant-knowledge/upload` route) and malformed responses. Signed capabilities must not be logged, cached, persisted or placed
 in page URLs. On failed/preflight-denied/aborted/redirected R2 PUT, the browser
 must not call finalise or assert upload success. The authorised user can retry
 using the API's documented idempotency and expiration behaviour.
