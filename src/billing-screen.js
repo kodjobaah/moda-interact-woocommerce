@@ -1,6 +1,6 @@
 import { createElement } from '@wordpress/element';
-import { PurchaseHistoryScreen } from './billing/purchase-history-screen';
 import { __ } from '@wordpress/i18n';
+import { PurchaseHistoryScreen } from './billing/purchase-history-screen';
 import { PlansView } from './billing/plan-catalogue';
 import { BillingSummary } from './billing/summary';
 import { TopUpSection } from './billing/top-up-section';
@@ -156,10 +156,21 @@ export function BillingScreen({
 					available: state.data.surfaces.purchaseHistoryAllowed,
 				})
 			: null,
-		state.status === 'READY' && !showHistory && state.data?.surfaces?.usageHistoryAllowed
-			? createElement('p', { className: 'moda-usage__billing-link' },
-				createElement('a', { href: 'admin.php?page=moda-interact-usage-history', className: 'button' },
-					__('Usage history', 'moda-interact')))
+		state.status === 'READY' &&
+			!showHistory &&
+			state.data?.surfaces?.usageHistoryAllowed
+			? createElement(
+					'p',
+					{ className: 'moda-usage__billing-link' },
+					createElement(
+						'a',
+						{
+							href: 'admin.php?page=moda-interact-usage-history',
+							className: 'button',
+						},
+						__('Usage history', 'moda-interact')
+					)
+				)
 			: null,
 		...(state.status === 'READY' && state.view !== 'SUMMARY' && !showHistory
 			? billingNotices(state.data, state)

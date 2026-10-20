@@ -1,5 +1,3 @@
-/* eslint vitest/no-import-node-test: "off" */
-
 import assert from 'node:assert/strict';
 import { createServer } from 'node:net';
 import test from 'node:test';

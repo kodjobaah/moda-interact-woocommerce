@@ -415,6 +415,8 @@ async function runFreshInstall(configPath, port) {
 }
 
 async function runUpgrade(configPath, port) {
+	// Baseline archive is initialised before the upgrade test is invoked.
+	// eslint-disable-next-line @typescript-eslint/no-use-before-define
 	await installZip(configPath, port, baselineArchive, '--activate');
 	assertPluginInstalledAndActive(configPath, port);
 	assertNoExternalApiRequests(

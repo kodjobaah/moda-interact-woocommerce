@@ -1,3 +1,12 @@
+function sameIds(left, right) {
+	const first = [...left].sort();
+	const second = [...right].sort();
+	return (
+		first.length === second.length &&
+		first.every((id, index) => id === second[index])
+	);
+}
+
 /**
  * Read-only reconciliation after an uncertain category POST outcome.
  * Generation is the concurrency fence; never infer a successful write from a
@@ -47,15 +56,6 @@ export function reconcileStoreCategorySave(latest, previous, selection) {
 		return 'CATEGORY_UNAVAILABLE';
 	}
 	return 'SAVE_FAILED';
-}
-
-function sameIds(left, right) {
-	const first = [...left].sort();
-	const second = [...right].sort();
-	return (
-		first.length === second.length &&
-		first.every((id, index) => id === second[index])
-	);
 }
 
 /**

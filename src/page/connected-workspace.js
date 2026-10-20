@@ -35,7 +35,9 @@ export function ConnectedWorkspace({
 			timeZone,
 		});
 	} else if (activeSurface === 'USAGE') {
-		activeContent = createElement(UsageHistoryScreen, { key: `usage:${connectionIdentity}` });
+		activeContent = createElement(UsageHistoryScreen, {
+			key: `usage:${connectionIdentity}`,
+		});
 	} else if (activeSurface === 'SUPPORT') {
 		activeContent = createElement(SupportScreen, {
 			key: `support:${connectionIdentity}`,
