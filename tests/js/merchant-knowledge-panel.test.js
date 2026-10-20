@@ -449,6 +449,54 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		});
 	});
 
+	it('clears a web-page draft only after the server confirms the add', async () => {
+		let acknowledge;
+		const onAction = vi.fn(() => new Promise((resolve) => {
+			acknowledge = resolve;
+		}));
+		const form = KnowledgeWebForm({
+			data,
+			catalogue: catalogueFor(data, 'REMOTE_URL'),
+			disabled: false,
+			onAction,
+		});
+		const values = {
+			name: { value: 'New help page' },
+			purpose: { value: 'COMPANY_INFORMATION' },
+			languageTag: { value: 'en' },
+			url: { value: 'https://example.org/help' },
+		};
+		const reset = vi.fn();
+		const event = {
+			preventDefault: vi.fn(),
+			currentTarget: {
+				elements: { namedItem: (key) => values[key] ?? null },
+				reset,
+			},
+		};
+
+		const saving = form.props.onSubmit(event);
+		expect(onAction).toHaveBeenCalledWith('addUrl', {
+			name: 'New help page',
+			purpose: 'COMPANY_INFORMATION',
+			languageTag: 'en',
+			url: 'https://example.org/help',
+		});
+		expect(reset).not.toHaveBeenCalled();
+		acknowledge({ confirmedAction: 'addUrl' });
+		await saving;
+		expect(reset).toHaveBeenCalledTimes(1);
+
+		// A declined or unconfirmed action must preserve the input draft.
+		onAction.mockResolvedValueOnce({ status: 'READY', error: 'DENIED' });
+		await form.props.onSubmit(event);
+		expect(reset).toHaveBeenCalledTimes(1);
+
+		onAction.mockRejectedValueOnce(new Error('Network failure'));
+		await form.props.onSubmit(event);
+		expect(reset).toHaveBeenCalledTimes(1);
+	});
+
 	it('keeps native file submit disabled until a valid selected file and editable name are supplied', () => {
 		const onFileChange = vi.fn();
 		const form = KnowledgeUploadFields({

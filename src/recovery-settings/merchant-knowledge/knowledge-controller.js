@@ -120,7 +120,7 @@ export class MerchantKnowledgeController {
 		}
 		const epoch = ++this.epoch;
 		this.publish({ status: 'SAVING', data, activeAction: action });
-		let finalized = false;
+		let confirmed = false;
 		const result = await this.request(
 			epoch,
 			async (context) => {
@@ -135,8 +135,9 @@ export class MerchantKnowledgeController {
 				if (context.signal.aborted) {
 					throw Object.assign(new Error('ABORTED'), { code: 'ABORTED' });
 				}
-				// The uploader returns only after Moda accepts finalisation.
-				finalized = ['upload', 'replaceSource'].includes(action);
+				// Acknowledged additions and uploads may reset their forms. Failed
+				// or interrupted writes must retain the merchant's draft.
+				confirmed = ['addUrl', 'upload', 'replaceSource'].includes(action);
 				// Web-source commands return a validated authoritative snapshot.
 				// An incomplete (paginated) snapshot must still be read fully.
 				if (acknowledgement?.knowledge?.nextPosition === null) {
@@ -155,7 +156,7 @@ export class MerchantKnowledgeController {
 			},
 			'READY', data, 'write'
 		);
-		return finalized && this.isCurrent(epoch)
+		return confirmed && this.isCurrent(epoch)
 			? { ...result, confirmedAction: action }
 			: result;
 	}

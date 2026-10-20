@@ -14,14 +14,25 @@ export function KnowledgeWebForm({ data, catalogue, disabled, onAction }) {
 				if (disabled) {
 					return;
 				}
-				const elements = event.currentTarget.elements;
+				const form = event.currentTarget;
+				const elements = form.elements;
 				const name = elements.namedItem('name')?.value?.trim() ?? '';
 				const purpose = elements.namedItem('purpose')?.value ?? '';
 				const languageTag =
 					elements.namedItem('languageTag')?.value ?? '';
 				const url = elements.namedItem('url')?.value ?? '';
 				if (name && purpose && languageTag && validKnowledgeUrl(url)) {
-					onAction('addUrl', { name, purpose, languageTag, url });
+					return Promise.resolve(
+						onAction('addUrl', { name, purpose, languageTag, url })
+					)
+						.then((result) => {
+							if (result?.confirmedAction === 'addUrl') {
+								form.reset();
+							}
+						})
+						.catch(() => {
+							// Retain the draft; the controller surfaces failures.
+						});
 				}
 			},
 		},

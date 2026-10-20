@@ -354,10 +354,25 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
-		await controller.perform('addUrl', payload);
+		const result = await controller.perform('addUrl', payload);
+		expect(result.confirmedAction).toBe('addUrl');
 		expect(client.read).toHaveBeenCalledTimes(1);
 		expect(controller.state).toMatchObject({ status: 'READY', data: updated });
 		expect(controller.state.data.sources).toHaveLength(2);
+		controller.dispose();
+	});
+
+	it('does not confirm an unsuccessful web-page addition', async () => {
+		const client = {
+			read: vi.fn(async () => fixture()),
+			addUrl: vi.fn(async () => { throw { code: 'DENIED' }; }),
+		};
+		const controller = new MerchantKnowledgeController(client);
+		connected(controller);
+		await settle();
+		const result = await controller.perform('addUrl', payload);
+		expect(result.confirmedAction).toBeUndefined();
+		expect(result.error).toBe('DENIED');
 		controller.dispose();
 	});
 
@@ -389,7 +404,8 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
-		await controller.perform('addUrl', payload);
+		const result = await controller.perform('addUrl', payload);
+		expect(result.confirmedAction).toBe('addUrl');
 		expect(controller.state).toMatchObject({
 			status: 'READY', data: original, error: 'SAVED_NEEDS_REFRESH',
 			needsRefresh: true,
