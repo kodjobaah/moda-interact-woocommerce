@@ -1,6 +1,6 @@
 import { createElement } from '@wordpress/element';
-import { PurchaseHistoryScreen } from './billing/purchase-history-screen';
 import { __ } from '@wordpress/i18n';
+import { PurchaseHistoryScreen } from './billing/purchase-history-screen';
 import { PlansView } from './billing/plan-catalogue';
 import { BillingSummary } from './billing/summary';
 import { TopUpSection } from './billing/top-up-section';

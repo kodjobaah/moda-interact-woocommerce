@@ -197,14 +197,14 @@ export class UsageHistoryController {
 		} catch (error) {
 			if (this.current(revision)) {
 				const code = error?.code ?? error?.message;
-				const status =
-					code === 'invalid_cursor'
-						? 'INVALID_CURSOR'
-						: code === 'permission_denied'
-							? 'DENIED'
-							: code === 'usage_history_unavailable'
-								? 'UNAVAILABLE'
-								: 'FAILED';
+				let status = 'FAILED';
+				if (code === 'invalid_cursor') {
+					status = 'INVALID_CURSOR';
+				} else if (code === 'permission_denied') {
+					status = 'DENIED';
+				} else if (code === 'usage_history_unavailable') {
+					status = 'UNAVAILABLE';
+				}
 				this.publish({
 					...this.state,
 					status,

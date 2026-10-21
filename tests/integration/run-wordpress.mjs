@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { createHmac, randomBytes } from 'node:crypto';
 import { createServer } from 'node:https';
 import { mkdtemp, readFile, rm, writeFile, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
+import { promisify } from 'node:util';
 import { assertStoreContextWordPress } from './store-context-assertions.mjs';
 import { createWordPressFetch } from './wordpress-http.mjs';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
@@ -15,17 +16,22 @@ import { assertLocaleBatch011 } from './locale-batch-011.mjs';
 import { assertLocaleBatch012 } from './locale-batch-012.mjs';
 import { assertLocaleBatch013 } from './locale-batch-013.mjs';
 import { assertReleaseLocales } from './release-locales.mjs';
+import { assertCheckoutWordPress } from './checkout-wordpress.mjs';
+import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
 
+const execFileAsync = promisify(execFile);
+const checkoutOnly = process.argv.includes('--checkout-only');
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
-const port = Number(process.env.WP_ENV_PORT ?? 8899);
-const siteUrl = `http://localhost:${port}`;
+let siteUrl;
 const fetchWordPress = createWordPressFetch();
 const temporaryDirectory = await mkdtemp(
 	join(tmpdir(), 'moda-woo-api-fixture-')
 );
 const keyPath = join(temporaryDirectory, 'fixture-key.pem');
 const certificatePath = join(temporaryDirectory, 'fixture-cert.pem');
+let activityStatus = 202;
+const activityRequests = [];
 let probeCount = 0;
 let connectCount = 0;
 let bootstrapCount = 0;
@@ -60,9 +66,38 @@ function wp(...args) {
 		'npm',
 		['exec', '--', 'wp-env', 'run', 'cli', 'wp', ...args],
 		{
-			env: { ...process.env, WP_ENV_PORT: String(port) },
+			env: process.env,
 		}
 	);
+}
+
+// The HTTPS fixture runs in this process. Delivery-triggering WP-CLI commands
+// must be asynchronous so the fixture can accept and respond to PHP requests.
+async function wpAsync(...args) {
+	const { stdout } = await execFileAsync(
+		'npm',
+		['exec', '--', 'wp-env', 'run', 'cli', 'wp', ...args],
+		{
+			cwd: repository,
+			encoding: 'utf8',
+			maxBuffer: 16 * 1024 * 1024,
+			env: process.env,
+		}
+	);
+	return stdout;
+}
+
+function runningWordPressSite() {
+	const output = command('npm', ['exec', '--', 'wp-env', 'status', '--json']);
+	let status;
+	try {
+		status = JSON.parse(output.trim());
+	} catch {
+		throw new Error('wp-env status --json did not return valid JSON');
+	}
+	const resolvedUrl = siteUrlFromWpEnvStatus(status);
+	process.stdout.write(`[ARCH035] Using running wp-env: ${resolvedUrl}\n`);
+	return resolvedUrl;
 }
 
 function restoreWpHome() {
@@ -74,7 +109,7 @@ function restoreWpHome() {
 		'npm',
 		['exec', '--', 'wp-env', 'run', 'cli', 'wp', 'config', ...args],
 		{
-			env: { ...process.env, WP_ENV_PORT: String(port) },
+			env: process.env,
 		}
 	);
 }
@@ -250,6 +285,33 @@ const server = createServer(
 			}
 			const bodyBytes = Buffer.concat(chunks);
 			const url = new URL(request.url ?? '/', 'https://fixture.invalid');
+			if (
+				url.pathname === '/v1/woocommerce/activity' &&
+				request.method === 'POST'
+			) {
+				assert.equal(
+					request.headers['x-moda-installation-id'],
+					'install_wp_fixture'
+				);
+				assert.equal(request.headers.cookie, undefined);
+				const payload = JSON.parse(bodyBytes.toString('utf8'));
+				const event = payload.event ?? payload;
+				assert.equal(event.schemaVersion, 'woo.activity.v1');
+				activityRequests.push({
+					eventId: event.eventId,
+					status: activityStatus,
+					payload,
+				});
+				sendJson(
+					response,
+					activityStatus,
+					activityStatus === 202
+						? { status: 'accepted' }
+						: { error: 'unavailable' }
+				);
+				return;
+			}
+
 			if (
 				url.pathname === '/v1/woocommerce/installations/connect' &&
 				request.method === 'POST'
@@ -679,639 +741,788 @@ const apiPort = server.address().port;
 const apiOrigin = `https://host.docker.internal:${apiPort}`;
 
 try {
-	// wp-env mounts this checkout; classmap-authoritative Composer autoloading
-	// must include newly added PHP REST controllers before WordPress boots.
-	command('composer', [
-		'dump-autoload',
-		'--optimize',
-		'--classmap-authoritative',
-	]);
-	wordpressStarted = true;
-	command('npm', ['run', 'env:start'], {
-		env: { ...process.env, WP_ENV_PORT: String(port) },
-	});
-	originalWpHome = parseJsonOutput(
-		wp('eval', 'echo wp_json_encode(defined("WP_HOME") ? WP_HOME : null);')
-	);
-	assert.ok(
-		originalWpHome === null || typeof originalWpHome === 'string',
-		'initial WP_HOME must be a string or undefined'
-	);
-	// The administrator's locale does not configure the WordPress site locale.
-	// A fresh wp-env installation otherwise defaults to en_US.
-	originalSiteLocale = parseJsonOutput(
-		wp('eval', 'echo wp_json_encode(get_option("WPLANG", null));')
-	);
-	assert.ok(
-		originalSiteLocale === null || typeof originalSiteLocale === 'string',
-		'initial site locale must be a string or absent'
-	);
-	wp('language', 'core', 'install', 'en_GB');
-	siteLocaleOverrideApplied = true;
-	wp('site', 'switch-language', 'en_GB');
-	assert.equal(
-		parseJsonOutput(wp('eval', 'echo wp_json_encode(get_locale());')),
-		'en_GB',
-		'WordPress must use en_GB before store-context assertions'
-	);
-	const hostBridgeIp = parseJsonOutput(
-		wp(
-			'eval',
-			'echo wp_json_encode(gethostbyname("host.docker.internal"));'
-		)
-	);
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'eval',
-			`update_option("home", "${siteUrl}"); update_option("siteurl", "${siteUrl}");`,
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'eval',
-			'update_option("permalink_structure", "/%postname%/");',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	const plugins = parseJsonOutput(wp('plugin', 'list', '--format=json'));
-	const plugin = plugins.find((entry) => entry.name === basename(repository));
-	assert.ok(plugin, 'wp-env must mount the Moda plugin');
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'plugin',
-			'activate',
-			'woocommerce',
-			plugin.name,
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	const pluginDir = parseJsonOutput(
-		wp(
-			'eval',
-			'echo wp_json_encode(dirname(MODA_INTERACT_MAIN_PLUGIN_FILE));'
-		)
-	);
-	// WordPress gettext and the bundled script must honor the administrator's
-	// UI locale without rewriting the site/store language.
-	assertLocaleWordPress({ wp, parseJsonOutput, repository });
-	assertLocaleBatch010({ wp, parseJsonOutput, repository });
-	assertLocaleBatch011({ wp, parseJsonOutput, repository });
-	assertLocaleBatch012({ wp, parseJsonOutput, repository });
-	assertLocaleBatch013({ wp, parseJsonOutput, repository });
-	const caPathInContainer = `${pluginDir}/tests/integration/.fixture-ca.pem`;
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'config',
-			'set',
-			'MODA_INTERACT_API_BASE_URL',
-			apiOrigin,
-			'--type=constant',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'config',
-			'set',
-			'MODA_INTERACT_API_CA_BUNDLE',
-			caPathInContainer,
-			'--type=constant',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'config',
-			'set',
-			'MODA_INTERACT_CONNECTION_MODE',
-			'local-development',
-			'--type=constant',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	const auth = parseJsonOutput(
-		wp(
-			'eval',
-			'$user_id = 1; $expiration = time() + DAY_IN_SECONDS; $token = WP_Session_Tokens::get_instance($user_id)->create($expiration); $cookie = wp_generate_auth_cookie($user_id, $expiration, "logged_in", $token); $_COOKIE[LOGGED_IN_COOKIE] = $cookie; wp_set_current_user($user_id); echo wp_json_encode(array("cookieName" => LOGGED_IN_COOKIE, "cookie" => $cookie, "nonce" => wp_create_nonce("wp_rest")));'
-		)
-	);
-	const request = (path, options = {}) =>
-		fetchWordPress(
-			`${siteUrl}/wp-json/moda-interact/v1/connection${path}`,
-			{
-				...options,
-				headers: {
-					...(options.headers ?? {}),
-					Cookie: `${auth.cookieName}=${auth.cookie}`,
-					'X-WP-Nonce': auth.nonce,
-				},
-			}
+	if (checkoutOnly) {
+		// Never start, stop, activate or reset a developer's existing wp-env.
+		// The checkout assertions create test orders/users and alter WooCommerce settings.
+		assert.equal(
+			process.env.MODA_CHECKOUT_TEST_DISPOSABLE,
+			'1',
+			'--checkout-only changes WooCommerce test data. Set MODA_CHECKOUT_TEST_DISPOSABLE=1 only for a disposable wp-env site.'
 		);
-	const merchantBootstrapRequest = (query = '') =>
-		fetchWordPress(
-			`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap${query}`,
-			{
-				headers: {
-					Cookie: `${auth.cookieName}=${auth.cookie}`,
-					'X-WP-Nonce': auth.nonce,
-				},
-			}
+		siteUrl = runningWordPressSite();
+		const response = await fetchWordPress(siteUrl);
+		assert.ok(
+			response.status < 500,
+			`Existing WordPress site is unhealthy (HTTP ${response.status})`
 		);
-	const billingRequest = (path, options = {}) =>
-		fetchWordPress(`${siteUrl}/wp-json/moda-interact/v1/billing${path}`, {
-			...options,
-			headers: {
-				...(options.headers ?? {}),
-				Cookie: `${auth.cookieName}=${auth.cookie}`,
-				'X-WP-Nonce': auth.nonce,
-			},
-		});
-
-	const noAuth = await fetchWordPress(
-		`${siteUrl}/wp-json/moda-interact/v1/connection`,
-		{
-			method: 'POST',
-			headers: { 'content-type': 'application/json' },
-			body: '{}',
-		}
-	);
-	assert.ok(
-		noAuth.status === 401 || noAuth.status === 403,
-		`unauthenticated POST must be denied, got ${noAuth.status}`
-	);
-	const badNonce = await fetchWordPress(
-		`${siteUrl}/wp-json/moda-interact/v1/connection`,
-		{
-			method: 'POST',
-			headers: {
-				Cookie: `${auth.cookieName}=${auth.cookie}`,
-				'X-WP-Nonce': 'invalid',
-				'content-type': 'application/json',
-			},
-			body: '{}',
-		}
-	);
-	assert.ok(
-		badNonce.status === 401 || badNonce.status === 403,
-		`invalid REST nonce must be denied, got ${badNonce.status}`
-	);
-	const unknownChallenge = await fetchWordPress(
-		`${siteUrl}/wp-json/moda-interact/v1/connection/challenge?attempt_id=550e8400-e29b-41d4-a716-446655440000&nonce=${randomBytes(32).toString('base64url')}`
-	);
-	assert.equal(unknownChallenge.status, 404);
-	const browserIdentity = await request('', {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify({
-			siteUrl: 'https://attacker.invalid',
-			shopId: 'attacker',
-		}),
-	});
-	assert.equal(browserIdentity.status, 400);
-
-	const connectedResponse = await request('', {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: '{}',
-	});
-	const connected = await connectedResponse.json();
-	assert.equal(
-		connectedResponse.status,
-		200,
-		`connection failed: ${JSON.stringify(connected)}`
-	);
-	assert.equal(connected.status, 'CONNECTED');
-	assert.equal(
-		JSON.stringify(connected).includes(
-			Buffer.alloc(32, 1).toString('base64url')
-		),
-		false
-	);
-	assert.equal(JSON.stringify(connected).includes('bootstrapSecret'), false);
-	assert.deepEqual(await (await request('')).json(), {
-		status: 'CONNECTED',
-		installationId: 'install_wp_fixture',
-		shopId: 'shop_wp_fixture',
-		canonicalSiteUrl: siteUrl,
-		credentialVersion: 1,
-	});
-	assert.deepEqual(await (await request('')).json(), {
-		status: 'RECONNECT_REQUIRED',
-	});
-	assert.deepEqual(await (await request('')).json(), {
-		status: 'REMOTE_UNAVAILABLE',
-	});
-
-	const reconnect = await request('', {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: '{}',
-	});
-	assert.equal(reconnect.status, 200);
-	assert.equal((await reconnect.json()).credentialVersion, 2);
-	assert.deepEqual(await (await request('')).json(), {
-		status: 'CONNECTED',
-		installationId: 'install_wp_fixture',
-		shopId: 'shop_wp_fixture',
-		canonicalSiteUrl: siteUrl,
-		credentialVersion: 2,
-	});
-	const bootstrapResponse = await merchantBootstrapRequest('?_locale=user');
-	const bootstrap = await bootstrapResponse.json();
-	assert.equal(bootstrapResponse.status, 200);
-	assert.match(
-		bootstrapResponse.headers.get('cache-control') ?? '',
-		/\bprivate\b/i
-	);
-	assert.match(
-		bootstrapResponse.headers.get('cache-control') ?? '',
-		/\bno-store\b/i
-	);
-	assert.equal(bootstrapResponse.headers.get('pragma'), 'no-cache');
-	assert.deepEqual(Object.keys(bootstrap).sort(), [
-		'internationalContext',
-		'schemaVersion',
-		'shop',
-		'storeProfile',
-	]);
-	assert.equal(bootstrap.shop.onboardingCompleted, false);
-	assert.equal(bootstrap.internationalContext.storeLocale, 'pt_BR');
-	assert.equal(bootstrap.internationalContext.languageTag, null);
-	assert.equal(bootstrap.storeProfile.pendingCategory.displayName, 'Apparel');
-	assert.equal(
-		JSON.stringify(bootstrap).includes(
-			Buffer.alloc(32, 2).toString('base64url')
-		),
-		false
-	);
-	const rejectedBootstrap = await merchantBootstrapRequest();
-	assert.equal(rejectedBootstrap.status, 401);
-	assert.deepEqual(await rejectedBootstrap.json(), {
-		error: 'RECONNECT_REQUIRED',
-	});
-	const outageBootstrap = await merchantBootstrapRequest();
-	assert.equal(outageBootstrap.status, 503);
-	assert.deepEqual(await outageBootstrap.json(), {
-		error: 'REMOTE_UNAVAILABLE',
-	});
-	const invalidBootstrap = await merchantBootstrapRequest();
-	assert.equal(invalidBootstrap.status, 502);
-	assert.deepEqual(await invalidBootstrap.json(), {
-		error: 'REMOTE_RESPONSE_INVALID',
-	});
-	const deniedBootstrap = await fetchWordPress(
-		`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`
-	);
-	assert.ok(deniedBootstrap.status === 401 || deniedBootstrap.status === 403);
-	const badNonceBootstrap = await fetchWordPress(
-		`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`,
-		{
-			headers: {
-				Cookie: `${auth.cookieName}=${auth.cookie}`,
-				'X-WP-Nonce': 'invalid',
-			},
-		}
-	);
-	assert.ok(
-		badNonceBootstrap.status === 401 || badNonceBootstrap.status === 403
-	);
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'eval',
-			'update_user_meta(1, "locale", "en_GB");',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	const billingRoutes = [
-		{ path: '', method: 'GET' },
-		{ path: '/plans', method: 'GET' },
-		{ path: '/subscription', method: 'POST' },
-		{ path: '/subscription/switch', method: 'POST' },
-		{ path: '/subscription/cancel', method: 'POST' },
-	];
-	const commandBody = {
-		'/subscription': {
-			merchantPricingPlanId: 'plan_paid',
-			actionId: '550e8400-e29b-41d4-a716-446655440001',
-		},
-		'/subscription/switch': {
-			merchantPricingPlanId: 'plan_paid',
-			actionId: '550e8400-e29b-41d4-a716-446655440002',
-		},
-		'/subscription/cancel': {
-			actionId: '550e8400-e29b-41d4-a716-446655440003',
-		},
-	};
-	for (const route of billingRoutes) {
-		const denied = await fetchWordPress(
-			`${siteUrl}/wp-json/moda-interact/v1/billing${route.path}`,
-			{ method: route.method }
+		const state = parseJsonOutput(
+			wp(
+				'eval',
+				`
+			$connection = get_option('moda_interact_woocommerce_connection');
+			echo wp_json_encode(array(
+				'moda' => defined('MODA_INTERACT_MAIN_PLUGIN_FILE') && is_plugin_active(plugin_basename(MODA_INTERACT_MAIN_PLUGIN_FILE)),
+				'woo' => class_exists('WooCommerce'),
+				'installationId' => is_array($connection) ? ($connection['installationId'] ?? null) : null,
+				'credentialVersion' => is_array($connection) ? ($connection['credentialVersion'] ?? null) : null,
+			));
+		`
+			)
 		);
 		assert.ok(
-			denied.status === 401 || denied.status === 403,
-			`unauthenticated billing ${route.method} ${route.path} must be denied`
+			state.moda && state.woo,
+			'Existing wp-env must have WooCommerce and Moda active'
 		);
-		const badNonceResponse = await fetchWordPress(
-			`${siteUrl}/wp-json/moda-interact/v1/billing${route.path}`,
+		assert.equal(
+			state.installationId,
+			'install_wp_fixture',
+			'Checkout-only requires the existing isolated Moda integration connection fixture'
+		);
+		assert.equal(
+			Number(state.credentialVersion),
+			2,
+			'Checkout-only requires the existing integration fixture credential version 2'
+		);
+		const previous = parseJsonOutput(
+			wp(
+				'eval',
+				`
+			echo wp_json_encode(array(
+				'base' => defined('MODA_INTERACT_API_BASE_URL') ? MODA_INTERACT_API_BASE_URL : null,
+				'ca' => defined('MODA_INTERACT_API_CA_BUNDLE') ? MODA_INTERACT_API_CA_BUNDLE : null,
+				'mode' => defined('MODA_INTERACT_CONNECTION_MODE') ? MODA_INTERACT_CONNECTION_MODE : null,
+			));
+		`
+			)
+		);
+		const constants = [
+			['MODA_INTERACT_API_BASE_URL', apiOrigin, previous.base],
+			[
+				'MODA_INTERACT_API_CA_BUNDLE',
+				parseJsonOutput(
+					wp(
+						'eval',
+						'echo wp_json_encode(dirname(MODA_INTERACT_MAIN_PLUGIN_FILE));'
+					)
+				) + '/tests/integration/.fixture-ca.pem',
+				previous.ca,
+			],
+			[
+				'MODA_INTERACT_CONNECTION_MODE',
+				'local-development',
+				previous.mode,
+			],
+		];
+		const applied = [];
+		try {
+			for (const [name, value, prior] of constants) {
+				// Refuse to overwrite existing unrelated API configuration.
+				assert.ok(
+					prior === null || typeof prior === 'string',
+					`${name}: unexpected existing configuration`
+				);
+				wp('config', 'set', name, value, '--type=constant');
+				applied.push([name, prior]);
+			}
+			await assertCheckoutWordPress({
+				siteUrl,
+				wp,
+				wpAsync,
+				parseJsonOutput,
+				getActivityRequests: () => activityRequests,
+				setActivityStatus: (status) => {
+					activityStatus = status;
+				},
+			});
+			process.stdout.write('ARCH-035 checkout-only integration PASS\n');
+		} finally {
+			for (const [name, prior] of applied.reverse()) {
+				try {
+					if (prior === null) {
+						wp('config', 'delete', name);
+					} else {
+						wp('config', 'set', name, prior, '--type=constant');
+					}
+				} catch (error) {
+					process.stderr.write(
+						`Could not restore ${name}: ${error.message}\n`
+					);
+				}
+			}
+		}
+	} else {
+		// wp-env mounts this checkout; classmap-authoritative Composer autoloading
+		// must include newly added PHP REST controllers before WordPress boots.
+		command('composer', [
+			'dump-autoload',
+			'--optimize',
+			'--classmap-authoritative',
+		]);
+		wordpressStarted = true;
+		command('npm', ['run', 'env:start'], {
+			env: process.env,
+		});
+		siteUrl = runningWordPressSite();
+		originalWpHome = parseJsonOutput(
+			wp(
+				'eval',
+				'echo wp_json_encode(defined("WP_HOME") ? WP_HOME : null);'
+			)
+		);
+		assert.ok(
+			originalWpHome === null || typeof originalWpHome === 'string',
+			'initial WP_HOME must be a string or undefined'
+		);
+		// The administrator's locale does not configure the WordPress site locale.
+		// A fresh wp-env installation otherwise defaults to en_US.
+		originalSiteLocale = parseJsonOutput(
+			wp('eval', 'echo wp_json_encode(get_option("WPLANG", null));')
+		);
+		assert.ok(
+			originalSiteLocale === null ||
+				typeof originalSiteLocale === 'string',
+			'initial site locale must be a string or absent'
+		);
+		wp('language', 'core', 'install', 'en_GB');
+		siteLocaleOverrideApplied = true;
+		wp('site', 'switch-language', 'en_GB');
+		assert.equal(
+			parseJsonOutput(wp('eval', 'echo wp_json_encode(get_locale());')),
+			'en_GB',
+			'WordPress must use en_GB before store-context assertions'
+		);
+		const hostBridgeIp = parseJsonOutput(
+			wp(
+				'eval',
+				'echo wp_json_encode(gethostbyname("host.docker.internal"));'
+			)
+		);
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'eval',
+				`update_option("home", "${siteUrl}"); update_option("siteurl", "${siteUrl}");`,
+			],
+			{ env: process.env }
+		);
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'eval',
+				'update_option("permalink_structure", "/%postname%/");',
+			],
+			{ env: process.env }
+		);
+		const plugins = parseJsonOutput(wp('plugin', 'list', '--format=json'));
+		const plugin = plugins.find(
+			(entry) => entry.name === basename(repository)
+		);
+		assert.ok(plugin, 'wp-env must mount the Moda plugin');
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'plugin',
+				'activate',
+				'woocommerce',
+				plugin.name,
+			],
+			{ env: process.env }
+		);
+		const pluginDir = parseJsonOutput(
+			wp(
+				'eval',
+				'echo wp_json_encode(dirname(MODA_INTERACT_MAIN_PLUGIN_FILE));'
+			)
+		);
+		// WordPress gettext and the bundled script must honor the administrator's
+		// UI locale without rewriting the site/store language.
+		assertLocaleWordPress({ wp, parseJsonOutput, repository });
+		assertLocaleBatch010({ wp, parseJsonOutput, repository });
+		assertLocaleBatch011({ wp, parseJsonOutput, repository });
+		assertLocaleBatch012({ wp, parseJsonOutput, repository });
+		assertLocaleBatch013({ wp, parseJsonOutput, repository });
+		const caPathInContainer = `${pluginDir}/tests/integration/.fixture-ca.pem`;
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'config',
+				'set',
+				'MODA_INTERACT_API_BASE_URL',
+				apiOrigin,
+				'--type=constant',
+			],
+			{ env: process.env }
+		);
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'config',
+				'set',
+				'MODA_INTERACT_API_CA_BUNDLE',
+				caPathInContainer,
+				'--type=constant',
+			],
+			{ env: process.env }
+		);
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'config',
+				'set',
+				'MODA_INTERACT_CONNECTION_MODE',
+				'local-development',
+				'--type=constant',
+			],
+			{ env: process.env }
+		);
+		const auth = parseJsonOutput(
+			wp(
+				'eval',
+				'$user_id = 1; $expiration = time() + DAY_IN_SECONDS; $token = WP_Session_Tokens::get_instance($user_id)->create($expiration); $cookie = wp_generate_auth_cookie($user_id, $expiration, "logged_in", $token); $_COOKIE[LOGGED_IN_COOKIE] = $cookie; wp_set_current_user($user_id); echo wp_json_encode(array("cookieName" => LOGGED_IN_COOKIE, "cookie" => $cookie, "nonce" => wp_create_nonce("wp_rest")));'
+			)
+		);
+		const request = (path, options = {}) =>
+			fetchWordPress(
+				`${siteUrl}/wp-json/moda-interact/v1/connection${path}`,
+				{
+					...options,
+					headers: {
+						...(options.headers ?? {}),
+						Cookie: `${auth.cookieName}=${auth.cookie}`,
+						'X-WP-Nonce': auth.nonce,
+					},
+				}
+			);
+		const merchantBootstrapRequest = (query = '') =>
+			fetchWordPress(
+				`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap${query}`,
+				{
+					headers: {
+						Cookie: `${auth.cookieName}=${auth.cookie}`,
+						'X-WP-Nonce': auth.nonce,
+					},
+				}
+			);
+		const billingRequest = (path, options = {}) =>
+			fetchWordPress(
+				`${siteUrl}/wp-json/moda-interact/v1/billing${path}`,
+				{
+					...options,
+					headers: {
+						...(options.headers ?? {}),
+						Cookie: `${auth.cookieName}=${auth.cookie}`,
+						'X-WP-Nonce': auth.nonce,
+					},
+				}
+			);
+
+		const noAuth = await fetchWordPress(
+			`${siteUrl}/wp-json/moda-interact/v1/connection`,
 			{
-				method: route.method,
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: '{}',
+			}
+		);
+		assert.ok(
+			noAuth.status === 401 || noAuth.status === 403,
+			`unauthenticated POST must be denied, got ${noAuth.status}`
+		);
+		const badNonce = await fetchWordPress(
+			`${siteUrl}/wp-json/moda-interact/v1/connection`,
+			{
+				method: 'POST',
 				headers: {
 					Cookie: `${auth.cookieName}=${auth.cookie}`,
 					'X-WP-Nonce': 'invalid',
 					'content-type': 'application/json',
 				},
-				...(commandBody[route.path]
-					? { body: JSON.stringify(commandBody[route.path]) }
-					: {}),
+				body: '{}',
 			}
 		);
 		assert.ok(
-			badNonceResponse.status === 401 || badNonceResponse.status === 403,
-			`invalid nonce billing ${route.method} ${route.path} must be denied`
+			badNonce.status === 401 || badNonce.status === 403,
+			`invalid REST nonce must be denied, got ${badNonce.status}`
 		);
-	}
-	const billingResponse = await billingRequest('');
-	assert.equal(billingResponse.status, 200);
-	assert.match(
-		billingResponse.headers.get('cache-control') ?? '',
-		/\bprivate\b/i
-	);
-	assert.match(
-		billingResponse.headers.get('cache-control') ?? '',
-		/\bno-store\b/i
-	);
-	assert.equal((await billingResponse.json()).currentPlan.planKind, 'FREE');
-	const plansResponse = await billingRequest('/plans');
-	assert.equal(plansResponse.status, 200);
-	assert.equal((await plansResponse.json()).resolvedLocale, 'en-GB');
-	for (const path of ['/subscription', '/subscription/switch']) {
-		const response = await billingRequest(path, {
+		const unknownChallenge = await fetchWordPress(
+			`${siteUrl}/wp-json/moda-interact/v1/connection/challenge?attempt_id=550e8400-e29b-41d4-a716-446655440000&nonce=${randomBytes(32).toString('base64url')}`
+		);
+		assert.equal(unknownChallenge.status, 404);
+		const browserIdentity = await request('', {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
-			body: JSON.stringify(commandBody[path]),
+			body: JSON.stringify({
+				siteUrl: 'https://attacker.invalid',
+				shopId: 'attacker',
+			}),
 		});
-		assert.equal(response.status, 200);
-		const result = await response.json();
-		assert.deepEqual(Object.keys(result).sort(), [
-			'confirmationUrl',
-			'operationId',
-			'schemaVersion',
-			'state',
-		]);
-		assert.equal(result.state, 'AWAITING_CONFIRMATION');
-	}
-	const cancellationResponse = await billingRequest('/subscription/cancel', {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify(commandBody['/subscription/cancel']),
-	});
-	assert.equal(cancellationResponse.status, 200);
-	assert.deepEqual(await cancellationResponse.json(), {
-		schemaVersion: 1,
-		operationId: 'operation_cancel',
-		state: 'CONFIRMED',
-		confirmationUrl: null,
-	});
-	assert.deepEqual(
-		[
-			billingReadCount,
-			plansReadCount,
-			createCount,
-			switchCount,
-			cancelCount,
-		],
-		[1, 1, 1, 1, 1]
-	);
-	for (let index = 0; index < 3; index += 1) {
+		assert.equal(browserIdentity.status, 400);
+
+		const connectedResponse = await request('', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: '{}',
+		});
+		const connected = await connectedResponse.json();
+		assert.equal(
+			connectedResponse.status,
+			200,
+			`connection failed: ${JSON.stringify(connected)}`
+		);
+		assert.equal(connected.status, 'CONNECTED');
+		assert.equal(
+			JSON.stringify(connected).includes(
+				Buffer.alloc(32, 1).toString('base64url')
+			),
+			false
+		);
+		assert.equal(
+			JSON.stringify(connected).includes('bootstrapSecret'),
+			false
+		);
+		assert.deepEqual(await (await request('')).json(), {
+			status: 'CONNECTED',
+			installationId: 'install_wp_fixture',
+			shopId: 'shop_wp_fixture',
+			canonicalSiteUrl: siteUrl,
+			credentialVersion: 1,
+		});
+		assert.deepEqual(await (await request('')).json(), {
+			status: 'RECONNECT_REQUIRED',
+		});
 		assert.deepEqual(await (await request('')).json(), {
 			status: 'REMOTE_UNAVAILABLE',
 		});
-	}
-	assert.deepEqual(await (await request('')).json(), {
-		status: 'REMOTE_UNAVAILABLE',
-	});
 
-	const tlsFailureUrl = `https://${hostBridgeIp}:${apiPort}`;
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'config',
-			'set',
-			'MODA_INTERACT_API_BASE_URL',
-			tlsFailureUrl,
-			'--type=constant',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	assert.deepEqual(await (await request('')).json(), {
-		status: 'REMOTE_UNAVAILABLE',
-	});
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'config',
-			'set',
-			'MODA_INTERACT_API_BASE_URL',
-			apiOrigin,
-			'--type=constant',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
+		const reconnect = await request('', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: '{}',
+		});
+		assert.equal(reconnect.status, 200);
+		assert.equal((await reconnect.json()).credentialVersion, 2);
+		assert.deepEqual(await (await request('')).json(), {
+			status: 'CONNECTED',
+			installationId: 'install_wp_fixture',
+			shopId: 'shop_wp_fixture',
+			canonicalSiteUrl: siteUrl,
+			credentialVersion: 2,
+		});
+		const bootstrapResponse =
+			await merchantBootstrapRequest('?_locale=user');
+		const bootstrap = await bootstrapResponse.json();
+		assert.equal(bootstrapResponse.status, 200);
+		assert.match(
+			bootstrapResponse.headers.get('cache-control') ?? '',
+			/\bprivate\b/i
+		);
+		assert.match(
+			bootstrapResponse.headers.get('cache-control') ?? '',
+			/\bno-store\b/i
+		);
+		assert.equal(bootstrapResponse.headers.get('pragma'), 'no-cache');
+		assert.deepEqual(Object.keys(bootstrap).sort(), [
+			'internationalContext',
+			'schemaVersion',
+			'shop',
+			'storeProfile',
+		]);
+		assert.equal(bootstrap.shop.onboardingCompleted, false);
+		assert.equal(bootstrap.internationalContext.storeLocale, 'pt_BR');
+		assert.equal(bootstrap.internationalContext.languageTag, null);
+		assert.equal(
+			bootstrap.storeProfile.pendingCategory.displayName,
+			'Apparel'
+		);
+		assert.equal(
+			JSON.stringify(bootstrap).includes(
+				Buffer.alloc(32, 2).toString('base64url')
+			),
+			false
+		);
+		const rejectedBootstrap = await merchantBootstrapRequest();
+		assert.equal(rejectedBootstrap.status, 401);
+		assert.deepEqual(await rejectedBootstrap.json(), {
+			error: 'RECONNECT_REQUIRED',
+		});
+		const outageBootstrap = await merchantBootstrapRequest();
+		assert.equal(outageBootstrap.status, 503);
+		assert.deepEqual(await outageBootstrap.json(), {
+			error: 'REMOTE_UNAVAILABLE',
+		});
+		const invalidBootstrap = await merchantBootstrapRequest();
+		assert.equal(invalidBootstrap.status, 502);
+		assert.deepEqual(await invalidBootstrap.json(), {
+			error: 'REMOTE_RESPONSE_INVALID',
+		});
+		const deniedBootstrap = await fetchWordPress(
+			`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`
+		);
+		assert.ok(
+			deniedBootstrap.status === 401 || deniedBootstrap.status === 403
+		);
+		const badNonceBootstrap = await fetchWordPress(
+			`${siteUrl}/wp-json/moda-interact/v1/merchant/bootstrap`,
+			{
+				headers: {
+					Cookie: `${auth.cookieName}=${auth.cookie}`,
+					'X-WP-Nonce': 'invalid',
+				},
+			}
+		);
+		assert.ok(
+			badNonceBootstrap.status === 401 || badNonceBootstrap.status === 403
+		);
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'eval',
+				'update_user_meta(1, "locale", "en_GB");',
+			],
+			{ env: process.env }
+		);
+		const billingRoutes = [
+			{ path: '', method: 'GET' },
+			{ path: '/plans', method: 'GET' },
+			{ path: '/subscription', method: 'POST' },
+			{ path: '/subscription/switch', method: 'POST' },
+			{ path: '/subscription/cancel', method: 'POST' },
+		];
+		const commandBody = {
+			'/subscription': {
+				merchantPricingPlanId: 'plan_paid',
+				actionId: '550e8400-e29b-41d4-a716-446655440001',
+			},
+			'/subscription/switch': {
+				merchantPricingPlanId: 'plan_paid',
+				actionId: '550e8400-e29b-41d4-a716-446655440002',
+			},
+			'/subscription/cancel': {
+				actionId: '550e8400-e29b-41d4-a716-446655440003',
+			},
+		};
+		for (const route of billingRoutes) {
+			const denied = await fetchWordPress(
+				`${siteUrl}/wp-json/moda-interact/v1/billing${route.path}`,
+				{ method: route.method }
+			);
+			assert.ok(
+				denied.status === 401 || denied.status === 403,
+				`unauthenticated billing ${route.method} ${route.path} must be denied`
+			);
+			const badNonceResponse = await fetchWordPress(
+				`${siteUrl}/wp-json/moda-interact/v1/billing${route.path}`,
+				{
+					method: route.method,
+					headers: {
+						Cookie: `${auth.cookieName}=${auth.cookie}`,
+						'X-WP-Nonce': 'invalid',
+						'content-type': 'application/json',
+					},
+					...(commandBody[route.path]
+						? { body: JSON.stringify(commandBody[route.path]) }
+						: {}),
+				}
+			);
+			assert.ok(
+				badNonceResponse.status === 401 ||
+					badNonceResponse.status === 403,
+				`invalid nonce billing ${route.method} ${route.path} must be denied`
+			);
+		}
+		const billingResponse = await billingRequest('');
+		assert.equal(billingResponse.status, 200);
+		assert.match(
+			billingResponse.headers.get('cache-control') ?? '',
+			/\bprivate\b/i
+		);
+		assert.match(
+			billingResponse.headers.get('cache-control') ?? '',
+			/\bno-store\b/i
+		);
+		assert.equal(
+			(await billingResponse.json()).currentPlan.planKind,
+			'FREE'
+		);
+		const plansResponse = await billingRequest('/plans');
+		assert.equal(plansResponse.status, 200);
+		assert.equal((await plansResponse.json()).resolvedLocale, 'en-GB');
+		for (const path of ['/subscription', '/subscription/switch']) {
+			const response = await billingRequest(path, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify(commandBody[path]),
+			});
+			assert.equal(response.status, 200);
+			const result = await response.json();
+			assert.deepEqual(Object.keys(result).sort(), [
+				'confirmationUrl',
+				'operationId',
+				'schemaVersion',
+				'state',
+			]);
+			assert.equal(result.state, 'AWAITING_CONFIRMATION');
+		}
+		const cancellationResponse = await billingRequest(
+			'/subscription/cancel',
+			{
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify(commandBody['/subscription/cancel']),
+			}
+		);
+		assert.equal(cancellationResponse.status, 200);
+		assert.deepEqual(await cancellationResponse.json(), {
+			schemaVersion: 1,
+			operationId: 'operation_cancel',
+			state: 'CONFIRMED',
+			confirmationUrl: null,
+		});
+		assert.deepEqual(
+			[
+				billingReadCount,
+				plansReadCount,
+				createCount,
+				switchCount,
+				cancelCount,
+			],
+			[1, 1, 1, 1, 1]
+		);
+		for (let index = 0; index < 3; index += 1) {
+			assert.deepEqual(await (await request('')).json(), {
+				status: 'REMOTE_UNAVAILABLE',
+			});
+		}
+		assert.deepEqual(await (await request('')).json(), {
+			status: 'REMOTE_UNAVAILABLE',
+		});
 
-	wpHomeOverrideApplied = true;
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'config',
-			'set',
-			'WP_HOME',
-			'http://new-site.local',
-			'--type=constant',
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	const siteUrlChangedResponse = await request('', { redirect: 'manual' });
-	assert.equal(
-		siteUrlChangedResponse.status,
-		200,
-		`SITE_URL_CHANGED must return 200 without a redirect (received ${siteUrlChangedResponse.status}, Location: ${siteUrlChangedResponse.headers.get('location') ?? 'none'})`
-	);
-	assert.deepEqual(await siteUrlChangedResponse.json(), {
-		status: 'SITE_URL_CHANGED',
-	});
-	restoreWpHome();
-	wpHomeOverrideApplied = false;
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'eval',
-			`update_option("home", "${siteUrl}");`,
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'plugin',
-			'deactivate',
-			plugin.name,
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	command(
-		'npm',
-		[
-			'exec',
-			'--',
-			'wp-env',
-			'run',
-			'cli',
-			'wp',
-			'plugin',
-			'activate',
-			plugin.name,
-		],
-		{ env: { ...process.env, WP_ENV_PORT: String(port) } }
-	);
-	const stored = parseJsonOutput(
-		wp(
-			'eval',
-			'echo wp_json_encode(array(get_option("moda_interact_woocommerce_connection")["installationId"], get_option("moda_interact_woocommerce_connection")["credentialVersion"]));'
-		)
-	);
-	assert.deepEqual(stored, ['install_wp_fixture', 2]);
-	await assertStoreContextWordPress({
-		siteUrl,
-		auth,
-		wp,
-		parseJsonOutput,
-		getFixtureState: () => ({
-			attempts: contextSyncAttempts,
-			saved: savedContext,
-		}),
-	});
-	await assertStoreCategoryWordPress({
-		siteUrl,
-		auth,
-		wp,
-		parseJsonOutput,
-		getCategoryState: () => ({
-			selections: categorySelections,
-			generation: categoryGeneration,
-		}),
-	});
-	assertReleaseLocales({
-		wpEval: (source) => wp('eval', source),
-		parseJsonOutput,
-		getRemoteState: () => ({
-			contextSyncAttempts,
-			savedContext,
-			categoryGeneration,
-			categorySelections,
-			createCount,
-			switchCount,
-			cancelCount,
-		}),
-	});
-	process.stdout.write(
-		'WOO-014 installed plugin 20-language PHP/JS and Shop-state checks passed.\n'
-	);
-	process.stdout.write(
-		'WOO-008 WordPress category selection + active readback integration passed.\n'
-	);
-	process.stdout.write(
-		'WOO-007 WordPress store-context sync + readback integration passed.\n'
-	);
-	process.stdout.write(
-		'WOO-003 WordPress REST + HTTPS fixture integration passed.\n'
-	);
-	if (process.env.KEEP_WP_ENV === '1') {
+		const tlsFailureUrl = `https://${hostBridgeIp}:${apiPort}`;
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'config',
+				'set',
+				'MODA_INTERACT_API_BASE_URL',
+				tlsFailureUrl,
+				'--type=constant',
+			],
+			{ env: process.env }
+		);
+		assert.deepEqual(await (await request('')).json(), {
+			status: 'REMOTE_UNAVAILABLE',
+		});
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'config',
+				'set',
+				'MODA_INTERACT_API_BASE_URL',
+				apiOrigin,
+				'--type=constant',
+			],
+			{ env: process.env }
+		);
+
+		wpHomeOverrideApplied = true;
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'config',
+				'set',
+				'WP_HOME',
+				'http://new-site.local',
+				'--type=constant',
+			],
+			{ env: process.env }
+		);
+		const siteUrlChangedResponse = await request('', {
+			redirect: 'manual',
+		});
+		assert.equal(
+			siteUrlChangedResponse.status,
+			200,
+			`SITE_URL_CHANGED must return 200 without a redirect (received ${siteUrlChangedResponse.status}, Location: ${siteUrlChangedResponse.headers.get('location') ?? 'none'})`
+		);
+		assert.deepEqual(await siteUrlChangedResponse.json(), {
+			status: 'SITE_URL_CHANGED',
+		});
+		restoreWpHome();
+		wpHomeOverrideApplied = false;
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'eval',
+				`update_option("home", "${siteUrl}");`,
+			],
+			{ env: process.env }
+		);
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'plugin',
+				'deactivate',
+				plugin.name,
+			],
+			{ env: process.env }
+		);
+		command(
+			'npm',
+			[
+				'exec',
+				'--',
+				'wp-env',
+				'run',
+				'cli',
+				'wp',
+				'plugin',
+				'activate',
+				plugin.name,
+			],
+			{ env: process.env }
+		);
+		const stored = parseJsonOutput(
+			wp(
+				'eval',
+				'echo wp_json_encode(array(get_option("moda_interact_woocommerce_connection")["installationId"], get_option("moda_interact_woocommerce_connection")["credentialVersion"]));'
+			)
+		);
+		assert.deepEqual(stored, ['install_wp_fixture', 2]);
+		await assertCheckoutWordPress({
+			siteUrl,
+			wp,
+			wpAsync,
+			parseJsonOutput,
+			getActivityRequests: () => activityRequests,
+			setActivityStatus: (status) => {
+				activityStatus = status;
+			},
+		});
+		await assertStoreContextWordPress({
+			siteUrl,
+			auth,
+			wp,
+			parseJsonOutput,
+			getFixtureState: () => ({
+				attempts: contextSyncAttempts,
+				saved: savedContext,
+			}),
+		});
+		await assertStoreCategoryWordPress({
+			siteUrl,
+			auth,
+			wp,
+			parseJsonOutput,
+			getCategoryState: () => ({
+				selections: categorySelections,
+				generation: categoryGeneration,
+			}),
+		});
+		assertReleaseLocales({
+			wpEval: (source) => wp('eval', source),
+			parseJsonOutput,
+			getRemoteState: () => ({
+				contextSyncAttempts,
+				savedContext,
+				categoryGeneration,
+				categorySelections,
+				createCount,
+				switchCount,
+				cancelCount,
+			}),
+		});
 		process.stdout.write(
-			'KEEP_WP_ENV=1: integration fixture is ready for browser smoke; send SIGTERM to clean up.\n'
+			'WOO-014 installed plugin 20-language PHP/JS and Shop-state checks passed.\n'
 		);
-		await new Promise((resolveSignal) =>
-			process.once('SIGTERM', resolveSignal)
+		process.stdout.write(
+			'WOO-008 WordPress category selection + active readback integration passed.\n'
 		);
+		process.stdout.write(
+			'WOO-007 WordPress store-context sync + readback integration passed.\n'
+		);
+		process.stdout.write(
+			'WOO-003 WordPress REST + HTTPS fixture integration passed.\n'
+		);
+		if (process.env.KEEP_WP_ENV === '1') {
+			process.stdout.write(
+				'KEEP_WP_ENV=1: integration fixture is ready for browser smoke; send SIGTERM to clean up.\n'
+			);
+			await new Promise((resolveSignal) =>
+				process.once('SIGTERM', resolveSignal)
+			);
+		}
 	}
 } finally {
 	server.closeAllConnections();
@@ -1336,7 +1547,7 @@ try {
 						'delete',
 						constant,
 					],
-					{ env: { ...process.env, WP_ENV_PORT: String(port) } }
+					{ env: process.env }
 				);
 			} catch {
 				process.stderr.write(
@@ -1368,7 +1579,7 @@ try {
 		}
 		try {
 			command('npm', ['run', 'env:stop'], {
-				env: { ...process.env, WP_ENV_PORT: String(port) },
+				env: process.env,
 			});
 		} catch {
 			process.stderr.write(

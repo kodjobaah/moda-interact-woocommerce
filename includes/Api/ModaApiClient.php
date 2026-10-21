@@ -62,6 +62,27 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+	/** ARCH-035 API-008: server-to-server checkout event, never called on the shopper path. */
+	public function publishCheckoutActivity( array $connection, array $event ): void {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			( $event['schemaVersion'] ?? null ) !== 'woo.activity.v1' ||
+			( $event['eventType'] ?? null ) !== 'CHECKOUT_UPDATED' ||
+			isset( $event['shopId'] ) ) throw new ModaApiClientException( 'invalid_request' );
+		$body = wp_json_encode( $event );
+		if ( ! is_string( $body ) || strlen( $body ) > 65536 ) throw new ModaApiClientException( 'invalid_request' );
+		$response = $this->request( '/v1/woocommerce/activity', 'POST', array_merge(
+			self::installationHeaders( $connection ), array( 'Content-Type' => 'application/json' )
+		), $body, self::DEFAULT_TIMEOUT_SECONDS, 4096 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 202 !== $status ) {
+			throw new ModaApiClientException( $status >= 400 && $status < 500 ? 'remote_rejected' : 'remote_unavailable', $status );
+		}
+		$payload = $this->jsonBody( $response, 4096 );
+		if ( ! self::hasExactKeys( $payload, array( 'status' ) ) || 'accepted' !== $payload['status'] ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+	}
+
 	public function probe( array $connection ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) {
 			throw new ModaApiClientException( 'local_state_invalid' );

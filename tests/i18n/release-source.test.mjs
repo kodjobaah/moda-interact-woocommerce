@@ -9,7 +9,6 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-// eslint-disable-next-line vitest/no-import-node-test -- This suite runs with node --test.
 import { test } from 'node:test';
 import {
 	sourceMessages,

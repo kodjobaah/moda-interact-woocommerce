@@ -98,6 +98,8 @@ export function KnowledgeUploadForm({
 		setFile(null);
 	};
 
+	// KnowledgeUploadFields is a hoisted function declaration in this module.
+	// eslint-disable-next-line @typescript-eslint/no-use-before-define
 	return createElement(KnowledgeUploadFields, {
 		data,
 		all,
