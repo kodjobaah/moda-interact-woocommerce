@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { assertOrderWordPress } from './order-wordpress.mjs';
 
 // Real HTTP checkout sessions; unlike the PHPUnit hook doubles these requests
 // pass through WooCommerce's cart, checkout and Store API controllers.
@@ -132,6 +133,16 @@ function actionRows(wp, parseJsonOutput) {
     echo wp_json_encode($rows);
   `
 		)
+	);
+}
+
+// Exercise the published Action Scheduler callback without changing its retry
+// delay. Checkout and order tests share the same queued delivery contract.
+export async function deliverCapturedAction(wpAsync, action) {
+	const args = Buffer.from(JSON.stringify(action.args)).toString('base64');
+	await wpAsync(
+		'eval',
+		`do_action('moda_interact_dispatch_checkout_activity', ...array_values(json_decode(base64_decode('${args}'), true)));`
 	);
 }
 
@@ -512,10 +523,7 @@ export async function assertCheckoutWordPress({
 			setActivityStatus(202);
 			// WordPress clock remains unchanged: run the retry callback through the real hook
 			// with the scheduled payload, not by modifying production backoff delays.
-			await wpAsync(
-				'eval',
-				`do_action('moda_interact_dispatch_checkout_activity', ...array_values(json_decode(base64_decode('${Buffer.from(JSON.stringify(retry.args)).toString('base64')}'), true)));`
-			);
+			await deliverCapturedAction(wpAsync, retry);
 			assert.ok(
 				getActivityRequests().some(
 					(item) =>
@@ -523,6 +531,9 @@ export async function assertCheckoutWordPress({
 						item.status === 202
 				)
 			);
+			// Capture order events before placement, so HPOS order creation can be
+			// verified separately from earlier checkout events.
+			const beforeOrder = actionRows(wp, parseJsonOutput);
 			// Place an actual order using Woo Store API; verify HPOS order-object metadata.
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'POST',
@@ -559,6 +570,20 @@ export async function assertCheckoutWordPress({
 				/OrdersTableDataStore/.test(persisted.dataStore),
 				`HPOS must use the order-table data store (actual: ${persisted.dataStore})`
 			);
+			await assertOrderWordPress({
+				kind,
+				orderId: placed.order_id,
+				checkoutKey: first.checkoutKey,
+				beforeOrder,
+				checkoutAction: newestAction(revisedAdded),
+				getActions: () => actionRows(wp, parseJsonOutput),
+				newActions: newCheckoutActions,
+				deliverAction: (action) =>
+					deliverCapturedAction(wpAsync, action),
+				wpAsync,
+				getActivityRequests,
+				setActivityStatus,
+			});
 			wp(
 				'eval',
 				`wc_get_order(${Number(placed.order_id)})->delete(true);`

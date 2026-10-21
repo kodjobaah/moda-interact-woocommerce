@@ -27,10 +27,6 @@ final class CheckoutActivityPublisher {
 	}
 
 	public function enqueue( array $snapshot, string $checkout_key ): bool {
-		if ( ! function_exists( 'as_enqueue_async_action' ) ) return false;
-		$installed = ( $this->installations ?? new InstallationStore() )->read();
-		if ( 'valid' !== $installed['state'] ) return false;
-		$record = $installed['record'];
 		$event = array(
 			'schemaVersion' => 'woo.activity.v1',
 			'eventId' => 'woo-' . bin2hex( random_bytes( 16 ) ),
@@ -39,6 +35,20 @@ final class CheckoutActivityPublisher {
 			'occurredAt' => gmdate( 'Y-m-d\TH:i:s' ) . '.000Z',
 			'checkout' => $snapshot,
 		);
+		return $this->queue( $event );
+	}
+
+	/** Order events use the same Action Scheduler hook, installation check and retry path. */
+	public function enqueueOrder( array $event ): bool {
+		if ( ! self::validOrderEvent( $event ) ) return false;
+		return $this->queue( $event );
+	}
+
+	private function queue( array $event ): bool {
+		if ( ! function_exists( 'as_enqueue_async_action' ) ) return false;
+		$installed = ( $this->installations ?? new InstallationStore() )->read();
+		if ( 'valid' !== $installed['state'] ) return false;
+		$record = $installed['record'];
 		$json = wp_json_encode( $event );
 		if ( ! is_string( $json ) || strlen( $json ) > 65536 ) return false;
 		try {
@@ -53,8 +63,7 @@ final class CheckoutActivityPublisher {
 
 	/** Each action retries the *identical* bounded event with its original eventId. */
 	public function deliver( array $event, string $installation_id, string $shop_id, int $attempt ): void {
-		if ( $attempt < 1 || $attempt > self::MAX_ATTEMPTS || ! CheckoutKey::valid( $event['eventId'] ?? null ) ||
-			! CheckoutKey::valid( $event['checkoutKey'] ?? null ) || ( $event['eventType'] ?? null ) !== 'CHECKOUT_UPDATED' ) return;
+		if ( $attempt < 1 || $attempt > self::MAX_ATTEMPTS || ! self::validActivityEvent( $event ) ) return;
 		$current = ( $this->installations ?? new InstallationStore() )->read();
 		if ( 'valid' !== $current['state'] || $current['record']['shopId'] !== $shop_id ||
 			$current['record']['installationId'] !== $installation_id ) {
@@ -75,7 +84,7 @@ final class CheckoutActivityPublisher {
 			$configuration = $this->api ? null : ModaApiConfiguration::fromServerConfiguration();
 			$client = $this->api ?? ( $configuration ? new ModaApiClient( $configuration ) : null );
 			if ( ! $client ) throw new \RuntimeException( 'configuration unavailable' );
-			$client->publishCheckoutActivity( $current['record'], $event );
+			$client->publishActivity( $current['record'], $event );
 			return;
 		} catch ( \Throwable $error ) {
 			// 4xx are permanent; 503/transport failures remain eligible for bounded retry.
@@ -97,6 +106,27 @@ final class CheckoutActivityPublisher {
 		} catch ( \Throwable $error ) {
 			self::log( 'retry_schedule_failed' );
 		}
+	}
+
+	private static function validActivityEvent( array $event ): bool {
+		return ( $event['schemaVersion'] ?? null ) === 'woo.activity.v1' &&
+			CheckoutKey::valid( $event['eventId'] ?? null ) &&
+			CheckoutKey::valid( $event['checkoutKey'] ?? null ) &&
+			( ( ( $event['eventType'] ?? null ) === 'CHECKOUT_UPDATED' && isset( $event['checkout'] ) && ! isset( $event['order'] ) ) ||
+				self::validOrderEvent( $event ) );
+	}
+
+	private static function validOrderEvent( array $event ): bool {
+		$order = $event['order'] ?? null;
+		return ( $event['schemaVersion'] ?? null ) === 'woo.activity.v1' &&
+			in_array( $event['eventType'] ?? null, array( 'ORDER_PLACED', 'ORDER_PAID', 'ORDER_CANCELLED' ), true ) &&
+			CheckoutKey::valid( $event['eventId'] ?? null ) && CheckoutKey::valid( $event['checkoutKey'] ?? null ) &&
+			is_string( $event['occurredAt'] ?? null ) &&
+			! isset( $event['checkout'] ) && ! isset( $event['shopId'] ) &&
+			is_array( $order ) && CheckoutKey::valid( $order['orderId'] ?? null ) &&
+			( $order['checkoutKey'] ?? null ) === $event['checkoutKey'] &&
+			is_string( $order['status'] ?? null ) &&
+			1 === preg_match( '/^[a-z][a-z0-9_-]{0,63}$/D', $order['status'] );
 	}
 
 	private static function log( string $reason ): void {
