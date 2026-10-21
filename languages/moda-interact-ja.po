@@ -128,6 +128,10 @@ msgid "Buy %s credits"
 msgstr "%s クレジットを購入"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "アップロードをキャンセル"
+
 msgid "Cancel recurring plan?"
 msgstr "定期プランを解約しますか？"
 
@@ -1955,3 +1959,31 @@ msgstr "リカバリーを表示"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "利用履歴を表示する権限がありません。"
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "アシスタントが使用するストアの分類と参照資料。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "変更は保存されましたが、ナレッジソースを更新できませんでした。再試行して最新の一覧を読み込んでください。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "ナレッジソースの変更が保存されたか確認できませんでした。もう一度試す前に一覧を更新してください。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "ご利用のプランには含まれていません"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "選択したファイル形式は、この用途ではご利用のプランに含まれていません。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "ファイルアップロードの残り枠: %1$s（Webページと共通、合計%2$s件のソース）。"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "ご利用のプランで共通のナレッジソース上限に達しました。"

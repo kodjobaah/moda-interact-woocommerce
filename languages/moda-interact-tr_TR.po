@@ -132,6 +132,10 @@ msgid "Buy %s credits"
 msgstr "%s kredi satın al"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Yüklemeyi iptal et"
+
 msgid "Cancel recurring plan?"
 msgstr "Yinelenen plan iptal edilsin mi?"
 
@@ -1964,3 +1968,31 @@ msgstr "Kurtarmayı görüntüle"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Kullanım geçmişini görüntüleme izniniz yok."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Asistanın kullandığı mağaza sınıflandırması ve başvuru materyalleri."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "Değişiklikler kaydedildi ancak bilgi kaynakları yenilenemedi. En güncel listeyi yüklemek için yeniden deneyin."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "Bilgi kaynaklarındaki değişikliklerinizin kaydedildiğini doğrulayamadık. Yeniden denemeden önce listeyi yenileyin."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "Planınıza dahil değil"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "Seçilen dosya biçimi bu amaç için planınıza dahil değil."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "Dosya yüklemeleri için kalan yer: %1$s (web sayfalarıyla ortak; toplam %2$s kaynak)."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "Planınızın ortak bilgi kaynağı sınırına ulaşıldı."

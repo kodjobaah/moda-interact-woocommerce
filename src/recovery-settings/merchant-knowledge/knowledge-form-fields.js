@@ -58,6 +58,25 @@ export function formatOptions(catalogue) {
 	);
 }
 
+// The read catalogue contains only plan-authorised pairs. Present known file
+// formats as disabled options when absent so merchants can understand why a
+// CSV/XLSX selection is unavailable without treating the browser as authority.
+export function planUploadFormatOptions(permittedForPurpose) {
+	return ['CSV', 'XLSX'].map((key) => {
+		const permitted = permittedForPurpose.some(
+			(entry) => entry.dataFormat.key === key
+		);
+		return createElement(
+			'option',
+			{ key, value: key, disabled: !permitted },
+			formatLabel(key) +
+				(permitted
+					? ''
+					: ` — ${__('Not included in your plan', 'moda-interact')}`)
+		);
+	});
+}
+
 export function unavailableReason(kind) {
 	const label =
 		kind === 'addUrl'

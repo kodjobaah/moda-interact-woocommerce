@@ -3,6 +3,8 @@ import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-set
 import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
 import { FeaturePreferencesPanel } from '../../src/recovery-settings/feature-preferences-panel';
 import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
+import { StoreAssistantContext } from '../../src/recovery-settings/store-assistant-context';
+import { StoreProfileAccordion } from '../../src/recovery-settings/store-profile-accordion';
 import { RecoveryNavigation } from '../../src/recovery-settings/recovery-navigation';
 import { categoriesFixture } from './store-category-fixtures';
 
@@ -55,11 +57,9 @@ describe('Woo Recovery Settings category presentation', () => {
 		const children = view.props.children;
 		expect(children[1].type).toBe(RecoveryBehaviourPanel);
 		expect(children[2].type).toBe(FeaturePreferencesPanel);
-		expect(children[3].type).toBe('details');
-		expect(children[3].props.children[0].props.children).toBe(
-			'Store & assistant context'
-		);
-		expect(children[3].props.children[1].props.children.at(-1).type).toBe(
+		expect(children[3].type).toBe(StoreAssistantContext);
+		expect(children[3].props.storeProfile.type).toBe(StoreProfileAccordion);
+		expect(children[3].props.merchantKnowledge.type).toBe(
 			MerchantKnowledgePanel
 		);
 	});

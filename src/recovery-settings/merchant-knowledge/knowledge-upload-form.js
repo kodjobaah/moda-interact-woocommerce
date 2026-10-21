@@ -6,6 +6,7 @@ import {
 	field,
 	formatOptions,
 	languageSelect,
+	planUploadFormatOptions,
 	purposeOptions,
 } from './knowledge-form-fields';
 
@@ -15,6 +16,38 @@ function sourceNameFromFile(fileName) {
 		.replace(/[_-]+/g, ' ')
 		.trim()
 		.slice(0, 160);
+}
+
+// Match only upload formats permitted for the selected purpose. The filename is
+// a UI hint, never a substitute for hosted validation of content and size.
+export function matchingUploadFormat(file, catalogue) {
+	if (typeof file?.name !== 'string') {
+		return null;
+	}
+	const filename = file.name.trim().toLowerCase();
+	return (
+		catalogue.find((entry) => {
+			const { key, canonicalExtension } = entry.dataFormat;
+			return (
+				['CSV', 'XLSX'].includes(key) &&
+				typeof canonicalExtension === 'string' &&
+				filename.endsWith(canonicalExtension.toLowerCase())
+			);
+		})?.dataFormat.key ?? null
+	);
+}
+
+// A known file format absent from the authorised catalogue cannot be uploaded.
+// Unknown extensions remain rejected by validKnowledgeFile rather than being
+// misleadingly described as a plan restriction.
+export function fileFormatDisallowedByPlan(file, catalogue) {
+	const extension = /\.(csv|xlsx)$/i.exec(file?.name ?? '')?.[1];
+	return (
+		!!extension &&
+		!catalogue.some(
+			(entry) => entry.dataFormat.key === extension.toUpperCase()
+		)
+	);
 }
 
 // Hook-owning wrapper; field rendering and validation stay independently testable.
@@ -40,11 +73,16 @@ export function KnowledgeUploadForm({
 	const [name, setName] = useState(source?.name ?? '');
 	const [file, setFile] = useState(null);
 	const nameEdited = useRef(Boolean(source?.name));
+	const fileInputRef = useRef(null);
+	const formRef = useRef(null);
 	const forPurpose = all.filter((entry) => entry.purpose.key === purpose);
 	const pair =
 		forPurpose.find((entry) => entry.dataFormat.key === format) ??
 		forPurpose[0];
-	const selectedFormat = pair?.dataFormat.key ?? '';
+	const selectedFormat =
+		(!source && matchingUploadFormat(file, forPurpose)) ||
+		pair?.dataFormat.key ||
+		'';
 	const validFile = validKnowledgeFile(
 		file,
 		data?.maxUploadBytes,
@@ -53,6 +91,12 @@ export function KnowledgeUploadForm({
 	const disabled =
 		!enabled || busy || !pair || !data?.supportedLanguageTags?.length;
 	const canSubmit = !disabled && validFile && !!name.trim();
+	const clearSelectedFile = () => {
+		if (fileInputRef.current) {
+			fileInputRef.current.value = '';
+		}
+		setFile(null);
+	};
 
 	// KnowledgeUploadFields is a hoisted function declaration in this module.
 	// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -63,8 +107,11 @@ export function KnowledgeUploadForm({
 		purpose,
 		selectedFormat,
 		name,
+		file,
 		disabled,
 		canSubmit,
+		fileInputRef,
+		formRef,
 		source,
 		onPurposeChange: (next) => {
 			setPurpose(next);
@@ -72,17 +119,23 @@ export function KnowledgeUploadForm({
 				all.find((entry) => entry.purpose.key === next)?.dataFormat
 					.key ?? ''
 			);
-			setFile(null);
+			clearSelectedFile();
 		},
 		onFormatChange: (next) => {
 			setFormat(next);
-			setFile(null);
+			clearSelectedFile();
 		},
 		onNameChange: (next) => {
 			nameEdited.current = true;
 			setName(next);
 		},
 		onFileChange: (next) => {
+			if (next && !source) {
+				const detected = matchingUploadFormat(next, forPurpose);
+				if (detected) {
+					setFormat(detected);
+				}
+			}
 			setFile(next);
 			if (next && !nameEdited.current) {
 				setName(sourceNameFromFile(next.name));
@@ -92,14 +145,33 @@ export function KnowledgeUploadForm({
 			if (!canSubmit || !languageTag) {
 				return;
 			}
-			onAction(source ? 'replaceSource' : 'upload', {
-				...(source ? { id: source.id } : {}),
-				name: name.trim(),
-				purpose,
-				dataFormatKey: selectedFormat,
-				languageTag,
-				file,
-			});
+			const action = source ? 'replaceSource' : 'upload';
+			Promise.resolve(
+				onAction(action, {
+					...(source ? { id: source.id } : {}),
+					name: name.trim(),
+					purpose,
+					dataFormatKey: selectedFormat,
+					languageTag,
+					file,
+				})
+			)
+				.then((result) => {
+					if (result?.confirmedAction !== action) {
+						return;
+					}
+					formRef.current?.reset();
+					clearSelectedFile();
+					if (!source) {
+						setName('');
+						setPurpose(all[0]?.purpose.key ?? '');
+						setFormat(all[0]?.dataFormat.key ?? '');
+						nameEdited.current = false;
+					}
+				})
+				.catch(() => {
+					// The controller displays failures; retain the merchant's draft.
+				});
 		},
 	});
 }
@@ -111,8 +183,11 @@ export function KnowledgeUploadFields({
 	purpose,
 	selectedFormat,
 	name,
+	file = null,
 	disabled,
 	canSubmit,
+	fileInputRef,
+	formRef,
 	source,
 	onPurposeChange,
 	onFormatChange,
@@ -123,11 +198,32 @@ export function KnowledgeUploadFields({
 	const item = forPurpose.find(
 		(entry) => entry.dataFormat.key === selectedFormat
 	);
-	const accept = item?.dataFormat.canonicalExtension ?? '';
+	const accept = source
+		? (item?.dataFormat.canonicalExtension ?? '')
+		: [
+				...new Set(
+					forPurpose
+						.map((entry) => entry.dataFormat.canonicalExtension)
+						.filter(Boolean)
+				),
+			].join(',');
 	const maxId = `moda-knowledge-max-upload-${source?.id ?? 'new'}`;
+	const disallowedFile =
+		!source && fileFormatDisallowedByPlan(file, forPurpose);
+	const slotsAvailable =
+		!source &&
+		data?.planEntitled === true &&
+		all.length > 0 &&
+		Number.isSafeInteger(data?.configuredCount) &&
+		Number.isSafeInteger(data?.maxKnowledgeSources) &&
+		data.maxKnowledgeSources > 0;
+	const remainingSlots = slotsAvailable
+		? Math.max(0, data.maxKnowledgeSources - data.configuredCount)
+		: null;
 	return createElement(
 		'form',
 		{
+			ref: formRef,
 			className: 'moda-knowledge__form moda-knowledge__form--upload',
 			onSubmit: (event) => {
 				event.preventDefault();
@@ -166,7 +262,9 @@ export function KnowledgeUploadFields({
 					onChange: (event) =>
 						onFormatChange(event.currentTarget.value),
 				},
-				...formatOptions(forPurpose)
+				...(source
+					? formatOptions(forPurpose)
+					: planUploadFormatOptions(forPurpose))
 			)
 		),
 		field(
@@ -184,7 +282,7 @@ export function KnowledgeUploadFields({
 		field(
 			__('File', 'moda-interact'),
 			createElement('input', {
-				key: `${purpose}:${selectedFormat}`,
+				ref: fileInputRef,
 				name: 'file',
 				type: 'file',
 				accept,
@@ -208,6 +306,19 @@ export function KnowledgeUploadFields({
 					)
 				: __('Unavailable', 'moda-interact')
 		),
+		disallowedFile
+			? createElement(
+					'p',
+					{
+						className: 'moda-knowledge__plan-warning',
+						role: 'alert',
+					},
+					__(
+						'The selected file format is not included in your plan for this purpose.',
+						'moda-interact'
+					)
+				)
+			: null,
 		field(
 			__('Language', 'moda-interact'),
 			languageSelect(data, disabled, source?.languageTag)
@@ -222,6 +333,21 @@ export function KnowledgeUploadFields({
 			source
 				? __('Replace file', 'moda-interact')
 				: __('Upload file', 'moda-interact')
-		)
+		),
+		remainingSlots !== null
+			? createElement(
+					'p',
+					{ className: 'moda-knowledge__quota', role: 'status' },
+					sprintf(
+						/* translators: 1: remaining source slots; 2: plan source limit. */
+						__(
+							'Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total).',
+							'moda-interact'
+						),
+						String(remainingSlots),
+						String(data.maxKnowledgeSources)
+					)
+				)
+			: null
 	);
 }

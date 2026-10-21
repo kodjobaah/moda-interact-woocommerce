@@ -12,6 +12,8 @@ final class ModaApiClient {
 	/** Publication may take longer than a read; only category POST receives this budget. */
 	private const CATEGORY_SELECTION_TIMEOUT_SECONDS = 30;
 	private const DEFAULT_TIMEOUT_SECONDS = 5;
+	/** Merchant Knowledge commands include a post-commit source projection. */
+	private const KNOWLEDGE_TIMEOUT_SECONDS = 20;
 
 	private $transport;
 
@@ -639,6 +641,11 @@ final class ModaApiClient {
 		}
 	}
 
+	/** Non-secret, configured upload-intent destination for an opt-in local trace. */
+	public function knowledgeUploadIntentEndpointForDiagnostics(): string {
+		return $this->configuration->base_url . '/v1/merchant/merchant-knowledge/upload-intents';
+	}
+
 	/** API-014..017 hosted operations; installation auth is never supplied by browser input. */
 	public function merchantKnowledgeExchange( array $connection, string $path, string $method, ?array $data = null ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
@@ -669,7 +676,11 @@ final class ModaApiClient {
 		if ( null !== $data && ( ! is_string( $body ) || strlen( $body ) > $max_request ) ) throw new ModaApiClientException( 'invalid_request' );
 		$headers = self::installationHeaders( $connection );
 		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
-		$response = $this->request( $path, $method, $headers, $body, self::DEFAULT_TIMEOUT_SECONDS, 262145 );
+		// Scope the longer HTTP transport deadline to knowledge routes only. Do not
+		// alter Prisma transaction deadlines or unrelated merchant API requests.
+		$timeout = str_starts_with( $path, '/v1/merchant/merchant-knowledge' )
+			? self::KNOWLEDGE_TIMEOUT_SECONDS : self::DEFAULT_TIMEOUT_SECONDS;
+		$response = $this->request( $path, $method, $headers, $body, $timeout, 262145 );
 		$status = wp_remote_retrieve_response_code( $response );
 		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
 		if ( in_array( $status, array( 400, 403, 404, 409, 413 ), true ) ) {

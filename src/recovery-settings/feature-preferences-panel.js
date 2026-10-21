@@ -38,7 +38,7 @@ function FeatureCard({ feature, busy, onToggle }) {
 		createElement(
 			'small',
 			null,
-			feature.editable
+			feature.required === false
 				? __('Optional', 'moda-interact')
 				: __('Always enabled', 'moda-interact'),
 			' · ',
@@ -96,7 +96,9 @@ export function FeaturePreferencesPanel(props) {
 	const status = state?.status ?? 'IDLE';
 	const busy = status === 'LOADING' || status === 'SAVING';
 	const features = state?.data?.features ?? [];
-	const showFeatures = ['READY', 'SAVED', 'SAVING'].includes(status);
+	const showFeatures =
+		!!state?.data &&
+		['READY', 'SAVED', 'SAVING', 'CONFLICT'].includes(status);
 	const unavailable = ['ERROR', 'CONFLICT', 'DENIED', 'UNAVAILABLE'].includes(
 		status
 	);
@@ -165,7 +167,11 @@ export function FeaturePreferencesPanel(props) {
 					'div',
 					{ className: 'moda-interact-features__grid' },
 					features.map((feature) =>
-						FeatureCard({ feature, busy, onToggle })
+						FeatureCard({
+							feature,
+							busy: busy || status === 'CONFLICT',
+							onToggle,
+						})
 					)
 				)
 			: null,

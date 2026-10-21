@@ -134,6 +134,10 @@ msgid "Buy %s credits"
 msgstr "Acheter %s crédits"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Annuler le téléversement"
+
 msgid "Cancel recurring plan?"
 msgstr "Résilier le forfait récurrent ?"
 
@@ -2004,3 +2008,31 @@ msgstr "Voir la récupération"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Vous n’êtes pas autorisé à consulter l’historique d’utilisation."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Classification de la boutique et ressources de référence utilisées par l’assistant."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "Les modifications ont été enregistrées, mais les sources de connaissances n’ont pas pu être actualisées. Réessayez pour charger la liste à jour."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "Nous n’avons pas pu confirmer l’enregistrement des modifications des sources de connaissances. Actualisez la liste avant de réessayer."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "Non inclus dans votre forfait"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "Le format de fichier sélectionné n’est pas inclus dans votre forfait pour cet usage."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "Emplacements disponibles pour les fichiers : %1$s (partagés avec les pages web ; %2$s sources au total)."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "La limite partagée de sources de connaissances de votre forfait est atteinte."

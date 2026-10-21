@@ -9,7 +9,6 @@ use ModaInteract\WooCommerce\Api\ModaApiClientException;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Api\ModaApiConfigurationException;
 use ModaInteract\WooCommerce\Api\MerchantKnowledgeContracts as Contract;
-use ModaInteract\WooCommerce\Api\MerchantKnowledgeUploadCapability;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
 use ModaInteract\WooCommerce\Connection\SiteIdentity;
 use ModaInteract\WooCommerce\Connection\SiteIdentityException;
@@ -61,8 +60,21 @@ final class MerchantKnowledgeController {
 	}
 
 	public function handle( \WP_REST_Request $request ): \WP_REST_Response {
-		if ( true !== $this->authorizeAdministrator( $request ) ) return self::error( 'FORBIDDEN', 403 );
-		if ( null === $this->api ) return self::error( 'API_NOT_CONFIGURED', 503 );
+		// Local diagnostics are explicitly opt-in. Never log a signed URL, request
+		// payload, installation credential or file metadata.
+		$trace_id = self::uploadTraceEnabled() && 'POST' === $request->get_method() &&
+			'/moda-interact/v1/merchant/merchant-knowledge/upload-intents' === $request->get_route()
+			? str_replace( '.', '', uniqid( 'woo-', true ) ) : null;
+		$started_at = microtime( true );
+		self::traceUploadIntent( $trace_id, $started_at, 'request_received' );
+		if ( true !== $this->authorizeAdministrator( $request ) ) {
+			self::traceUploadIntent( $trace_id, $started_at, 'authorization_rejected', 403 );
+			return self::error( 'FORBIDDEN', 403 );
+		}
+		if ( null === $this->api ) {
+			self::traceUploadIntent( $trace_id, $started_at, 'api_not_configured', 503 );
+			return self::error( 'API_NOT_CONFIGURED', 503 );
+		}
 		$query = $request->get_query_params();
 		// WordPress apiFetch may add its own administrator-locale selector. It is
 		// local to WordPress and must not be forwarded to the hosted API.
@@ -104,30 +116,79 @@ final class MerchantKnowledgeController {
 			if ( ! Contract::request( $kind, $data ) ) return self::error( 'INVALID_REQUEST', 400 );
 		}
 		$local = $this->store->read();
-		if ( 'invalid' === $local['state'] ) return self::error( 'LOCAL_STATE_INVALID', 409 );
-		if ( 'valid' !== $local['state'] ) return self::error( 'RECONNECT_REQUIRED', 401 );
+		if ( 'invalid' === $local['state'] ) {
+			self::traceUploadIntent( $trace_id, $started_at, 'local_state_invalid', 409 );
+			return self::error( 'LOCAL_STATE_INVALID', 409 );
+		}
+		if ( 'valid' !== $local['state'] ) {
+			self::traceUploadIntent( $trace_id, $started_at, 'reconnect_required', 401 );
+			return self::error( 'RECONNECT_REQUIRED', 401 );
+		}
 		try {
 			$record = $local['record'];
 			$this->assertRecord( $record );
 			$host_path = $this->apiPath( $op, $id, $position );
+			self::traceUploadIntent( $trace_id, $started_at, 'upstream_request_started', null,
+				array( 'apiEndpoint' => $this->api->knowledgeUploadIntentEndpointForDiagnostics(), 'apiMethod' => $method ) );
 			$result = $this->api->merchantKnowledgeExchange( $record, $host_path, $method, $data );
+			self::traceUploadIntent( $trace_id, $started_at, 'upstream_response_decoded', null,
+				array( 'capabilityFields' => array_values( array_intersect( array_keys( $result ),
+					array( 'schemaVersion', 'assetId', 'uploadUrl', 'expiresAt', 'maxUploadBytes', 'requiredHeaders' ) ) ),
+					'unexpectedFieldCount' => count( array_diff( array_keys( $result ),
+						array( 'schemaVersion', 'assetId', 'uploadUrl', 'expiresAt', 'maxUploadBytes', 'requiredHeaders' ) ) ) ) );
 			$this->assertRecord( $record );
 			$valid = match ( $op ) {
 				'features_read', 'features_update' => Contract::featureResponse( $result ),
 				'knowledge_read' => Contract::knowledgeResponse( $result ),
 				'upload_edit' => Contract::editResult( $result ),
 				'reprocess', 'upload_finalize' => Contract::uploadResult( $result ),
-				'upload_intent' => MerchantKnowledgeUploadCapability::valid( $result, $data, $record ),
+				'upload_intent' => Contract::intentResponse( $result, $data ),
 				default => Contract::commandResponse( $result ),
 			};
-			if ( ! $valid ) return self::error( 'REMOTE_RESPONSE_INVALID', 502 );
-			return self::respond( $result, 'web_create' === $op && ( $result['created'] ?? false ) ? 201 : 200 );
+			if ( ! $valid ) {
+				self::traceUploadIntent( $trace_id, $started_at, 'intent_response_invalid', 502 );
+				return self::error( 'REMOTE_RESPONSE_INVALID', 502 );
+			}
+			self::traceUploadIntent( $trace_id, $started_at, 'intent_response_accepted' );
+			$status = 'web_create' === $op && ( $result['created'] ?? false ) ? 201 : 200;
+			// Prepared is not proof that Nginx or Cloudflare delivered the response.
+			self::traceUploadIntent( $trace_id, $started_at, 'response_prepared', $status );
+			return self::respond( $result, $status );
 		} catch ( SiteIdentityException $exception ) {
+			self::traceUploadIntent( $trace_id, $started_at, 'site_url_changed', 409 );
 			return self::error( 'SITE_URL_CHANGED', 409 );
 		} catch ( ModaApiClientException $exception ) {
-			return $this->apiError( $exception );
+			$response = $this->apiError( $exception );
+			$reason = $exception->getMessage();
+			$known = array( 'unauthorized', 'connection_changed', 'local_state_invalid',
+				'invalid_request', 'remote_response_invalid', 'remote_rejected', 'remote_unavailable' );
+			self::traceUploadIntent( $trace_id, $started_at,
+				'api_error_' . ( in_array( $reason, $known, true ) ? $reason : 'unknown' ), $response->get_status() );
+			return $response;
 		} catch ( \Throwable $exception ) {
+			self::traceUploadIntent( $trace_id, $started_at, 'unexpected_exception', 503 );
 			return self::error( 'REMOTE_UNAVAILABLE', 503 );
+		}
+	}
+
+	private static function uploadTraceEnabled(): bool {
+		return ( defined( 'MODA_INTERACT_WOO_UPLOAD_TRACE' ) && true === constant( 'MODA_INTERACT_WOO_UPLOAD_TRACE' ) ) ||
+			'1' === getenv( 'MODA_INTERACT_WOO_UPLOAD_TRACE' );
+	}
+
+	/** Local, opt-in upload-intent diagnostics; never affect merchant operations. */
+	private static function traceUploadIntent( ?string $trace_id, float $started_at, string $stage, ?int $status = null, array $details = array() ): void {
+		if ( null === $trace_id ) return;
+		$payload = array( 'event' => 'woocommerce.merchant_knowledge.upload_intent',
+			'traceId' => $trace_id, 'stage' => $stage,
+			'elapsedMs' => (int) round( ( microtime( true ) - $started_at ) * 1000 ) );
+		if ( null !== $status ) $payload['httpStatus'] = $status;
+		if ( array() !== $details ) $payload['details'] = $details;
+		try {
+			$encoded = wp_json_encode( $payload );
+			if ( is_string( $encoded ) ) @error_log( '[moda-interact] ' . $encoded );
+		} catch ( \Throwable $ignored ) {
+			// Diagnostics must not affect upload or error handling.
 		}
 	}
 

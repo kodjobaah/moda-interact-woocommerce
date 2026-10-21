@@ -6,7 +6,8 @@ import {
 import { FeaturePreferencesController } from '../../src/recovery-settings/feature-preferences-controller';
 
 const snapshot = {
-	revision: 'revision-1',
+	schemaVersion: 1,
+	revision: 'a'.repeat(64),
 	features: [
 		{
 			id: 'required-1',
@@ -16,6 +17,8 @@ const snapshot = {
 			enabled: false,
 			effective: true,
 			editable: false,
+			required: true,
+			planEligible: true,
 		},
 		{
 			id: 'optional-1',
@@ -25,6 +28,8 @@ const snapshot = {
 			enabled: false,
 			effective: false,
 			editable: true,
+			required: false,
+			planEligible: true,
 		},
 	],
 };
@@ -58,7 +63,11 @@ function mount(client) {
 
 describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 	it('defaults to unavailable without attempting an invented WordPress route', async () => {
-		const controller = mount(createFeaturePreferencesClient());
+		const controller = mount(
+			createFeaturePreferencesClient(async () => {
+				throw new Error('FEATURES_UNAVAILABLE');
+			})
+		);
 		await flush();
 		expect(controller.state).toEqual({ status: 'UNAVAILABLE', data: null });
 		await controller.save('optional-1', true);
@@ -87,14 +96,18 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 
 	it('renders an authoritative empty state and distinguishes denied and transport errors', async () => {
 		const client = {
-			read: vi.fn(async () => ({ revision: 'empty', features: [] })),
+			read: vi.fn(async () => ({
+				schemaVersion: 1,
+				revision: 'd'.repeat(64),
+				features: [],
+			})),
 			save: vi.fn(),
 		};
 		const controller = mount(client);
 		await flush();
 		expect(controller.state).toEqual({
 			status: 'READY',
-			data: { revision: 'empty', features: [] },
+			data: { schemaVersion: 1, revision: 'd'.repeat(64), features: [] },
 		});
 		client.read.mockRejectedValueOnce(new Error('DENIED'));
 		await controller.refresh();
@@ -120,14 +133,14 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 		await flush();
 		expect(client.save).toHaveBeenCalledTimes(1);
 		expect(client.save).toHaveBeenCalledWith({
-			expectedRevision: 'revision-1',
-			preferences: [{ featureId: 'optional-1', enabled: true }],
+			expectedRevision: 'a'.repeat(64),
+			changes: [{ featureId: 'optional-1', enabled: true }],
 		});
 		expect(controller.state.status).toBe('SAVING');
 		expect(controller.state.data.features[1].enabled).toBe(false);
 		pending.resolve({
 			...snapshot,
-			revision: 'revision-2',
+			revision: 'b'.repeat(64),
 			features: [
 				snapshot.features[0],
 				{ ...snapshot.features[1], enabled: true, effective: true },
@@ -156,9 +169,9 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 		});
 		await flush();
 		expect(controller.state.status).toBe('READY');
-		pending.resolve({ ...snapshot, revision: 'obsolete' });
+		pending.resolve({ ...snapshot, revision: 'c'.repeat(64) });
 		await saving;
-		expect(controller.state.data.revision).toBe('revision-1');
+		expect(controller.state.data.revision).toBe('a'.repeat(64));
 		controller.setConnection({ status: 'DISCONNECTED' });
 		expect(controller.state).toEqual({ status: 'IDLE', data: null });
 		controller.setConnection({ status: 'CONNECTED' });
@@ -181,9 +194,9 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 		await flush();
 		controller.setConnection({ status: 'CONNECTED', installationId: 'b' });
 		await flush();
-		pending.resolve({ ...snapshot, revision: 'wrong-installation' });
+		pending.resolve({ ...snapshot, revision: 'c'.repeat(64) });
 		await flush();
-		expect(controller.state.data?.revision).toBe('revision-1');
+		expect(controller.state.data?.revision).toBe('a'.repeat(64));
 		controller.dispose();
 	});
 });

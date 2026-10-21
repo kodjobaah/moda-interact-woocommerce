@@ -3,6 +3,8 @@
 require_once __DIR__ . '/fixtures/MerchantKnowledgeTestBase.php';
 
 use ModaInteract\WooCommerce\Api\MerchantKnowledgeContracts;
+use ModaInteract\WooCommerce\Api\ModaApiClient;
+use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
 
 final class MerchantKnowledgeControllerTest extends MerchantKnowledgeTestBase {
@@ -124,6 +126,41 @@ final class MerchantKnowledgeControllerTest extends MerchantKnowledgeTestBase {
 			self::assertSame( 0, $remote[1]['redirection'] );
 		}
 		self::assertCount( count( $requests ), $seen );
+	}
+
+	public function test_knowledge_proxy_uses_bounded_transport_budget_without_changing_other_routes(): void {
+		$requests = array();
+		$client = new ModaApiClient(
+			ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ),
+			static function ( string $url, array $args ) use ( &$requests ): array {
+				$requests[] = array( 'url' => $url, 'args' => $args );
+				if ( str_ends_with( $url, '/feature-preferences' ) ) {
+					return self::response( 200, self::feature() );
+				}
+				if ( str_ends_with( $url, '/sources' ) ) {
+					// The hosted create and post-commit projection can exceed five seconds.
+					return self::response( 201, array( 'created' => true, 'sourceId' => 'source_1',
+						'knowledge' => self::knowledge() ) );
+				}
+				return self::response( 200, self::knowledge() );
+			}
+		);
+		$connection = self::record();
+		$client->merchantKnowledgeExchange( $connection, '/v1/merchant/merchant-knowledge', 'GET' );
+		$result = $client->merchantKnowledgeExchange( $connection, '/v1/merchant/merchant-knowledge/sources',
+			'POST', array( 'name' => 'FAQ', 'purposeKey' => 'FAQ', 'dataFormatKey' => 'WEB_PAGE',
+				'url' => 'https://example.org/help' ) );
+		self::assertTrue( $result['created'] );
+		$client->merchantKnowledgeExchange( $connection, '/v1/merchant/feature-preferences', 'GET' );
+		self::assertSame( array( 20, 20, 5 ), array_map(
+			static fn( array $item ): int => $item['args']['timeout'], $requests
+		) );
+		foreach ( $requests as $item ) {
+			self::assertSame( 0, $item['args']['redirection'] );
+			self::assertSame( array(), $item['args']['cookies'] );
+			self::assertTrue( $item['args']['sslverify'] );
+			self::assertStringStartsWith( 'Bearer ', $item['args']['headers']['Authorization'] );
+		}
 	}
 
 	public function test_knowledge_projection_supports_cursor_and_rejects_unexpected_fields(): void {

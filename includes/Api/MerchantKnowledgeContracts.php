@@ -196,14 +196,15 @@ final class MerchantKnowledgeContracts {
 			( ! isset( $v['sourceId'] ) || self::id( $v['sourceId'] ) ) &&
 			( ! isset( $v['created'] ) || is_bool( $v['created'] ) ) && self::knowledgeResponse( $v['knowledge'] );
 	}
+	/** Minimal browser-consumed envelope; Moda API owns R2 signing and header details. */
 	public static function intentResponse( mixed $v, array $request ): bool {
 		return self::exact( $v, array( 'schemaVersion', 'assetId', 'uploadUrl', 'expiresAt', 'maxUploadBytes', 'requiredHeaders' ) ) &&
 			$v['schemaVersion'] === 1 && self::id( $v['assetId'] ) && self::text( $v['uploadUrl'], 4096 ) &&
-			is_string( $v['expiresAt'] ) && strtotime( $v['expiresAt'] ) !== false && strtotime( $v['expiresAt'] ) > time() &&
-			strtotime( $v['expiresAt'] ) <= time() + 601 && self::uint( $v['maxUploadBytes'], 25 * 1024 * 1024 ) &&
-			self::exact( $v['requiredHeaders'], array( 'Content-Type', 'If-None-Match', 'x-amz-meta-sha256' ) ) &&
-			$v['requiredHeaders']['Content-Type'] === $request['contentType'] &&
-			$v['requiredHeaders']['If-None-Match'] === '*' && $v['requiredHeaders']['x-amz-meta-sha256'] === $request['sha256'];
+			is_string( $v['expiresAt'] ) && strtotime( $v['expiresAt'] ) !== false &&
+			self::uint( $v['maxUploadBytes'] ) && is_array( $v['requiredHeaders'] ) &&
+			! array_is_list( $v['requiredHeaders'] ) && count( $v['requiredHeaders'] ) > 0 &&
+			count( $v['requiredHeaders'] ) <= 16 &&
+			count( array_filter( $v['requiredHeaders'], 'is_string' ) ) === count( $v['requiredHeaders'] );
 	}
 	public static function uploadResult( mixed $v ): bool {
 		return self::exact( $v, array( 'schemaVersion', 'sourceId', 'revisionId', 'generation', 'status' ) ) &&

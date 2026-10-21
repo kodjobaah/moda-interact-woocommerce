@@ -9,6 +9,19 @@ import { unavailableReason } from './knowledge-form-fields';
 import { KnowledgeUploadForm } from './knowledge-upload-form';
 import { KnowledgeWebForm } from './knowledge-web-form';
 
+function uploadUnavailableMessage(ready, uploadCount, capacity) {
+	if (ready && uploadCount === 0) {
+		return `${__('Upload file', 'moda-interact')} — ${__('Not included in your plan', 'moda-interact')}`;
+	}
+	if (ready && !capacity) {
+		return __(
+			"Your plan's shared knowledge-source limit has been reached.",
+			'moda-interact'
+		);
+	}
+	return unavailableReason('upload');
+}
+
 // Native details/summary implements keyboard interaction without a custom toggle.
 export function KnowledgeAddForms({
 	data,
@@ -70,7 +83,7 @@ export function KnowledgeAddForms({
 						'moda-interact'
 					)
 				),
-		uploads.length || preserveUnavailable
+		uploads.length || preserveUnavailable || ready
 			? createElement(
 					'details',
 					{ className: 'moda-knowledge__disclosure', open: true },
@@ -107,7 +120,11 @@ export function KnowledgeAddForms({
 									className: 'moda-knowledge__hint',
 									role: 'status',
 								},
-								unavailableReason('upload')
+								uploadUnavailableMessage(
+									ready,
+									uploads.length,
+									capacity
+								)
 							)
 						: null
 				)

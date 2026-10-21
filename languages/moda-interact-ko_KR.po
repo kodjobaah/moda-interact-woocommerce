@@ -131,6 +131,10 @@ msgid "Buy %s credits"
 msgstr "크레딧 %s개 구매"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "업로드 취소"
+
 msgid "Cancel recurring plan?"
 msgstr "정기 요금제를 취소하시겠습니까?"
 
@@ -1952,3 +1956,31 @@ msgstr "복구 보기"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "사용 내역을 볼 권한이 없습니다."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "어시스턴트가 사용하는 스토어 분류 및 참고 자료입니다."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "변경 사항은 저장되었지만 지식 소스 목록을 새로 고칠 수 없습니다. 다시 시도하여 최신 목록을 불러오세요."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "지식 소스 변경 사항이 저장되었는지 확인할 수 없습니다. 다시 시도하기 전에 목록을 새로 고치세요."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "현재 요금제에 포함되지 않음"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "선택한 파일 형식은 이 용도에 대한 현재 요금제에 포함되지 않습니다."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "파일 업로드 가능 잔여 슬롯: %1$s개(웹페이지와 공유, 총 %2$s개 소스)."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "현재 요금제의 공유 지식 소스 한도에 도달했습니다."

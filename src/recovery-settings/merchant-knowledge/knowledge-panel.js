@@ -16,6 +16,16 @@ function knowledgeErrorMessage(status) {
 				'You do not have permission to manage knowledge sources.',
 				'moda-interact'
 			);
+		case 'SAVED_NEEDS_REFRESH':
+			return __(
+				'The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list.',
+				'moda-interact'
+			);
+		case 'VERIFY_REQUIRED':
+			return __(
+				'We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again.',
+				'moda-interact'
+			);
 		case 'CONFLICT':
 			return __(
 				'Knowledge sources changed elsewhere. Refresh to review them.',
@@ -49,13 +59,13 @@ export function MerchantKnowledgePanel({
 					String(limit)
 				)
 			: null;
-	const permissions = !busy && ready ? (data?.permissions ?? {}) : {};
+	const permissions =
+		!busy && ready && !state.needsRefresh ? (data?.permissions ?? {}) : {};
 	return createElement(
 		'details',
 		{
 			id: 'merchant-knowledge',
 			className: 'moda-knowledge',
-			open: true,
 			'aria-labelledby': 'merchant-knowledge-title',
 			'aria-busy': busy,
 		},
@@ -84,12 +94,29 @@ export function MerchantKnowledgePanel({
 				: null,
 			entitled && count
 				? createElement(
-						'p',
-						{
-							className: 'moda-knowledge__capacity',
-							role: 'status',
-						},
-						count
+						'div',
+						{ className: 'moda-knowledge__capacity-row' },
+						createElement(
+							'p',
+							{
+								className: 'moda-knowledge__capacity',
+								role: 'status',
+							},
+							count
+						),
+						!state.needsRefresh
+							? createElement(
+									'button',
+									{
+										type: 'button',
+										className:
+											'button moda-knowledge__manual-refresh',
+										disabled: busy,
+										onClick: onRefresh,
+									},
+									__('Refresh', 'moda-interact')
+								)
+							: null
 					)
 				: null,
 			ready && !entitled
@@ -106,9 +133,30 @@ export function MerchantKnowledgePanel({
 				? createElement(
 						'p',
 						{ role: 'status' },
-						status === 'LOADING'
+						status === 'LOADING' || state.phase === 'HASHING'
 							? __('Loading…', 'moda-interact')
 							: __('Saving…', 'moda-interact')
+					)
+				: null,
+			state.error
+				? createElement(
+						'p',
+						{
+							role: 'alert',
+							className: 'moda-knowledge__status-error',
+						},
+						knowledgeErrorMessage(state.error)
+					)
+				: null,
+			busy && ['upload', 'replaceSource'].includes(state.activeAction)
+				? createElement(
+						'button',
+						{
+							type: 'button',
+							className: 'button',
+							onClick: () => onAction('cancelUpload'),
+						},
+						__('Cancel upload', 'moda-interact')
 					)
 				: null,
 			!ready && !busy
@@ -142,7 +190,8 @@ export function MerchantKnowledgePanel({
 						onAction,
 					})
 				: null,
-			['ERROR', 'CONFLICT', 'DENIED', 'UNAVAILABLE'].includes(status)
+			state.needsRefresh ||
+				['ERROR', 'CONFLICT', 'DENIED', 'UNAVAILABLE'].includes(status)
 				? createElement(
 						'button',
 						{

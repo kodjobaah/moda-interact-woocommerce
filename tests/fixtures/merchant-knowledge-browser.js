@@ -2,6 +2,8 @@
 // WordPress connection, merchant credentials, or production mock data.
 import { createElement, createRoot } from '@wordpress/element';
 import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
+import { StoreAssistantContext } from '../../src/recovery-settings/store-assistant-context';
+import { StoreProfileAccordion } from '../../src/recovery-settings/store-profile-accordion';
 import '../../src/index.scss';
 
 const status = new URLSearchParams(window.location.search).get('status');
@@ -42,6 +44,39 @@ const state =
 				data: null,
 			};
 
+const categoryState = {
+	status: 'READY',
+	categoryId: 'pets',
+	mappingIds: [],
+	data: {
+		storeProfile: {
+			activeCategory: { localizedDisplayName: 'Animals & Pet Supplies' },
+			pendingCategory: null,
+			pendingSelectionGeneration: 1,
+			activeMappingIds: [],
+			pendingState: 'NONE',
+			pendingTemplate: null,
+		},
+		categories: [
+			{
+				id: 'pets',
+				localizedDisplayName: 'Animals & Pet Supplies',
+				localizedDescription: 'Pet supplies',
+				mappings: [],
+			},
+		],
+	},
+};
+
 createRoot(document.getElementById('merchant-knowledge-fixture')).render(
-	createElement(MerchantKnowledgePanel, { state })
+	createElement(StoreAssistantContext, {
+		storeProfile: createElement(StoreProfileAccordion, {
+			state: categoryState,
+			onRefresh: () => {},
+			onSave: () => {},
+			onChoose: () => {},
+			onToggleMapping: () => {},
+		}),
+		merchantKnowledge: createElement(MerchantKnowledgePanel, { state }),
+	})
 );

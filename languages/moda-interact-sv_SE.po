@@ -134,6 +134,10 @@ msgid "Buy %s credits"
 msgstr "Köp %s krediter"
 
 #: src/billing/cancel-dialog.js:55
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:124
+msgid "Cancel upload"
+msgstr "Avbryt uppladdning"
+
 msgid "Cancel recurring plan?"
 msgstr "Säga upp löpande abonnemang?"
 
@@ -1978,3 +1982,31 @@ msgstr "Visa återställning"
 #: src/usage-history/usage-history-screen.js
 msgid "You do not have permission to view usage history."
 msgstr "Du har inte behörighet att visa användningshistorik."
+
+#: src/recovery-settings/store-assistant-context.js:23
+msgid "Store classification and reference material used by the assistant."
+msgstr "Butiksklassificering och referensmaterial som assistenten använder."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:21
+msgid "The changes were saved, but the knowledge sources could not be refreshed. Retry to load the latest list."
+msgstr "Ändringarna sparades, men kunskapskällorna kunde inte uppdateras. Försök igen för att läsa in den senaste listan."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-panel.js:26
+msgid "We could not confirm whether your knowledge source changes were saved. Refresh the list before trying again."
+msgstr "Vi kunde inte bekräfta om dina ändringar av kunskapskällorna sparades. Uppdatera listan innan du försöker igen."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-form-fields.js:75 src/recovery-settings/merchant-knowledge/knowledge-forms.js:111
+msgid "Not included in your plan"
+msgstr "Ingår inte i ditt abonnemang"
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:289
+msgid "The selected file format is not included in your plan for this purpose."
+msgstr "Det valda filformatet ingår inte i ditt abonnemang för detta ändamål."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-upload-form.js:316
+msgid "Remaining slots for file uploads: %1$s (shared with web pages; %2$s sources total)."
+msgstr "Återstående platser för filuppladdning: %1$s (delas med webbsidor; totalt %2$s källor)."
+
+#: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
+msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr "Din abonnemangsgräns för delade kunskapskällor har nåtts."
