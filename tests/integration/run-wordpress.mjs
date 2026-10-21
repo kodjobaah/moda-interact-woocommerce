@@ -297,6 +297,14 @@ const server = createServer(
 				const payload = JSON.parse(bodyBytes.toString('utf8'));
 				const event = payload.event ?? payload;
 				assert.equal(event.schemaVersion, 'woo.activity.v1');
+				if (['ORDER_PLACED', 'ORDER_PAID', 'ORDER_CANCELLED'].includes(event.eventType)) {
+					assert.equal(event.checkout, undefined);
+					assert.equal(event.shopId, undefined);
+					assert.deepEqual(Object.keys(event.order ?? {}).sort(), ['checkoutKey', 'orderId', 'status']);
+					assert.equal(event.order.checkoutKey, event.checkoutKey);
+					assert.match(event.order.orderId, /^[1-9][0-9]*$/);
+					assert.match(event.order.status, /^[a-z][a-z0-9_-]{0,63}$/);
+				}
 				activityRequests.push({
 					eventId: event.eventId,
 					status: activityStatus,

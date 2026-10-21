@@ -62,12 +62,21 @@ final class ModaApiClient {
 		return $payload;
 	}
 
-	/** ARCH-035 API-008: server-to-server checkout event, never called on the shopper path. */
+	/** Existing checkout entrypoint retained for API-008 consumers. */
 	public function publishCheckoutActivity( array $connection, array $event ): void {
+		if ( ( $event['eventType'] ?? null ) !== 'CHECKOUT_UPDATED' ) throw new ModaApiClientException( 'invalid_request' );
+		$this->publishActivity( $connection, $event );
+	}
+
+	/** Capture-only checkout and order events share the authenticated activity endpoint. */
+	public function publishActivity( array $connection, array $event ): void {
+		$type = $event['eventType'] ?? null;
 		if ( ! InstallationStore::isValidRecord( $connection ) ||
 			( $event['schemaVersion'] ?? null ) !== 'woo.activity.v1' ||
-			( $event['eventType'] ?? null ) !== 'CHECKOUT_UPDATED' ||
-			isset( $event['shopId'] ) ) throw new ModaApiClientException( 'invalid_request' );
+			! in_array( $type, array( 'CHECKOUT_UPDATED', 'ORDER_PLACED', 'ORDER_PAID', 'ORDER_CANCELLED' ), true ) ||
+			isset( $event['shopId'] ) ||
+			( 'CHECKOUT_UPDATED' === $type ? ! isset( $event['checkout'] ) || isset( $event['order'] ) :
+				! isset( $event['order'] ) || isset( $event['checkout'] ) ) ) throw new ModaApiClientException( 'invalid_request' );
 		$body = wp_json_encode( $event );
 		if ( ! is_string( $body ) || strlen( $body ) > 65536 ) throw new ModaApiClientException( 'invalid_request' );
 		$response = $this->request( '/v1/woocommerce/activity', 'POST', array_merge(

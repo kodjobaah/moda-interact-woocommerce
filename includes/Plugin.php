@@ -24,7 +24,7 @@ final class Plugin {
 	}
 
 	/**
-	 * The current extension does not read or write WooCommerce order storage.
+	 * The extension uses WooCommerce order-object APIs for HPOS-safe metadata.
 	 */
 	public static function declare_hpos_compatibility(): void {
 		if ( ! class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
