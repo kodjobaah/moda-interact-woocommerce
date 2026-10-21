@@ -4,6 +4,42 @@ import { knowledgeActionAllowed } from './knowledge-action-validation';
 // Internal marker: the command succeeded, but its follow-up read did not.
 const ACKNOWLEDGED_NEEDS_REFRESH = Symbol('acknowledged-needs-refresh');
 
+function retainedDataError(kind, code, uncertainWrite) {
+	if (kind === 'read') {
+		return 'REFRESH_FAILED';
+	}
+	if (uncertainWrite) {
+		return 'VERIFY_REQUIRED';
+	}
+	if (code === 'CONFLICT') {
+		return 'CONFLICT';
+	}
+	if (code === 'DENIED' || code === 'FORBIDDEN') {
+		return 'DENIED';
+	}
+	return 'ERROR';
+}
+
+function emptyDataStatus(code) {
+	if (
+		[
+			'KNOWLEDGE_UNAVAILABLE',
+			'RECONNECT_REQUIRED',
+			'REMOTE_UNAVAILABLE',
+			'API_NOT_CONFIGURED',
+		].includes(code)
+	) {
+		return 'UNAVAILABLE';
+	}
+	if (code === 'DENIED' || code === 'FORBIDDEN') {
+		return 'DENIED';
+	}
+	if (code === 'CONFLICT') {
+		return 'CONFLICT';
+	}
+	return 'ERROR';
+}
+
 // Bounded, connection-aware state owner; no provider operations in React.
 export class MerchantKnowledgeController {
 	constructor(client = createMerchantKnowledgeClient()) {
@@ -223,36 +259,21 @@ export class MerchantKnowledgeController {
 						this.publish({
 							status: 'READY',
 							data: originalData,
-							error:
-								kind === 'read'
-									? 'REFRESH_FAILED'
-									: uncertainWrite
-										? 'VERIFY_REQUIRED'
-										: code === 'CONFLICT'
-											? 'CONFLICT'
-											: code === 'DENIED' ||
-												  code === 'FORBIDDEN'
-												? 'DENIED'
-												: 'ERROR',
+							error: retainedDataError(
+								kind,
+								code,
+								uncertainWrite
+							),
 							needsRefresh:
 								kind === 'read' ||
 								code === 'CONFLICT' ||
 								uncertainWrite,
 						});
 					} else {
-						const status = [
-							'KNOWLEDGE_UNAVAILABLE',
-							'RECONNECT_REQUIRED',
-							'REMOTE_UNAVAILABLE',
-							'API_NOT_CONFIGURED',
-						].includes(code)
-							? 'UNAVAILABLE'
-							: code === 'DENIED' || code === 'FORBIDDEN'
-								? 'DENIED'
-								: code === 'CONFLICT'
-									? 'CONFLICT'
-									: 'ERROR';
-						this.publish({ status, data: null });
+						this.publish({
+							status: emptyDataStatus(code),
+							data: null,
+						});
 					}
 				}
 				return this.state;

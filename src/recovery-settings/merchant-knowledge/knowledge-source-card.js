@@ -273,30 +273,43 @@ export function KnowledgeSourceCard({
 					onAction
 				)
 			),
-			createElement(
-				'button',
-				{
-					type: 'button',
-					className: 'button',
-					disabled:
-						busy ||
-						!permissions.deleteSource ||
-						source.dataFormatKey !== 'WEB_PAGE' ||
-						source.currentlyPlanEntitled === false,
-					onClick: () => {
-						const confirm =
-							typeof window !== 'undefined' &&
-							typeof window.confirm === 'function' &&
-							window.confirm(
-								`${__('Delete', 'moda-interact')} — ${source.name}?`
-							);
-						if (confirm) {
-							onAction('deleteSource', { id: source.id });
-						}
-					},
-				},
-				__('Delete', 'moda-interact')
-			)
+			source.dataFormatKey === 'WEB_PAGE'
+				? createElement(
+						'details',
+						{ className: 'moda-knowledge__action-disclosure' },
+						createElement(
+							'summary',
+							null,
+							__('Delete', 'moda-interact')
+						),
+						createElement(
+							'p',
+							null,
+							__('Delete', 'moda-interact'),
+							' — ',
+							source.name,
+							'?'
+						),
+						createElement(
+							'button',
+							{
+								type: 'button',
+								className: 'button',
+								disabled:
+									busy ||
+									!permissions.deleteSource ||
+									source.currentlyPlanEntitled === false,
+								onClick: () =>
+									onAction('deleteSource', { id: source.id }),
+							},
+							__('Delete', 'moda-interact')
+						)
+					)
+				: createElement(
+						'button',
+						{ type: 'button', className: 'button', disabled: true },
+						__('Delete', 'moda-interact')
+					)
 		)
 	);
 }

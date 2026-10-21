@@ -28,14 +28,15 @@ export function merchantRestError(error, unavailable = 'REMOTE_UNAVAILABLE') {
 		(value) => typeof value === 'string' && CODES.has(value)
 	);
 	const numeric = candidates.find((value) => Number.isInteger(value));
-	const code =
-		declared ??
-		(numeric === 401
-			? 'RECONNECT_REQUIRED'
-			: numeric === 403
-				? 'DENIED'
-				: numeric === 409
-					? 'CONFLICT'
-					: unavailable);
+	let code = declared ?? unavailable;
+	if (declared === undefined) {
+		if (numeric === 401) {
+			code = 'RECONNECT_REQUIRED';
+		} else if (numeric === 403) {
+			code = 'DENIED';
+		} else if (numeric === 409) {
+			code = 'CONFLICT';
+		}
+	}
 	return Object.assign(new Error(code), { code });
 }

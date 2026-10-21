@@ -62,6 +62,7 @@ function harness({
 	send = vi.fn(async () => ({ ok: true, status: 200 })),
 	intentValue = intent(),
 	clock = () => NOW,
+	crypto = cryptoProvider,
 } = {}) {
 	const request = vi.fn(async ({ path }) =>
 		path.endsWith('/upload-intents') ? intentValue : finalised()
@@ -70,7 +71,7 @@ function harness({
 	const upload = createKnowledgeUploader({
 		request,
 		send,
-		cryptoProvider,
+		cryptoProvider: crypto,
 		now: clock,
 		timeoutMs: 10000,
 	});
@@ -90,6 +91,17 @@ function harness({
 }
 
 describe('ARCH-035-WOOCOMMERCE-015 browser direct R2 upload', () => {
+	it('generates a version-4 UUID without randomUUID when secure random bytes exist', async () => {
+		const crypto = {
+			getRandomValues: (bytes) => bytes.fill(255),
+			subtle: cryptoProvider.subtle,
+		};
+		const h = harness({ crypto });
+		await h.run();
+		expect(h.request.mock.calls[0][0].data.idempotencyKey).toBe(
+			'ffffffff-ffff-4fff-bfff-ffffffffffff'
+		);
+	});
 	it('hashes bytes, preserves required signed headers, omits credentials and finalises only after PUT', async () => {
 		const h = harness();
 		await expect(h.run()).resolves.toEqual(finalised());

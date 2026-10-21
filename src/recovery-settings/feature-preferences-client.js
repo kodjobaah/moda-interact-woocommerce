@@ -15,7 +15,7 @@ const own = (value, fields) =>
 
 /**
  * Strict, browser-side validation of API-014's revisioned response.
- * @param value
+ * @param {unknown} value - Untrusted API response.
  */
 export function parseFeaturePreferences(value) {
 	if (

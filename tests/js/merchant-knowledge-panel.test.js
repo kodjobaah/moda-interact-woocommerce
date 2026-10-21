@@ -267,7 +267,8 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		});
 		expect(view.type).toBe('details');
 		expect(view.props['aria-labelledby']).toBe('merchant-knowledge-title');
-		expect(nodes(view, 'summary')).toHaveLength(7); // section, two add disclosures, three edit forms, one replace
+		// Section, two add, three edit, one replace and two web deletions.
+		expect(nodes(view, 'summary')).toHaveLength(9);
 		expect(nodes(view, 'summary')[0].props.className).toBe(
 			'moda-knowledge__heading'
 		);
@@ -687,6 +688,34 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		expect(text(fullFields)).toContain(
 			'Remaining slots for file uploads: 0'
 		);
+	});
+
+	it('requires an explicit native disclosure before deleting a web source', () => {
+		const onAction = vi.fn();
+		const view = KnowledgeSourceList({
+			data,
+			sources: [data.sources[0]],
+			permissions: { ...data.permissions, deleteSource: true },
+			onAction,
+		});
+		const confirmation = nodes(view, 'details').find(
+			(node) =>
+				node.props.className === 'moda-knowledge__action-disclosure' &&
+				nodes(node, 'summary').some(
+					(summary) => text(summary) === 'Delete'
+				)
+		);
+		expect(confirmation).toBeDefined();
+		const warning = nodes(confirmation, 'p')[0];
+		expect(warning).toBeDefined();
+		expect(text(warning).replace(/\s+/g, '')).toBe('Delete—Products?');
+		const confirmButton = nodes(confirmation, 'button').find(
+			(node) => text(node) === 'Delete'
+		);
+		expect(confirmButton.props.disabled).toBe(false);
+		expect(onAction).not.toHaveBeenCalled();
+		confirmButton.props.onClick();
+		expect(onAction).toHaveBeenCalledWith('deleteSource', { id: 'a' });
 	});
 
 	it('offers explicit upload cancellation without exposing unsupported file deletion', () => {

@@ -5,19 +5,8 @@ const MIME = {
 	XLSX: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
 };
 const SHA = /^[a-f0-9]{64}$/;
-// API-017 retains previously persisted keys while new intents use a verified
-// hostname and UTC timestamp. Never loosen the R2 account, shop/asset or file
-// extension checks to accommodate the newer storage layout.
-const LEGACY_OBJECT_PATH =
-	/^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/([A-Za-z0-9_-]{1,128})\/source\.(csv|xlsx)$/;
-const CURRENT_OBJECT_PATH =
-	/^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/\d{8}T\d{9}Z-([a-f0-9-]{36})\.(csv|xlsx)$/;
-
-function validObjectPath(path, assetId, extension) {
-	const match =
-		LEGACY_OBJECT_PATH.exec(path) ?? CURRENT_OBJECT_PATH.exec(path);
-	return !!match && match[1] === assetId && `.${match[2]}` === extension;
-}
+// The authenticated upload-intent API owns object-key validation. The browser
+// uses its signed upload capability unchanged rather than parsing key layouts.
 
 const failure = (code) => Object.assign(new Error(code), { code });
 
@@ -66,8 +55,8 @@ function uuid(cryptoProvider) {
 		throw failure('UPLOAD_UNAVAILABLE');
 	}
 	const bytes = cryptoProvider.getRandomValues(new Uint8Array(16));
-	bytes[6] = (bytes[6] & 15) | 64;
-	bytes[8] = (bytes[8] & 63) | 128;
+	bytes[6] = (bytes[6] % 16) + 64;
+	bytes[8] = (bytes[8] % 64) + 128;
 	const h = [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
 	return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
@@ -180,7 +169,7 @@ export function createKnowledgeUploader({
 					referrerPolicy: 'no-referrer',
 					signal: controller.signal,
 				});
-			} catch (error) {
+			} catch {
 				if (controller.signal.aborted || signal?.aborted) {
 					throw failure(
 						signal?.aborted ? 'ABORTED' : 'UPLOAD_TIMEOUT'
