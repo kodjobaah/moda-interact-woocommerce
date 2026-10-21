@@ -54,9 +54,7 @@ test('replays the exact scheduled checkout/order payload through the WordPress h
 		commands[0][1],
 		/^do_action\('moda_interact_dispatch_checkout_activity',/
 	);
-	const encoded = commands[0][1].match(
-		/base64_decode\('([^']+)'\)/
-	)?.[1];
+	const encoded = commands[0][1].match(/base64_decode\('([^']+)'\)/)?.[1];
 	assert.ok(
 		encoded,
 		'scheduled arguments must be encoded for safe WP-CLI evaluation'

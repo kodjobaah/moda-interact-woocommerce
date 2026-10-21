@@ -578,7 +578,8 @@ export async function assertCheckoutWordPress({
 				checkoutAction: newestAction(revisedAdded),
 				getActions: () => actionRows(wp, parseJsonOutput),
 				newActions: newCheckoutActions,
-				deliverAction: (action) => deliverCapturedAction(wpAsync, action),
+				deliverAction: (action) =>
+					deliverCapturedAction(wpAsync, action),
 				wpAsync,
 				getActivityRequests,
 				setActivityStatus,

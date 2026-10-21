@@ -37,88 +37,147 @@ export async function assertOrderWordPress({
 	assert.equal(placedAction.args.event.order.checkoutKey, checkoutKey);
 	assert.equal(placedAction.args.event.order.orderId, String(orderId));
 	assert.equal(placedAction.args.event.schemaVersion, 'woo.activity.v1');
-	assert.equal(orderEvents(afterOrder, orderId, 'ORDER_PAID').length, 0,
-		`${kind}: placing an order must not imply successful payment`);
+	assert.equal(
+		orderEvents(afterOrder, orderId, 'ORDER_PAID').length,
+		0,
+		`${kind}: placing an order must not imply successful payment`
+	);
 	// Order-first and checkout-first are both valid ingestion orders. The
 	// fixture intentionally alternates delivery for guest and customer.
 	const earlierCheckout = checkoutAction;
-	const deliveryOrder = kind === 'guest'
-		? [placedAction, earlierCheckout]
-		: [earlierCheckout, placedAction];
+	const deliveryOrder =
+		kind === 'guest'
+			? [placedAction, earlierCheckout]
+			: [earlierCheckout, placedAction];
 	for (const action of deliveryOrder) {
 		await deliverAction(action);
-		assert.ok(getActivityRequests().some((request) =>
-			request.eventId === action.args.event.eventId && request.status === 202
-		), `${kind}: activity API must accept either source order`);
+		assert.ok(
+			getActivityRequests().some(
+				(request) =>
+					request.eventId === action.args.event.eventId &&
+					request.status === 202
+			),
+			`${kind}: activity API must accept either source order`
+		);
 	}
 	// payment_complete(), not a processing/completed status label, is
 	// the authoritative Woo payment signal for ORDER_PAID.
-	await wpAsync('eval', `
+	await wpAsync(
+		'eval',
+		`
 		$order = wc_get_order(${Number(orderId)});
 		$order->update_status('pending');
 		if (!$order->payment_complete('arch035-fixture')) throw new Exception('payment_complete failed');
-	`);
+	`
+	);
 	const afterPaid = getActions();
-	const paid = orderEvents(newActions(afterOrder, afterPaid),
-		orderId, 'ORDER_PAID');
+	const paid = orderEvents(
+		newActions(afterOrder, afterPaid),
+		orderId,
+		'ORDER_PAID'
+	);
 	assert.equal(paid.length, 1, `${kind}: confirmed payment must emit once`);
 	assert.equal(paid[0].args.event.checkoutKey, checkoutKey);
-	await wpAsync('eval', `do_action('woocommerce_payment_complete', ${Number(orderId)});`);
-	assert.equal(orderEvents(getActions(),
-		orderId, 'ORDER_PAID').length, 1,
-		`${kind}: repeated payment callback must not duplicate the event`);
+	await wpAsync(
+		'eval',
+		`do_action('woocommerce_payment_complete', ${Number(orderId)});`
+	);
+	assert.equal(
+		orderEvents(getActions(), orderId, 'ORDER_PAID').length,
+		1,
+		`${kind}: repeated payment callback must not duplicate the event`
+	);
 	// Cancellation is an explicit Woo status transition, not inferred
 	// from payment status or an order's existence.
 	const beforeCancel = getActions();
 	const callsBeforeCancel = getActivityRequests().length;
 	setActivityStatus(503);
-	await wpAsync('eval', `wc_get_order(${Number(orderId)})->update_status('cancelled');`);
-	assert.equal(getActivityRequests().length, callsBeforeCancel,
-		'Cancelling an order must never call hosted API synchronously');
+	await wpAsync(
+		'eval',
+		`wc_get_order(${Number(orderId)})->update_status('cancelled');`
+	);
+	assert.equal(
+		getActivityRequests().length,
+		callsBeforeCancel,
+		'Cancelling an order must never call hosted API synchronously'
+	);
 	const afterCancel = getActions();
-	const cancelled = orderEvents(newActions(beforeCancel, afterCancel),
-		orderId, 'ORDER_CANCELLED');
+	const cancelled = orderEvents(
+		newActions(beforeCancel, afterCancel),
+		orderId,
+		'ORDER_CANCELLED'
+	);
 	assert.equal(cancelled.length, 1, `${kind}: cancelled event`);
 	const cancelAction = cancelled[0];
 	assert.equal(cancelAction.args.event.checkoutKey, checkoutKey);
 	await deliverAction(cancelAction);
-	assert.ok(getActivityRequests().some((request) =>
-		request.eventId === cancelAction.args.event.eventId && request.status === 503
-	), 'Order 503 must reach the HTTPS fixture');
-	const pendingRetry = orderEvents(getActions(),
-		orderId, 'ORDER_CANCELLED').find((action) =>
+	assert.ok(
+		getActivityRequests().some(
+			(request) =>
+				request.eventId === cancelAction.args.event.eventId &&
+				request.status === 503
+		),
+		'Order 503 must reach the HTTPS fixture'
+	);
+	const pendingRetry = orderEvents(
+		getActions(),
+		orderId,
+		'ORDER_CANCELLED'
+	).find(
+		(action) =>
 			Number(action.args.attempt) === 2 &&
 			action.args.event.eventId === cancelAction.args.event.eventId
-		);
+	);
 	assert.ok(pendingRetry, 'Order 503 schedules the original event');
 	assert.deepEqual(pendingRetry.args.event, cancelAction.args.event);
 	setActivityStatus(202);
 	await deliverAction(pendingRetry);
-	assert.ok(getActivityRequests().some((request) =>
-		request.eventId === cancelAction.args.event.eventId && request.status === 202
-	), 'Order retry must be accepted with its original identity');
+	assert.ok(
+		getActivityRequests().some(
+			(request) =>
+				request.eventId === cancelAction.args.event.eventId &&
+				request.status === 202
+		),
+		'Order retry must be accepted with its original identity'
+	);
 	// Repeated source callback stays suppressed, while reopening followed
 	// by a new cancellation creates a genuinely new event identity.
-	await wpAsync('eval', `
+	await wpAsync(
+		'eval',
+		`
 		$order = wc_get_order(${Number(orderId)});
 		do_action('woocommerce_order_status_changed', $order->get_id(), 'processing', 'cancelled', $order);
-	`);
-	assert.equal(orderEvents(getActions(),
-		orderId, 'ORDER_CANCELLED').filter((action) =>
-			Number(action.args.attempt) === 1).length, 1,
-		`${kind}: repeated cancelled callback must not duplicate event`);
-	await wpAsync('eval', `
+	`
+	);
+	assert.equal(
+		orderEvents(getActions(), orderId, 'ORDER_CANCELLED').filter(
+			(action) => Number(action.args.attempt) === 1
+		).length,
+		1,
+		`${kind}: repeated cancelled callback must not duplicate event`
+	);
+	await wpAsync(
+		'eval',
+		`
 		$order = wc_get_order(${Number(orderId)});
 		$order->update_status('pending');
 		$order->update_status('cancelled');
-	`);
-	const allCancellationEvents = orderEvents(getActions(),
-		orderId, 'ORDER_CANCELLED').filter((action) =>
-			Number(action.args.attempt) === 1);
-	assert.equal(allCancellationEvents.length, 2,
-		`${kind}: cancellation after reopening is another occurrence`);
-	assert.notEqual(allCancellationEvents[0].args.event.eventId,
-		allCancellationEvents[1].args.event.eventId);
+	`
+	);
+	const allCancellationEvents = orderEvents(
+		getActions(),
+		orderId,
+		'ORDER_CANCELLED'
+	).filter((action) => Number(action.args.attempt) === 1);
+	assert.equal(
+		allCancellationEvents.length,
+		2,
+		`${kind}: cancellation after reopening is another occurrence`
+	);
+	assert.notEqual(
+		allCancellationEvents[0].args.event.eventId,
+		allCancellationEvents[1].args.event.eventId
+	);
 	process.stdout.write(
 		`ARCH-035 Order ${kind}: placed, payment, cancellation, replay, 503, HPOS PASS\n`
 	);
