@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { createHmac, randomBytes } from 'node:crypto';
 import { createServer } from 'node:https';
 import { mkdtemp, readFile, rm, writeFile, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
+import { promisify } from 'node:util';
 import { assertStoreContextWordPress } from './store-context-assertions.mjs';
 import { createWordPressFetch } from './wordpress-http.mjs';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
@@ -18,6 +19,7 @@ import { assertReleaseLocales } from './release-locales.mjs';
 import { assertCheckoutWordPress } from './checkout-wordpress.mjs';
 import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
 
+const execFileAsync = promisify(execFile);
 const checkoutOnly = process.argv.includes('--checkout-only');
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
@@ -67,6 +69,22 @@ function wp(...args) {
 			env: process.env,
 		}
 	);
+}
+
+// The HTTPS fixture runs in this process. Delivery-triggering WP-CLI commands
+// must be asynchronous so the fixture can accept and respond to PHP requests.
+async function wpAsync(...args) {
+	const { stdout } = await execFileAsync(
+		'npm',
+		['exec', '--', 'wp-env', 'run', 'cli', 'wp', ...args],
+		{
+			cwd: repository,
+			encoding: 'utf8',
+			maxBuffer: 16 * 1024 * 1024,
+			env: process.env,
+		}
+	);
+	return stdout;
 }
 
 function runningWordPressSite() {
@@ -809,6 +827,7 @@ try {
 			await assertCheckoutWordPress({
 				siteUrl,
 				wp,
+				wpAsync,
 				parseJsonOutput,
 				getActivityRequests: () => activityRequests,
 				setActivityStatus: (status) => {
@@ -1444,6 +1463,7 @@ try {
 		await assertCheckoutWordPress({
 			siteUrl,
 			wp,
+			wpAsync,
 			parseJsonOutput,
 			getActivityRequests: () => activityRequests,
 			setActivityStatus: (status) => {
