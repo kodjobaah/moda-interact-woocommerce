@@ -50,6 +50,8 @@ export function BillingSummary({
 		}
 		dialogWasOpen.current = cancelDialogOpen;
 	}, [cancelDialogOpen]);
+	// BillingSummaryView is a hoisted function declaration in this module.
+	// eslint-disable-next-line @typescript-eslint/no-use-before-define
 	return createElement(BillingSummaryView, {
 		data,
 		state,

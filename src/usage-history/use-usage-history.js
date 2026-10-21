@@ -4,7 +4,9 @@ import { UsageHistoryController } from './usage-history-controller';
 /** Connected-only lifecycle; unmount/disconnect invalidates all pending responses. */
 export function useUsageHistory() {
 	const controllerRef = useRef(null);
-	if (!controllerRef.current) controllerRef.current = new UsageHistoryController();
+	if (!controllerRef.current) {
+		controllerRef.current = new UsageHistoryController();
+	}
 	const [state, setState] = useState(controllerRef.current.state);
 	useEffect(() => {
 		const controller = controllerRef.current;

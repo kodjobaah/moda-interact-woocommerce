@@ -1,5 +1,3 @@
-/* eslint vitest/no-import-node-test: "off" */
-
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';

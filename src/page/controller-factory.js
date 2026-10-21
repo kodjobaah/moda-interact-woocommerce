@@ -11,9 +11,11 @@ import { StoreContextSyncController } from '../store-context-sync-controller';
 
 /** Create controllers with the same cross-controller callbacks as the original page. */
 export function createPageControllers() {
-	const merchant = new MerchantBootstrapController(undefined, () =>
-		connection.refresh()
-	);
+	const merchant = new MerchantBootstrapController(undefined, () => {
+		// This callback runs after all controllers have been constructed.
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		return connection.refresh();
+	});
 	const sync = new StoreContextSyncController(undefined, () =>
 		merchant.refreshAfterCurrent()
 	);
