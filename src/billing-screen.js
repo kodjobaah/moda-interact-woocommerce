@@ -156,10 +156,21 @@ export function BillingScreen({
 					available: state.data.surfaces.purchaseHistoryAllowed,
 				})
 			: null,
-		state.status === 'READY' && !showHistory && state.data?.surfaces?.usageHistoryAllowed
-			? createElement('p', { className: 'moda-usage__billing-link' },
-				createElement('a', { href: 'admin.php?page=moda-interact-usage-history', className: 'button' },
-					__('Usage history', 'moda-interact')))
+		state.status === 'READY' &&
+			!showHistory &&
+			state.data?.surfaces?.usageHistoryAllowed
+			? createElement(
+					'p',
+					{ className: 'moda-usage__billing-link' },
+					createElement(
+						'a',
+						{
+							href: 'admin.php?page=moda-interact-usage-history',
+							className: 'button',
+						},
+						__('Usage history', 'moda-interact')
+					)
+				)
 			: null,
 		...(state.status === 'READY' && state.view !== 'SUMMARY' && !showHistory
 			? billingNotices(state.data, state)

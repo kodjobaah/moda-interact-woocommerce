@@ -155,7 +155,9 @@ export function KnowledgeUploadForm({
 				})
 			)
 				.then((result) => {
-					if (result?.confirmedAction !== action) return;
+					if (result?.confirmedAction !== action) {
+						return;
+					}
 					formRef.current?.reset();
 					clearSelectedFile();
 					if (!source) {
@@ -305,7 +307,10 @@ export function KnowledgeUploadFields({
 		disallowedFile
 			? createElement(
 					'p',
-					{ className: 'moda-knowledge__plan-warning', role: 'alert' },
+					{
+						className: 'moda-knowledge__plan-warning',
+						role: 'alert',
+					},
 					__(
 						'The selected file format is not included in your plan for this purpose.',
 						'moda-interact'

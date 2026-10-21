@@ -111,9 +111,9 @@ export function KnowledgeAddForms({
 									? `${__('Upload file', 'moda-interact')} — ${__('Not included in your plan', 'moda-interact')}`
 									: ready && !capacity
 										? __(
-											"Your plan's shared knowledge-source limit has been reached.",
-											'moda-interact'
-										)
+												"Your plan's shared knowledge-source limit has been reached.",
+												'moda-interact'
+											)
 										: unavailableReason('upload')
 							)
 						: null

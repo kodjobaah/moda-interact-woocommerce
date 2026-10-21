@@ -63,9 +63,11 @@ function mount(client) {
 
 describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 	it('defaults to unavailable without attempting an invented WordPress route', async () => {
-		const controller = mount(createFeaturePreferencesClient(async () => {
-			throw new Error('FEATURES_UNAVAILABLE');
-		}));
+		const controller = mount(
+			createFeaturePreferencesClient(async () => {
+				throw new Error('FEATURES_UNAVAILABLE');
+			})
+		);
 		await flush();
 		expect(controller.state).toEqual({ status: 'UNAVAILABLE', data: null });
 		await controller.save('optional-1', true);
@@ -94,7 +96,11 @@ describe('ARCH-035-WOOCOMMERCE-003 feature controls', () => {
 
 	it('renders an authoritative empty state and distinguishes denied and transport errors', async () => {
 		const client = {
-			read: vi.fn(async () => ({ schemaVersion: 1, revision: 'd'.repeat(64), features: [] })),
+			read: vi.fn(async () => ({
+				schemaVersion: 1,
+				revision: 'd'.repeat(64),
+				features: [],
+			})),
 			save: vi.fn(),
 		};
 		const controller = mount(client);

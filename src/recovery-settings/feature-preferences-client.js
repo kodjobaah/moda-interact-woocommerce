@@ -13,7 +13,10 @@ const own = (value, fields) =>
 	Object.keys(value).length === fields.length &&
 	fields.every((field) => Object.hasOwn(value, field));
 
-/** Strict, browser-side validation of API-014's revisioned response. */
+/**
+ * Strict, browser-side validation of API-014's revisioned response.
+ * @param value
+ */
 export function parseFeaturePreferences(value) {
 	if (
 		!own(value, ['schemaVersion', 'revision', 'features']) ||
@@ -29,8 +32,15 @@ export function parseFeaturePreferences(value) {
 	for (const feature of value.features) {
 		if (
 			!own(feature, [
-				'id', 'key', 'name', 'description', 'enabled', 'effective',
-				'editable', 'required', 'planEligible',
+				'id',
+				'key',
+				'name',
+				'description',
+				'enabled',
+				'effective',
+				'editable',
+				'required',
+				'planEligible',
 			]) ||
 			typeof feature.id !== 'string' ||
 			!ID.test(feature.id) ||
@@ -43,9 +53,13 @@ export function parseFeaturePreferences(value) {
 			(feature.description !== null &&
 				(typeof feature.description !== 'string' ||
 					feature.description.length > 10000)) ||
-			!['enabled', 'effective', 'editable', 'required', 'planEligible'].every(
-				(key) => typeof feature[key] === 'boolean'
-			) ||
+			![
+				'enabled',
+				'effective',
+				'editable',
+				'required',
+				'planEligible',
+			].every((key) => typeof feature[key] === 'boolean') ||
 			(feature.editable && (!feature.planEligible || feature.required)) ||
 			(feature.effective && !feature.planEligible)
 		) {

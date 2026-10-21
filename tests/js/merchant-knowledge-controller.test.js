@@ -290,13 +290,17 @@ describe('ARCH-035-WOOCOMMERCE-015 command failure and cancellation', () => {
 		const original = fixture();
 		const client = {
 			read: vi.fn(async () => original),
-			addUrl: vi.fn(async () => { throw { code: 'REMOTE_UNAVAILABLE' }; }),
+			addUrl: vi.fn(async () => {
+				throw { code: 'REMOTE_UNAVAILABLE' };
+			}),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
 		await controller.perform('addUrl', {
-			name: 'Draft', purpose: 'FAQ', languageTag: 'en',
+			name: 'Draft',
+			purpose: 'FAQ',
+			languageTag: 'en',
 			url: 'https://example.org/help',
 		});
 		expect(controller.state.status).toBe('READY');
@@ -310,23 +314,32 @@ describe('ARCH-035-WOOCOMMERCE-015 command failure and cancellation', () => {
 		let release;
 		const client = {
 			read: vi.fn(async () => fixture()),
-			upload: vi.fn((_payload, { signal }) => new Promise((resolve) => {
-				release = () => resolve({ status: 'ACCEPTED' });
-				signal.addEventListener('abort', () => resolve({ status: 'ACCEPTED' }));
-			})),
+			upload: vi.fn(
+				(_payload, { signal }) =>
+					new Promise((resolve) => {
+						release = () => resolve({ status: 'ACCEPTED' });
+						signal.addEventListener('abort', () =>
+							resolve({ status: 'ACCEPTED' })
+						);
+					})
+			),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
 		const saved = controller.perform('upload', {
-			name: 'Source', purpose: 'PRODUCT_INFORMATION',
-			languageTag: 'en', dataFormatKey: 'XLSX',
+			name: 'Source',
+			purpose: 'PRODUCT_INFORMATION',
+			languageTag: 'en',
+			dataFormatKey: 'XLSX',
 			file: { name: 'item.xlsx', size: 40 },
 		});
 		await settle();
 		expect(controller.state.status).toBe('SAVING');
 		controller.setConnection({
-			status: 'CONNECTED', installationId: 'rotated', credentialVersion: 2,
+			status: 'CONNECTED',
+			installationId: 'rotated',
+			credentialVersion: 2,
 		});
 		await saved;
 		expect(client.read).toHaveBeenCalledTimes(2);
@@ -338,19 +351,30 @@ describe('ARCH-035-WOOCOMMERCE-015 command failure and cancellation', () => {
 
 describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 	const payload = {
-		name: 'New source', purpose: 'FAQ', languageTag: 'en',
+		name: 'New source',
+		purpose: 'FAQ',
+		languageTag: 'en',
 		url: 'https://example.org/new',
 	};
 
 	it('uses the authoritative complete command snapshot without a second GET', async () => {
 		const original = fixture();
 		const updated = {
-			...original, configuredCount: 2, nextPosition: null,
-			sources: [...original.sources, { ...original.sources[0], id: 'new_2' }],
+			...original,
+			configuredCount: 2,
+			nextPosition: null,
+			sources: [
+				...original.sources,
+				{ ...original.sources[0], id: 'new_2' },
+			],
 		};
 		const client = {
 			read: vi.fn(async () => original),
-			addUrl: vi.fn(async () => ({ created: true, sourceId: 'new_2', knowledge: updated })),
+			addUrl: vi.fn(async () => ({
+				created: true,
+				sourceId: 'new_2',
+				knowledge: updated,
+			})),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
@@ -358,7 +382,10 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		const result = await controller.perform('addUrl', payload);
 		expect(result.confirmedAction).toBe('addUrl');
 		expect(client.read).toHaveBeenCalledTimes(1);
-		expect(controller.state).toMatchObject({ status: 'READY', data: updated });
+		expect(controller.state).toMatchObject({
+			status: 'READY',
+			data: updated,
+		});
 		expect(controller.state.data.sources).toHaveLength(2);
 		controller.dispose();
 	});
@@ -366,7 +393,9 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 	it('does not confirm an unsuccessful web-page addition', async () => {
 		const client = {
 			read: vi.fn(async () => fixture()),
-			addUrl: vi.fn(async () => { throw { code: 'DENIED' }; }),
+			addUrl: vi.fn(async () => {
+				throw { code: 'DENIED' };
+			}),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
@@ -379,10 +408,19 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 
 	it('fetches the complete list when command acknowledgement is paginated', async () => {
 		const original = fixture();
-		const updated = { ...original, configuredCount: 2, sources: original.sources };
+		const updated = {
+			...original,
+			configuredCount: 2,
+			sources: original.sources,
+		};
 		const client = {
-			read: vi.fn().mockResolvedValueOnce(original).mockResolvedValueOnce(updated),
-			addUrl: vi.fn(async () => ({ knowledge: { ...updated, nextPosition: 1 } })),
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(original)
+				.mockResolvedValueOnce(updated),
+			addUrl: vi.fn(async () => ({
+				knowledge: { ...updated, nextPosition: 1 },
+			})),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
@@ -397,7 +435,9 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		const original = fixture();
 		const updated = { ...original, configuredCount: 2 };
 		const client = {
-			read: vi.fn().mockResolvedValueOnce(original)
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(original)
 				.mockRejectedValueOnce({ code: 'REMOTE_UNAVAILABLE' })
 				.mockResolvedValueOnce(updated),
 			addUrl: vi.fn(async () => ({ created: true })),
@@ -408,13 +448,18 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		const result = await controller.perform('addUrl', payload);
 		expect(result.confirmedAction).toBe('addUrl');
 		expect(controller.state).toMatchObject({
-			status: 'READY', data: original, error: 'SAVED_NEEDS_REFRESH',
+			status: 'READY',
+			data: original,
+			error: 'SAVED_NEEDS_REFRESH',
 			needsRefresh: true,
 		});
 		await controller.perform('addUrl', payload);
 		expect(client.addUrl).toHaveBeenCalledTimes(1);
 		await controller.refresh();
-		expect(controller.state).toMatchObject({ status: 'READY', data: updated });
+		expect(controller.state).toMatchObject({
+			status: 'READY',
+			data: updated,
+		});
 		expect(controller.state.needsRefresh).toBeUndefined();
 		controller.dispose();
 	});
@@ -422,7 +467,9 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 	it('reports upload completion only after finalisation, even if the next read fails', async () => {
 		const original = fixture();
 		const client = {
-			read: vi.fn().mockResolvedValueOnce(original)
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(original)
 				.mockRejectedValueOnce({ code: 'REMOTE_UNAVAILABLE' }),
 			upload: vi.fn(async () => ({ status: 'ACCEPTED' })),
 		};
@@ -430,13 +477,17 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		connected(controller);
 		await settle();
 		const confirmed = await controller.perform('upload', {
-			name: 'Products', purpose: 'PRODUCT_INFORMATION',
-			dataFormatKey: 'XLSX', languageTag: 'en',
+			name: 'Products',
+			purpose: 'PRODUCT_INFORMATION',
+			dataFormatKey: 'XLSX',
+			languageTag: 'en',
 			file: { name: 'products.xlsx', size: 40 },
 		});
 		expect(confirmed.confirmedAction).toBe('upload');
 		expect(controller.state).toMatchObject({
-			status: 'READY', error: 'SAVED_NEEDS_REFRESH', needsRefresh: true,
+			status: 'READY',
+			error: 'SAVED_NEEDS_REFRESH',
+			needsRefresh: true,
 		});
 		expect(controller.state).not.toHaveProperty('confirmedAction');
 		controller.dispose();
@@ -445,14 +496,18 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 	it('never signals upload completion after a failed finalisation', async () => {
 		const client = {
 			read: vi.fn(async () => fixture()),
-			upload: vi.fn(async () => { throw { code: 'UPLOAD_FAILED' }; }),
+			upload: vi.fn(async () => {
+				throw { code: 'UPLOAD_FAILED' };
+			}),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
 		const failed = await controller.perform('upload', {
-			name: 'Products', purpose: 'PRODUCT_INFORMATION',
-			dataFormatKey: 'XLSX', languageTag: 'en',
+			name: 'Products',
+			purpose: 'PRODUCT_INFORMATION',
+			dataFormatKey: 'XLSX',
+			languageTag: 'en',
 			file: { name: 'products.xlsx', size: 40 },
 		});
 		expect(failed).not.toHaveProperty('confirmedAction');
@@ -463,7 +518,9 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 	it('preserves known data and blocks writes after a refresh failure', async () => {
 		const original = fixture();
 		const client = {
-			read: vi.fn().mockResolvedValueOnce(original)
+			read: vi
+				.fn()
+				.mockResolvedValueOnce(original)
 				.mockRejectedValueOnce({ code: 'REMOTE_UNAVAILABLE' }),
 			addUrl: vi.fn(),
 		};
@@ -472,7 +529,9 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		await settle();
 		await controller.refresh();
 		expect(controller.state).toMatchObject({
-			status: 'READY', data: original, error: 'REFRESH_FAILED',
+			status: 'READY',
+			data: original,
+			error: 'REFRESH_FAILED',
 			needsRefresh: true,
 		});
 		await controller.perform('addUrl', payload);
@@ -484,14 +543,18 @@ describe('ARCH-035-WOOCOMMERCE-015 source-write acknowledgements', () => {
 		const original = fixture();
 		const client = {
 			read: vi.fn(async () => original),
-			addUrl: vi.fn(async () => { throw { code: 'KNOWLEDGE_UNAVAILABLE' }; }),
+			addUrl: vi.fn(async () => {
+				throw { code: 'KNOWLEDGE_UNAVAILABLE' };
+			}),
 		};
 		const controller = new MerchantKnowledgeController(client);
 		connected(controller);
 		await settle();
 		await controller.perform('addUrl', payload);
 		expect(controller.state).toMatchObject({
-			status: 'READY', data: original, error: 'VERIFY_REQUIRED',
+			status: 'READY',
+			data: original,
+			error: 'VERIFY_REQUIRED',
 			needsRefresh: true,
 		});
 		await controller.perform('addUrl', payload);

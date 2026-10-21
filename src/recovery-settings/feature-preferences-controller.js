@@ -139,15 +139,23 @@ export class FeaturePreferencesController {
 				if (this.isCurrent(epoch)) {
 					const code = error?.code || error?.message;
 					let status = 'ERROR';
-					if (['FEATURES_UNAVAILABLE', 'REMOTE_UNAVAILABLE',
-						'API_NOT_CONFIGURED'].includes(code)) {
+					if (
+						[
+							'FEATURES_UNAVAILABLE',
+							'REMOTE_UNAVAILABLE',
+							'API_NOT_CONFIGURED',
+						].includes(code)
+					) {
 						status = 'UNAVAILABLE';
 					} else if (code === 'DENIED' || code === 'FORBIDDEN') {
 						status = 'DENIED';
 					} else if (code === 'CONFLICT') {
 						status = 'CONFLICT';
 					}
-					this.publish({ status, data: status === 'CONFLICT' ? this.state.data : null });
+					this.publish({
+						status,
+						data: status === 'CONFLICT' ? this.state.data : null,
+					});
 				}
 				return this.state;
 			})

@@ -8,11 +8,14 @@ const SHA = /^[a-f0-9]{64}$/;
 // API-017 retains previously persisted keys while new intents use a verified
 // hostname and UTC timestamp. Never loosen the R2 account, shop/asset or file
 // extension checks to accommodate the newer storage layout.
-const LEGACY_OBJECT_PATH = /^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/([A-Za-z0-9_-]{1,128})\/source\.(csv|xlsx)$/;
-const CURRENT_OBJECT_PATH = /^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/\d{8}T\d{9}Z-([a-f0-9-]{36})\.(csv|xlsx)$/;
+const LEGACY_OBJECT_PATH =
+	/^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/([A-Za-z0-9_-]{1,128})\/source\.(csv|xlsx)$/;
+const CURRENT_OBJECT_PATH =
+	/^\/[A-Za-z0-9._-]{3,63}\/merchant-knowledge\/[a-z0-9][a-z0-9-]{0,31}\/woocommerce\/[A-Za-z0-9_-]{1,128}\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/\d{8}T\d{9}Z-([a-f0-9-]{36})\.(csv|xlsx)$/;
 
 function validObjectPath(path, assetId, extension) {
-	const match = LEGACY_OBJECT_PATH.exec(path) ?? CURRENT_OBJECT_PATH.exec(path);
+	const match =
+		LEGACY_OBJECT_PATH.exec(path) ?? CURRENT_OBJECT_PATH.exec(path);
 	return !!match && match[1] === assetId && `.${match[2]}` === extension;
 }
 
@@ -22,24 +25,32 @@ function uploadMetadata(payload, limit, catalogue) {
 	const { file, dataFormatKey, purpose } = payload;
 	if (
 		!validKnowledgeFile(file, limit, dataFormatKey) ||
-		!file || typeof file.arrayBuffer !== 'function' ||
+		!file ||
+		typeof file.arrayBuffer !== 'function' ||
 		!MIME[dataFormatKey] ||
-		!file.name || file.name.length > 255 ||
+		!file.name ||
+		file.name.length > 255 ||
 		/[\\/\x00-\x1f\x7f]/.test(file.name) ||
 		!catalogue.some(
-			(entry) => entry.purpose.key === purpose &&
+			(entry) =>
+				entry.purpose.key === purpose &&
 				entry.dataFormat.key === dataFormatKey &&
 				entry.dataFormat.inputKind === 'UPLOAD'
 		) ||
-		!payload.name?.trim() || payload.name.length > 160 ||
+		!payload.name?.trim() ||
+		payload.name.length > 160 ||
 		!payload.languageTag
 	) {
 		throw failure('INVALID_REQUEST');
 	}
 	const offered = catalogue.find(
-		(entry) => entry.purpose.key === purpose && entry.dataFormat.key === dataFormatKey
+		(entry) =>
+			entry.purpose.key === purpose &&
+			entry.dataFormat.key === dataFormatKey
 	).dataFormat.acceptedContentTypes;
-	const accepted = MIME[dataFormatKey].filter((type) => offered.includes(type));
+	const accepted = MIME[dataFormatKey].filter((type) =>
+		offered.includes(type)
+	);
 	const contentType = file.type || accepted[0];
 	if (!accepted.includes(contentType)) {
 		throw failure('INVALID_REQUEST');
@@ -62,14 +73,20 @@ function uuid(cryptoProvider) {
 }
 
 async function checksum(file, cryptoProvider, signal) {
-	if (signal?.aborted) throw failure('ABORTED');
+	if (signal?.aborted) {
+		throw failure('ABORTED');
+	}
 	if (typeof cryptoProvider?.subtle?.digest !== 'function') {
 		throw failure('UPLOAD_UNAVAILABLE');
 	}
 	const buffer = await file.arrayBuffer();
-	if (signal?.aborted) throw failure('ABORTED');
+	if (signal?.aborted) {
+		throw failure('ABORTED');
+	}
 	const digest = await cryptoProvider.subtle.digest('SHA-256', buffer);
-	if (signal?.aborted) throw failure('ABORTED');
+	if (signal?.aborted) {
+		throw failure('ABORTED');
+	}
 	return [...new Uint8Array(digest)]
 		.map((b) => b.toString(16).padStart(2, '0'))
 		.join('');
@@ -86,11 +103,19 @@ export function createKnowledgeUploader({
 	timeoutMs = 120000,
 }) {
 	return async function upload(payload, { signal, onProgress } = {}) {
-		const metadata = uploadMetadata(payload, payload.maxUploadBytes, payload.catalogue);
-		if (signal?.aborted) throw failure('ABORTED');
+		const metadata = uploadMetadata(
+			payload,
+			payload.maxUploadBytes,
+			payload.catalogue
+		);
+		if (signal?.aborted) {
+			throw failure('ABORTED');
+		}
 		onProgress?.('HASHING');
 		const sha256 = await checksum(payload.file, cryptoProvider, signal);
-		if (!SHA.test(sha256)) throw failure('UPLOAD_HASH_INVALID');
+		if (!SHA.test(sha256)) {
+			throw failure('UPLOAD_HASH_INVALID');
+		}
 		const uploadRequest = {
 			idempotencyKey: uuid(cryptoProvider),
 			purposeKey: payload.purpose,
@@ -106,28 +131,42 @@ export function createKnowledgeUploader({
 			data: uploadRequest,
 			signal,
 		});
-		if (signal?.aborted) throw failure('ABORTED');
+		if (signal?.aborted) {
+			throw failure('ABORTED');
+		}
 		// Moda API owns the R2 destination, object key and signing contract.
 		// Use its capability as issued; the browser only needs the fields it consumes.
-		if (typeof intent?.uploadUrl !== 'string' || !intent.uploadUrl ||
-			typeof intent?.assetId !== 'string' || !intent.assetId ||
-			!intent.requiredHeaders || typeof intent.requiredHeaders !== 'object' ||
-			!Number.isFinite(Date.parse(intent.expiresAt))) {
+		if (
+			typeof intent?.uploadUrl !== 'string' ||
+			!intent.uploadUrl ||
+			typeof intent?.assetId !== 'string' ||
+			!intent.assetId ||
+			!intent.requiredHeaders ||
+			typeof intent.requiredHeaders !== 'object' ||
+			!Number.isFinite(Date.parse(intent.expiresAt))
+		) {
 			throw failure('UPLOAD_CAPABILITY_INVALID');
 		}
 		const url = intent.uploadUrl;
-		if (typeof AbortController === 'undefined') throw failure('UPLOAD_UNAVAILABLE');
+		if (typeof AbortController === 'undefined') {
+			throw failure('UPLOAD_UNAVAILABLE');
+		}
 		const controller = new AbortController();
 		const abort = () => controller.abort();
 		signal?.addEventListener('abort', abort, { once: true });
-		const limit = Math.min(timeoutMs, Date.parse(intent.expiresAt) - now() - 1000);
+		const limit = Math.min(
+			timeoutMs,
+			Date.parse(intent.expiresAt) - now() - 1000
+		);
 		if (limit <= 0) {
 			signal?.removeEventListener('abort', abort);
 			throw failure('UPLOAD_EXPIRED');
 		}
 		const timer = setTimeout(abort, limit);
 		try {
-			if (signal?.aborted) throw failure('ABORTED');
+			if (signal?.aborted) {
+				throw failure('ABORTED');
+			}
 			onProgress?.('UPLOADING');
 			let result;
 			try {
@@ -143,13 +182,19 @@ export function createKnowledgeUploader({
 				});
 			} catch (error) {
 				if (controller.signal.aborted || signal?.aborted) {
-					throw failure(signal?.aborted ? 'ABORTED' : 'UPLOAD_TIMEOUT');
+					throw failure(
+						signal?.aborted ? 'ABORTED' : 'UPLOAD_TIMEOUT'
+					);
 				}
 				throw failure('UPLOAD_FAILED');
 			}
-			if (signal?.aborted) throw failure('ABORTED');
+			if (signal?.aborted) {
+				throw failure('ABORTED');
+			}
 			if (!result || result.redirected || !result.ok) {
-				throw failure(result?.status === 412 ? 'UPLOAD_CONFLICT' : 'UPLOAD_FAILED');
+				throw failure(
+					result?.status === 412 ? 'UPLOAD_CONFLICT' : 'UPLOAD_FAILED'
+				);
 			}
 		} finally {
 			clearTimeout(timer);

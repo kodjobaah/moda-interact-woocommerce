@@ -91,15 +91,20 @@ export class MerchantKnowledgeController {
 		const previousData = this.state.data;
 		this.publish({ status: 'LOADING', data: previousData });
 		return this.request(
-			epoch, (context) => this.client.read(context), 'READY',
-			previousData, 'read'
+			epoch,
+			(context) => this.client.read(context),
+			'READY',
+			previousData,
+			'read'
 		);
 	}
 
 	async perform(action, payload) {
 		if (action === 'cancelUpload') {
-			if (this.state.status === 'SAVING' &&
-				['upload', 'replaceSource'].includes(this.state.activeAction)) {
+			if (
+				this.state.status === 'SAVING' &&
+				['upload', 'replaceSource'].includes(this.state.activeAction)
+			) {
 				this.currentAbort?.abort();
 			}
 			return this.state;
@@ -125,19 +130,29 @@ export class MerchantKnowledgeController {
 			epoch,
 			async (context) => {
 				const acknowledgement = await this.client[action](payload, {
-					...context, snapshot: data,
+					...context,
+					snapshot: data,
 					onProgress: (phase) => {
 						if (this.isCurrent(epoch)) {
-							this.publish({ status: 'SAVING', data, activeAction: action, phase });
+							this.publish({
+								status: 'SAVING',
+								data,
+								activeAction: action,
+								phase,
+							});
 						}
 					},
 				});
 				if (context.signal.aborted) {
-					throw Object.assign(new Error('ABORTED'), { code: 'ABORTED' });
+					throw Object.assign(new Error('ABORTED'), {
+						code: 'ABORTED',
+					});
 				}
 				// Acknowledged additions and uploads may reset their forms. Failed
 				// or interrupted writes must retain the merchant's draft.
-				confirmed = ['addUrl', 'upload', 'replaceSource'].includes(action);
+				confirmed = ['addUrl', 'upload', 'replaceSource'].includes(
+					action
+				);
 				// Web-source commands return a validated authoritative snapshot.
 				// An incomplete (paginated) snapshot must still be read fully.
 				if (acknowledgement?.knowledge?.nextPosition === null) {
@@ -154,14 +169,22 @@ export class MerchantKnowledgeController {
 					return { [ACKNOWLEDGED_NEEDS_REFRESH]: data };
 				}
 			},
-			'READY', data, 'write'
+			'READY',
+			data,
+			'write'
 		);
 		return confirmed && this.isCurrent(epoch)
 			? { ...result, confirmedAction: action }
 			: result;
 	}
 
-	request(epoch, operation, successStatus, originalData = null, kind = 'read') {
+	request(
+		epoch,
+		operation,
+		successStatus,
+		originalData = null,
+		kind = 'read'
+	) {
 		const controller = new AbortController();
 		this.currentAbort = controller;
 		const request = Promise.resolve()
@@ -170,8 +193,10 @@ export class MerchantKnowledgeController {
 				if (this.isCurrent(epoch) && !controller.signal.aborted) {
 					if (data?.[ACKNOWLEDGED_NEEDS_REFRESH]) {
 						this.publish({
-							status: 'READY', data: data[ACKNOWLEDGED_NEEDS_REFRESH],
-							error: 'SAVED_NEEDS_REFRESH', needsRefresh: true,
+							status: 'READY',
+							data: data[ACKNOWLEDGED_NEEDS_REFRESH],
+							error: 'SAVED_NEEDS_REFRESH',
+							needsRefresh: true,
 						});
 					} else {
 						this.publish({ status: successStatus, data });
@@ -188,23 +213,45 @@ export class MerchantKnowledgeController {
 						// A failed read keeps the last valid data but prevents stale writes.
 						// A transport failure during a write has an UNKNOWN outcome:
 						// refresh before allowing another submit, avoiding duplicates.
-						const uncertainWrite = kind === 'write' && [
-							'KNOWLEDGE_UNAVAILABLE', 'REMOTE_UNAVAILABLE',
-							'API_NOT_CONFIGURED',
-						].includes(code);
+						const uncertainWrite =
+							kind === 'write' &&
+							[
+								'KNOWLEDGE_UNAVAILABLE',
+								'REMOTE_UNAVAILABLE',
+								'API_NOT_CONFIGURED',
+							].includes(code);
 						this.publish({
-							status: 'READY', data: originalData,
-							error: kind === 'read' ? 'REFRESH_FAILED' :
-								uncertainWrite ? 'VERIFY_REQUIRED' :
-								code === 'CONFLICT' ? 'CONFLICT' :
-								code === 'DENIED' || code === 'FORBIDDEN' ? 'DENIED' : 'ERROR',
-							needsRefresh: kind === 'read' || code === 'CONFLICT' || uncertainWrite,
+							status: 'READY',
+							data: originalData,
+							error:
+								kind === 'read'
+									? 'REFRESH_FAILED'
+									: uncertainWrite
+										? 'VERIFY_REQUIRED'
+										: code === 'CONFLICT'
+											? 'CONFLICT'
+											: code === 'DENIED' ||
+												  code === 'FORBIDDEN'
+												? 'DENIED'
+												: 'ERROR',
+							needsRefresh:
+								kind === 'read' ||
+								code === 'CONFLICT' ||
+								uncertainWrite,
 						});
 					} else {
-						const status = ['KNOWLEDGE_UNAVAILABLE', 'RECONNECT_REQUIRED',
-							'REMOTE_UNAVAILABLE', 'API_NOT_CONFIGURED'].includes(code) ? 'UNAVAILABLE' :
-							code === 'DENIED' || code === 'FORBIDDEN' ? 'DENIED' :
-							code === 'CONFLICT' ? 'CONFLICT' : 'ERROR';
+						const status = [
+							'KNOWLEDGE_UNAVAILABLE',
+							'RECONNECT_REQUIRED',
+							'REMOTE_UNAVAILABLE',
+							'API_NOT_CONFIGURED',
+						].includes(code)
+							? 'UNAVAILABLE'
+							: code === 'DENIED' || code === 'FORBIDDEN'
+								? 'DENIED'
+								: code === 'CONFLICT'
+									? 'CONFLICT'
+									: 'ERROR';
 						this.publish({ status, data: null });
 					}
 				}

@@ -59,8 +59,8 @@ export function MerchantKnowledgePanel({
 					String(limit)
 				)
 			: null;
-	const permissions = !busy && ready && !state.needsRefresh
-		? (data?.permissions ?? {}) : {};
+	const permissions =
+		!busy && ready && !state.needsRefresh ? (data?.permissions ?? {}) : {};
 	return createElement(
 		'details',
 		{
@@ -109,7 +109,8 @@ export function MerchantKnowledgePanel({
 									'button',
 									{
 										type: 'button',
-										className: 'button moda-knowledge__manual-refresh',
+										className:
+											'button moda-knowledge__manual-refresh',
 										disabled: busy,
 										onClick: onRefresh,
 									},
@@ -139,15 +140,25 @@ export function MerchantKnowledgePanel({
 				: null,
 			state.error
 				? createElement(
-						'p', { role: 'alert', className: 'moda-knowledge__status-error' },
+						'p',
+						{
+							role: 'alert',
+							className: 'moda-knowledge__status-error',
+						},
 						knowledgeErrorMessage(state.error)
-					) : null,
+					)
+				: null,
 			busy && ['upload', 'replaceSource'].includes(state.activeAction)
 				? createElement(
-						'button', { type: 'button', className: 'button',
-							onClick: () => onAction('cancelUpload') },
+						'button',
+						{
+							type: 'button',
+							className: 'button',
+							onClick: () => onAction('cancelUpload'),
+						},
 						__('Cancel upload', 'moda-interact')
-					) : null,
+					)
+				: null,
 			!ready && !busy
 				? createElement(
 						'p',
@@ -179,7 +190,8 @@ export function MerchantKnowledgePanel({
 						onAction,
 					})
 				: null,
-			(state.needsRefresh || ['ERROR', 'CONFLICT', 'DENIED', 'UNAVAILABLE'].includes(status))
+			state.needsRefresh ||
+				['ERROR', 'CONFLICT', 'DENIED', 'UNAVAILABLE'].includes(status)
 				? createElement(
 						'button',
 						{

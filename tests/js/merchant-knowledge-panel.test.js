@@ -309,7 +309,8 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 			onRefresh,
 		});
 		const button = nodes(view, 'button').find(
-			(node) => node.props.className === 'button moda-knowledge__manual-refresh'
+			(node) =>
+				node.props.className === 'button moda-knowledge__manual-refresh'
 		);
 		expect(button).toBeDefined();
 		expect(text(button)).toBe('Refresh');
@@ -321,17 +322,25 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 			state: { status: 'SAVING', data },
 			onRefresh,
 		});
-		expect(nodes(saving, 'button').find(
-			(node) => node.props.className === 'button moda-knowledge__manual-refresh'
-		).props.disabled).toBe(true);
+		expect(
+			nodes(saving, 'button').find(
+				(node) =>
+					node.props.className ===
+					'button moda-knowledge__manual-refresh'
+			).props.disabled
+		).toBe(true);
 
 		const stale = MerchantKnowledgePanel({
 			state: { status: 'READY', data, needsRefresh: true },
 			onRefresh,
 		});
-		expect(nodes(stale, 'button').some(
-			(node) => node.props.className === 'button moda-knowledge__manual-refresh'
-		)).toBe(false);
+		expect(
+			nodes(stale, 'button').some(
+				(node) =>
+					node.props.className ===
+					'button moda-knowledge__manual-refresh'
+			)
+		).toBe(false);
 		expect(text(stale)).toContain('Retry');
 	});
 
@@ -451,9 +460,12 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 
 	it('clears a web-page draft only after the server confirms the add', async () => {
 		let acknowledge;
-		const onAction = vi.fn(() => new Promise((resolve) => {
-			acknowledge = resolve;
-		}));
+		const onAction = vi.fn(
+			() =>
+				new Promise((resolve) => {
+					acknowledge = resolve;
+				})
+		);
 		const form = KnowledgeWebForm({
 			data,
 			catalogue: catalogueFor(data, 'REMOTE_URL'),
@@ -535,18 +547,18 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 
 	it('detects dropped CSV/XLSX files only when allowed by the selected purpose', () => {
 		const choices = catalogueFor(data, 'UPLOAD');
-		expect(
-			matchingUploadFormat({ name: 'products.CSV' }, choices)
-		).toBe('CSV');
-		expect(
-			matchingUploadFormat({ name: 'products.xlsx' }, choices)
-		).toBe('XLSX');
+		expect(matchingUploadFormat({ name: 'products.CSV' }, choices)).toBe(
+			'CSV'
+		);
+		expect(matchingUploadFormat({ name: 'products.xlsx' }, choices)).toBe(
+			'XLSX'
+		);
 		expect(
 			matchingUploadFormat({ name: 'products.csv' }, choices.slice(0, 1))
 		).toBe(null);
-		expect(
-			matchingUploadFormat({ name: 'products.exe' }, choices)
-		).toBe(null);
+		expect(matchingUploadFormat({ name: 'products.exe' }, choices)).toBe(
+			null
+		);
 		expect(matchingUploadFormat(null, choices)).toBe(null);
 	});
 
@@ -560,9 +572,15 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		expect(csv.props.disabled).toBe(true);
 		expect(text(csv)).toContain('Not included in your plan');
 		expect(xlsx.props.disabled).toBe(false);
-		expect(fileFormatDisallowedByPlan({ name: 'items.csv' }, permitted)).toBe(true);
-		expect(fileFormatDisallowedByPlan({ name: 'items.xlsx' }, permitted)).toBe(false);
-		expect(matchingUploadFormat({ name: 'items.csv' }, permitted)).toBe(null);
+		expect(
+			fileFormatDisallowedByPlan({ name: 'items.csv' }, permitted)
+		).toBe(true);
+		expect(
+			fileFormatDisallowedByPlan({ name: 'items.xlsx' }, permitted)
+		).toBe(false);
+		expect(matchingUploadFormat({ name: 'items.csv' }, permitted)).toBe(
+			null
+		);
 		const rendered = KnowledgeUploadFields({
 			data: { ...data, configuredCount: 2, maxKnowledgeSources: 10 },
 			all: permitted,
@@ -579,20 +597,38 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 			onFileChange: vi.fn(),
 			onSubmit: vi.fn(),
 		});
-		expect(nodes(rendered, 'option').find((item) => item.props.value === 'CSV').props.disabled).toBe(true);
-		expect(nodes(rendered, 'input').find((item) => item.props.type === 'file').props.accept).toBe('.xlsx');
-		expect(text(rendered)).toContain('The selected file format is not included in your plan');
+		expect(
+			nodes(rendered, 'option').find((item) => item.props.value === 'CSV')
+				.props.disabled
+		).toBe(true);
+		expect(
+			nodes(rendered, 'input').find((item) => item.props.type === 'file')
+				.props.accept
+		).toBe('.xlsx');
+		expect(text(rendered)).toContain(
+			'The selected file format is not included in your plan'
+		);
 		expect(text(rendered)).toContain('Remaining slots for file uploads: 8');
-		expect(text(rendered)).toContain('shared with web pages; 10 sources total');
-		expect(nodes(rendered, 'button').find((button) => button.props.type === 'submit').props.disabled).toBe(true);
+		expect(text(rendered)).toContain(
+			'shared with web pages; 10 sources total'
+		);
+		expect(
+			nodes(rendered, 'button').find(
+				(button) => button.props.type === 'submit'
+			).props.disabled
+		).toBe(true);
 	});
 
 	it('enables CSV automatically when authorised without changing source limits', () => {
 		const permitted = catalogueFor(data, 'UPLOAD');
 		const choices = planUploadFormatOptions(permitted);
 		expect(choices.every((item) => !item.props.disabled)).toBe(true);
-		expect(matchingUploadFormat({ name: 'items.csv' }, permitted)).toBe('CSV');
-		expect(fileFormatDisallowedByPlan({ name: 'items.csv' }, permitted)).toBe(false);
+		expect(matchingUploadFormat({ name: 'items.csv' }, permitted)).toBe(
+			'CSV'
+		);
+		expect(
+			fileFormatDisallowedByPlan({ name: 'items.csv' }, permitted)
+		).toBe(false);
 		const rendered = KnowledgeUploadFields({
 			data: { ...data, configuredCount: 9, maxKnowledgeSources: 10 },
 			all: permitted,
@@ -610,8 +646,14 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 			onSubmit: vi.fn(),
 		});
 		expect(text(rendered)).toContain('Remaining slots for file uploads: 1');
-		expect(text(rendered)).not.toContain('The selected file format is not included');
-		expect(nodes(rendered, 'button').find((button) => button.props.type === 'submit').props.disabled).toBe(false);
+		expect(text(rendered)).not.toContain(
+			'The selected file format is not included'
+		);
+		expect(
+			nodes(rendered, 'button').find(
+				(button) => button.props.type === 'submit'
+			).props.disabled
+		).toBe(false);
 	});
 
 	it('explains when the plan has no uploads or all shared source slots are occupied', () => {
@@ -620,12 +662,18 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 			catalogue: catalogueFor(data, 'REMOTE_URL'),
 		};
 		const blocked = KnowledgeAddForms({ data: onlyWeb });
-		expect(text(blocked)).toContain('Upload file — Not included in your plan');
-		expect(nodes(blocked, KnowledgeUploadForm)[0].props.enabled).toBe(false);
+		expect(text(blocked)).toContain(
+			'Upload file — Not included in your plan'
+		);
+		expect(nodes(blocked, KnowledgeUploadForm)[0].props.enabled).toBe(
+			false
+		);
 		const full = KnowledgeAddForms({
 			data: { ...data, configuredCount: data.maxKnowledgeSources },
 		});
-		expect(text(full)).toContain('shared knowledge-source limit has been reached');
+		expect(text(full)).toContain(
+			'shared knowledge-source limit has been reached'
+		);
 		expect(nodes(full, KnowledgeUploadForm)[0].props.enabled).toBe(false);
 		const fullFields = KnowledgeUploadFields({
 			data: { ...data, configuredCount: data.maxKnowledgeSources },
@@ -636,13 +684,20 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 			disabled: true,
 			canSubmit: false,
 		});
-		expect(text(fullFields)).toContain('Remaining slots for file uploads: 0');
+		expect(text(fullFields)).toContain(
+			'Remaining slots for file uploads: 0'
+		);
 	});
 
 	it('offers explicit upload cancellation without exposing unsupported file deletion', () => {
 		const onAction = vi.fn();
 		const uploading = MerchantKnowledgePanel({
-			state: { status: 'SAVING', data, activeAction: 'upload', phase: 'UPLOADING' },
+			state: {
+				status: 'SAVING',
+				data,
+				activeAction: 'upload',
+				phase: 'UPLOADING',
+			},
 			onAction,
 		});
 		const cancel = nodes(uploading, 'button').find(
@@ -653,13 +708,20 @@ describe('Merchant Knowledge Shopify-parity fixture UI', () => {
 		expect(onAction).toHaveBeenCalledWith('cancelUpload');
 
 		const fileSource = {
-			id: 'file_1', name: 'CSV', dataFormatKey: 'CSV', purposeKey: 'FAQ',
-			languageTag: 'en', uploadedFileName: 'faq.csv',
-			currentlyPlanEntitled: true, revision: { status: 'ACTIVE' },
+			id: 'file_1',
+			name: 'CSV',
+			dataFormatKey: 'CSV',
+			purposeKey: 'FAQ',
+			languageTag: 'en',
+			uploadedFileName: 'faq.csv',
+			currentlyPlanEntitled: true,
+			revision: { status: 'ACTIVE' },
 		};
 		const listing = KnowledgeSourceList({
-			data, sources: [fileSource],
-			permissions: { deleteSource: true }, onAction,
+			data,
+			sources: [fileSource],
+			permissions: { deleteSource: true },
+			onAction,
 		});
 		const deletion = nodes(listing, 'button').find(
 			(node) => text(node) === 'Delete'

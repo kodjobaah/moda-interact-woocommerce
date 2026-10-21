@@ -6,8 +6,15 @@ const PERIOD_ID = /^[A-Za-z0-9_-]{1,128}$/;
 const CURSOR = /^[A-Za-z0-9_-]{1,1024}$/;
 
 const initial = () => ({
-	status: 'IDLE', view: 'current', periodId: '', kind: 'ALL',
-	page: 1, pageSize: 10, periodCursor: '', data: null, error: null,
+	status: 'IDLE',
+	view: 'current',
+	periodId: '',
+	kind: 'ALL',
+	page: 1,
+	pageSize: 10,
+	periodCursor: '',
+	data: null,
+	error: null,
 });
 
 /** Client data is a test-only view model until a hosted usage-history contract exists. */
@@ -23,16 +30,22 @@ export class UsageHistoryController {
 	}
 
 	subscribe(listener) {
-		if (this.disposed) return () => {};
+		if (this.disposed) {
+			return () => {};
+		}
 		this.listeners.add(listener);
 		listener(this.state);
 		return () => this.listeners.delete(listener);
 	}
 
 	publish(next) {
-		if (this.disposed) return;
+		if (this.disposed) {
+			return;
+		}
 		this.state = next;
-		for (const listener of this.listeners) listener(next);
+		for (const listener of this.listeners) {
+			listener(next);
+		}
 	}
 
 	invalidate() {
@@ -42,7 +55,9 @@ export class UsageHistoryController {
 	}
 
 	setActive(active) {
-		if (this.disposed || this.active === active) return;
+		if (this.disposed || this.active === active) {
+			return;
+		}
 		this.active = active;
 		if (!active) {
 			this.invalidate();
@@ -53,81 +68,154 @@ export class UsageHistoryController {
 	}
 
 	change(patch) {
-		if (!this.active || this.disposed) return;
+		if (!this.active || this.disposed) {
+			return;
+		}
 		const next = { ...this.state, ...patch };
-		if (Object.keys(patch).every((key) => next[key] === this.state[key])) return;
+		if (Object.keys(patch).every((key) => next[key] === this.state[key])) {
+			return;
+		}
 		this.invalidate();
 		this.publish({ ...next, status: 'IDLE', error: null });
 		this.refresh();
 	}
 
 	setView(view) {
-		if (!['current', 'past'].includes(view) || view === this.state.view) return;
-		this.change({ view, periodId: '', periodCursor: '', page: 1, data: null });
+		if (!['current', 'past'].includes(view) || view === this.state.view) {
+			return;
+		}
+		this.change({
+			view,
+			periodId: '',
+			periodCursor: '',
+			page: 1,
+			data: null,
+		});
 	}
 
 	setPeriod(periodId) {
-		if (periodId !== '' && !PERIOD_ID.test(periodId)) return;
-		if (periodId && !this.state.data?.periodPage?.items?.some((item) => item.id === periodId)) return;
+		if (periodId !== '' && !PERIOD_ID.test(periodId)) {
+			return;
+		}
+		if (
+			periodId &&
+			!this.state.data?.periodPage?.items?.some(
+				(item) => item.id === periodId
+			)
+		) {
+			return;
+		}
 		this.change({ periodId, page: 1 });
 	}
 
 	setKind(kind) {
-		if (USAGE_KINDS.includes(kind)) this.change({ kind, page: 1 });
+		if (USAGE_KINDS.includes(kind)) {
+			this.change({ kind, page: 1 });
+		}
 	}
 
 	setPageSize(size) {
-		if (USAGE_PAGE_SIZES.includes(size)) this.change({ pageSize: size, page: 1 });
+		if (USAGE_PAGE_SIZES.includes(size)) {
+			this.change({ pageSize: size, page: 1 });
+		}
 	}
 
 	setPage(page) {
 		const total = this.state.data?.usagePagination?.total;
-		if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(total)) return;
-		if ((page - 1) * this.state.pageSize >= total && page !== 1) return;
+		if (
+			!Number.isSafeInteger(page) ||
+			page < 1 ||
+			!Number.isSafeInteger(total)
+		) {
+			return;
+		}
+		if ((page - 1) * this.state.pageSize >= total && page !== 1) {
+			return;
+		}
 		this.change({ page });
 	}
 
 	setPeriodCursor(cursor) {
-		if (typeof cursor !== 'string' || !CURSOR.test(cursor)) return;
+		if (typeof cursor !== 'string' || !CURSOR.test(cursor)) {
+			return;
+		}
 		const page = this.state.data?.periodPage;
-		if (![page?.nextCursor, page?.previousCursor].includes(cursor)) return;
+		if (![page?.nextCursor, page?.previousCursor].includes(cursor)) {
+			return;
+		}
 		this.change({ periodCursor: cursor });
 	}
 
 	async refresh() {
-		if (!this.active || this.disposed || this.state.status === 'LOADING') return;
+		if (!this.active || this.disposed || this.state.status === 'LOADING') {
+			return;
+		}
 		if (!this.client.available) {
-			this.publish({ ...this.state, status: 'UNAVAILABLE', data: null, error: null });
+			this.publish({
+				...this.state,
+				status: 'UNAVAILABLE',
+				data: null,
+				error: null,
+			});
 			return;
 		}
 		this.invalidate();
 		const revision = this.revision;
 		const controller = new AbortController();
 		this.abortController = controller;
-		const { view, periodId, kind, page, pageSize, periodCursor } = this.state;
-		this.publish({ ...this.state, status: 'LOADING', data: null, error: null });
+		const { view, periodId, kind, page, pageSize, periodCursor } =
+			this.state;
+		this.publish({
+			...this.state,
+			status: 'LOADING',
+			data: null,
+			error: null,
+		});
 		try {
 			const data = await this.client.getHistory(
-				{ view, periodId, kind, page, pageSize, periodCursor }, controller.signal
+				{ view, periodId, kind, page, pageSize, periodCursor },
+				controller.signal
 			);
 			if (this.current(revision)) {
-				if (!data || !Array.isArray(data.usageEvents) ||
+				if (
+					!data ||
+					!Array.isArray(data.usageEvents) ||
 					!Array.isArray(data.periodPage?.items) ||
-					!Number.isSafeInteger(data.usagePagination?.total)) {
+					!Number.isSafeInteger(data.usagePagination?.total)
+				) {
 					throw new Error('invalid_response');
 				}
-				this.publish({ ...this.state, status: data.state === 'unavailable' ? 'INVALID_PERIOD' : 'READY', data });
+				this.publish({
+					...this.state,
+					status:
+						data.state === 'unavailable'
+							? 'INVALID_PERIOD'
+							: 'READY',
+					data,
+				});
 			}
 		} catch (error) {
 			if (this.current(revision)) {
 				const code = error?.code ?? error?.message;
-				const status = code === 'invalid_cursor' ? 'INVALID_CURSOR' :
-					code === 'permission_denied' ? 'DENIED' :
-					code === 'usage_history_unavailable' ? 'UNAVAILABLE' : 'FAILED';
-				this.publish({ ...this.state, status, error: code, data: null });
+				const status =
+					code === 'invalid_cursor'
+						? 'INVALID_CURSOR'
+						: code === 'permission_denied'
+							? 'DENIED'
+							: code === 'usage_history_unavailable'
+								? 'UNAVAILABLE'
+								: 'FAILED';
+				this.publish({
+					...this.state,
+					status,
+					error: code,
+					data: null,
+				});
 			}
 		} finally {
-			if (this.current(revision)) this.abortController = null;
+			if (this.current(revision)) {
+				this.abortController = null;
+			}
 		}
 	}
 
