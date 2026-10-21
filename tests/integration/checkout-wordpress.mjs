@@ -153,8 +153,10 @@ export async function persistBlocksBilling(blocks, billingAddress, kind) {
 	);
 	const updatedCart = await response.json();
 	assert.ok(
-		updatedCart?.billing_address?.first_name === billingAddress.first_name &&
-			updatedCart?.billing_address?.last_name === billingAddress.last_name,
+		updatedCart?.billing_address?.first_name ===
+			billingAddress.first_name &&
+			updatedCart?.billing_address?.last_name ===
+				billingAddress.last_name,
 		`${kind}: cart/update-customer must persist billing fields`
 	);
 }
@@ -183,7 +185,12 @@ function newestAction(rows) {
 }
 
 // Diagnostics contain only action IDs and booleans; never log checkout PII.
-function changedCheckoutDiagnostic(before, after, expectedName, responseMatches) {
+function changedCheckoutDiagnostic(
+	before,
+	after,
+	expectedName,
+	responseMatches
+) {
 	const added = newCheckoutActions(before, after);
 	return JSON.stringify({
 		storeApiResponseMatchesUpdatedName: responseMatches,
@@ -191,7 +198,8 @@ function changedCheckoutDiagnostic(before, after, expectedName, responseMatches)
 		pendingActionIdsAfter: after.map((row) => row.id),
 		newActionIds: added.map((row) => row.id),
 		updatedNameInNewQueuedSnapshot: added.some(
-			(row) => row.args?.event?.checkout?.contact?.firstName === expectedName
+			(row) =>
+				row.args?.event?.checkout?.contact?.firstName === expectedName
 		),
 	});
 }
@@ -326,8 +334,14 @@ export async function assertCheckoutWordPress({
 				classicAfter.length > classicBefore.length,
 				`${kind}: Classic AJAX must emit checkout activity`
 			);
-			const classicAdded = newCheckoutActions(classicBefore, classicAfter);
-			assert.ok(classicAdded.length > 0, `${kind}: Classic AJAX must create a new action ID`);
+			const classicAdded = newCheckoutActions(
+				classicBefore,
+				classicAfter
+			);
+			assert.ok(
+				classicAdded.length > 0,
+				`${kind}: Classic AJAX must create a new action ID`
+			);
 			assertEvent(newestAction(classicAdded).args.event);
 			process.stdout.write(
 				`ARCH-035 Classic ${kind}: checkout AJAX capture PASS\n`
@@ -381,7 +395,10 @@ export async function assertCheckoutWordPress({
 				`${kind}: PATCH must enqueue an event`
 			);
 			const initialAdded = newCheckoutActions(previous, after);
-			assert.ok(initialAdded.length > 0, `${kind}: initial PATCH must create a new action ID`);
+			assert.ok(
+				initialAdded.length > 0,
+				`${kind}: initial PATCH must create a new action ID`
+			);
 			const first = newestAction(initialAdded).args.event;
 			assertEvent(first);
 			// Identical PATCH must not publish an additional event.
@@ -391,7 +408,9 @@ export async function assertCheckoutWordPress({
 				body: JSON.stringify(body),
 			});
 			assert.equal(r.status, 200);
-			const unchangedRows = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const unchangedRows = checkoutEvents(
+				actionRows(wp, parseJsonOutput)
+			);
 			assert.equal(
 				newCheckoutActions(after, unchangedRows).length,
 				0,
@@ -407,7 +426,8 @@ export async function assertCheckoutWordPress({
 			assert.equal(r.status, 200);
 			const patchResult = await r.json();
 			const responseMatches =
-				patchResult?.billing_address?.first_name === body.billing_address.first_name;
+				patchResult?.billing_address?.first_name ===
+				body.billing_address.first_name;
 			const revisedRows = checkoutEvents(actionRows(wp, parseJsonOutput));
 			const revisedAdded = newCheckoutActions(unchangedRows, revisedRows);
 			const diagnostic = changedCheckoutDiagnostic(
@@ -420,7 +440,10 @@ export async function assertCheckoutWordPress({
 				responseMatches,
 				`${kind}: checkout response did not reflect the saved billing change: ${diagnostic}`
 			);
-			assert.ok(revisedAdded.length > 0, `${kind}: changed PATCH must enqueue a new action: ${diagnostic}`);
+			assert.ok(
+				revisedAdded.length > 0,
+				`${kind}: changed PATCH must enqueue a new action: ${diagnostic}`
+			);
 			const revised = newestAction(revisedAdded).args.event;
 			assert.equal(
 				revised.checkout?.contact?.firstName,
@@ -450,7 +473,10 @@ export async function assertCheckoutWordPress({
 			);
 			const outageRows = checkoutEvents(actionRows(wp, parseJsonOutput));
 			const outageAdded = newCheckoutActions(revisedRows, outageRows);
-			assert.ok(outageAdded.length > 0, `${kind}: outage PATCH must create a new action`);
+			assert.ok(
+				outageAdded.length > 0,
+				`${kind}: outage PATCH must create a new action`
+			);
 			const outageEvent = newestAction(outageAdded).args.event;
 			assertEvent(outageEvent);
 			assert.notEqual(
@@ -460,11 +486,13 @@ export async function assertCheckoutWordPress({
 			);
 			assert.equal(outageEvent.checkoutKey, first.checkoutKey);
 			// Run the real Action Scheduler delivery callback and inspect durable retry args.
+			// HybridStore can have the group in its modern tables without a legacy
+			// taxonomy term, so restrict CLI execution by the checkout hook only.
+			// actionRows still verifies the stored group on pending actions.
 			await wpAsync(
 				'action-scheduler',
 				'run',
 				'--hooks=moda_interact_dispatch_checkout_activity',
-				'--group=moda-interact-activity',
 				'--batch-size=20',
 				'--batches=1'
 			);

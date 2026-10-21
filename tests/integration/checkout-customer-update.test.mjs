@@ -16,7 +16,10 @@ test('Blocks address changes use the cart update-customer endpoint', async () =>
 				calls += 1;
 				assert.equal(path, '/wp-json/wc/store/v1/cart/update-customer');
 				assert.equal(options.method, 'POST');
-				assert.equal(options.headers['content-type'], 'application/json');
+				assert.equal(
+					options.headers['content-type'],
+					'application/json'
+				);
 				assert.deepEqual(JSON.parse(options.body), {
 					billing_address: billingAddress,
 				});

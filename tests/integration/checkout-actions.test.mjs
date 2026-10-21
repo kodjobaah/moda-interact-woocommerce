@@ -5,7 +5,10 @@ import { newCheckoutActions } from './checkout-wordpress.mjs';
 test('finds added actions even when the scheduler reorders its rows', () => {
 	const before = [{ id: 24 }, { id: 25 }];
 	const after = [{ id: 27 }, { id: 24 }, { id: 26 }, { id: 25 }];
-	assert.deepEqual(newCheckoutActions(before, after).map((row) => row.id), [27, 26]);
+	assert.deepEqual(
+		newCheckoutActions(before, after).map((row) => row.id),
+		[27, 26]
+	);
 });
 
 test('does not mistake reordered or differently typed IDs for new actions', () => {
@@ -17,5 +20,8 @@ test('does not mistake reordered or differently typed IDs for new actions', () =
 test('recognizes the new action ID for a retry independently of its payload', () => {
 	const before = [{ id: 91, args: { attempt: 1 } }];
 	const after = [before[0], { id: 92, args: { attempt: 2 } }];
-	assert.deepEqual(newCheckoutActions(before, after).map((row) => row.id), [92]);
+	assert.deepEqual(
+		newCheckoutActions(before, after).map((row) => row.id),
+		[92]
+	);
 });
