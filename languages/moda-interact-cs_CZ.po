@@ -1951,8 +1951,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Historii využití se nepodařilo načíst. Zkuste to znovu."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Historie využití zatím není pro tento obchod WooCommerce dostupná. Žádné záznamy nebyly změněny."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Historie využití není pro tento obchod momentálně k dispozici."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"

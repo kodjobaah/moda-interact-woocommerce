@@ -1960,8 +1960,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Käyttöhistorian lataus epäonnistui. Yritä uudelleen."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Käyttöhistoria ei ole vielä saatavilla tässä WooCommerce-kaupassa. Tietoja ei muutettu."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Käyttöhistoria ei ole tällä hetkellä saatavilla tälle kaupalle."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"

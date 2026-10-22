@@ -27,24 +27,24 @@ export function UsageHistoryResults({ history, locale }) {
 			className: 'moda-usage__results',
 			'aria-live': 'polite',
 		},
-		paging.billId
-			? createElement(
-					'div',
-					{ className: 'moda-usage__period-title' },
-					createElement(
+		createElement(
+			'div',
+			{ className: 'moda-usage__period-title' },
+			paging.periodStart && paging.periodEnd
+				? createElement(
 						'h2',
 						null,
 						`${formatDate(paging.periodStart)} — ${formatDate(paging.periodEnd)}`
-					),
-					createElement(
-						'p',
-						null,
-						__('Recorded usage', 'moda-interact'),
-						': ',
-						formatNumber(paging.totalQuantity)
 					)
-				)
-			: null,
+				: null,
+			createElement(
+				'p',
+				null,
+				__('Recorded usage', 'moda-interact'),
+				': ',
+				formatNumber(paging.totalQuantity)
+			)
+		),
 		!events.length
 			? createElement(
 					'p',

@@ -38,7 +38,7 @@ const page = (overrides = {}) => ({
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('Woo usage history controller', () => {
-	it('never makes a request when the approved usage-history API is absent', async () => {
+	it('honours a deliberately disabled injected client without requests', async () => {
 		const read = vi.fn();
 		const c = new UsageHistoryController({
 			available: false,
@@ -107,9 +107,11 @@ describe('Woo usage history controller', () => {
 		c.setKind('PURCHASE');
 		c.setPageSize(7);
 		expect(read).toHaveBeenCalledTimes(1);
+		c.setPeriod('period_a');
+		await settle();
 		c.setPeriodCursor('nextperiod');
 		await settle();
-		expect(read.mock.lastCall[0].periodCursor).toBe('nextperiod');
+		expect(read.mock.lastCall[0]).toMatchObject({ periodCursor: 'nextperiod', periodId: '', page: 1 });
 		c.setView('past');
 		await settle();
 		expect(c.state).toMatchObject({
@@ -148,6 +150,8 @@ describe('Woo usage history controller', () => {
 
 	it.each([
 		['invalid_cursor', 'INVALID_CURSOR'],
+		['invalid_period', 'INVALID_PERIOD'],
+		['reconnect_required', 'RECONNECT'],
 		['permission_denied', 'DENIED'],
 		['remote_unavailable', 'FAILED'],
 	])(
@@ -166,4 +170,33 @@ describe('Woo usage history controller', () => {
 			c.dispose();
 		}
 	);
+
+	it('does not issue duplicate requests while loading or restore stale data on disconnect', async () => {
+		const resolvers = [];
+		const read = vi.fn(() => new Promise((resolve) => resolvers.push(resolve)));
+		const c = new UsageHistoryController({ available: true, getHistory: read });
+		c.setActive(true);
+		c.refresh();
+		c.refresh();
+		expect(read).toHaveBeenCalledTimes(1);
+		c.setView('past');
+		expect(read).toHaveBeenCalledTimes(2);
+		resolvers[0](page());
+		await settle();
+		expect(c.state.status).toBe('LOADING');
+		c.setActive(false);
+		resolvers[1](page());
+		await settle();
+		expect(c.state.status).toBe('IDLE');
+		c.dispose();
+	});
+
+	it('does not treat an unavailable paid period as a real empty history', async () => {
+		const c = new UsageHistoryController({ available: true, getHistory: async () => page({ state: 'unavailable', usageEvents: [] }) });
+		c.setActive(true);
+		await settle();
+		expect(c.state.status).toBe('UNAVAILABLE');
+		expect(c.state.data.state).toBe('unavailable');
+		c.dispose();
+	});
 });

@@ -1907,8 +1907,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "ไม่สามารถโหลดประวัติการใช้งานได้ โปรดลองอีกครั้ง"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "ประวัติการใช้งานยังไม่พร้อมสำหรับร้าน WooCommerce นี้ ไม่มีการแก้ไขบันทึกใด ๆ"
+msgid "Usage history is currently unavailable for this store."
+msgstr "ขณะนี้ไม่สามารถดูประวัติการใช้งานสำหรับร้านค้านี้ได้"
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"

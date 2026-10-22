@@ -1890,8 +1890,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "无法加载使用记录，请重试。"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "此 WooCommerce 商店尚不支持查看使用记录。未更改任何使用数据。"
+msgid "Usage history is currently unavailable for this store."
+msgstr "此店铺的使用记录目前不可用。"
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"

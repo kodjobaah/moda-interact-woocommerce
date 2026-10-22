@@ -1985,8 +1985,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Impossibile caricare la cronologia utilizzo. Riprova."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "La cronologia utilizzo non è ancora disponibile per questo negozio WooCommerce. Nessun dato è stato modificato."
+msgid "Usage history is currently unavailable for this store."
+msgstr "La cronologia di utilizzo non è attualmente disponibile per questo negozio."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"

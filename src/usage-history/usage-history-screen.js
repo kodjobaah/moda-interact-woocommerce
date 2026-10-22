@@ -6,6 +6,7 @@ import { UsageHistoryResults } from './usage-history-results';
 import { useUsageHistory } from './use-usage-history';
 
 const BILLING_HREF = 'admin.php?page=moda-interact-billing';
+const CONNECTION_HREF = 'admin.php?page=moda-interact';
 
 export function UsageHistoryView({ history, locale = resolveBillingLocale() }) {
 	const { state } = history;
@@ -15,7 +16,12 @@ export function UsageHistoryView({ history, locale = resolveBillingLocale() }) {
 		message = __('Loading usage history…', 'moda-interact');
 	} else if (state.status === 'UNAVAILABLE') {
 		message = __(
-			'Usage history is not yet available for this WooCommerce store. No usage records have been changed.',
+			'Usage history is currently unavailable for this store.',
+			'moda-interact'
+		);
+	} else if (state.status === 'RECONNECT') {
+		message = __(
+			'The local connection needs to be re-established. Your Moda account and store data have not been removed.',
 			'moda-interact'
 		);
 	} else if (state.status === 'DENIED') {
@@ -90,7 +96,7 @@ export function UsageHistoryView({ history, locale = resolveBillingLocale() }) {
 						className: 'button',
 						disabled:
 							busy ||
-							state.status === 'UNAVAILABLE' ||
+							state.status === 'RECONNECT' ||
 							state.status === 'DENIED',
 						onClick: history.refresh,
 					},
@@ -104,16 +110,25 @@ export function UsageHistoryView({ history, locale = resolveBillingLocale() }) {
 						{
 							className:
 								state.status === 'FAILED' ||
+								state.status === 'RECONNECT' ||
 								state.status === 'DENIED'
 									? 'moda-interact-message moda-interact-message--error'
 									: 'moda-interact-message',
 							role:
 								state.status === 'FAILED' ||
+								state.status === 'RECONNECT' ||
 								state.status === 'DENIED'
 									? 'alert'
 									: 'status',
 						},
 						createElement('p', null, message),
+						state.status === 'RECONNECT'
+							? createElement(
+									'a',
+									{ href: CONNECTION_HREF, className: 'button' },
+									__('Reconnect Moda Interact', 'moda-interact')
+								)
+							: null,
 						state.status === 'INVALID_CURSOR' ||
 							state.status === 'INVALID_PERIOD'
 							? createElement(

@@ -325,6 +325,8 @@ class WooCommerce {}
 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 require_once dirname( __DIR__ ) . '/includes/Api/DiscountOffersContracts.php';
+require_once dirname( __DIR__ ) . '/includes/Api/UsageHistoryResponseValidator.php';
+require_once dirname( __DIR__ ) . '/includes/Rest/UsageHistoryController.php';
 require_once dirname( __DIR__ ) . '/includes/Api/MerchantKnowledgeContracts.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/MerchantKnowledgeController.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/RecoveryDiscountOffersController.php';

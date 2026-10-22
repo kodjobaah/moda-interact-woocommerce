@@ -80,6 +80,7 @@ describe('usage history presentation', () => {
 		'IDLE',
 		'LOADING',
 		'UNAVAILABLE',
+		'RECONNECT',
 		'DENIED',
 		'FAILED',
 		'INVALID_CURSOR',
@@ -100,6 +101,22 @@ describe('usage history presentation', () => {
 					['status', 'alert'].includes(node.props.role)
 			)
 		).toBe(true);
+	});
+
+	it('provides the connection page when credentials must be re-established', () => {
+		const ui = UsageHistoryView({ history: history('RECONNECT') });
+		const links = walk(ui).filter((node) => node.type === 'a');
+		expect(links.some((node) => node.props.href === 'admin.php?page=moda-interact')).toBe(true);
+	});
+
+	it('renders a signed Free lifetime usage total even without BillingPeriod', () => {
+		const free = {
+			...data,
+			usagePagination: { ...data.usagePagination, billId: null, periodStart: null, periodEnd: null, totalQuantity: -2 },
+		};
+		const rendered = UsageHistoryResults({ history: history('READY', free), locale: 'en-GB' });
+		const nodes = walk(rendered);
+		expect(nodes.some((node) => node.type === 'p' && [].concat(node.props.children).includes('-2'))).toBe(true);
 	});
 
 	it('announces an empty usage period without presenting it as unavailable', () => {

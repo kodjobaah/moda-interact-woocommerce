@@ -1954,8 +1954,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Kullanım geçmişi yüklenemedi. Tekrar deneyin."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Kullanım geçmişi bu WooCommerce mağazasında henüz kullanılamıyor. Hiçbir kayıt değiştirilmedi."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Kullanım geçmişi şu anda bu mağaza için kullanılamıyor."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"

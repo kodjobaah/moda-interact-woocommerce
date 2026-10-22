@@ -1996,8 +1996,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Der Nutzungsverlauf konnte nicht geladen werden. Bitte erneut versuchen."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Der Nutzungsverlauf ist für diesen WooCommerce-Shop noch nicht verfügbar. Keine Nutzungsdaten wurden geändert."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Der Nutzungsverlauf ist für diesen Shop derzeit nicht verfügbar."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
