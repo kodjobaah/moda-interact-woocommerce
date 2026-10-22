@@ -4,7 +4,7 @@ import { useSupport } from './use-support';
 import { SupportThread } from './support-thread';
 import { SupportComposer } from './support-composer';
 
-/** Connected merchant support page; unsupported backend operations remain disabled. */
+/** Connected merchant Support, using the privileged WordPress REST facade. */
 export function SupportScreen() {
 	const support = useSupport();
 	return createElement(
@@ -38,7 +38,11 @@ export function SupportScreen() {
 		}),
 		createElement(SupportComposer, {
 			sendStatus: support.state.sendStatus,
-			canSend: support.capabilities.send,
+			canSend:
+				support.capabilities.send &&
+				!support.state.sendBlocked &&
+				support.state.status === 'READY',
+			readStatus: support.state.status,
 			onSend: support.send,
 		})
 	);

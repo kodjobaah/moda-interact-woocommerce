@@ -634,6 +634,65 @@ final class ModaApiClient {
 		return is_string( $id ) && strlen( $id ) <= 128 && 1 === preg_match( '/^[A-Za-z0-9_-]+$/D', $id );
 	}
 
+	/** API-020: installation-scoped Support history and two-way commands. */
+	public function merchantSupportHistory( array $connection, int $page, int $page_size ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) || $page < 1 || $page > 999999 ||
+			! in_array( $page_size, array( 10, 25, 50 ), true ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$path = '/v1/merchant/support/messages?page=' . $page . '&pageSize=' . $page_size;
+		$payload = $this->supportRequest( $connection, $path, 'GET', null, array( 200 ), 262144 );
+		if ( ! SupportResponseValidator::history( $payload, $page, $page_size ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $payload;
+	}
+
+	public function merchantSupportCompose( array $connection, array $input ): array {
+		if ( ! SupportResponseValidator::composeInput( $input ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = wp_json_encode( $input );
+		if ( ! is_string( $body ) || strlen( $body ) > 32768 ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$payload = $this->supportRequest( $connection, '/v1/merchant/support/messages', 'POST', $body, array( 200, 201 ) );
+		if ( ! SupportResponseValidator::composeReceipt( $payload ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid' );
+		}
+		return $payload;
+	}
+
+	public function merchantSupportMarkRead( array $connection, string $message_id ): array {
+		if ( ! SupportResponseValidator::messageId( $message_id ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$payload = $this->supportRequest( $connection, '/v1/merchant/support/messages/' . rawurlencode( $message_id ) . '/read',
+			'POST', null, array( 200 ) );
+		if ( ! SupportResponseValidator::readReceipt( $payload, $message_id ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $payload;
+	}
+
+	private function supportRequest( array $connection, string $path, string $method, ?string $body, array $success, int $max_response = 8192 ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) {
+			throw new ModaApiClientException( 'local_state_invalid' );
+		}
+		$headers = self::installationHeaders( $connection );
+		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
+		$response = $this->request( $path, $method, $headers, $body, self::DEFAULT_TIMEOUT_SECONDS, $max_response + 1 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 403 === $status ) throw new ModaApiClientException( 'support_unavailable', $status );
+		if ( 404 === $status ) throw new ModaApiClientException( 'not_found', $status );
+		if ( 409 === $status ) throw new ModaApiClientException( 'idempotency_conflict', $status );
+		if ( 400 === $status || 413 === $status ) throw new ModaApiClientException( 'invalid_request', $status );
+		if ( ! in_array( $status, $success, true ) ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try { return $this->jsonBody( $response, $max_response ); }
+		catch ( ModaApiClientException $error ) { throw new ModaApiClientException( 'remote_response_invalid', $status ); }
+	}
+
 	private static function installationHeaders( array $connection ): array {
 		return array(
 			'X-Moda-Installation-Id' => $connection['installationId'],

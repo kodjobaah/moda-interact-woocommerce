@@ -62,7 +62,12 @@ export function SupportMessageCard({ message }) {
 			createElement(
 				'time',
 				{ dateTime: message.createdAt },
-				new Date(message.createdAt).toLocaleString()
+				new Date(message.createdAt).toLocaleString(undefined, {
+					month: 'short',
+					day: 'numeric',
+					hour: 'numeric',
+					minute: '2-digit',
+				})
 			),
 			!message.readAt &&
 				message.kind !== 'MERCHANT' &&

@@ -2,7 +2,7 @@ import { createElement, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { countSupportGraphemes, validSupportBody } from './support-validation';
 
-export function SupportComposer({ sendStatus, canSend, onSend }) {
+export function SupportComposer({ sendStatus, canSend, readStatus, onSend }) {
 	const [body, setBody] = useState('');
 	const [invalid, setInvalid] = useState(false);
 	const count = countSupportGraphemes(body);
@@ -75,7 +75,7 @@ export function SupportComposer({ sendStatus, canSend, onSend }) {
 				)
 			)
 		),
-		!canSend
+		!canSend && readStatus === 'UNAVAILABLE'
 			? createElement(
 					'p',
 					{ id: 'moda-support-error', role: 'status' },
@@ -102,7 +102,11 @@ export function SupportComposer({ sendStatus, canSend, onSend }) {
 		sendStatus === 'SENT'
 			? createElement(
 					'p',
-					{ id: 'moda-support-error', role: 'status' },
+					{
+						id: 'moda-support-error',
+						className: 'moda-support__sr-only',
+						role: 'status',
+					},
 					__('Message sent', 'moda-interact')
 				)
 			: null
