@@ -61,7 +61,7 @@ final class UsageHistoryControllerTest extends TestCase {
 		$sent = array();
 		parse_str( (string) parse_url( $calls[0][0], PHP_URL_QUERY ), $sent );
 		unset( $query['_locale'] );
-		self::assertSame( $query, $sent );
+		self::assertSame( array_merge( $query, array( 'responseVersion' => '2' ) ), $sent );
 		self::assertArrayNotHasKey( 'shopId', $sent );
 	}
 
@@ -76,6 +76,7 @@ final class UsageHistoryControllerTest extends TestCase {
 			array( 'page' => array( '1', '2' ) ), array( 'kind' => 'PURCHASE' ),
 			array( 'periodId' => '../foreign' ), array( 'periodId' => str_repeat( 'a', 129 ) ),
 			array( 'periodCursor' => str_repeat( 'b', 1025 ) ),
+			array( 'responseVersion' => '1' ), array( 'responseVersion' => '2' ),
 		) as $query ) {
 			self::assertSame( 400, $controller->read( new WP_REST_Request( 'GET', $query ) )->get_status() );
 		}
@@ -92,6 +93,7 @@ final class UsageHistoryControllerTest extends TestCase {
 		$free['usagePagination']['periodStart'] = null;
 		$free['usagePagination']['periodEnd'] = null;
 		$free['usageEvents'][0]['quantity'] = -2;
+		$free['usageEvents'][0]['chargedAgainst'] = 'LIFETIME_FREE_CREDITS';
 		$free['usagePagination']['totalQuantity'] = -2;
 		self::assertTrue( UsageHistoryResponseValidator::isValid( $free ) );
 		$calls = array();
@@ -101,6 +103,66 @@ final class UsageHistoryControllerTest extends TestCase {
 		$free['usagePagination']['totalQuantity'] = 0;
 		self::assertTrue( UsageHistoryResponseValidator::isValid( $free ) );
 		self::assertSame( $free, $this->controller( $calls, $free )->read( new WP_REST_Request() )->get_data() );
+	}
+
+	public function test_v1_and_v2_charge_attribution_validation_remains_strict(): void {
+		$v1 = self::history( 'current', 10, 1 );
+		$v2 = self::history();
+		self::assertTrue( UsageHistoryResponseValidator::isValid( $v1 ) );
+		self::assertTrue( UsageHistoryResponseValidator::isValid( $v2 ) );
+		self::assertFalse( UsageHistoryResponseValidator::isValid( array_replace_recursive( $v1, array(
+			'usageEvents' => array( array_merge( $v1['usageEvents'][0], array( 'chargedAgainst' => 'LIFETIME_FREE_CREDITS' ) ) ),
+		) ) ) );
+		foreach ( array( 'LIFETIME_FREE_CREDITS', 'INCLUDED_PLAN_ALLOWANCE', 'PURCHASED_TOP_UP',
+			'PROMOTIONAL_CREDITS', 'NOT_APPLICABLE', 'UNATTRIBUTED' ) as $label ) {
+			$v2['usageEvents'][0]['chargedAgainst'] = $label;
+			self::assertTrue( UsageHistoryResponseValidator::isValid( $v2 ), $label );
+		}
+		foreach ( array( 'purchasedCreditPurchaseId', 'shopId', 'apiCredential' ) as $extra ) {
+			$invalid = $v2;
+			$invalid['usageEvents'][0][$extra] = 'secret';
+			self::assertFalse( UsageHistoryResponseValidator::isValid( $invalid ) );
+		}
+		foreach ( array( 'PAID', '', 'purchased_top_up', null, 4 ) as $bad ) {
+			$v2['usageEvents'][0]['chargedAgainst'] = $bad;
+			self::assertFalse( UsageHistoryResponseValidator::isValid( $v2 ) );
+		}
+		$v2['usageEvents'][0]['chargedAgainst'] = 'UNATTRIBUTED';
+		$v2['usageEvents'][0]['metric'] = 'UNKNOWN_NEW_METRIC';
+		self::assertFalse( UsageHistoryResponseValidator::isValid( $v2 ) );
+		$v2['usageEvents'][0]['metric'] = 'RECOVERY_CONVERSATION';
+		unset( $v2['usageEvents'][0]['chargedAgainst'] );
+		self::assertFalse( UsageHistoryResponseValidator::isValid( $v2 ) );
+		$v2['usageEvents'] = array();
+		$v2['usagePagination']['total'] = 0;
+		$v2['usagePagination']['totalQuantity'] = 0;
+		self::assertTrue( UsageHistoryResponseValidator::isValid( $v2 ) );
+	}
+
+	public function test_unsupported_v2_retries_only_once_with_valid_v1_projection(): void {
+		$calls = array();
+		$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ),
+			static function ( string $url, array $args ) use ( &$calls ): array {
+				$calls[] = array( $url, $args );
+				parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $query );
+				return isset( $query['responseVersion'] )
+					? self::response( 400, array( 'error' => 'invalid_request' ) )
+					: self::response( 200, self::history( 'current', 10, 1 ) );
+			} );
+		$read = $client->merchantUsageHistory( self::installation(), array( 'view' => 'current' ) );
+		self::assertSame( 1, $read['schemaVersion'] );
+		self::assertCount( 2, $calls );
+		self::assertStringContainsString( 'responseVersion=2', $calls[0][0] );
+		self::assertStringNotContainsString( 'responseVersion', $calls[1][0] );
+	}
+
+	public function test_mismatched_response_version_fails_closed_without_fallback(): void {
+		$calls = array();
+		$controller = $this->controller( $calls, self::history( 'current', 10, 1 ) );
+		$result = $controller->read( new WP_REST_Request() );
+		self::assertSame( 502, $result->get_status() );
+		self::assertSame( array( 'status' => 'REMOTE_RESPONSE_INVALID' ), $result->get_data() );
+		self::assertCount( 1, $calls );
 	}
 
 	public function test_fails_closed_on_malformed_hosted_projection_and_foreign_fields(): void {
@@ -200,9 +262,15 @@ final class UsageHistoryControllerTest extends TestCase {
 		);
 	}
 
-	private static function history( string $view = 'current', int $size = 10 ): array {
+	private static function history( string $view = 'current', int $size = 10, int $version = 2 ): array {
+		$event = array(
+			'id' => 'event_1', 'metric' => 'RECOVERY_CONVERSATION', 'quantity' => 1,
+			'occurredAt' => '2026-10-14T10:00:00.000Z',
+			'sourceRecovery' => array( 'recoveryId' => 'recovery_1', 'customerName' => 'Jane <script>Doe</script>' ),
+		);
+		if ( 2 === $version ) $event['chargedAgainst'] = 'INCLUDED_PLAN_ALLOWANCE';
 		return array(
-			'schemaVersion' => 1, 'state' => 'ready', 'usageView' => $view,
+			'schemaVersion' => $version, 'state' => 'ready', 'usageView' => $view,
 			'periodPage' => array( 'items' => array( array(
 				'id' => 'period_1', 'periodStart' => '2026-10-01T00:00:00.000Z',
 				'periodEnd' => '2026-10-31T00:00:00.000Z',
@@ -212,11 +280,7 @@ final class UsageHistoryControllerTest extends TestCase {
 				'billId' => 'period_1', 'periodStart' => '2026-10-01T00:00:00.000Z',
 				'periodEnd' => '2026-10-31T00:00:00.000Z',
 			),
-			'usageEvents' => array( array(
-				'id' => 'event_1', 'metric' => 'RECOVERY_CONVERSATION', 'quantity' => 1,
-				'occurredAt' => '2026-10-14T10:00:00.000Z',
-				'sourceRecovery' => array( 'recoveryId' => 'recovery_1', 'customerName' => 'Jane <script>Doe</script>' ),
-			) ),
+			'usageEvents' => array( $event ),
 		);
 	}
 

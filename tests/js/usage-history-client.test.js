@@ -31,7 +31,39 @@ const sample = (overrides = {}) => ({
 	...overrides,
 });
 
+const sampleV2 = (chargedAgainst = 'PURCHASED_TOP_UP') => {
+	const v1 = sample();
+	return {
+		...v1,
+		schemaVersion: 2,
+		usageEvents: v1.usageEvents.map((event) => ({ ...event, chargedAgainst })),
+	};
+};
+
 describe('Woo API-022 usage-history client', () => {
+	it('accepts strict v2 allocation evidence while retaining the exact legacy v1 projection', async () => {
+		for (const chargedAgainst of [
+			'LIFETIME_FREE_CREDITS', 'INCLUDED_PLAN_ALLOWANCE', 'PURCHASED_TOP_UP',
+			'PROMOTIONAL_CREDITS', 'NOT_APPLICABLE', 'UNATTRIBUTED',
+		]) {
+			const v2 = sampleV2(chargedAgainst);
+			expect(parseUsageHistory(v2).usageEvents[0].chargedAgainst).toBe(chargedAgainst);
+			expect(await createUsageHistoryClient(vi.fn(async () => v2)).getHistory(filters())).toEqual(v2);
+		}
+		expect(parseUsageHistory(sample()).schemaVersion).toBe(1);
+	});
+
+	it.each([
+		{ ...sampleV2(), usageEvents: sampleV2().usageEvents.map(({ chargedAgainst, ...event }) => event) },
+		{ ...sampleV2(), usageEvents: [{ ...sampleV2().usageEvents[0], chargedAgainst: 'STRANGE' }] },
+		{ ...sampleV2(), usageEvents: [{ ...sampleV2().usageEvents[0], chargedAgainst: null }] },
+		{ ...sampleV2(), usageEvents: [{ ...sampleV2().usageEvents[0], purchasedCreditPurchaseId: 'secret' }] },
+		{ ...sampleV2(), schemaVersion: 3 },
+		{ ...sampleV2(), usageEvents: [{ ...sampleV2().usageEvents[0], metric: 'UNRECOGNISED_METRIC' }] },
+		{ ...sample(), usageEvents: [{ ...sample().usageEvents[0], chargedAgainst: 'LIFETIME_FREE_CREDITS' }] },
+	])('rejects invalid v1/v2 response fields without guessing', (payload) => {
+		expect(() => parseUsageHistory(payload)).toThrow('invalid_response');
+	});
 	it('calls only the same-origin WP path with bounded filters and abort signal', async () => {
 		const request = vi.fn(async () => sample());
 		const client = createUsageHistoryClient(request);

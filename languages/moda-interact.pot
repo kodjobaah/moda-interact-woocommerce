@@ -1876,11 +1876,15 @@ msgid "Billing periods"
 msgstr ""
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
+msgid "Current usage"
 msgstr ""
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
 msgstr ""
 
 #: src/usage-history/usage-history-screen.js
@@ -1892,7 +1896,7 @@ msgid "No recorded usage for this period."
 msgstr ""
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
+msgid "Past paid usage"
 msgstr ""
 
 #: src/billing-screen.js
@@ -1916,7 +1920,7 @@ msgid "Recovery conversation"
 msgstr ""
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
+msgid "Review your recorded recovery conversation usage."
 msgstr ""
 
 #: src/usage-history/usage-history-toolbar.js
@@ -1989,4 +1993,28 @@ msgstr ""
 
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr ""
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
 msgstr ""

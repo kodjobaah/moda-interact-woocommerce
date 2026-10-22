@@ -94,6 +94,10 @@ export class UsageHistoryController {
 	}
 
 	setPeriod(periodId) {
+		// Current usage is determined by the authenticated subscription, not a selector.
+		if (this.state.view !== 'past') {
+			return;
+		}
 		if (periodId !== '' && !PERIOD_ID.test(periodId)) {
 			return;
 		}
@@ -136,6 +140,9 @@ export class UsageHistoryController {
 	}
 
 	setPeriodCursor(cursor) {
+		if (this.state.view !== 'past') {
+			return;
+		}
 		if (typeof cursor !== 'string' || !CURSOR.test(cursor)) {
 			return;
 		}

@@ -309,6 +309,27 @@ final class ModaApiClient {
 			};
 			if ( ! $valid ) throw new ModaApiClientException( 'invalid_request' );
 		}
+		// Request proof-based per-event attribution without exposing version selection
+		// to the WordPress browser route. Older hosted APIs reject the new parameter.
+		try {
+			return $this->readMerchantUsageHistory( $connection, array_merge( $filters, array( 'responseVersion' => '2' ) ) );
+		} catch ( ModaApiClientException $error ) {
+			if ( 'invalid_request' !== $error->getMessage() || 400 !== $error->http_status ) throw $error;
+			// Version negotiation only: retry once using the unchanged, strict v1
+			// projection. Invalid cursors/periods, outages and auth errors NEVER fall back.
+			if ( function_exists( 'wc_get_logger' ) ) {
+				try {
+					wc_get_logger()->warning( 'Usage history v2 was rejected; using legacy v1 without charge attribution.', array( 'source' => 'moda-interact' ) );
+				} catch ( \Throwable $logging_error ) {
+					// Telemetry failure must not prevent a compatible read-only fallback.
+				}
+			}
+			return $this->readMerchantUsageHistory( $connection, $filters );
+		}
+	}
+
+	/** One bounded hosted read with strict version/selection checks. */
+	private function readMerchantUsageHistory( array $connection, array $filters ): array {
 		$path = '/v1/merchant/usage-history' . ( $filters ? '?' . http_build_query( $filters, '', '&', PHP_QUERY_RFC3986 ) : '' );
 		$response = $this->request( $path, 'GET', self::installationHeaders( $connection ), null, self::DEFAULT_TIMEOUT_SECONDS, 262145 );
 		$status = wp_remote_retrieve_response_code( $response );
@@ -329,6 +350,7 @@ final class ModaApiClient {
 		try { $payload = $this->jsonBody( $response, 262144 ); }
 		catch ( ModaApiClientException $exception ) { throw new ModaApiClientException( 'remote_response_invalid', $status ); }
 		if ( ! UsageHistoryResponseValidator::isValid( $payload ) ||
+			$payload['schemaVersion'] !== (int) ( $filters['responseVersion'] ?? '1' ) ||
 			$payload['usageView'] !== ( $filters['view'] ?? 'current' ) ||
 			$payload['usagePagination']['page'] !== (int) ( $filters['page'] ?? '1' ) ||
 			$payload['usagePagination']['pageSize'] !== (int) ( $filters['pageSize'] ?? '10' ) ) {

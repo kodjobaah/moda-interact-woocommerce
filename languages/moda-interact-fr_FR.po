@@ -1922,12 +1922,16 @@ msgid "Billing periods"
 msgstr "Périodes de facturation"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Période actuelle"
+msgid "Current usage"
+msgstr "Utilisation actuelle"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Type d’événement"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Utilisation à vie"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1938,8 +1942,8 @@ msgid "No recorded usage for this period."
 msgstr "Aucune utilisation enregistrée pour cette période."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Périodes précédentes"
+msgid "Past paid usage"
+msgstr "Utilisation payante passée"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1962,8 +1966,8 @@ msgid "Recovery conversation"
 msgstr "Conversation de récupération"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Consultez l’utilisation enregistrée des conversations de récupération par période de facturation."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Consultez l’utilisation enregistrée des conversations de récupération."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -2036,3 +2040,27 @@ msgstr "Emplacements disponibles pour les fichiers : %1$s (partagés avec les pa
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "La limite partagée de sources de connaissances de votre forfait est atteinte."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Décompté de"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Crédits gratuits à vie"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Quota inclus dans l’abonnement"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Recharge achetée"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Crédits promotionnels"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Non attribué"

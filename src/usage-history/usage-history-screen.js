@@ -84,7 +84,7 @@ export function UsageHistoryView({ history, locale = resolveBillingLocale() }) {
 						'p',
 						null,
 						__(
-							'Review your recorded recovery conversation usage by billing period.',
+							'Review your recorded recovery conversation usage.',
 							'moda-interact'
 						)
 					)

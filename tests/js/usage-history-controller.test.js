@@ -64,6 +64,10 @@ describe('Woo usage history controller', () => {
 		c.setActive(true);
 		await settle();
 		expect(c.state.status).toBe('READY');
+		c.setPeriod('period_a'); // Current period cannot be selected manually.
+		expect(c.state.periodId).toBe('');
+		c.setView('past');
+		await settle();
 		c.setPeriod('period_a');
 		await settle();
 		c.setKind('RECOVERY_CONVERSATION');
@@ -102,20 +106,25 @@ describe('Woo usage history controller', () => {
 		});
 		c.setActive(true);
 		await settle();
+		c.setPeriodCursor('nextperiod'); // No cursor on current view.
+		c.setPeriod('period_a');
+		expect(read).toHaveBeenCalledTimes(1);
 		c.setPeriodCursor('unexpected');
 		c.setPeriod('bad/period');
 		c.setKind('PURCHASE');
 		c.setPageSize(7);
 		expect(read).toHaveBeenCalledTimes(1);
+		c.setView('past');
+		await settle();
 		c.setPeriod('period_a');
 		await settle();
 		c.setPeriodCursor('nextperiod');
 		await settle();
 		expect(read.mock.lastCall[0]).toMatchObject({ periodCursor: 'nextperiod', periodId: '', page: 1 });
-		c.setView('past');
+		c.setView('current');
 		await settle();
 		expect(c.state).toMatchObject({
-			view: 'past',
+			view: 'current',
 			page: 1,
 			periodCursor: '',
 			periodId: '',

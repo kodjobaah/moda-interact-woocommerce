@@ -1914,12 +1914,16 @@ msgid "Billing periods"
 msgstr "Períodos de cobrança"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Período atual"
+msgid "Current usage"
+msgstr "Uso atual"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Tipo de evento"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Uso vitalício"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1930,8 +1934,8 @@ msgid "No recorded usage for this period."
 msgstr "Nenhum uso registrado neste período."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Períodos anteriores"
+msgid "Past paid usage"
+msgstr "Uso pago anterior"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1954,8 +1958,8 @@ msgid "Recovery conversation"
 msgstr "Conversa de recuperação"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Confira o uso registrado das conversas de recuperação por período de cobrança."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Confira o uso registrado das conversas de recuperação."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -2028,3 +2032,27 @@ msgstr "Vagas restantes para envio de arquivos: %1$s (compartilhadas com página
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "O limite compartilhado de fontes de conhecimento do seu plano foi atingido."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Debitado de"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Créditos gratuitos vitalícios"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Franquia incluída no plano"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Recarga comprada"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Créditos promocionais"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Não atribuído"

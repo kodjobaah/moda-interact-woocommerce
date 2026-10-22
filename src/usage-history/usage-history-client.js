@@ -4,6 +4,14 @@ export const USAGE_HISTORY_PATH = '/moda-interact/v1/merchant/usage-history';
 const VIEWS = ['current', 'past'];
 const KINDS = ['ALL', 'RECOVERY_CONVERSATION'];
 const SIZES = [10, 25, 50, 100];
+export const USAGE_CHARGE_SOURCES = [
+	'LIFETIME_FREE_CREDITS',
+	'INCLUDED_PLAN_ALLOWANCE',
+	'PURCHASED_TOP_UP',
+	'PROMOTIONAL_CREDITS',
+	'NOT_APPLICABLE',
+	'UNATTRIBUTED',
+];
 const ID = /^[A-Za-z0-9_-]{1,128}$/;
 const RECOVERY_ID = /^[A-Za-z0-9_-]{1,191}$/;
 const CURSOR = /^[A-Za-z0-9_-]{1,1024}$/;
@@ -47,20 +55,26 @@ function period(value) {
 	);
 }
 
-function event(value) {
+function event(value, version) {
+	const keys = ['id', 'metric', 'quantity', 'occurredAt', 'sourceRecovery'];
+	if (version === 2) {
+		keys.push('chargedAgainst');
+	}
 	if (
-		!object(value, [
-			'id',
-			'metric',
-			'quantity',
-			'occurredAt',
-			'sourceRecovery',
-		]) ||
+		!object(value, keys) ||
 		!id(value.id, RECOVERY_ID) ||
 		typeof value.metric !== 'string' ||
 		!/^[A-Z][A-Z0-9_]{0,63}$/.test(value.metric) ||
+		(version === 2 &&
+			![
+				'RECOVERY_CONVERSATION',
+				'OUTBOUND_AUTOMATED_MESSAGE',
+				'DELIVERED_WHATSAPP_MESSAGE',
+				'RECOVERY_CREDIT_PACK_PURCHASE',
+			].includes(value.metric)) ||
 		!signed(value.quantity) ||
-		!iso(value.occurredAt)
+		!iso(value.occurredAt) ||
+		(version === 2 && !USAGE_CHARGE_SOURCES.includes(value.chargedAgainst))
 	) {
 		return false;
 	}
@@ -76,7 +90,7 @@ function event(value) {
 	);
 }
 
-/** Parse only the approved API-022 v1 projection; reject extra sensitive fields. */
+/** Parse only the exact v1/v2 API-022 projections; reject extra sensitive fields. */
 export function parseUsageHistory(payload) {
 	if (
 		!object(payload, [
@@ -87,7 +101,7 @@ export function parseUsageHistory(payload) {
 			'usageEvents',
 			'usagePagination',
 		]) ||
-		payload.schemaVersion !== 1 ||
+		![1, 2].includes(payload.schemaVersion) ||
 		!['ready', 'unavailable'].includes(payload.state) ||
 		!VIEWS.includes(payload.usageView)
 	) {
@@ -126,7 +140,7 @@ export function parseUsageHistory(payload) {
 		!Array.isArray(payload.usageEvents) ||
 		payload.usageEvents.length > paging.pageSize ||
 		payload.usageEvents.length > paging.total ||
-		!payload.usageEvents.every(event)
+		!payload.usageEvents.every((item) => event(item, payload.schemaVersion))
 	) {
 		throw new Error('invalid_response');
 	}

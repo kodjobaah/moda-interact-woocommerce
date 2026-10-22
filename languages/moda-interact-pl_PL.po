@@ -1898,12 +1898,16 @@ msgid "Billing periods"
 msgstr "Okresy rozliczeniowe"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Bieżący okres"
+msgid "Current usage"
+msgstr "Bieżące użycie"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Typ zdarzenia"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Wykorzystanie bezterminowe"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1914,8 +1918,8 @@ msgid "No recorded usage for this period."
 msgstr "Brak zarejestrowanego użycia w tym okresie."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Poprzednie okresy"
+msgid "Past paid usage"
+msgstr "Poprzednie płatne użycie"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1938,8 +1942,8 @@ msgid "Recovery conversation"
 msgstr "Rozmowa odzyskiwania"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Przeglądaj zarejestrowane użycie rozmów odzyskiwania według okresów rozliczeniowych."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Przejrzyj zarejestrowane wykorzystanie rozmów odzyskiwania."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -2012,3 +2016,27 @@ msgstr "Pozostałe miejsca na przesyłanie plików: %1$s (wspólne ze stronami W
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Osiągnięto wspólny limit źródeł wiedzy w Twoim planie."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Pobrano z"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Darmowe kredyty bezterminowe"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Limit wliczony w plan"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Zakupione dodatkowe kredyty"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Kredyty promocyjne"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Nieprzypisane"

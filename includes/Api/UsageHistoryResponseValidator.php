@@ -45,11 +45,23 @@ final class UsageHistoryResponseValidator {
 			strtotime( $value['periodStart'] ) < strtotime( $value['periodEnd'] );
 	}
 
-	private static function event( mixed $value ): bool {
-		if ( ! self::exact( $value, array( 'id', 'metric', 'quantity', 'occurredAt', 'sourceRecovery' ) ) ||
+	private const CHARGE_SOURCES = array(
+		'LIFETIME_FREE_CREDITS', 'INCLUDED_PLAN_ALLOWANCE', 'PURCHASED_TOP_UP',
+		'PROMOTIONAL_CREDITS', 'NOT_APPLICABLE', 'UNATTRIBUTED',
+	);
+
+	private static function event( mixed $value, int $version ): bool {
+		$keys = array( 'id', 'metric', 'quantity', 'occurredAt', 'sourceRecovery' );
+		if ( 2 === $version ) $keys[] = 'chargedAgainst';
+		if ( ! self::exact( $value, $keys ) ||
 			! self::id( $value['id'], 191 ) || ! is_string( $value['metric'] ) ||
 			! preg_match( '/^[A-Z][A-Z0-9_]{0,63}$/D', $value['metric'] ) ||
-			! self::quantity( $value['quantity'], true ) || ! self::timestamp( $value['occurredAt'] ) ) return false;
+			( 2 === $version && ! in_array( $value['metric'], array(
+				'RECOVERY_CONVERSATION', 'OUTBOUND_AUTOMATED_MESSAGE',
+				'DELIVERED_WHATSAPP_MESSAGE', 'RECOVERY_CREDIT_PACK_PURCHASE',
+			), true ) ) ||
+			! self::quantity( $value['quantity'], true ) || ! self::timestamp( $value['occurredAt'] ) ||
+			( 2 === $version && ! in_array( $value['chargedAgainst'], self::CHARGE_SOURCES, true ) ) ) return false;
 		$source = $value['sourceRecovery'];
 		if ( null === $source ) return true;
 		return self::exact( $source, array( 'recoveryId', 'customerName' ) ) &&
@@ -63,7 +75,8 @@ final class UsageHistoryResponseValidator {
 
 	public static function isValid( mixed $value ): bool {
 		if ( ! self::exact( $value, array( 'schemaVersion', 'state', 'usageView', 'periodPage', 'usageEvents', 'usagePagination' ) ) ||
-			1 !== $value['schemaVersion'] || ! in_array( $value['state'], array( 'ready', 'unavailable' ), true ) ||
+			! in_array( $value['schemaVersion'], array( 1, 2 ), true ) ||
+			! in_array( $value['state'], array( 'ready', 'unavailable' ), true ) ||
 			! in_array( $value['usageView'], array( 'current', 'past' ), true ) ) return false;
 		$periods = $value['periodPage'];
 		if ( ! self::exact( $periods, array( 'items', 'previousCursor', 'nextCursor' ) ) ||
@@ -81,7 +94,7 @@ final class UsageHistoryResponseValidator {
 			( ( null === $page['periodStart'] ) !== ( null === $page['periodEnd'] ) ) ||
 			! is_array( $value['usageEvents'] ) || ! array_is_list( $value['usageEvents'] ) ||
 			count( $value['usageEvents'] ) > $page['pageSize'] || count( $value['usageEvents'] ) > $page['total'] ) return false;
-		foreach ( $value['usageEvents'] as $event ) if ( ! self::event( $event ) ) return false;
+		foreach ( $value['usageEvents'] as $event ) if ( ! self::event( $event, $value['schemaVersion'] ) ) return false;
 		return true;
 	}
 }

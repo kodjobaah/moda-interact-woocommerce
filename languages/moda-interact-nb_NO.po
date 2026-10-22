@@ -1896,12 +1896,16 @@ msgid "Billing periods"
 msgstr "Faktureringsperioder"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Gjeldende periode"
+msgid "Current usage"
+msgstr "Nåværende bruk"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Hendelsestype"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Livstidsbruk"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1912,8 +1916,8 @@ msgid "No recorded usage for this period."
 msgstr "Ingen bruk registrert for denne perioden."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Tidligere perioder"
+msgid "Past paid usage"
+msgstr "Tidligere betalt bruk"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1936,8 +1940,8 @@ msgid "Recovery conversation"
 msgstr "Gjenopprettingssamtale"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Se registrert bruk av gjenopprettingssamtaler per faktureringsperiode."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Se registrert bruk av gjenopprettingssamtaler."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -2010,3 +2014,27 @@ msgstr "Ledige plasser for filopplasting: %1$s (deles med nettsider; totalt %2$s
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Den felles grensen for kunnskapskilder i abonnementet ditt er nådd."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Belastet"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Livsvarige gratiskreditter"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Inkludert kvote i abonnementet"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Kjøpt påfyll"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Kampanjekreditter"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Ikke tilordnet"

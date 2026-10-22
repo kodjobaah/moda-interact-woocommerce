@@ -1914,12 +1914,16 @@ msgid "Billing periods"
 msgstr "Períodos de facturación"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Período actual"
+msgid "Current usage"
+msgstr "Uso actual"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Tipo de evento"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Uso de por vida"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1930,8 +1934,8 @@ msgid "No recorded usage for this period."
 msgstr "No hay uso registrado en este período."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Períodos anteriores"
+msgid "Past paid usage"
+msgstr "Uso de periodos de pago anteriores"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1954,8 +1958,8 @@ msgid "Recovery conversation"
 msgstr "Conversación de recuperación"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Consulta el uso registrado de conversaciones de recuperación por período de facturación."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Consulta el uso registrado de conversaciones de recuperación."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -2028,3 +2032,27 @@ msgstr "Plazas disponibles para subir archivos: %1$s (compartidas con páginas w
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Se ha alcanzado el límite compartido de fuentes de conocimiento de tu plan."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Descontado de"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Créditos gratuitos de por vida"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Asignación incluida en el plan"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Recarga comprada"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Créditos promocionales"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Sin atribución"
