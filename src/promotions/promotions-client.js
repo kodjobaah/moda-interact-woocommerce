@@ -26,37 +26,54 @@ export function createPromotionsClient(request = apiFetch) {
 	}
 	return {
 		async read({ offerPage = 1, historyPage = 1 }, signal) {
-			if (!validPromotionPage(offerPage) || !validPromotionPage(historyPage)) {
+			if (
+				!validPromotionPage(offerPage) ||
+				!validPromotionPage(historyPage)
+			) {
 				throw new Error('INVALID_REQUEST');
 			}
 			const query = new URLSearchParams({
-				offerPage: String(offerPage), historyPage: String(historyPage),
+				offerPage: String(offerPage),
+				historyPage: String(historyPage),
 			});
 			try {
 				const response = await request({
-					path: `${PROMOTIONS_PATH}?${query}`, method: 'GET', signal,
+					path: `${PROMOTIONS_PATH}?${query}`,
+					method: 'GET',
+					signal,
 				});
-				if (signal?.aborted) throw new Error('ABORTED');
+				if (signal?.aborted) {
+					throw new Error('ABORTED');
+				}
 				const data = parsePromotionsResponse(response);
 				if (
 					data.offersPagination.page > offerPage ||
 					data.history.page > historyPage
-				) throw new Error('REMOTE_RESPONSE_INVALID');
+				) {
+					throw new Error('REMOTE_RESPONSE_INVALID');
+				}
 				return data;
 			} catch (error) {
 				throw errorFrom(error, signal);
 			}
 		},
 		async select(campaignId, expectedRevision, signal) {
-			if (!validCampaignId(campaignId) || !validRevision(expectedRevision)) {
+			if (
+				!validCampaignId(campaignId) ||
+				!validRevision(expectedRevision)
+			) {
 				throw new Error('INVALID_REQUEST');
 			}
 			try {
 				const response = await request({
-					path: `${PROMOTIONS_PATH}/selection`, method: 'PUT',
-					data: { campaignId, expectedRevision }, signal,
+					path: `${PROMOTIONS_PATH}/selection`,
+					method: 'PUT',
+					data: { campaignId, expectedRevision },
+					signal,
 				});
-				if (signal?.aborted) throw new Error('ABORTED');
+				if (signal?.aborted) {
+					throw new Error('ABORTED');
+				}
 				return parsePromotionSelection(response, campaignId);
 			} catch (error) {
 				throw errorFrom(error, signal);

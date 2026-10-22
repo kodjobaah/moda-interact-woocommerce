@@ -60,10 +60,10 @@ export function UsageHistoryResults({ history, locale }) {
 					)
 				: state.view === 'current' && paging.billId === null
 					? createElement(
-						'h2',
-						null,
-						__('Lifetime usage', 'moda-interact')
-					)
+							'h2',
+							null,
+							__('Lifetime usage', 'moda-interact')
+						)
 					: null,
 			createElement(
 				'p',

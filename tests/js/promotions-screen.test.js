@@ -180,7 +180,6 @@ it('uses compact promotions and history headings in the unavailable state', () =
 	expect(nodes(screen, 'article')).toHaveLength(0);
 });
 
-
 it.each([
 	['SELECTED', 'Selected'],
 	['USED', 'Used'],
@@ -191,12 +190,22 @@ it.each([
 	['REOPENED', 'Reopened'],
 ])('renders API-021 history status %s as %s', (status, label) => {
 	const root = PromotionHistory({
-		history: { entries: [{
-			campaignId: 'campaign-a', campaignTitle: 'Autumn', status,
-			quantityGranted: 5, committedQuantity: 2, remainingQuantity: 3,
-			lastSelectedAt: '2026-10-20T00:00:00.000Z',
-			expiresAt: '2026-11-01T00:00:00.000Z',
-		}], totalEntries: 1, totalPages: 1 },
+		history: {
+			entries: [
+				{
+					campaignId: 'campaign-a',
+					campaignTitle: 'Autumn',
+					status,
+					quantityGranted: 5,
+					committedQuantity: 2,
+					remainingQuantity: 3,
+					lastSelectedAt: '2026-10-20T00:00:00.000Z',
+					expiresAt: '2026-11-01T00:00:00.000Z',
+				},
+			],
+			totalEntries: 1,
+			totalPages: 1,
+		},
 	});
 	expect(text(root)).toContain(label);
 	expect(text(root)).toContain('Granted 5');
@@ -206,20 +215,36 @@ it.each([
 it('supports explicit refresh, reconnect, and post-revision-conflict messaging', () => {
 	const onRefresh = vi.fn();
 	const onReconnect = vi.fn();
-	const expired = PromotionsScreen({ model: { status: 'RECONNECT_REQUIRED' }, onRefresh, onReconnect });
+	const expired = PromotionsScreen({
+		model: { status: 'RECONNECT_REQUIRED' },
+		onRefresh,
+		onReconnect,
+	});
 	expect(text(expired)).toContain('Reconnect Moda Interact');
 	nodes(expired, 'button')[0].props.onClick();
 	expect(onReconnect).toHaveBeenCalledOnce();
 	expect(onRefresh).not.toHaveBeenCalled();
-	const conflict = PromotionsScreen({ model: { status: 'CONFLICT' }, onRefresh });
-	expect(nodes(conflict, 'p').some((p) => p.props.role === 'alert')).toBe(true);
+	const conflict = PromotionsScreen({
+		model: { status: 'CONFLICT' },
+		onRefresh,
+	});
+	expect(nodes(conflict, 'p').some((p) => p.props.role === 'alert')).toBe(
+		true
+	);
 	nodes(conflict, 'button')[0].props.onClick();
 	expect(onRefresh).toHaveBeenCalledOnce();
-	const reloaded = PromotionsScreen({ model: {
-		status: 'READY', selection: null, offers: [],
-		offersPagination: { page: 1, totalPages: 1 },
-		history: { page: 1, entries: [], totalPages: 1 }, error: 'CONFLICT',
-	} });
-	expect(nodes(reloaded, 'p').some((p) => p.props.role === 'alert')).toBe(true);
+	const reloaded = PromotionsScreen({
+		model: {
+			status: 'READY',
+			selection: null,
+			offers: [],
+			offersPagination: { page: 1, totalPages: 1 },
+			history: { page: 1, entries: [], totalPages: 1 },
+			error: 'CONFLICT',
+		},
+	});
+	expect(nodes(reloaded, 'p').some((p) => p.props.role === 'alert')).toBe(
+		true
+	);
 	expect(text(reloaded)).toContain('latest offers have been loaded');
 });

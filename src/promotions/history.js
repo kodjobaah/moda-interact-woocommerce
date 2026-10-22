@@ -115,7 +115,9 @@ export function PromotionHistory({
 								sprintf(
 									/* translators: %s: last promotion-selection date. */
 									__('Selected %s', 'moda-interact'),
-									entry.lastSelectedAt ? formatDate(entry.lastSelectedAt) : '—'
+									entry.lastSelectedAt
+										? formatDate(entry.lastSelectedAt)
+										: '—'
 								)
 							),
 							createElement(

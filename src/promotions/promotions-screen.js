@@ -9,13 +9,22 @@ function nonReadyMessage(status) {
 		return __('Loading…', 'moda-interact');
 	}
 	if (status === 'DENIED') {
-		return __('You do not have permission to view promotions.', 'moda-interact');
+		return __(
+			'You do not have permission to view promotions.',
+			'moda-interact'
+		);
 	}
 	if (status === 'RECONNECT_REQUIRED') {
-		return __('Reconnect Moda Interact to view promotions.', 'moda-interact');
+		return __(
+			'Reconnect Moda Interact to view promotions.',
+			'moda-interact'
+		);
 	}
 	if (status === 'CONFLICT') {
-		return __('Promotions changed. Refresh to see the latest offers.', 'moda-interact');
+		return __(
+			'Promotions changed. Refresh to see the latest offers.',
+			'moda-interact'
+		);
 	}
 	if (status === 'ERROR') {
 		return __('This section could not be loaded.', 'moda-interact');
@@ -28,10 +37,16 @@ function nonReadyMessage(status) {
 
 function noticeMessage(code) {
 	if (code === 'CONFLICT') {
-		return __('Promotions changed. The latest offers have been loaded.', 'moda-interact');
+		return __(
+			'Promotions changed. The latest offers have been loaded.',
+			'moda-interact'
+		);
 	}
 	if (code === 'PROMOTION_INELIGIBLE') {
-		return __('Promotion is no longer eligible. The latest offers have been loaded.', 'moda-interact');
+		return __(
+			'Promotion is no longer eligible. The latest offers have been loaded.',
+			'moda-interact'
+		);
 	}
 	return null;
 }
@@ -45,8 +60,8 @@ function noticeMessage(code) {
  * @param {((campaignId: string) => void)|null} root0.onSelect      Selection callback.
  * @param {((page: number) => void)|null}       root0.onOffersPage  Offer paging callback.
  * @param {((page: number) => void)|null}       root0.onHistoryPage History paging callback.
- * @param {(() => void)|null}                 root0.onRefresh     Reload from API.
- * @param {(() => void)|null}                 root0.onReconnect   Revalidate installation.
+ * @param {(() => void)|null}                   root0.onRefresh     Reload from API.
+ * @param {(() => void)|null}                   root0.onReconnect   Revalidate installation.
  * @return {Object} Promotions screen.
  */
 export function PromotionsScreen({
@@ -60,7 +75,9 @@ export function PromotionsScreen({
 	const ready = model.status === 'READY';
 	const selected = ready ? model.selection : null;
 	const offers = ready ? (model.offers ?? []) : [];
-	const otherOffers = offers.filter((offer) => offer.id !== selected?.campaignId);
+	const otherOffers = offers.filter(
+		(offer) => offer.id !== selected?.campaignId
+	);
 	const pagination = ready ? (model.offersPagination ?? {}) : {};
 	const notice = ready ? noticeMessage(model.error) : null;
 	let offerBody;
@@ -68,7 +85,12 @@ export function PromotionsScreen({
 		offerBody = createElement(
 			'p',
 			{
-				role: ['ERROR', 'DENIED', 'RECONNECT_REQUIRED', 'CONFLICT'].includes(model.status)
+				role: [
+					'ERROR',
+					'DENIED',
+					'RECONNECT_REQUIRED',
+					'CONFLICT',
+				].includes(model.status)
 					? 'alert'
 					: 'status',
 				className: 'moda-promotions__empty',
@@ -158,13 +180,19 @@ export function PromotionsScreen({
 						sprintf(
 							/* translators: %s: selected promotion expiry date. */
 							__('Expires %s', 'moda-interact'),
-							selected.expiresAt ? formatDate(selected.expiresAt) : '—'
+							selected.expiresAt
+								? formatDate(selected.expiresAt)
+								: '—'
 						)
 					)
 				)
 			: null,
 		notice
-			? createElement('p', { role: 'alert', className: 'moda-promotions__notice' }, notice)
+			? createElement(
+					'p',
+					{ role: 'alert', className: 'moda-promotions__notice' },
+					notice
+				)
 			: null,
 		createElement(
 			'section',
@@ -187,21 +215,35 @@ export function PromotionsScreen({
 				)
 			),
 			offerBody,
-			!ready && (onRefresh || (model.status === 'RECONNECT_REQUIRED' && onReconnect))
-				? createElement('button', {
-					type: 'button',
-					className: 'button',
-					onClick: model.status === 'RECONNECT_REQUIRED' ? onReconnect : onRefresh,
-				}, model.status === 'RECONNECT_REQUIRED'
-					? __('Reconnect Moda Interact', 'moda-interact')
-					: __('Refresh', 'moda-interact'))
+			!ready &&
+				(onRefresh ||
+					(model.status === 'RECONNECT_REQUIRED' && onReconnect))
+				? createElement(
+						'button',
+						{
+							type: 'button',
+							className: 'button',
+							onClick:
+								model.status === 'RECONNECT_REQUIRED'
+									? onReconnect
+									: onRefresh,
+						},
+						model.status === 'RECONNECT_REQUIRED'
+							? __('Reconnect Moda Interact', 'moda-interact')
+							: __('Refresh', 'moda-interact')
+					)
 				: null,
 			ready && onRefresh
-				? createElement('button', {
-					type: 'button', className: 'button',
-					disabled: model.saving === true,
-					onClick: onRefresh,
-				}, __('Refresh', 'moda-interact'))
+				? createElement(
+						'button',
+						{
+							type: 'button',
+							className: 'button',
+							disabled: model.saving === true,
+							onClick: onRefresh,
+						},
+						__('Refresh', 'moda-interact')
+					)
 				: null,
 			ready
 				? createElement(PromotionPager, {

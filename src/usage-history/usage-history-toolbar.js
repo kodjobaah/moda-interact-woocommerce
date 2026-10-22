@@ -138,7 +138,8 @@ export function UsageHistoryToolbar({ history, locale }) {
 			)
 		),
 		past &&
-			(state.data?.periodPage?.previousCursor || state.data?.periodPage?.nextCursor)
+			(state.data?.periodPage?.previousCursor ||
+				state.data?.periodPage?.nextCursor)
 			? createElement(
 					'nav',
 					{

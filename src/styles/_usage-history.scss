@@ -118,10 +118,12 @@
 	}
 
 	// Additional attribution column scrolls inside the panel on narrow screens.
-	&__table { min-width: 760px; }
+	&__table {
+		min-width: 760px;
+	}
 
 	&__table th,
- &__table td {
+	&__table td {
 		vertical-align: top;
 		padding: 12px;
 	}

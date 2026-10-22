@@ -4,7 +4,9 @@ import { PromotionsController } from './promotions-controller';
 /** Installation-keyed mount; unmount fences every outstanding GET/PUT. */
 export function usePromotions() {
 	const ref = useRef(null);
-	if (!ref.current) ref.current = new PromotionsController();
+	if (!ref.current) {
+		ref.current = new PromotionsController();
+	}
 	const [state, setState] = useState(ref.current.state);
 	useEffect(() => {
 		const controller = ref.current;
