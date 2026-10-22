@@ -7,6 +7,8 @@ defined( 'ABSPATH' ) || exit;
 // Bundled production Composer loaders are class-map authoritative.
 // This bounded feature is explicitly loaded without requiring a vendor rebuild.
 require_once __DIR__ . '/Api/DiscountOffersContracts.php';
+require_once __DIR__ . '/Api/SupportResponseValidator.php';
+require_once __DIR__ . '/Rest/SupportController.php';
 require_once __DIR__ . '/Rest/RecoveryDiscountOffersController.php';
 require_once __DIR__ . '/Api/MerchantKnowledgeContracts.php';
 require_once __DIR__ . '/Rest/MerchantKnowledgeController.php';
@@ -32,6 +34,7 @@ use ModaInteract\WooCommerce\Rest\RecoveryListController;
 use ModaInteract\WooCommerce\Rest\RecoveryDetailController;
 use ModaInteract\WooCommerce\Rest\ReadAccessController;
 use ModaInteract\WooCommerce\Rest\MerchantKnowledgeController;
+use ModaInteract\WooCommerce\Rest\SupportController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutActivityPublisher;
 use ModaInteract\WooCommerce\Checkout\OrderLifecycleCapture;
@@ -101,6 +104,7 @@ final class Runtime {
 		( new RecoveryDetailController( null, new SiteIdentity( $mode ) ) )->register();
 		( new ReadAccessController( null, new SiteIdentity( $mode ) ) )->register();
 		( new MerchantKnowledgeController( null, new SiteIdentity( $mode ) ) )->register();
+		( new SupportController( null, new SiteIdentity( $mode ) ) )->register();
 		$activity_publisher = new CheckoutActivityPublisher();
 		( new CheckoutCapture( $activity_publisher ) )->register();
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();

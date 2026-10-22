@@ -69,7 +69,7 @@ describe('Support native merchant presentation', () => {
 				SupportThread({ state: state('ERROR'), canRead: true }),
 				'button'
 			)
-		).toHaveLength(4); // refresh, retry, previous, next
+		).toHaveLength(2); // refresh and retry; no inactive pagination
 	});
 
 	it('renders ordered, server-paginated messages without allowing unsupported navigation', () => {
@@ -91,10 +91,47 @@ describe('Support native merchant presentation', () => {
 		expect(cards).toHaveLength(1);
 		expect(cards[0].props.message).toBe(item);
 		expect(words(view)).toContain('Page 2 of 3');
+		expect(find(view, 'nav')).toHaveLength(1);
 		const buttons = find(view, 'button');
 		buttons[1].props.onClick();
 		buttons[2].props.onClick();
 		expect(page.mock.calls).toEqual([[1], [3]]);
+	});
+
+	it('keeps single-page conversations uncluttered like Shopify Support', () => {
+		const merchantMessage = {
+			id: 'first',
+			kind: 'MERCHANT',
+			state: 'AVAILABLE',
+			originalBody: 'Can I get some help?',
+			displayBody: 'Can I get some help?',
+			createdAt: '2026-10-22T01:00:00Z',
+		};
+		const reply = {
+			...merchantMessage,
+			id: 'reply',
+			kind: 'ADMINISTRATIVE',
+			displayBody: 'Of course.',
+		};
+		const view = SupportThread({
+			state: state('READY', [merchantMessage, reply]),
+			canRead: true,
+		});
+		expect(find(view, SupportMessageCard)).toHaveLength(2);
+		expect(find(view, 'nav')).toHaveLength(0);
+		const styles = readFileSync(
+			new URL('../../src/support/styles/_support.scss', import.meta.url),
+			'utf8'
+		);
+		expect(styles).toMatch(
+			/&__message--merchant\s*\{[^}]*align-self:\s*flex-end/
+		);
+		expect(styles).toMatch(
+			/&__message--administrative,[\s\S]*?align-self:\s*flex-start/
+		);
+		expect(styles).toMatch(
+			/&__compose-footer\s*\{[^}]*flex-direction:\s*column/
+		);
 	});
 
 	it('never inserts untrusted system URLs into a support card action', () => {
@@ -118,14 +155,14 @@ describe('Support native merchant presentation', () => {
 		).toBeNull();
 	});
 
-	it('keeps a disabled composer in production and mobile/keyboard styles scoped', () => {
+	it('enables the hosted-backed composer while preserving mobile/keyboard styles', () => {
 		expect(SupportComposer).toBeTypeOf('function');
 		const client = readFileSync(
 			new URL('../../src/support/support-client.js', import.meta.url),
 			'utf8'
 		);
 		expect(client).toMatch(
-			/read:\s*false,\s*send:\s*false,\s*markRead:\s*false/
+			/read:\s*true,\s*send:\s*true,\s*markRead:\s*true/
 		);
 		const css = readFileSync(
 			new URL('../../src/support/styles/_support.scss', import.meta.url),

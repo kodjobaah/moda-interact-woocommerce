@@ -40,7 +40,7 @@ export function SupportThread({ state, onRefresh, onPage, canRead }) {
 				'button',
 				{
 					type: 'button',
-					className: 'button',
+					className: 'button-link moda-support__refresh',
 					onClick: onRefresh,
 					disabled: !canRead || status === 'LOADING',
 				},
@@ -77,24 +77,24 @@ export function SupportThread({ state, onRefresh, onPage, canRead }) {
 					)
 				)
 			: null,
-		createElement(
-			'nav',
-			{
-				className: 'moda-support__pager',
-				'aria-label': __('Support pages', 'moda-interact'),
-			},
-			createElement(
-				'button',
-				{
-					type: 'button',
-					className: 'button-link',
-					disabled: status !== 'READY' || page <= 1,
-					onClick: () => onPage(page - 1),
-				},
-				__('Previous', 'moda-interact')
-			),
-			status === 'READY' && totalPages > 0
-				? createElement(
+		status === 'READY' && totalPages > 1
+			? createElement(
+					'nav',
+					{
+						className: 'moda-support__pager',
+						'aria-label': __('Support pages', 'moda-interact'),
+					},
+					createElement(
+						'button',
+						{
+							type: 'button',
+							className: 'button-link',
+							disabled: page <= 1,
+							onClick: () => onPage(page - 1),
+						},
+						__('Previous', 'moda-interact')
+					),
+					createElement(
 						'span',
 						null,
 						sprintf(
@@ -103,18 +103,18 @@ export function SupportThread({ state, onRefresh, onPage, canRead }) {
 							page,
 							totalPages
 						)
+					),
+					createElement(
+						'button',
+						{
+							type: 'button',
+							className: 'button-link',
+							disabled: page >= totalPages,
+							onClick: () => onPage(page + 1),
+						},
+						__('Next', 'moda-interact')
 					)
-				: null,
-			createElement(
-				'button',
-				{
-					type: 'button',
-					className: 'button-link',
-					disabled: status !== 'READY' || page >= totalPages,
-					onClick: () => onPage(page + 1),
-				},
-				__('Next', 'moda-interact')
-			)
-		)
+				)
+			: null
 	);
 }

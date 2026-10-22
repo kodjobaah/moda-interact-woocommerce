@@ -15,6 +15,9 @@ export function countSupportGraphemes(value) {
 }
 
 export function validSupportBody(body) {
+	if (typeof body !== 'string') {
+		return false;
+	}
 	const count = countSupportGraphemes(body);
 	return count >= 1 && count <= 500;
 }

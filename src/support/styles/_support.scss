@@ -1,3 +1,4 @@
+// Shopify-style conversation layout, scoped to the WooCommerce Support surface.
 .moda-interact-page--support {
 	box-sizing: border-box;
 }
@@ -6,7 +7,7 @@
 	max-width: 860px;
 	margin: 0 auto;
 	display: grid;
-	gap: 18px;
+	gap: 16px;
 
 	&__header h1 {
 		margin: 0 0 8px;
@@ -14,22 +15,22 @@
 
 	&__header p {
 		margin: 0;
-		color: #50575e;
+		color: var(--moda-muted);
 	}
 
 	&__panel {
-		background: #fff;
-		border: 1px solid #c3c4c7;
-		border-radius: 5px;
-		padding: 20px;
+		min-width: 0;
+		padding: 16px;
+		border: 1px solid var(--moda-border);
+		border-radius: 12px;
+		background: var(--moda-surface);
+		box-shadow: 0 1px 2px rgb(20 61 44 / 5%);
 	}
 
 	&__section-title,
 	&__message-head,
-	&__compose-footer,
 	&__pager {
 		display: flex;
-		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px;
@@ -37,68 +38,164 @@
 
 	&__section-title h2,
 	&__panel h2 {
-		font-size: 1.15rem;
-		margin: 0 0 12px;
+		margin: 0;
+		color: var(--moda-ink);
+		font-size: 14px;
+		font-weight: 650;
+		line-height: 1.5;
 	}
 
-	&__section-title h2 {
-		margin: 0;
+	&__refresh {
+		font-size: 12px;
+		color: var(--moda-forest-700);
 	}
 
 	&__thread {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 		padding: 0;
-		margin: 20px 0 0;
+		margin: 14px 0 0;
 		list-style: none;
-		display: grid;
-		gap: 12px;
 	}
 
 	&__message {
-		padding: 14px;
-		background: #f6f7f7;
-		border: 1px solid #dcdcde;
-		border-radius: 4px;
+		align-self: flex-start;
+		min-width: 0;
+		max-width: 78%;
+		margin: 0;
+		padding: 12px 16px;
+		border: 1px solid var(--moda-border);
+		border-radius: 9px;
+		background: #fff;
+		color: var(--moda-ink);
 		overflow-wrap: anywhere;
 	}
 
 	&__message--merchant {
-		background: #f0f6fc;
+		align-self: flex-end;
+		width: fit-content;
+		min-width: 170px;
+		background: var(--moda-forest-100);
+		border-color: var(--moda-forest-200);
+		border-right: 3px solid var(--moda-forest-700);
 	}
 
-	&__message p {
-		white-space: pre-wrap;
+	&__message--administrative,
+	&__message--system {
+		align-self: flex-start;
+		width: 78%;
+		border-left: 3px solid var(--moda-forest-700);
+	}
+
+	&__message-head {
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px 12px;
+	}
+
+	&__message-head strong {
+		font-size: 13px;
 	}
 
 	&__message time {
-		color: #50575e;
-		font-size: 0.85rem;
+		color: var(--moda-muted);
+		font-size: 12px;
+		white-space: nowrap;
+	}
+
+	&__message p {
+		margin: 4px 0 0;
+		line-height: 1.55;
+		white-space: pre-wrap;
+	}
+
+	&__message .button-link,
+	&__message a {
+		margin-top: 8px;
+		font-size: 12px;
 	}
 
 	&__unread {
-		font-weight: 600;
+		color: var(--moda-forest-700);
+		font-size: 12px;
+		font-weight: 650;
 	}
 
 	&__pager {
-		margin-top: 20px;
+		margin-top: 16px;
 	}
 
-	textarea {
+	&__panel form {
+		margin-top: 10px;
+	}
+
+	&__panel label {
+		display: block;
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	&__panel textarea {
 		display: block;
 		width: 100%;
 		max-width: 100%;
+		min-height: 112px;
 		margin: 8px 0 12px;
-		box-sizing: border-box;
+		padding: 10px 12px;
+		border: 1px solid var(--moda-border);
+		border-radius: 8px;
+		background: #fff;
+		box-shadow: none;
+		resize: vertical;
 	}
 
-	label {
-		display: block;
-		font-weight: 600;
+	&__compose-footer {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	&__compose-footer .button-primary {
+		min-height: 36px;
+		padding: 4px 14px;
+		border: 1px solid var(--moda-forest-700);
+		border-radius: 7px;
+		background: var(--moda-forest-700);
+		color: #fff;
+	}
+
+	&__compose-footer .button-primary:not(:disabled):hover {
+		border-color: var(--moda-forest-800);
+		background: var(--moda-forest-800);
+		color: #fff;
+	}
+
+	&__compose-footer .button-primary:disabled {
+		border-color: var(--moda-border);
+		background: var(--moda-forest-200);
+		color: var(--moda-forest-800);
+		cursor: not-allowed;
+		opacity: 0.65;
+	}
+
+	&__sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	button:focus-visible,
 	a:focus-visible,
 	textarea:focus-visible {
-		outline: 2px solid #2271b1;
+		outline: 2px solid var(--moda-forest-700);
 		outline-offset: 2px;
 	}
 
@@ -108,9 +205,15 @@
 			padding: 14px;
 		}
 
-		&__section-title,
-		&__compose-footer {
-			align-items: flex-start;
+		&__thread {
+			gap: 12px;
+		}
+
+		&__message,
+		&__message--administrative,
+		&__message--system {
+			width: auto;
+			max-width: 94%;
 		}
 
 		&__message-head {
