@@ -1897,12 +1897,16 @@ msgid "Billing periods"
 msgstr "Faktureringsperioder"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Nuværende periode"
+msgid "Current usage"
+msgstr "Aktuelt forbrug"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Hændelsestype"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Samlet forbrug uden udløb"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1913,8 +1917,8 @@ msgid "No recorded usage for this period."
 msgstr "Intet forbrug registreret for denne periode."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Tidligere perioder"
+msgid "Past paid usage"
+msgstr "Tidligere betalt forbrug"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1937,8 +1941,8 @@ msgid "Recovery conversation"
 msgstr "Gendannelsessamtale"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Se registreret forbrug af gendannelsessamtaler pr. faktureringsperiode."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Se dit registrerede forbrug af gendannelsessamtaler."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1969,8 +1973,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Forbrugshistorikken kunne ikke indlæses. Prøv igen."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Forbrugshistorik er endnu ikke tilgængelig for denne WooCommerce-butik. Ingen data er ændret."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Brugshistorikken er i øjeblikket ikke tilgængelig for denne butik."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -2011,3 +2015,27 @@ msgstr "Ledige pladser til filuploads: %1$s (deles med websider; i alt %2$s kild
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Den fælles grænse for videnskilder i dit abonnement er nået."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Trukket fra"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Gratis kreditter uden udløb"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Inkluderet i abonnementet"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Købt ekstra kredit"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Kampagnekreditter"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Ikke tilknyttet"

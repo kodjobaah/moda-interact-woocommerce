@@ -1818,12 +1818,16 @@ msgid "Billing periods"
 msgstr "计费周期"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "当前周期"
+msgid "Current usage"
+msgstr "当前使用情况"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "事件类型"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "终身用量"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1834,8 +1838,8 @@ msgid "No recorded usage for this period."
 msgstr "此周期没有已记录的使用量。"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "以往周期"
+msgid "Past paid usage"
+msgstr "以往付费使用情况"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1858,8 +1862,8 @@ msgid "Recovery conversation"
 msgstr "恢复对话"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "按计费周期查看恢复对话的使用记录。"
+msgid "Review your recorded recovery conversation usage."
+msgstr "查看已记录的挽回对话使用情况。"
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1890,8 +1894,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "无法加载使用记录，请重试。"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "此 WooCommerce 商店尚不支持查看使用记录。未更改任何使用数据。"
+msgid "Usage history is currently unavailable for this store."
+msgstr "此店铺的使用记录目前不可用。"
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -1932,3 +1936,27 @@ msgstr "剩余文件上传名额：%1$s（与网页共享，总计 %2$s 个来�
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "已达到当前套餐的共享知识来源上限。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "扣费来源"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "终身免费额度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "套餐内含额度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "购买的追加额度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "促销额度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "未归属"

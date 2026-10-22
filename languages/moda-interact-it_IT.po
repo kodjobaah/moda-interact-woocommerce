@@ -1913,12 +1913,16 @@ msgid "Billing periods"
 msgstr "Periodi di fatturazione"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Periodo corrente"
+msgid "Current usage"
+msgstr "Utilizzo attuale"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Tipo di evento"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Utilizzo a vita"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1929,8 +1933,8 @@ msgid "No recorded usage for this period."
 msgstr "Nessun utilizzo registrato per questo periodo."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Periodi precedenti"
+msgid "Past paid usage"
+msgstr "Utilizzo a pagamento precedente"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1953,8 +1957,8 @@ msgid "Recovery conversation"
 msgstr "Conversazione di recupero"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Consulta l’utilizzo registrato delle conversazioni di recupero per periodo di fatturazione."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Consulta l’utilizzo registrato delle conversazioni di recupero."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1985,8 +1989,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Impossibile caricare la cronologia utilizzo. Riprova."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "La cronologia utilizzo non è ancora disponibile per questo negozio WooCommerce. Nessun dato è stato modificato."
+msgid "Usage history is currently unavailable for this store."
+msgstr "La cronologia di utilizzo non è attualmente disponibile per questo negozio."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -2027,3 +2031,27 @@ msgstr "Posti disponibili per il caricamento di file: %1$s (condivisi con le pag
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "È stato raggiunto il limite condiviso di fonti di conoscenza del tuo piano."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Addebitato su"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Crediti gratuiti a vita"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Quota inclusa nel piano"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Ricarica acquistata"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Crediti promozionali"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Non attribuito"

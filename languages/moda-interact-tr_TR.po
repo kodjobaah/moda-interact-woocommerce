@@ -1882,12 +1882,16 @@ msgid "Billing periods"
 msgstr "Faturalama dönemleri"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Geçerli dönem"
+msgid "Current usage"
+msgstr "Geçerli kullanım"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Etkinlik türü"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Ömür boyu kullanım"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1898,8 +1902,8 @@ msgid "No recorded usage for this period."
 msgstr "Bu dönem için kaydedilmiş kullanım yok."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Önceki dönemler"
+msgid "Past paid usage"
+msgstr "Geçmiş ücretli kullanım"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1922,8 +1926,8 @@ msgid "Recovery conversation"
 msgstr "Kurtarma görüşmesi"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Kurtarma görüşmelerinin kaydedilen kullanımını faturalama dönemine göre inceleyin."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Kaydedilen kurtarma görüşmesi kullanımınızı görüntüleyin."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1954,8 +1958,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Kullanım geçmişi yüklenemedi. Tekrar deneyin."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Kullanım geçmişi bu WooCommerce mağazasında henüz kullanılamıyor. Hiçbir kayıt değiştirilmedi."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Kullanım geçmişi şu anda bu mağaza için kullanılamıyor."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -1996,3 +2000,27 @@ msgstr "Dosya yüklemeleri için kalan yer: %1$s (web sayfalarıyla ortak; topla
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Planınızın ortak bilgi kaynağı sınırına ulaşıldı."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Şuradan düşüldü"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Ömür boyu ücretsiz krediler"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Plana dahil kullanım hakkı"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Satın alınan ek kredi"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Promosyon kredileri"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Kaynağı belirsiz"

@@ -1888,12 +1888,16 @@ msgid "Billing periods"
 msgstr "Laskutusjaksot"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Nykyinen jakso"
+msgid "Current usage"
+msgstr "Nykyinen käyttö"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Tapahtumatyyppi"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Elinikäinen käyttö"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1904,8 +1908,8 @@ msgid "No recorded usage for this period."
 msgstr "Tälle jaksolle ei ole kirjattu käyttöä."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Aiemmat jaksot"
+msgid "Past paid usage"
+msgstr "Aiempi maksullinen käyttö"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1928,8 +1932,8 @@ msgid "Recovery conversation"
 msgstr "Palautuskeskustelu"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Tarkastele palautuskeskustelujen kirjattua käyttöä laskutusjaksoittain."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Tarkastele palautuskeskustelujen kirjattua käyttöä."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1960,8 +1964,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Käyttöhistorian lataus epäonnistui. Yritä uudelleen."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Käyttöhistoria ei ole vielä saatavilla tässä WooCommerce-kaupassa. Tietoja ei muutettu."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Käyttöhistoria ei ole tällä hetkellä saatavilla tälle kaupalle."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -2002,3 +2006,27 @@ msgstr "Jäljellä olevat tiedostopaikat: %1$s (jaettu verkkosivujen kanssa; yht
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Tilauksesi yhteinen tietolähderaja on saavutettu."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Veloitettu lähteestä"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Elinikäiset ilmaiset krediitit"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Tilaukseen sisältyvä kiintiö"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Ostettu lisäsaldo"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Kampanjakrediitit"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Kohdistamaton"

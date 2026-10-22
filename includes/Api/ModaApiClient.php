@@ -292,6 +292,73 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+
+	/** API-022: authenticated, read-only and strictly filtered Woo usage-history read. */
+	public function merchantUsageHistory( array $connection, array $filters ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
+		foreach ( $filters as $key => $value ) {
+			if ( ! is_string( $value ) ) throw new ModaApiClientException( 'invalid_request' );
+			$valid = match ( $key ) {
+				'view' => in_array( $value, array( 'current', 'past' ), true ),
+				'kind' => in_array( $value, array( 'ALL', 'RECOVERY_CONVERSATION' ), true ),
+				'page' => 1 === preg_match( '/^[1-9][0-9]{0,3}$/D', $value ) && (int) $value <= 1000,
+				'pageSize' => in_array( $value, array( '10', '25', '50', '100' ), true ),
+				'periodId' => 1 === preg_match( '/^[A-Za-z0-9_-]{1,128}$/D', $value ),
+				'periodCursor' => 1 === preg_match( '/^[A-Za-z0-9_-]{1,1024}$/D', $value ),
+				default => false,
+			};
+			if ( ! $valid ) throw new ModaApiClientException( 'invalid_request' );
+		}
+		// Request proof-based per-event attribution without exposing version selection
+		// to the WordPress browser route. Older hosted APIs reject the new parameter.
+		try {
+			return $this->readMerchantUsageHistory( $connection, array_merge( $filters, array( 'responseVersion' => '2' ) ) );
+		} catch ( ModaApiClientException $error ) {
+			if ( 'invalid_request' !== $error->getMessage() || 400 !== $error->http_status ) throw $error;
+			// Version negotiation only: retry once using the unchanged, strict v1
+			// projection. Invalid cursors/periods, outages and auth errors NEVER fall back.
+			if ( function_exists( 'wc_get_logger' ) ) {
+				try {
+					wc_get_logger()->warning( 'Usage history v2 was rejected; using legacy v1 without charge attribution.', array( 'source' => 'moda-interact' ) );
+				} catch ( \Throwable $logging_error ) {
+					// Telemetry failure must not prevent a compatible read-only fallback.
+				}
+			}
+			return $this->readMerchantUsageHistory( $connection, $filters );
+		}
+	}
+
+	/** One bounded hosted read with strict version/selection checks. */
+	private function readMerchantUsageHistory( array $connection, array $filters ): array {
+		$path = '/v1/merchant/usage-history' . ( $filters ? '?' . http_build_query( $filters, '', '&', PHP_QUERY_RFC3986 ) : '' );
+		$response = $this->request( $path, 'GET', self::installationHeaders( $connection ), null, self::DEFAULT_TIMEOUT_SECONDS, 262145 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 403 === $status ) throw new ModaApiClientException( 'permission_denied', $status );
+		if ( in_array( $status, array( 400, 409 ), true ) ) {
+			try { $error = self::decodeErrorBody( $response )['error'] ?? null; }
+			catch ( ModaApiClientException $exception ) { $error = null; }
+			if ( in_array( $error, array( 'invalid_cursor', 'usage_history_invalid_cursor', 'usage_history_cursor_invalid' ), true ) ) {
+				throw new ModaApiClientException( 'invalid_cursor', $status );
+			}
+			if ( in_array( $error, array( 'invalid_period', 'usage_history_invalid_period', 'usage_history_period_invalid' ), true ) ) {
+				throw new ModaApiClientException( 'invalid_period', $status );
+			}
+			throw new ModaApiClientException( 400 === $status ? 'invalid_request' : 'tenant_conflict', $status );
+		}
+		if ( 200 !== $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try { $payload = $this->jsonBody( $response, 262144 ); }
+		catch ( ModaApiClientException $exception ) { throw new ModaApiClientException( 'remote_response_invalid', $status ); }
+		if ( ! UsageHistoryResponseValidator::isValid( $payload ) ||
+			$payload['schemaVersion'] !== (int) ( $filters['responseVersion'] ?? '1' ) ||
+			$payload['usageView'] !== ( $filters['view'] ?? 'current' ) ||
+			$payload['usagePagination']['page'] !== (int) ( $filters['page'] ?? '1' ) ||
+			$payload['usagePagination']['pageSize'] !== (int) ( $filters['pageSize'] ?? '10' ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return $payload;
+	}
+
 	public function billingPresentation( array $connection ): array {
 		$payload = $this->billingRequest( $connection, '/v1/billing', 'GET' );
 		if ( ! BillingResponseValidator::isPresentation( $payload ) ) {

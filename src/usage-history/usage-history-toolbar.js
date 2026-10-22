@@ -4,15 +4,25 @@ import { USAGE_KINDS } from './usage-history-controller';
 import { usageFormatters } from './usage-history-format';
 
 const PERIOD_VIEW = [
-	['current', __('Current period', 'moda-interact')],
-	['past', __('Past periods', 'moda-interact')],
+	['current', __('Current usage', 'moda-interact')],
+	['past', __('Past paid usage', 'moda-interact')],
 ];
 
 export function UsageHistoryToolbar({ history, locale }) {
 	const { state } = history;
 	const { formatDate } = usageFormatters(locale);
 	const busy = state.status === 'LOADING';
+	const past = state.view === 'past';
 	const periods = state.data?.periodPage?.items ?? [];
+	// The API automatically selects the first historical period when periodId is empty.
+	// Reflect that selection instead of presenting an empty placeholder.
+	const effectivePeriodId =
+		state.periodId || state.data?.usagePagination?.billId || '';
+	const selectedPeriodId = periods.some(
+		(period) => period.id === effectivePeriodId
+	)
+		? effectivePeriodId
+		: '';
 	return createElement(
 		'div',
 		{ className: 'moda-usage__controls' },
@@ -20,7 +30,7 @@ export function UsageHistoryToolbar({ history, locale }) {
 			'nav',
 			{
 				className: 'moda-usage__tabs',
-				'aria-label': __('Billing period', 'moda-interact'),
+				'aria-label': __('Usage history', 'moda-interact'),
 			},
 			...PERIOD_VIEW.map(([view, label]) =>
 				createElement(
@@ -40,36 +50,42 @@ export function UsageHistoryToolbar({ history, locale }) {
 		),
 		createElement(
 			'div',
-			{ className: 'moda-usage__filters' },
-			createElement(
-				'label',
-				null,
-				__('Billing period', 'moda-interact'),
-				createElement(
-					'select',
-					{
-						value: state.periodId,
-						disabled: busy || !periods.length,
-						onChange: (event) =>
-							history.setPeriod(event.target.value),
-					},
-					createElement(
-						'option',
-						{ value: '' },
-						__('Select a period', 'moda-interact')
-					),
-					...periods.map((period) =>
+			{
+				className: past
+					? 'moda-usage__filters'
+					: 'moda-usage__filters moda-usage__filters--current',
+			},
+			past
+				? createElement(
+						'label',
+						null,
+						__('Billing period', 'moda-interact'),
 						createElement(
-							'option',
+							'select',
 							{
-								key: period.id,
-								value: period.id,
+								value: selectedPeriodId,
+								disabled: busy || !periods.length,
+								onChange: (event) =>
+									history.setPeriod(event.target.value),
 							},
-							`${formatDate(period.periodStart)} — ${formatDate(period.periodEnd)}`
+							createElement(
+								'option',
+								{ value: '' },
+								__('Select a period', 'moda-interact')
+							),
+							...periods.map((period) =>
+								createElement(
+									'option',
+									{
+										key: period.id,
+										value: period.id,
+									},
+									`${formatDate(period.periodStart)} — ${formatDate(period.periodEnd)}`
+								)
+							)
 						)
 					)
-				)
-			),
+				: null,
 			createElement(
 				'label',
 				null,
@@ -121,7 +137,8 @@ export function UsageHistoryToolbar({ history, locale }) {
 				)
 			)
 		),
-		periods.length
+		past &&
+			(state.data?.periodPage?.previousCursor || state.data?.periodPage?.nextCursor)
 			? createElement(
 					'nav',
 					{
