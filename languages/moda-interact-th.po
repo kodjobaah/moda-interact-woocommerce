@@ -1835,12 +1835,16 @@ msgid "Billing periods"
 msgstr "รอบการเรียกเก็บเงิน"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "รอบปัจจุบัน"
+msgid "Current usage"
+msgstr "การใช้งานปัจจุบัน"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "ประเภทเหตุการณ์"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "การใช้งานตลอดชีพ"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1851,8 +1855,8 @@ msgid "No recorded usage for this period."
 msgstr "ไม่มีการบันทึกการใช้งานในรอบนี้"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "รอบที่ผ่านมา"
+msgid "Past paid usage"
+msgstr "การใช้งานแบบชำระเงินที่ผ่านมา"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1875,8 +1879,8 @@ msgid "Recovery conversation"
 msgstr "การสนทนาเพื่อกู้คืน"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "ตรวจสอบการใช้งานการสนทนาเพื่อกู้คืนที่บันทึกไว้ตามรอบการเรียกเก็บเงิน"
+msgid "Review your recorded recovery conversation usage."
+msgstr "ดูการใช้งานการสนทนาเพื่อกู้คืนที่บันทึกไว้"
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1907,8 +1911,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "ไม่สามารถโหลดประวัติการใช้งานได้ โปรดลองอีกครั้ง"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "ประวัติการใช้งานยังไม่พร้อมสำหรับร้าน WooCommerce นี้ ไม่มีการแก้ไขบันทึกใด ๆ"
+msgid "Usage history is currently unavailable for this store."
+msgstr "ขณะนี้ไม่สามารถดูประวัติการใช้งานสำหรับร้านค้านี้ได้"
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -1989,3 +1993,27 @@ msgstr "โปรโมชันมีการเปลี่ยนแปลง
 #: src/promotions/promotions-screen.js
 msgid "Promotion is no longer eligible. The latest offers have been loaded."
 msgstr "โปรโมชันนี้ไม่มีสิทธิ์อีกต่อไป โหลดข้อเสนอล่าสุดแล้ว"
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "หักจาก"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "เครดิตฟรีตลอดชีพ"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "โควตาที่รวมในแพ็กเกจ"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "เครดิตเติมเงินที่ซื้อ"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "เครดิตส่งเสริมการขาย"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "ไม่สามารถระบุแหล่งที่มา"

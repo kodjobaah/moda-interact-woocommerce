@@ -36,9 +36,19 @@
 	text-align: center;
 }
 
-.moda-interact-billing-hub__refresh {
+.moda-interact-billing-hub__toolbar {
 	grid-column: 3;
 	justify-self: end;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.moda-interact-billing-hub__toolbar .button {
+	display: inline-flex;
+	align-items: center;
 	min-height: 38px;
 	border-color: var(--moda-border) !important;
 	border-radius: 12px !important;
@@ -197,9 +207,13 @@
 	}
 
 	.moda-interact-billing-hub__page-title,
-	.moda-interact-billing-hub__refresh {
+	.moda-interact-billing-hub__toolbar {
 		grid-column: 1;
 		justify-self: start;
+	}
+
+	.moda-interact-billing-hub__toolbar {
+		justify-content: flex-start;
 	}
 
 	.moda-interact-billing-hub__hero {

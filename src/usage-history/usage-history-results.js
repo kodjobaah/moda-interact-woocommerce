@@ -3,6 +3,27 @@ import { __ } from '@wordpress/i18n';
 import { recoveryDetailHref } from '../recoveries/detail/detail-navigation';
 import { usageFormatters } from './usage-history-format';
 
+/** Labels are presentation-only. Never infer a charge source from plan or period. */
+export function usageChargeLabel(value) {
+	switch (value) {
+		case 'LIFETIME_FREE_CREDITS':
+			return __('Lifetime Free credits', 'moda-interact');
+		case 'INCLUDED_PLAN_ALLOWANCE':
+			return __('Included plan allowance', 'moda-interact');
+		case 'PURCHASED_TOP_UP':
+			return __('Purchased top-up', 'moda-interact');
+		case 'PROMOTIONAL_CREDITS':
+			return __('Promotional credits', 'moda-interact');
+		case 'NOT_APPLICABLE':
+			return __('Not applicable', 'moda-interact');
+		case 'UNATTRIBUTED':
+			return __('Unattributed', 'moda-interact');
+		default:
+			// v1 carries no attribution evidence; do not mislabel as UNATTRIBUTED.
+			return __('Not available', 'moda-interact');
+	}
+}
+
 export function UsageHistoryResults({ history, locale }) {
 	const { state } = history;
 	const { data } = state;
@@ -18,6 +39,7 @@ export function UsageHistoryResults({ history, locale }) {
 		__('Event type', 'moda-interact'),
 		__('Recovery', 'moda-interact'),
 		__('Customer', 'moda-interact'),
+		__('Charged against', 'moda-interact'),
 		__('Quantity', 'moda-interact'),
 		__('Recorded at', 'moda-interact'),
 	];
@@ -27,24 +49,30 @@ export function UsageHistoryResults({ history, locale }) {
 			className: 'moda-usage__results',
 			'aria-live': 'polite',
 		},
-		paging.billId
-			? createElement(
-					'div',
-					{ className: 'moda-usage__period-title' },
-					createElement(
+		createElement(
+			'div',
+			{ className: 'moda-usage__period-title' },
+			paging.periodStart && paging.periodEnd
+				? createElement(
 						'h2',
 						null,
 						`${formatDate(paging.periodStart)} — ${formatDate(paging.periodEnd)}`
-					),
-					createElement(
-						'p',
-						null,
-						__('Recorded usage', 'moda-interact'),
-						': ',
-						formatNumber(paging.totalQuantity)
 					)
-				)
-			: null,
+				: state.view === 'current' && paging.billId === null
+					? createElement(
+						'h2',
+						null,
+						__('Lifetime usage', 'moda-interact')
+					)
+					: null,
+			createElement(
+				'p',
+				null,
+				__('Recorded usage', 'moda-interact'),
+				': ',
+				formatNumber(paging.totalQuantity)
+			)
+		),
 		!events.length
 			? createElement(
 					'p',
@@ -112,6 +140,11 @@ export function UsageHistoryResults({ history, locale }) {
 										{ dir: 'auto' },
 										source?.customerName ||
 											__('Unlinked', 'moda-interact')
+									),
+									createElement(
+										'td',
+										null,
+										usageChargeLabel(event.chargedAgainst)
 									),
 									createElement(
 										'td',

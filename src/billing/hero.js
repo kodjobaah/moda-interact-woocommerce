@@ -23,14 +23,28 @@ export function BillingHero({ state, onRefresh, onSetView }) {
 				__('Recovery capacity', 'moda-interact')
 			),
 			createElement(
-				'button',
-				{
-					type: 'button',
-					className: 'button moda-interact-billing-hub__refresh',
-					disabled: state.status === 'LOADING',
-					onClick: onRefresh,
-				},
-				__('Refresh billing', 'moda-interact')
+				'div',
+				{ className: 'moda-interact-billing-hub__toolbar' },
+				ready && state.data?.surfaces?.usageHistoryAllowed
+					? createElement(
+						'a',
+						{
+							href: 'admin.php?page=moda-interact-usage-history',
+							className: 'button moda-interact-billing-hub__history',
+						},
+						__('Usage history', 'moda-interact')
+					)
+					: null,
+				createElement(
+					'button',
+					{
+						type: 'button',
+						className: 'button moda-interact-billing-hub__refresh',
+						disabled: state.status === 'LOADING',
+						onClick: onRefresh,
+					},
+					__('Refresh billing', 'moda-interact')
+				)
 			)
 		),
 		createElement(

@@ -1873,12 +1873,16 @@ msgid "Billing periods"
 msgstr "請求期間"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "現在の期間"
+msgid "Current usage"
+msgstr "現在の利用状況"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "イベントの種類"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "生涯利用状況"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1889,8 +1893,8 @@ msgid "No recorded usage for this period."
 msgstr "この期間の利用記録はありません。"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "過去の期間"
+msgid "Past paid usage"
+msgstr "過去の有料利用状況"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1913,8 +1917,8 @@ msgid "Recovery conversation"
 msgstr "リカバリー会話"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "請求期間ごとのリカバリー会話の利用記録を確認します。"
+msgid "Review your recorded recovery conversation usage."
+msgstr "記録されたリカバリー会話の利用状況を確認できます。"
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1945,8 +1949,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "利用履歴を読み込めませんでした。もう一度お試しください。"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "このWooCommerceストアでは利用履歴をまだ表示できません。利用記録は変更されていません。"
+msgid "Usage history is currently unavailable for this store."
+msgstr "このストアの利用履歴は現在表示できません。"
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -2027,3 +2031,27 @@ msgstr "プロモーションが変更されました。最新のオファーを
 #: src/promotions/promotions-screen.js
 msgid "Promotion is no longer eligible. The latest offers have been loaded."
 msgstr "このプロモーションは対象外になりました。最新のオファーを読み込みました。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "請求先"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "生涯無料クレジット"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "プランに含まれる利用枠"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "購入した追加クレジット"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "プロモーションクレジット"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "未分類"

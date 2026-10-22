@@ -1821,12 +1821,16 @@ msgid "Billing periods"
 msgstr "計費週期"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "目前週期"
+msgid "Current usage"
+msgstr "目前使用情況"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "事件類型"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "終身用量"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1837,8 +1841,8 @@ msgid "No recorded usage for this period."
 msgstr "此週期沒有已記錄的使用量。"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "過往週期"
+msgid "Past paid usage"
+msgstr "過往付費使用情況"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1861,8 +1865,8 @@ msgid "Recovery conversation"
 msgstr "恢復對話"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "依計費週期檢視恢復對話的使用紀錄。"
+msgid "Review your recorded recovery conversation usage."
+msgstr "檢視已記錄的挽回對話使用情況。"
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1893,8 +1897,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "無法載入使用紀錄，請再試一次。"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "此 WooCommerce 商店尚無法檢視使用紀錄。未變更任何使用資料。"
+msgid "Usage history is currently unavailable for this store."
+msgstr "此商店的使用記錄目前無法使用。"
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -1975,3 +1979,27 @@ msgstr "促銷活動已變更。已載入最新優惠。"
 #: src/promotions/promotions-screen.js
 msgid "Promotion is no longer eligible. The latest offers have been loaded."
 msgstr "此促銷活動不再符合資格。已載入最新優惠。"
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "扣抵來源"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "終身免費額度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "方案內含額度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "購買的加值額度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "促銷額度"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "未歸屬"

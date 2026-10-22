@@ -79,6 +79,10 @@
 		gap: 16px;
 	}
 
+	&__filters--current {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
 	&__filters label {
 		display: grid;
 		gap: 6px;
@@ -113,6 +117,9 @@
 		overflow-x: auto;
 	}
 
+	// Additional attribution column scrolls inside the panel on narrow screens.
+	&__table { min-width: 760px; }
+
 	&__table th,
  &__table td {
 		vertical-align: top;
@@ -134,7 +141,8 @@
 
 	@media (max-width: 780px) {
 
-		&__filters {
+		&__filters,
+		&__filters--current {
 			grid-template-columns: 1fr;
 		}
 	}

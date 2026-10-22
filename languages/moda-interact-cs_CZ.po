@@ -1879,12 +1879,16 @@ msgid "Billing periods"
 msgstr "Fakturační období"
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Current period"
-msgstr "Aktuální období"
+msgid "Current usage"
+msgstr "Aktuální využití"
 
 #: src/usage-history/usage-history-results.js
 msgid "Event type"
 msgstr "Typ události"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime usage"
+msgstr "Celoživotní využití"
 
 #: src/usage-history/usage-history-screen.js
 msgid "Loading usage history…"
@@ -1895,8 +1899,8 @@ msgid "No recorded usage for this period."
 msgstr "Pro toto období nebylo zaznamenáno žádné využití."
 
 #: src/usage-history/usage-history-toolbar.js
-msgid "Past periods"
-msgstr "Minulá období"
+msgid "Past paid usage"
+msgstr "Minulé placené využití"
 
 #: src/billing-screen.js
 msgid "Quantity"
@@ -1919,8 +1923,8 @@ msgid "Recovery conversation"
 msgstr "Konverzace pro obnovení"
 
 #: src/usage-history/usage-history-screen.js
-msgid "Review your recorded recovery conversation usage by billing period."
-msgstr "Prohlédněte si zaznamenané využití konverzací pro obnovení podle fakturačního období."
+msgid "Review your recorded recovery conversation usage."
+msgstr "Prohlédněte si zaznamenané využití konverzací při obnově nákupu."
 
 #: src/usage-history/usage-history-toolbar.js
 msgid "Rows per page"
@@ -1951,8 +1955,8 @@ msgid "Usage history could not be loaded. Please try again."
 msgstr "Historii využití se nepodařilo načíst. Zkuste to znovu."
 
 #: src/usage-history/usage-history-screen.js
-msgid "Usage history is not yet available for this WooCommerce store. No usage records have been changed."
-msgstr "Historie využití zatím není pro tento obchod WooCommerce dostupná. Žádné záznamy nebyly změněny."
+msgid "Usage history is currently unavailable for this store."
+msgstr "Historie využití není pro tento obchod momentálně k dispozici."
 
 #: src/usage-history/usage-history-results.js
 msgid "Usage history pages"
@@ -2033,3 +2037,27 @@ msgstr "Propagační akce se změnily. Nejnovější nabídky byly načteny."
 #: src/promotions/promotions-screen.js
 msgid "Promotion is no longer eligible. The latest offers have been loaded."
 msgstr "Propagační akce již nesplňuje podmínky. Nejnovější nabídky byly načteny."
+
+#: src/usage-history/usage-history-results.js
+msgid "Charged against"
+msgstr "Účtováno z"
+
+#: src/usage-history/usage-history-results.js
+msgid "Lifetime Free credits"
+msgstr "Doživotní kredity zdarma"
+
+#: src/usage-history/usage-history-results.js
+msgid "Included plan allowance"
+msgstr "Kredity zahrnuté v tarifu"
+
+#: src/usage-history/usage-history-results.js
+msgid "Purchased top-up"
+msgstr "Zakoupené dobití kreditů"
+
+#: src/usage-history/usage-history-results.js
+msgid "Promotional credits"
+msgstr "Propagační kredity"
+
+#: src/usage-history/usage-history-results.js
+msgid "Unattributed"
+msgstr "Bez přiřazeného zdroje"

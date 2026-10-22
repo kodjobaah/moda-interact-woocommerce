@@ -7,6 +7,8 @@ defined( 'ABSPATH' ) || exit;
 // Bundled production Composer loaders are class-map authoritative.
 // This bounded feature is explicitly loaded without requiring a vendor rebuild.
 require_once __DIR__ . '/Api/DiscountOffersContracts.php';
+require_once __DIR__ . '/Api/UsageHistoryResponseValidator.php';
+require_once __DIR__ . '/Rest/UsageHistoryController.php';
 require_once __DIR__ . '/Api/SupportResponseValidator.php';
 require_once __DIR__ . '/Rest/SupportController.php';
 require_once __DIR__ . '/Api/PromotionsResponseValidator.php';
@@ -36,6 +38,7 @@ use ModaInteract\WooCommerce\Rest\RecoveryListController;
 use ModaInteract\WooCommerce\Rest\RecoveryDetailController;
 use ModaInteract\WooCommerce\Rest\ReadAccessController;
 use ModaInteract\WooCommerce\Rest\MerchantKnowledgeController;
+use ModaInteract\WooCommerce\Rest\UsageHistoryController;
 use ModaInteract\WooCommerce\Rest\SupportController;
 use ModaInteract\WooCommerce\Rest\PromotionsController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
@@ -107,6 +110,7 @@ final class Runtime {
 		( new RecoveryDetailController( null, new SiteIdentity( $mode ) ) )->register();
 		( new ReadAccessController( null, new SiteIdentity( $mode ) ) )->register();
 		( new MerchantKnowledgeController( null, new SiteIdentity( $mode ) ) )->register();
+		( new UsageHistoryController( null, new SiteIdentity( $mode ) ) )->register();
 		( new SupportController( null, new SiteIdentity( $mode ) ) )->register();
 		( new PromotionsController( null, new SiteIdentity( $mode ) ) )->register();
 		$activity_publisher = new CheckoutActivityPublisher();

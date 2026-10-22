@@ -376,6 +376,59 @@ describe('Billing screen', () => {
 		expect(onRefresh).toHaveBeenCalledOnce();
 	});
 
+	it('places Usage history beside Refresh billing only when the merchant can access it', () => {
+		const data = presentation({
+			surfaces: {
+				...presentation().surfaces,
+				usageHistoryAllowed: true,
+			},
+		});
+		const state = readyState(data);
+		const hero = BillingHero({ state, onRefresh: vi.fn(), onSetView: vi.fn() });
+		const toolbar = findElement(
+			hero,
+			(node) => node.props.className === 'moda-interact-billing-hub__toolbar'
+		);
+		const controls = findElements(
+			toolbar,
+			(node) => node.type === 'a' || node.type === 'button'
+		);
+
+		expect(controls.map(textContent)).toEqual(['Usage history', 'Refresh billing']);
+		expect(controls[0].props.href).toBe('admin.php?page=moda-interact-usage-history');
+		expect(controls[0].props.className).toContain('moda-interact-billing-hub__history');
+
+		// BillingScreen no longer renders a second, mid-page Usage history link.
+		const screen = BillingScreen({
+			state,
+			onRefresh: vi.fn(),
+			onLoadPlans: vi.fn(),
+			onSelectPlan: vi.fn(),
+			onCancel: vi.fn(),
+			onPurchaseTopUp: vi.fn(),
+			onSetView: vi.fn(),
+		});
+		expect(findElements(
+			screen,
+			(node) => node.props.className === 'moda-usage__billing-link'
+		)).toHaveLength(0);
+
+		for (const other of [
+			readyState(presentation()),
+			{ ...state, status: 'LOADING' },
+		]) {
+			const unavailable = BillingHero({
+				state: other,
+				onRefresh: vi.fn(),
+				onSetView: vi.fn(),
+			});
+			expect(findElements(
+				unavailable,
+				(node) => node.type === 'a' && node.props.href?.includes('usage-history')
+			)).toHaveLength(0);
+		}
+	});
+
 	it('uses normalized administrator locale before site and English fallbacks', () => {
 		const locale = resolveBillingLocale({ user: 'de_DE', site: 'fr_FR' });
 		expect(locale).toBe('de-DE');

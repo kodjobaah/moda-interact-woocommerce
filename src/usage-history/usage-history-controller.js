@@ -17,7 +17,7 @@ const initial = () => ({
 	error: null,
 });
 
-/** Client data is a test-only view model until a hosted usage-history contract exists. */
+/** Owns one connected usage-history query and discards stale identity/selection results. */
 export class UsageHistoryController {
 	constructor(client = createUsageHistoryClient()) {
 		this.client = client;
@@ -94,6 +94,10 @@ export class UsageHistoryController {
 	}
 
 	setPeriod(periodId) {
+		// Current usage is determined by the authenticated subscription, not a selector.
+		if (this.state.view !== 'past') {
+			return;
+		}
 		if (periodId !== '' && !PERIOD_ID.test(periodId)) {
 			return;
 		}
@@ -136,6 +140,9 @@ export class UsageHistoryController {
 	}
 
 	setPeriodCursor(cursor) {
+		if (this.state.view !== 'past') {
+			return;
+		}
 		if (typeof cursor !== 'string' || !CURSOR.test(cursor)) {
 			return;
 		}
@@ -143,7 +150,7 @@ export class UsageHistoryController {
 		if (![page?.nextCursor, page?.previousCursor].includes(cursor)) {
 			return;
 		}
-		this.change({ periodCursor: cursor });
+		this.change({ periodCursor: cursor, periodId: '', page: 1 });
 	}
 
 	async refresh() {
@@ -189,7 +196,7 @@ export class UsageHistoryController {
 					...this.state,
 					status:
 						data.state === 'unavailable'
-							? 'INVALID_PERIOD'
+							? 'UNAVAILABLE'
 							: 'READY',
 					data,
 				});
@@ -198,7 +205,11 @@ export class UsageHistoryController {
 			if (this.current(revision)) {
 				const code = error?.code ?? error?.message;
 				let status = 'FAILED';
-				if (code === 'invalid_cursor') {
+				if (code === 'reconnect_required') {
+					status = 'RECONNECT';
+				} else if (code === 'invalid_period') {
+					status = 'INVALID_PERIOD';
+				} else if (code === 'invalid_cursor') {
 					status = 'INVALID_CURSOR';
 				} else if (code === 'permission_denied') {
 					status = 'DENIED';
