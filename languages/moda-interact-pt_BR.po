@@ -2028,3 +2028,43 @@ msgstr "Vagas restantes para envio de arquivos: %1$s (compartilhadas com página
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "O limite compartilhado de fontes de conhecimento do seu plano foi atingido."
+
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Selecionada"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Utilizada"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Encerrada"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Não é mais elegível"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Reaberta"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Você não tem permissão para visualizar promoções."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Reconecte o Moda Interact para ver as promoções."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "As promoções mudaram. Atualize para ver as ofertas mais recentes."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "As promoções mudaram. As ofertas mais recentes foram carregadas."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "A promoção não é mais elegível. As ofertas mais recentes foram carregadas."

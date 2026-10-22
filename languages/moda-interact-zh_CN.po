@@ -1932,3 +1932,43 @@ msgstr "剩余文件上传名额：%1$s（与网页共享，总计 %2$s 个来�
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "已达到当前套餐的共享知识来源上限。"
+
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "已选择"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "已使用"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "已关闭"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "不再符合条件"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "已重新开放"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "您无权查看促销活动。"
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "请重新连接 Moda Interact 以查看促销活动。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "促销活动已更改。请刷新以查看最新优惠。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "促销活动已更改。已加载最新优惠。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "此促销活动不再符合条件。已加载最新优惠。"

@@ -292,6 +292,65 @@ final class ModaApiClient {
 		return $payload;
 	}
 
+
+	/** API-021 promotions. Paths, filters and body are constructed server-side only. */
+	public function merchantPromotions( array $connection, int $offer_page, int $history_page, ?string $locale = null ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
+		if ( $offer_page < 1 || $offer_page > 1000 || $history_page < 1 || $history_page > 1000 ||
+			( null !== $locale && ! preg_match( '/^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$/D', $locale ) ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$query = array( 'offerPage' => $offer_page, 'historyPage' => $history_page );
+		if ( null !== $locale ) $query['locale'] = $locale;
+		$result = $this->promotionsExchange( $connection, '/v1/merchant/promotions?' .
+			http_build_query( $query, '', '&', PHP_QUERY_RFC3986 ), 'GET' );
+		if ( ! PromotionsResponseValidator::read( $result ) ||
+			$result['offersPagination']['page'] > $offer_page || $result['history']['page'] > $history_page ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $result;
+	}
+
+	public function selectMerchantPromotion( array $connection, string $campaign_id, string $expected_revision ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
+		if ( ! preg_match( '/^[A-Za-z0-9_-]{1,128}$/D', $campaign_id ) ||
+			! PromotionsResponseValidator::revision( $expected_revision ) ) throw new ModaApiClientException( 'invalid_request' );
+		$result = $this->promotionsExchange( $connection, '/v1/merchant/promotions/selection', 'PUT', array(
+			'campaignId' => $campaign_id, 'expectedRevision' => $expected_revision,
+		) );
+		if ( ! PromotionsResponseValidator::selected( $result ) || $result['selection']['campaignId'] !== $campaign_id ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $result;
+	}
+
+	private function promotionsExchange( array $connection, string $path, string $method, ?array $payload = null ): array {
+		$body = null === $payload ? null : wp_json_encode( $payload );
+		if ( null !== $payload && ( ! is_string( $body ) || strlen( $body ) > 4096 ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$headers = self::installationHeaders( $connection );
+		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
+		$response = $this->request( $path, $method, $headers, $body, self::DEFAULT_TIMEOUT_SECONDS, 262145 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 400 === $status || 413 === $status ) throw new ModaApiClientException( 'invalid_request', $status );
+		if ( in_array( $status, array( 403, 409, 422 ), true ) ) {
+			$remote = null;
+			try {
+				$error = self::decodeErrorBody( $response )['error'] ?? null;
+				if ( is_string( $error ) && in_array( $error, array( 'promotion_unavailable', 'promotion_revision_conflict',
+					'promotion_selection_locked', 'promotion_not_eligible', 'promotion_exhausted', 'promotion_integrity_invalid' ), true ) ) {
+					$remote = $error;
+				}
+			} catch ( ModaApiClientException $ignored ) { /* Never expose upstream error text. */ }
+			throw new ModaApiClientException( 'remote_rejected', $status, $remote );
+		}
+		if ( 200 !== $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try { return $this->jsonBody( $response, 262144 ); }
+		catch ( ModaApiClientException $error ) { throw new ModaApiClientException( 'remote_response_invalid', $status ); }
+	}
+
 	public function billingPresentation( array $connection ): array {
 		$payload = $this->billingRequest( $connection, '/v1/billing', 'GET' );
 		if ( ! BillingResponseValidator::isPresentation( $payload ) ) {

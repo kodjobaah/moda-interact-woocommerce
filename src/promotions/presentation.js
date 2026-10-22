@@ -1,5 +1,6 @@
 import { createElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { formatDate, formatQuantity } from '../billing/presentation-formatters';
 
 const display = (value) =>
 	value === null || value === undefined ? '—' : String(value);
@@ -48,6 +49,9 @@ export function PromotionCards({
 				!locked &&
 				!busy &&
 				!offer.exhausted &&
+				offer.eligible === true &&
+				offer.selectable === true &&
+				!offer.previouslyClaimed &&
 				typeof onSelect === 'function';
 			return createElement(
 				'article',
@@ -66,7 +70,7 @@ export function PromotionCards({
 						sprintf(
 							/* translators: %s: promotional recovery-credit quantity. */
 							__('%s credits', 'moda-interact'),
-							display(offer.quantity)
+							formatQuantity(offer.quantity)
 						)
 					)
 				),
@@ -86,7 +90,7 @@ export function PromotionCards({
 					sprintf(
 						/* translators: %s: promotion expiry date supplied by merchant API. */
 						__('Expires %s', 'moda-interact'),
-						display(offer.expiresAt)
+						formatDate(offer.expiresAt)
 					)
 				),
 				createElement(

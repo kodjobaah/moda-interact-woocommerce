@@ -2002,3 +2002,43 @@ msgstr "Jäljellä olevat tiedostopaikat: %1$s (jaettu verkkosivujen kanssa; yht
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Tilauksesi yhteinen tietolähderaja on saavutettu."
+
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Valittu"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Käytetty"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Suljettu"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Ei enää oikeutettu"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Avattu uudelleen"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Sinulla ei ole oikeutta tarkastella kampanjoita."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Yhdistä Moda Interact uudelleen nähdäksesi kampanjat."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "Kampanjat ovat muuttuneet. Päivitä nähdäksesi uusimmat tarjoukset."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "Kampanjat ovat muuttuneet. Uusimmat tarjoukset on ladattu."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "Kampanja ei enää täytä ehtoja. Uusimmat tarjoukset on ladattu."

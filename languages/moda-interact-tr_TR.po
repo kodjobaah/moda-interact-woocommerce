@@ -1996,3 +1996,43 @@ msgstr "Dosya yüklemeleri için kalan yer: %1$s (web sayfalarıyla ortak; topla
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Planınızın ortak bilgi kaynağı sınırına ulaşıldı."
+
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Seçildi"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Kullanıldı"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Kapatıldı"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Artık uygun değil"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Yeniden açıldı"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Promosyonları görüntüleme izniniz yok."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Promosyonları görmek için Moda Interact bağlantısını yeniden kurun."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "Promosyonlar değişti. En son teklifleri görmek için yenileyin."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "Promosyonlar değişti. En son teklifler yüklendi."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "Promosyon artık uygun değil. En son teklifler yüklendi."

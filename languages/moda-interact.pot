@@ -1990,3 +1990,43 @@ msgstr ""
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr ""
+
+#: src/promotions/history.js
+msgid "Selected"
+msgstr ""
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr ""
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr ""
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr ""
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr ""
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr ""
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr ""
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr ""
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr ""
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr ""

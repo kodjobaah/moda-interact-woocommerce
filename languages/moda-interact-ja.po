@@ -1987,3 +1987,43 @@ msgstr "ファイルアップロードの残り枠: %1$s（Webページと共通
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "ご利用のプランで共通のナレッジソース上限に達しました。"
+
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "選択済み"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "使用済み"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "終了"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "対象外になりました"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "再開"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "プロモーションを表示する権限がありません。"
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "プロモーションを表示するには Moda Interact に再接続してください。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "プロモーションが変更されました。最新のオファーを表示するには更新してください。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "プロモーションが変更されました。最新のオファーを読み込みました。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "このプロモーションは対象外になりました。最新のオファーを読み込みました。"

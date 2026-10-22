@@ -2010,3 +2010,43 @@ msgstr "Ledige plasser for filopplasting: %1$s (deles med nettsider; totalt %2$s
 #: src/recovery-settings/merchant-knowledge/knowledge-forms.js:114
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Den felles grensen for kunnskapskilder i abonnementet ditt er nådd."
+
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Valgt"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Brukt"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Stengt"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Ikke lenger kvalifisert"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Åpnet på nytt"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Du har ikke tillatelse til å se kampanjer."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Koble til Moda Interact på nytt for å se kampanjer."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "Kampanjene er endret. Oppdater for å se de nyeste tilbudene."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "Kampanjene er endret. De nyeste tilbudene er lastet inn."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "Kampanjen er ikke lenger kvalifisert. De nyeste tilbudene er lastet inn."
