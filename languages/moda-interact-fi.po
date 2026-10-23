@@ -2095,3 +2095,107 @@ msgstr "Moda näyttää ehdot täyttävillä kassasivuilla WhatsApp-markkinointi
 #: src/recovery-settings/whatsapp-consent-guidance.js:27
 msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
 msgstr "Ilman vahvistettua lupaa keskeneräisen ostoksen palautusta ei aloiteta. Asiakas voi peruuttaa suostumuksensa ottamalla yhteyttä kauppaan. Myöhemmin valitsematta jätetty ruutu ei peruuta aiempaa lupaa; nykyinen valinta on tarkistettava ennen palautusta."
+
+#: src/recoveries/customer-selection/selection-messages.js:6
+msgid "Check the phone format or ticket reference."
+msgstr "Tarkista puhelinnumeron muoto tai tukipyynnön viite."
+
+#: src/recoveries/customer-selection/selection-messages.js:8
+msgid "No matching customer phone in this store."
+msgstr "Kaupasta ei löytynyt vastaavaa asiakkaan puhelinnumeroa."
+
+#: src/recoveries/customer-selection/selection-messages.js:10
+msgid "Multiple phone records match. Contact support."
+msgstr "Useita vastaavia puhelintietoja. Ota yhteyttä tukeen."
+
+#: src/recoveries/customer-selection/selection-messages.js:12
+msgid "Re-enabling requires the customer to have opted in."
+msgstr "Uudelleen käyttöönotto edellyttää asiakkaan suostumusta."
+
+#: src/recoveries/customer-selection/selection-messages.js:14
+msgid "Customer STOP cannot be cleared by the merchant."
+msgstr "Kauppias ei voi kumota asiakkaan STOP-pyyntöä."
+
+#: src/recoveries/customer-selection/selection-messages.js:16
+msgid "Only store administrators can manage this selection."
+msgstr "Vain kaupan ylläpitäjät voivat hallita tätä valintaa."
+
+#: src/recoveries/customer-selection/selection-messages.js:20
+msgid "Reconnect the store before changing recovery selection."
+msgstr "Yhdistä kauppa uudelleen ennen palautusvalinnan muuttamista."
+
+#: src/recoveries/customer-selection/selection-messages.js:22
+msgid "Unable to verify the result. Look up the phone again."
+msgstr "Tulosta ei voitu vahvistaa. Hae numero uudelleen."
+
+#: src/recoveries/customer-selection/selection-panel.js:29
+msgid "Customer STOP blocks all WhatsApp contact."
+msgstr "Asiakkaan STOP estää kaiken WhatsApp-yhteydenoton."
+
+#: src/recoveries/customer-selection/selection-panel.js:31
+msgid "Merchant recovery suppression is active."
+msgstr "Kauppiaan asettama palautuksen esto on voimassa."
+
+#: src/recoveries/customer-selection/selection-panel.js:33
+msgid "Customer phone is eligible for recovery selection."
+msgstr "Asiakkaan numero voidaan valita palautukseen."
+
+#: src/recoveries/customer-selection/selection-panel.js:34
+msgid "Customer phone is not eligible for recovery."
+msgstr "Asiakkaan numero ei kelpaa palautukseen."
+
+#: src/recoveries/customer-selection/selection-panel.js:41
+msgid "Customer recovery selection"
+msgstr "Asiakkaan palautusvalinta"
+
+#: src/recoveries/customer-selection/selection-panel.js:42
+msgid "Select an existing customer phone by international digits without +. Merchant selection never grants WhatsApp consent."
+msgstr "Valitse olemassa oleva asiakkaan numero kansainvälisin numeroin ilman +-merkkiä. Kauppiaan valinta ei anna WhatsApp-suostumusta."
+
+#: src/recoveries/customer-selection/selection-panel.js:44
+msgid "Customer phone"
+msgstr "Asiakkaan puhelinnumero"
+
+#: src/recoveries/customer-selection/selection-panel.js:50
+msgid "Look up phone"
+msgstr "Hae numero"
+
+#: src/recoveries/customer-selection/selection-panel.js:55
+msgid "WhatsApp consent: granted"
+msgstr "WhatsApp-suostumus: annettu"
+
+#: src/recoveries/customer-selection/selection-panel.js:56
+msgid "WhatsApp consent: not granted"
+msgstr "WhatsApp-suostumus: ei annettu"
+
+#: src/recoveries/customer-selection/selection-panel.js:59
+msgid "Selection was already recorded."
+msgstr "Tämä valinta on jo tallennettu."
+
+#: src/recoveries/customer-selection/selection-panel.js:60
+msgid "Customer recovery selection updated."
+msgstr "Asiakkaan palautusvalinta päivitetty."
+
+#: src/recoveries/customer-selection/selection-panel.js:64
+msgid "Suppress recovery"
+msgstr "Estä palautus"
+
+#: src/recoveries/customer-selection/selection-panel.js:67
+msgid "Re-enable recovery"
+msgstr "Ota palautus uudelleen käyttöön"
+
+#: src/recoveries/customer-selection/selection-panel.js:69
+msgid "External support ticket reference"
+msgstr "Ulkoisen tukipyynnön viite"
+
+#: src/recoveries/customer-selection/selection-panel.js:76
+msgid "I confirm the customer requested STOP outside WhatsApp."
+msgstr "Vahvistan, että asiakas pyysi STOP-toimintoa WhatsAppin ulkopuolella."
+
+#: src/recoveries/customer-selection/selection-panel.js:80
+msgid "Record customer STOP"
+msgstr "Kirjaa asiakkaan STOP"
+
+#: src/recoveries/customer-selection/selection-panel.js:70
+msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr "Säilytä tukipyyntö omissa tiedoissasi; Moda ei tallenna tätä viitettä."

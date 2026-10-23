@@ -18,6 +18,7 @@
 @use "./styles/merchant-knowledge-sources";
 @use "./styles/read-access";
 @use "./recoveries/styles/recoveries";
+@use "./recoveries/customer-selection/selection";
 @use "./recoveries/styles/recovery-filters";
 @use "./recoveries/styles/recovery-list";
 @use "./recoveries/detail/styles/recovery-detail";
