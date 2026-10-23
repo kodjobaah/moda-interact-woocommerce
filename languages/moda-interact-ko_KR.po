@@ -2077,3 +2077,107 @@ msgstr "Moda는 해당 결제 화면에 기본적으로 선택되지 않은 What
 #: src/recovery-settings/whatsapp-consent-guidance.js:27
 msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
 msgstr "확인된 허가가 없으면 미완료 결제 복구를 시작할 수 없습니다. 고객은 매장에 연락해 동의를 철회할 수 있습니다. 나중에 체크박스를 선택하지 않아도 이전 동의는 철회되지 않으며 복구 전에 현재 선호 사항을 확인해야 합니다."
+
+#: src/recoveries/customer-selection/selection-messages.js:6
+msgid "Check the phone format or ticket reference."
+msgstr "전화번호 형식 또는 티켓 참조를 확인하세요."
+
+#: src/recoveries/customer-selection/selection-messages.js:8
+msgid "No matching customer phone in this store."
+msgstr "이 스토어에 일치하는 고객 전화번호가 없습니다."
+
+#: src/recoveries/customer-selection/selection-messages.js:10
+msgid "Multiple phone records match. Contact support."
+msgstr "일치하는 전화번호 기록이 여러 개 있습니다. 지원팀에 문의하세요."
+
+#: src/recoveries/customer-selection/selection-messages.js:12
+msgid "Re-enabling requires the customer to have opted in."
+msgstr "다시 활성화하려면 고객의 동의가 필요합니다."
+
+#: src/recoveries/customer-selection/selection-messages.js:14
+msgid "Customer STOP cannot be cleared by the merchant."
+msgstr "고객의 STOP은 판매자가 해제할 수 없습니다."
+
+#: src/recoveries/customer-selection/selection-messages.js:16
+msgid "Only store administrators can manage this selection."
+msgstr "스토어 관리자만 이 선택을 관리할 수 있습니다."
+
+#: src/recoveries/customer-selection/selection-messages.js:20
+msgid "Reconnect the store before changing recovery selection."
+msgstr "복구 선택을 변경하기 전에 스토어를 다시 연결하세요."
+
+#: src/recoveries/customer-selection/selection-messages.js:22
+msgid "Unable to verify the result. Look up the phone again."
+msgstr "결과를 확인할 수 없습니다. 전화번호를 다시 조회하세요."
+
+#: src/recoveries/customer-selection/selection-panel.js:29
+msgid "Customer STOP blocks all WhatsApp contact."
+msgstr "고객의 STOP은 모든 WhatsApp 연락을 차단합니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:31
+msgid "Merchant recovery suppression is active."
+msgstr "판매자의 복구 차단이 활성화되었습니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:33
+msgid "Customer phone is eligible for recovery selection."
+msgstr "고객 전화번호를 복구 대상으로 선택할 수 있습니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:34
+msgid "Customer phone is not eligible for recovery."
+msgstr "고객 전화번호는 복구 대상이 아닙니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:41
+msgid "Customer recovery selection"
+msgstr "고객 복구 대상 선택"
+
+#: src/recoveries/customer-selection/selection-panel.js:42
+msgid "Select an existing customer phone by international digits without +. Merchant selection never grants WhatsApp consent."
+msgstr "기존 고객 전화번호를 + 없이 국제 번호 숫자로 입력하세요. 판매자 선택은 WhatsApp 동의를 부여하지 않습니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:44
+msgid "Customer phone"
+msgstr "고객 전화번호"
+
+#: src/recoveries/customer-selection/selection-panel.js:50
+msgid "Look up phone"
+msgstr "전화번호 조회"
+
+#: src/recoveries/customer-selection/selection-panel.js:55
+msgid "WhatsApp consent: granted"
+msgstr "WhatsApp 동의: 허용됨"
+
+#: src/recoveries/customer-selection/selection-panel.js:56
+msgid "WhatsApp consent: not granted"
+msgstr "WhatsApp 동의: 허용되지 않음"
+
+#: src/recoveries/customer-selection/selection-panel.js:59
+msgid "Selection was already recorded."
+msgstr "이 선택은 이미 기록되었습니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:60
+msgid "Customer recovery selection updated."
+msgstr "고객 복구 선택이 업데이트되었습니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:64
+msgid "Suppress recovery"
+msgstr "복구 차단"
+
+#: src/recoveries/customer-selection/selection-panel.js:67
+msgid "Re-enable recovery"
+msgstr "복구 다시 활성화"
+
+#: src/recoveries/customer-selection/selection-panel.js:69
+msgid "External support ticket reference"
+msgstr "외부 지원 티켓 참조"
+
+#: src/recoveries/customer-selection/selection-panel.js:76
+msgid "I confirm the customer requested STOP outside WhatsApp."
+msgstr "고객이 WhatsApp 외부에서 STOP을 요청했음을 확인합니다."
+
+#: src/recoveries/customer-selection/selection-panel.js:80
+msgid "Record customer STOP"
+msgstr "고객 STOP 기록"
+
+#: src/recoveries/customer-selection/selection-panel.js:70
+msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr "티켓을 자체 기록에 보관하세요. Moda는 이 참조를 저장하지 않습니다."

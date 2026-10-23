@@ -2105,3 +2105,107 @@ msgstr "Moda wyświetla domyślnie niezaznaczone pole zgody marketingowej WhatsA
 #: src/recovery-settings/whatsapp-consent-guidance.js:27
 msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
 msgstr "Bez zweryfikowanej zgody nie można rozpocząć odzyskiwania niedokończonego zamówienia. Klient może skontaktować się ze sklepem, aby wycofać zgodę. Niezaznaczone pole przy kolejnej wizycie nie cofa wcześniejszej zgody; należy sprawdzić aktualną preferencję przed odzyskiwaniem."
+
+#: src/recoveries/customer-selection/selection-messages.js:6
+msgid "Check the phone format or ticket reference."
+msgstr "Sprawdź format numeru lub identyfikator zgłoszenia."
+
+#: src/recoveries/customer-selection/selection-messages.js:8
+msgid "No matching customer phone in this store."
+msgstr "W tym sklepie nie znaleziono pasującego numeru klienta."
+
+#: src/recoveries/customer-selection/selection-messages.js:10
+msgid "Multiple phone records match. Contact support."
+msgstr "Pasuje kilka rekordów numeru. Skontaktuj się ze wsparciem."
+
+#: src/recoveries/customer-selection/selection-messages.js:12
+msgid "Re-enabling requires the customer to have opted in."
+msgstr "Ponowne włączenie wymaga zgody klienta."
+
+#: src/recoveries/customer-selection/selection-messages.js:14
+msgid "Customer STOP cannot be cleared by the merchant."
+msgstr "Sprzedawca nie może cofnąć polecenia STOP klienta."
+
+#: src/recoveries/customer-selection/selection-messages.js:16
+msgid "Only store administrators can manage this selection."
+msgstr "Tylko administratorzy sklepu mogą zarządzać tym wyborem."
+
+#: src/recoveries/customer-selection/selection-messages.js:20
+msgid "Reconnect the store before changing recovery selection."
+msgstr "Połącz sklep ponownie przed zmianą wyboru odzyskiwania."
+
+#: src/recoveries/customer-selection/selection-messages.js:22
+msgid "Unable to verify the result. Look up the phone again."
+msgstr "Nie udało się potwierdzić wyniku. Wyszukaj numer ponownie."
+
+#: src/recoveries/customer-selection/selection-panel.js:29
+msgid "Customer STOP blocks all WhatsApp contact."
+msgstr "Polecenie STOP klienta blokuje cały kontakt przez WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:31
+msgid "Merchant recovery suppression is active."
+msgstr "Blokada odzyskiwania ustawiona przez sprzedawcę jest aktywna."
+
+#: src/recoveries/customer-selection/selection-panel.js:33
+msgid "Customer phone is eligible for recovery selection."
+msgstr "Numer klienta można wybrać do odzyskiwania."
+
+#: src/recoveries/customer-selection/selection-panel.js:34
+msgid "Customer phone is not eligible for recovery."
+msgstr "Numer klienta nie kwalifikuje się do odzyskiwania."
+
+#: src/recoveries/customer-selection/selection-panel.js:41
+msgid "Customer recovery selection"
+msgstr "Wybór klienta do odzyskiwania"
+
+#: src/recoveries/customer-selection/selection-panel.js:42
+msgid "Select an existing customer phone by international digits without +. Merchant selection never grants WhatsApp consent."
+msgstr "Wybierz istniejący numer klienta w formacie międzynarodowym bez +. Wybór sprzedawcy nigdy nie oznacza zgody na WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:44
+msgid "Customer phone"
+msgstr "Telefon klienta"
+
+#: src/recoveries/customer-selection/selection-panel.js:50
+msgid "Look up phone"
+msgstr "Wyszukaj numer"
+
+#: src/recoveries/customer-selection/selection-panel.js:55
+msgid "WhatsApp consent: granted"
+msgstr "Zgoda na WhatsApp: udzielona"
+
+#: src/recoveries/customer-selection/selection-panel.js:56
+msgid "WhatsApp consent: not granted"
+msgstr "Zgoda na WhatsApp: nieudzielona"
+
+#: src/recoveries/customer-selection/selection-panel.js:59
+msgid "Selection was already recorded."
+msgstr "Ten wybór został już zapisany."
+
+#: src/recoveries/customer-selection/selection-panel.js:60
+msgid "Customer recovery selection updated."
+msgstr "Zaktualizowano wybór klienta do odzyskiwania."
+
+#: src/recoveries/customer-selection/selection-panel.js:64
+msgid "Suppress recovery"
+msgstr "Zablokuj odzyskiwanie"
+
+#: src/recoveries/customer-selection/selection-panel.js:67
+msgid "Re-enable recovery"
+msgstr "Ponownie włącz odzyskiwanie"
+
+#: src/recoveries/customer-selection/selection-panel.js:69
+msgid "External support ticket reference"
+msgstr "Identyfikator zewnętrznego zgłoszenia"
+
+#: src/recoveries/customer-selection/selection-panel.js:76
+msgid "I confirm the customer requested STOP outside WhatsApp."
+msgstr "Potwierdzam, że klient zażądał STOP poza WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:80
+msgid "Record customer STOP"
+msgstr "Zapisz STOP klienta"
+
+#: src/recoveries/customer-selection/selection-panel.js:70
+msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr "Zachowaj zgłoszenie we własnych rejestrach; Moda nie zapisuje tego identyfikatora."

@@ -2042,3 +2042,107 @@ msgstr "Moda แสดงช่องยินยอมการตลาดผ�
 #: src/recovery-settings/whatsapp-consent-guidance.js:27
 msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
 msgstr "หากไม่มีการยืนยันความยินยอม จะไม่สามารถเริ่มติดตามการชำระเงินค้างได้ ลูกค้าสามารถติดต่อร้านค้าเพื่อถอนความยินยอม การไม่เลือกช่องในครั้งถัดไปไม่ได้ยกเลิกความยินยอมเดิม ต้องตรวจสอบความต้องการปัจจุบันก่อนเริ่มติดตาม"
+
+#: src/recoveries/customer-selection/selection-messages.js:6
+msgid "Check the phone format or ticket reference."
+msgstr "ตรวจสอบรูปแบบเบอร์โทรหรือรหัสอ้างอิงตั๋วช่วยเหลือ"
+
+#: src/recoveries/customer-selection/selection-messages.js:8
+msgid "No matching customer phone in this store."
+msgstr "ไม่พบเบอร์โทรลูกค้าที่ตรงกันในร้านค้านี้"
+
+#: src/recoveries/customer-selection/selection-messages.js:10
+msgid "Multiple phone records match. Contact support."
+msgstr "มีข้อมูลเบอร์โทรตรงกันหลายรายการ โปรดติดต่อฝ่ายสนับสนุน"
+
+#: src/recoveries/customer-selection/selection-messages.js:12
+msgid "Re-enabling requires the customer to have opted in."
+msgstr "การเปิดใช้งานอีกครั้งต้องได้รับความยินยอมจากลูกค้า"
+
+#: src/recoveries/customer-selection/selection-messages.js:14
+msgid "Customer STOP cannot be cleared by the merchant."
+msgstr "ผู้ค้าไม่สามารถยกเลิกคำขอ STOP ของลูกค้าได้"
+
+#: src/recoveries/customer-selection/selection-messages.js:16
+msgid "Only store administrators can manage this selection."
+msgstr "เฉพาะผู้ดูแลร้านค้าเท่านั้นที่จัดการการเลือกนี้ได้"
+
+#: src/recoveries/customer-selection/selection-messages.js:20
+msgid "Reconnect the store before changing recovery selection."
+msgstr "เชื่อมต่อร้านค้าอีกครั้งก่อนเปลี่ยนการเลือกกู้คืน"
+
+#: src/recoveries/customer-selection/selection-messages.js:22
+msgid "Unable to verify the result. Look up the phone again."
+msgstr "ไม่สามารถตรวจสอบผลได้ โปรดค้นหาเบอร์อีกครั้ง"
+
+#: src/recoveries/customer-selection/selection-panel.js:29
+msgid "Customer STOP blocks all WhatsApp contact."
+msgstr "คำขอ STOP ของลูกค้าบล็อกการติดต่อ WhatsApp ทั้งหมด"
+
+#: src/recoveries/customer-selection/selection-panel.js:31
+msgid "Merchant recovery suppression is active."
+msgstr "การระงับการกู้คืนโดยผู้ค้ายังมีผล"
+
+#: src/recoveries/customer-selection/selection-panel.js:33
+msgid "Customer phone is eligible for recovery selection."
+msgstr "สามารถเลือกเบอร์ลูกค้านี้เพื่อกู้คืนได้"
+
+#: src/recoveries/customer-selection/selection-panel.js:34
+msgid "Customer phone is not eligible for recovery."
+msgstr "เบอร์ลูกค้านี้ไม่มีสิทธิ์กู้คืน"
+
+#: src/recoveries/customer-selection/selection-panel.js:41
+msgid "Customer recovery selection"
+msgstr "การเลือกลูกค้าสำหรับการกู้คืน"
+
+#: src/recoveries/customer-selection/selection-panel.js:42
+msgid "Select an existing customer phone by international digits without +. Merchant selection never grants WhatsApp consent."
+msgstr "เลือกเบอร์ลูกค้าที่มีอยู่ด้วยตัวเลขสากลโดยไม่มี + การเลือกของผู้ค้าไม่ถือเป็นความยินยอม WhatsApp"
+
+#: src/recoveries/customer-selection/selection-panel.js:44
+msgid "Customer phone"
+msgstr "เบอร์โทรลูกค้า"
+
+#: src/recoveries/customer-selection/selection-panel.js:50
+msgid "Look up phone"
+msgstr "ค้นหาเบอร์โทร"
+
+#: src/recoveries/customer-selection/selection-panel.js:55
+msgid "WhatsApp consent: granted"
+msgstr "ความยินยอม WhatsApp: ให้แล้ว"
+
+#: src/recoveries/customer-selection/selection-panel.js:56
+msgid "WhatsApp consent: not granted"
+msgstr "ความยินยอม WhatsApp: ยังไม่ได้ให้"
+
+#: src/recoveries/customer-selection/selection-panel.js:59
+msgid "Selection was already recorded."
+msgstr "การเลือกนี้ถูกบันทึกแล้ว"
+
+#: src/recoveries/customer-selection/selection-panel.js:60
+msgid "Customer recovery selection updated."
+msgstr "อัปเดตการเลือกลูกค้าสำหรับการกู้คืนแล้ว"
+
+#: src/recoveries/customer-selection/selection-panel.js:64
+msgid "Suppress recovery"
+msgstr "ระงับการกู้คืน"
+
+#: src/recoveries/customer-selection/selection-panel.js:67
+msgid "Re-enable recovery"
+msgstr "เปิดการกู้คืนอีกครั้ง"
+
+#: src/recoveries/customer-selection/selection-panel.js:69
+msgid "External support ticket reference"
+msgstr "รหัสอ้างอิงตั๋วช่วยเหลือภายนอก"
+
+#: src/recoveries/customer-selection/selection-panel.js:76
+msgid "I confirm the customer requested STOP outside WhatsApp."
+msgstr "ฉันยืนยันว่าลูกค้าร้องขอ STOP นอก WhatsApp"
+
+#: src/recoveries/customer-selection/selection-panel.js:80
+msgid "Record customer STOP"
+msgstr "บันทึก STOP ของลูกค้า"
+
+#: src/recoveries/customer-selection/selection-panel.js:70
+msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr "เก็บตั๋วไว้ในบันทึกของคุณเอง Moda ไม่จัดเก็บรหัสอ้างอิงนี้"

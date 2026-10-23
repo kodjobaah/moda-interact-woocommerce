@@ -15,6 +15,7 @@ import {
 	recoveryDetailHref,
 } from './detail/detail-navigation';
 import { ConnectedRecoveryDetailScreen } from './detail/connected-recovery-detail-screen';
+import { CustomerRecoverySelectionPanel } from './customer-selection/selection-panel';
 
 /**
  * Display layer only. Live data and pagination are owned by the read controller.
@@ -75,6 +76,7 @@ function RecoveriesListScreen({ timeZone: bootstrapTimeZone = null }) {
 			onRefresh: recoveries.refresh,
 			disabled: busy,
 		}),
+		createElement(CustomerRecoverySelectionPanel),
 		createElement(RecoveryFilterPanel, {
 			filters: filters.filters,
 			today: filters.today,
