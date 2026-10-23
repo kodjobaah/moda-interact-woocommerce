@@ -26,13 +26,13 @@ export function parseSelectionStatus(value, hasOutcome = false) {
 		'phoneEligibleForRecovery',
 		'canReenable',
 	];
-	if (hasOutcome) keys.push('outcome');
+	if (hasOutcome) {
+		keys.push('outcome');
+	}
 	if (
 		!exact(value, keys) ||
 		value.schemaVersion !== SELECTION_VERSION ||
-		!['UNKNOWN', 'GRANTED', 'REVOKED'].includes(
-			value.consentDecision
-		) ||
+		!['UNKNOWN', 'GRANTED', 'REVOKED'].includes(value.consentDecision) ||
 		typeof value.suppressed !== 'boolean' ||
 		![null, 'MERCHANT_OPT_OUT', 'CUSTOMER_STOP'].includes(
 			value.suppressionReason

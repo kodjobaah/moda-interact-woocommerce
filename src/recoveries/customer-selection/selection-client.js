@@ -21,12 +21,25 @@ const errors = new Set([
 	'REMOTE_RESPONSE_INVALID',
 ]);
 function selectionError(error) {
-	const candidates = [error?.data?.status, error?.status, error?.code, error?.message];
-	const code = candidates.find((value) => typeof value === 'string' && errors.has(value));
-	if (code) return new Error(code);
+	const candidates = [
+		error?.data?.status,
+		error?.status,
+		error?.code,
+		error?.message,
+	];
+	const code = candidates.find(
+		(value) => typeof value === 'string' && errors.has(value)
+	);
+	if (code) {
+		return new Error(code);
+	}
 	const httpStatus = candidates.find((value) => typeof value === 'number');
-	const fallback = { 400: 'INVALID_REQUEST', 401: 'RECONNECT_REQUIRED',
-		403: 'FORBIDDEN', 404: 'CUSTOMER_PHONE_NOT_FOUND' };
+	const fallback = {
+		400: 'INVALID_REQUEST',
+		401: 'RECONNECT_REQUIRED',
+		403: 'FORBIDDEN',
+		404: 'CUSTOMER_PHONE_NOT_FOUND',
+	};
 	return new Error(fallback[httpStatus] ?? 'REMOTE_UNAVAILABLE');
 }
 
@@ -34,7 +47,9 @@ function selectionError(error) {
 export function createSelectionClient(request = apiFetch) {
 	return Object.freeze({
 		async lookup(phone, signal) {
-			if (!isCanonicalPhone(phone)) throw new Error('INVALID_REQUEST');
+			if (!isCanonicalPhone(phone)) {
+				throw new Error('INVALID_REQUEST');
+			}
 			try {
 				const result = await request({
 					path: `${SELECTION_PATH}?canonicalPhone=${encodeURIComponent(phone)}`,
@@ -42,10 +57,17 @@ export function createSelectionClient(request = apiFetch) {
 					signal,
 				});
 				return parseSelectionStatus(result);
-			} catch (error) { throw selectionError(error); }
+			} catch (error) {
+				throw selectionError(error);
+			}
 		},
 		async execute(status, phone, action, evidenceReference, signal) {
-			const data = makeSelectionCommand(status, phone, action, evidenceReference);
+			const data = makeSelectionCommand(
+				status,
+				phone,
+				action,
+				evidenceReference
+			);
 			try {
 				const result = await request({
 					path: SELECTION_PATH,
@@ -54,7 +76,9 @@ export function createSelectionClient(request = apiFetch) {
 					signal,
 				});
 				return parseSelectionStatus(result, true);
-			} catch (error) { throw selectionError(error); }
+			} catch (error) {
+				throw selectionError(error);
+			}
 		},
 	});
 }

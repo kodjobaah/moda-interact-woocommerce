@@ -5,12 +5,40 @@
 	border: 1px solid var(--moda-border);
 	border-radius: 16px;
 
-	h2 { margin: 0 0 8px; font-size: 19px; }
-	p { color: var(--moda-muted); }
-	form, .moda-recovery-selection__result { display: grid; gap: 10px; }
-	input[type="tel"], input[type="text"] { width: min(100%, 420px); }
-	button { white-space: normal; }
+	h2 {
+		margin: 0 0 8px;
+		font-size: 19px;
+	}
+
+	p {
+		color: var(--moda-muted);
+	}
+
+	form,
+	.moda-recovery-selection__result {
+		display: grid;
+		gap: 10px;
+	}
+
+	input[type="tel"],
+	input[type="text"] {
+		width: min(100%, 420px);
+	}
+
+	button {
+		white-space: normal;
+	}
 }
 
-.moda-recovery-selection__row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.moda-recovery-selection__confirm { display: flex; gap: 10px; align-items: center; }
+.moda-recovery-selection__row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+}
+
+.moda-recovery-selection__confirm {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
