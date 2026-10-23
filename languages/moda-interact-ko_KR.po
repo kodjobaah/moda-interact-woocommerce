@@ -23,11 +23,6 @@ msgstr "%1$s / 30일마다"
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#. Description of the plugin
-#: moda-interact.php
-msgid "A WooCommerce Admin extension foundation for Moda Interact."
-msgstr "Moda Interact용 WooCommerce 관리자 확장 프로그램의 기반입니다."
-
 #: src/billing-screen.js:23 src/billing-screen.js:27
 msgid ""
 "A billing change is already in progress. Refresh the billing summary before "
@@ -1244,10 +1239,6 @@ msgstr "자동 메시지"
 msgid "Back to recoveries"
 msgstr "복구 목록으로 돌아가기"
 
-#: src/recoveries/detail/context/checkout-context-panel.js:10
-msgid "Checkout context"
-msgstr "결제 정보"
-
 #: src/recoveries/detail/conversation/conversation-panel.js:18
 #: src/recoveries/detail/conversation/conversation-panel.js:26
 msgid "Conversation"
@@ -1261,10 +1252,6 @@ msgstr "고객"
 msgid "Jump to latest"
 msgstr "최신 메시지로 이동"
 
-#: src/recoveries/detail/context/recovery-milestones.js:21
-msgid "Milestones"
-msgstr "진행 단계"
-
 #: src/recoveries/detail/conversation/conversation-message.js:34
 msgid "Moda assistant"
 msgstr "Moda 어시스턴트"
@@ -1276,10 +1263,6 @@ msgstr "기록된 대화가 없습니다."
 #: src/recoveries/detail/context/related-recoveries.js:32
 msgid "No related recoveries."
 msgstr "관련 복구가 없습니다."
-
-#: src/recoveries/detail/conversation/conversation-panel.js:22
-msgid "Read-only conversation history."
-msgstr "읽기 전용 대화 기록입니다."
 
 #: src/recoveries/detail/recovery-detail-header.js:14
 #: src/recoveries/detail/recovery-detail-header.js:17
@@ -2181,3 +2164,215 @@ msgstr "고객 STOP 기록"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "티켓을 자체 기록에 보관하세요. Moda는 이 참조를 저장하지 않습니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Checking message…"
+msgstr "메시지 확인 중…"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message blocked. Nothing was sent."
+msgstr "메시지가 전송되지 않았습니다. 내용을 수정해 주세요."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message requires review."
+msgstr "이 메시지는 전송 전에 검토가 필요합니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message screening unavailable. Check status before retrying."
+msgstr "콘텐츠 검사를 일시적으로 사용할 수 없습니다. 메시지가 전송되지 않았습니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Accepted / queued. Not yet sent."
+msgstr "답장이 대기열에 들어갔다고 WhatsApp 전송이 확인된 것은 아닙니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Provider confirmed sent."
+msgstr "전송됨"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message failed."
+msgstr "실패"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message cancelled."
+msgstr "전송되지 않음"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Delivery outcome unknown. Check status."
+msgstr "전달이 확인되지 않음"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Conversation changed. Refresh before retrying."
+msgstr "대화 제어 상태가 변경되었습니다. 다시 시도하기 전에 새로고침하세요."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human messaging is unavailable for this store."
+msgstr "이 스토어에서는 현재 상담원 답장이 비활성화되어 있습니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The customer service window is closed."
+msgstr "답장 가능 시간 종료"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Recovery follow-up is not available."
+msgstr "사용 가능한 후속 메시지 없음"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Approved follow-up template unavailable."
+msgstr "승인된 복구 후속 메시지 템플릿이 없습니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Please revise the message."
+msgstr "메시지가 전송되지 않았습니다. 내용을 수정해 주세요."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Unable to confirm the command. Check status before retrying."
+msgstr "메시지가 전송되지 않았습니다. 다시 시도하기 전에 상태를 확인하세요."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human conversation controls"
+msgstr "대화 제어"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over"
+msgstr "직접 응대"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Resume AI"
+msgstr "AI 재개"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer reply window open until"
+msgstr "고객 답장 가능 기한"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer service window closed."
+msgstr "답장 가능 시간 종료"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over to reply as the merchant."
+msgstr "상담원 답장을 보내려면 대화 제어권을 인계받으세요."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The recovery follow-up was already used."
+msgstr "후속 메시지 사용 완료"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "No server-approved recovery follow-up template is currently available."
+msgstr "승인된 복구 후속 메시지 템플릿이 없습니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Retry same request"
+msgstr "동일한 요청 다시 시도"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Check status"
+msgstr "상태 새로고침"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Done"
+msgstr "완료"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message blocked by moderation."
+msgstr "메시지가 전송되지 않았습니다. 내용을 수정해 주세요."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Moderation temporarily unavailable."
+msgstr "콘텐츠 검사를 일시적으로 사용할 수 없습니다. 메시지가 전송되지 않았습니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Checkout basket"
+msgstr "장바구니"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved checkout items unavailable."
+msgstr "저장된 장바구니를 확인할 수 없습니다."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Item unavailable"
+msgstr "사용할 수 없음"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Unit price"
+msgstr "단가"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Line total"
+msgstr "항목 합계"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved recovery total"
+msgstr "저장된 총액"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Some saved checkout details are unavailable."
+msgstr "복구 건을 저장할 당시 장바구니 정보 일부를 확인할 수 없었습니다."
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Moda Interact용 WooCommerce 관리자 확장 프로그램의 기반입니다."
+
+msgid "A queued reply is not a confirmed WhatsApp send."
+msgstr "답장이 대기열에 들어갔다고 WhatsApp 전송이 확인된 것은 아닙니다."
+
+msgid "Basket saved when this recovery was detected. Prices are not live."
+msgstr "이 복구 건이 감지되었을 때 장바구니를 저장했습니다. 가격은 최신 정보가 아닙니다."
+
+msgid "Follow-up"
+msgstr "후속 메시지"
+
+msgid "Initial outreach"
+msgstr "첫 연락"
+
+msgid "Merchant in control"
+msgstr "판매자 응대 중"
+
+msgid "Queue reply"
+msgstr "답장 대기열에 추가"
+
+msgid "Recovery activity"
+msgstr "복구 활동"
+
+msgid "Reply to customer"
+msgstr "고객에게 답장"

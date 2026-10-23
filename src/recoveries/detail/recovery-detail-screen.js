@@ -73,6 +73,8 @@ export function RecoveryDetailScreen({
 			createElement(ConversationPanel, conversation),
 			createElement(CheckoutContextPanel, {
 				milestones: detail?.milestones,
+				followUpUsed: detail?.followUpUsed,
+				basket: detail?.basket,
 				related,
 			})
 		)

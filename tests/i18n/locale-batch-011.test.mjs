@@ -88,8 +88,8 @@ function readMo(buffer) {
 	return entries;
 }
 
-test('WOO-011 catalogues cover all 512 source keys, with no accidental English fallbacks', () => {
-	assert.equal(sourceKeys.size, 512);
+test('WOO-011 catalogues cover all 553 source keys, with no accidental English fallbacks', () => {
+	assert.equal(sourceKeys.size, 553);
 	const productNames = new Set([
 		'Moda Interact',
 		'WooCommerce',

@@ -325,6 +325,50 @@ final class ModaApiClient {
 	}
 
 
+
+	/** Woo-only ARCH-040 conversation operations; transport uses the connected installation. */
+	public function merchantConversationCommand( array $connection, string $conversation_id, string $operation,
+		?array $payload = null, ?string $command_id = null ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) || ! ConversationCommandContracts::identifier( $conversation_id ) ||
+			! in_array( $operation, array( 'control', 'messages', 'status' ), true ) ||
+			( 'status' === $operation ? ( null !== $payload || ! ConversationCommandContracts::identifier( $command_id ) ) :
+				( null !== $command_id || ! ConversationCommandContracts::request( $payload, $operation ) ) ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$path = '/v1/merchant/conversations/' . rawurlencode( $conversation_id ) . '/' .
+			( 'status' === $operation ? 'send-commands/' . rawurlencode( $command_id ) :
+				( 'control' === $operation ? 'control' : 'messages' ) );
+		$body = null === $payload ? null : wp_json_encode( $payload );
+		if ( null !== $payload && ( ! is_string( $body ) || strlen( $body ) > 6144 ) ) throw new ModaApiClientException( 'invalid_request' );
+		$headers = self::installationHeaders( $connection );
+		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
+		$response = $this->request( $path, 'status' === $operation ? 'GET' : 'POST', $headers, $body,
+			self::DEFAULT_TIMEOUT_SECONDS, 16385 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( ! in_array( $status, 'messages' === $operation ? array( 200, 202 ) : array( 200 ), true ) ) {
+			$allowed = array( 'invalid_request', 'request_too_large', 'not_found', 'human_messaging_suspended',
+				'idempotency_conflict', 'stale_control_revision', 'conversation_control_conflict',
+				'not_human_controlled', 'follow_up_unavailable', 'template_not_allowed', 'service_window_closed',
+				'recipient_unavailable', 'send_entitlement_unavailable', 'human_content_invalid',
+				'conversation_control_integrity_invalid' );
+			$remote = null;
+			try { $remote = self::decodeErrorBody( $response )['error'] ?? null; }
+			catch ( ModaApiClientException $ignored ) { /* No untrusted remote detail is exposed. */ }
+			if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', 401 );
+			if ( ! is_string( $remote ) || ! in_array( $remote, $allowed, true ) || ! in_array( $status, array( 400, 403, 404, 409, 413 ), true ) ) {
+				throw new ModaApiClientException( 'remote_unavailable', 503 );
+			}
+			throw new ModaApiClientException( $remote, $status );
+		}
+		try { $data = $this->jsonBody( $response, 16384 ); }
+		catch ( ModaApiClientException $error ) { throw new ModaApiClientException( 'remote_response_invalid', 502 ); }
+		if ( ! ConversationCommandContracts::response( $data, $operation, $conversation_id ) ||
+			( 'status' === $operation && $data['commandId'] !== $command_id ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 502 );
+		}
+		return array( 'status' => $status, 'data' => $data );
+	}
+
 	/** API-021 promotions. Paths, filters and body are constructed server-side only. */
 	public function merchantPromotions( array $connection, int $offer_page, int $history_page, ?string $locale = null ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );

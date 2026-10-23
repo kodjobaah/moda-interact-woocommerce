@@ -21,11 +21,6 @@ msgstr ""
 msgid "Moda Interact"
 msgstr ""
 
-#. Description of the plugin
-#: moda-interact.php
-msgid "A WooCommerce Admin extension foundation for Moda Interact."
-msgstr ""
-
 #: includes/Admin/NativeNavigation.php:34
 #: includes/Admin/NativeNavigation.php:35 src/overview-screen.js:202
 #: src/page/surface-navigation.js:5
@@ -1237,10 +1232,6 @@ msgstr ""
 msgid "Back to recoveries"
 msgstr ""
 
-#: src/recoveries/detail/context/checkout-context-panel.js:10
-msgid "Checkout context"
-msgstr ""
-
 #: src/recoveries/detail/conversation/conversation-panel.js:18
 #: src/recoveries/detail/conversation/conversation-panel.js:26
 msgid "Conversation"
@@ -1254,10 +1245,6 @@ msgstr ""
 msgid "Jump to latest"
 msgstr ""
 
-#: src/recoveries/detail/context/recovery-milestones.js:21
-msgid "Milestones"
-msgstr ""
-
 #: src/recoveries/detail/conversation/conversation-message.js:34
 msgid "Moda assistant"
 msgstr ""
@@ -1268,10 +1255,6 @@ msgstr ""
 
 #: src/recoveries/detail/context/related-recoveries.js:32
 msgid "No related recoveries."
-msgstr ""
-
-#: src/recoveries/detail/conversation/conversation-panel.js:22
-msgid "Read-only conversation history."
 msgstr ""
 
 #: src/recoveries/detail/recovery-detail-header.js:14
@@ -2186,4 +2169,224 @@ msgstr ""
 
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Checking message…"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message blocked. Nothing was sent."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message requires review."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message screening unavailable. Check status before retrying."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Accepted / queued. Not yet sent."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Provider confirmed sent."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message failed."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message cancelled."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Delivery outcome unknown. Check status."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Conversation changed. Refresh before retrying."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human messaging is unavailable for this store."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The customer service window is closed."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Recovery follow-up is not available."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Approved follow-up template unavailable."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Please revise the message."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Unable to confirm the command. Check status before retrying."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human conversation controls"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Resume AI"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer reply window open until"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer service window closed."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over to reply as the merchant."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The recovery follow-up was already used."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "No server-approved recovery follow-up template is currently available."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Retry same request"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Check status"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Done"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message blocked by moderation."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Moderation temporarily unavailable."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/context/checkout-basket.js
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Checkout basket"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved checkout items unavailable."
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Item unavailable"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Unit price"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Line total"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved recovery total"
+msgstr ""
+
+#. ARCH-040: Recovery Detail merchant conversation and persisted basket labels.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Some saved checkout details are unavailable."
+msgstr ""
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr ""
+
+#: src/recoveries/detail/human/human-reply-composer.js:50
+msgid "A queued reply is not a confirmed WhatsApp send."
+msgstr ""
+
+#: src/recoveries/detail/context/checkout-basket.js:29
+msgid "Basket saved when this recovery was detected. Prices are not live."
+msgstr ""
+
+#: src/recoveries/detail/context/recovery-milestones.js:59
+msgid "Follow-up"
+msgstr ""
+
+#: src/recoveries/detail/context/recovery-milestones.js:11
+msgid "Initial outreach"
+msgstr ""
+
+#: src/recoveries/detail/human/human-mode-controls.js:21
+msgid "Merchant in control"
+msgstr ""
+
+#: src/recoveries/detail/human/human-reply-composer.js:45
+msgid "Queue reply"
+msgstr ""
+
+#: src/recoveries/detail/context/recovery-milestones.js:34
+msgid "Recovery activity"
+msgstr ""
+
+#: src/recoveries/detail/human/human-reply-composer.js:39
+msgid "Reply to customer"
 msgstr ""

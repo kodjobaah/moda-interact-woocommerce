@@ -102,10 +102,35 @@ export function ConversationMessage({ message }) {
 			{ className: 'moda-recovery-detail__bubble-heading' },
 			createElement('strong', null, senderLabel(message.sender)),
 			message.createdAt
-				? createElement('time', null, message.createdAt)
+				? createElement(
+						'time',
+						{ dateTime: message.instant || undefined },
+						message.time || message.createdAt
+					)
 				: null
 		),
 		content,
+		message.moderationStatus === 'BLOCK'
+			? createElement(
+					'p',
+					{ role: 'status' },
+					__('Message blocked by moderation.', 'moda-interact')
+				)
+			: null,
+		message.moderationStatus === 'REVIEW_REQUIRED'
+			? createElement(
+					'p',
+					{ role: 'status' },
+					__('Message requires review.', 'moda-interact')
+				)
+			: null,
+		message.moderationStatus === 'RETRYABLE_ERROR'
+			? createElement(
+					'p',
+					{ role: 'status' },
+					__('Moderation temporarily unavailable.', 'moda-interact')
+				)
+			: null,
 		message.deliveryStatus
 			? createElement(
 					'div',

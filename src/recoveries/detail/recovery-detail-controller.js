@@ -162,7 +162,9 @@ export class RecoveryDetailController {
 	}
 
 	jumpLatest() {
-		if (this.state.messages.status !== 'READY') {
+		// A command may settle while an earlier transcript refresh is still loading.
+		// Supersede that request so the terminal outcome is not missed.
+		if (this.state.summary.status !== 'READY') {
 			return;
 		}
 		return this.loadMessages({ window: 'latest' });

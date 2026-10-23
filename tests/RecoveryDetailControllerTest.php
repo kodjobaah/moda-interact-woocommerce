@@ -32,6 +32,9 @@ final class RecoveryDetailControllerTest extends TestCase {
 			'value' => array( 'amount' => '89.99', 'currency' => 'GBP', 'incomplete' => false ),
 			'customer' => array( 'firstName' => 'Ada', 'lastName' => 'Lovelace', 'email' => 'ada@example.invalid' ),
 			'hasConversation' => true,
+			'basket' => array( 'items' => array( array( 'title' => 'Book', 'variantTitle' => null, 'quantity' => 2, 'unitPrice' => array( 'amount' => '20.00', 'currency' => 'GBP' ), 'lineTotal' => null, 'imageUrl' => null ) ), 'recoveryTotal' => array( 'amount' => '89.99', 'currency' => 'GBP' ), 'unavailableReason' => null ),
+			'conversation' => array( 'id' => 'conv_1', 'controlMode' => 'AI', 'controlRevision' => 1, 'lastInboundAt' => null, 'windowExpiresAt' => null, 'followUp' => array( 'sequence2Used' => false, 'initiatedBy' => null ) ),
+			'humanMessagingAllowed' => true, 'humanMessagingStatus' => 'ACTIVE',
 			'milestones' => array(
 				'detectedAt' => '2026-10-09T12:00:00.000Z', 'messageSentAt' => '2026-10-09T13:00:00.000Z',
 				'engagedAt' => null, 'completedAt' => '2026-10-09T14:00:00.000Z', 'expiredAt' => null,
@@ -42,7 +45,7 @@ final class RecoveryDetailControllerTest extends TestCase {
 	private static function messages(): array {
 		return array( 'schemaVersion' => 1, 'previousCursor' => null, 'nextCursor' => 'abc_123', 'items' => array(
 			array( 'id' => 'msg_1', 'createdAt' => '2026-10-09T13:00:00.000Z', 'direction' => 'OUTBOUND',
-				'sender' => 'AGENT', 'content' => array( 'type' => 'TEXT', 'text' => 'Welcome', 'transcriptionStatus' => null ),
+				'sender' => 'AGENT', 'moderationStatus' => 'ALLOW', 'moderationReasonCode' => null, 'content' => array( 'type' => 'TEXT', 'text' => 'Welcome', 'transcriptionStatus' => null ),
 				'delivery' => array( 'status' => 'DELIVERED', 'sentAt' => '2026-10-09T13:00:00.000Z',
 					'deliveredAt' => '2026-10-09T13:00:01.000Z', 'readAt' => null ) ),
 		) );
