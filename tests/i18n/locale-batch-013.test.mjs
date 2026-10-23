@@ -91,8 +91,8 @@ function moTranslation(buffer, key) {
 	return undefined;
 }
 
-test('WOO-013 provides all 512 messages with one-form plural metadata', () => {
-	assert.equal(sourceKeys.size, 512);
+test('WOO-013 provides all 515 messages with one-form plural metadata', () => {
+	assert.equal(sourceKeys.size, 515);
 	const unchangedNames = new Set([
 		'Moda Interact',
 		'WooCommerce',
@@ -133,7 +133,7 @@ test('WOO-013 produces native gettext and WordPress script assets', () => {
 			outputDirectory,
 			strict: true,
 		});
-		assert.equal(result.requiredMessages, 512);
+		assert.equal(result.requiredMessages, 515);
 		assert.equal(result.translatedLanguages.length, 19);
 		assert.equal(result.assets.length, 38);
 		for (const { tag, locale, php, save, billing } of batch) {

@@ -2129,3 +2129,15 @@ msgstr "记录客户 STOP"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "请在自己的记录中保存工单；Moda 不会存储此编号。"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:76
+msgid "Earlier WhatsApp reminder permission"
+msgstr "之前的 WhatsApp 提醒同意"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:82
+msgid "Keep earlier permission unchanged"
+msgstr "保持之前的同意不变"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:83
+msgid "Withdraw earlier WhatsApp reminder permission"
+msgstr "撤回之前的 WhatsApp 提醒同意"

@@ -2193,3 +2193,15 @@ msgstr "Müşteri STOP kaydet"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Destek kaydını kendi kayıtlarınızda saklayın; Moda bu referansı kaydetmez."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:76
+msgid "Earlier WhatsApp reminder permission"
+msgstr "Önceki WhatsApp hatırlatma izni"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:82
+msgid "Keep earlier permission unchanged"
+msgstr "Önceki izni değiştirmeden bırak"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:83
+msgid "Withdraw earlier WhatsApp reminder permission"
+msgstr "Önceki WhatsApp hatırlatma iznini geri çek"

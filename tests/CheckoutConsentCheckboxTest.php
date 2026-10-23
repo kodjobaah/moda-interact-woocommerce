@@ -123,6 +123,12 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		self::assertFalse( $field['required'] );
 		self::assertSame( 0, $field['default'] );
 		self::assertSame( 96, $field['priority'] );
+		$withdrawal = $result['billing'][ CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD ];
+		self::assertSame( 'select', $withdrawal['type'] );
+		self::assertFalse( $withdrawal['required'] );
+		self::assertSame( 'unchanged', $withdrawal['default'] );
+		self::assertSame( 97, $withdrawal['priority'] );
+		self::assertArrayHasKey( CheckoutConsentCheckbox::WITHDRAW_VALUE, $withdrawal['options'] );
 		self::assertStringContainsString( 'WhatsApp marketing reminders', $field['label'] );
 		self::assertStringContainsString( 'Test Merchant', $field['label'] );
 		self::assertSame( 'en-GB', $field['custom_attributes']['data-moda-consent-locale'] );
@@ -145,8 +151,14 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		$checkbox->registerBlocksForCheckoutPage();
 		$_SERVER['REQUEST_URI'] = '/wp-json/wc/store/v1/checkout';
 		$checkbox->registerBlocksForStoreApi();
-		self::assertCount( 1, $GLOBALS['arch046_checkbox_blocks'] );
+		self::assertCount( 2, $GLOBALS['arch046_checkbox_blocks'] );
 		$field = $GLOBALS['arch046_checkbox_blocks'][0];
+		$withdrawal = $GLOBALS['arch046_checkbox_blocks'][1];
+		self::assertSame( CheckoutConsentCheckbox::BLOCK_WITHDRAW_FIELD, $withdrawal['id'] );
+		self::assertSame( 'select', $withdrawal['type'] );
+		self::assertSame( 'order', $withdrawal['location'] );
+		self::assertFalse( $withdrawal['required'] );
+		self::assertCount( 1, $withdrawal['options'] );
 		self::assertSame( CheckoutConsentCheckbox::BLOCK_FIELD, $field['id'] );
 		self::assertSame( 'order', $field['location'] );
 		self::assertSame( 'checkbox', $field['type'] );
@@ -165,7 +177,7 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		self::assertSame( array(), $GLOBALS['arch046_checkbox_blocks'] );
 		$_SERVER['REQUEST_URI'] = '/?rest_route=%2Fwc%2Fstore%2Fv1%2Fcheckout';
 		$checkbox->registerBlocksForStoreApi();
-		self::assertCount( 1, $GLOBALS['arch046_checkbox_blocks'] );
+		self::assertCount( 2, $GLOBALS['arch046_checkbox_blocks'] );
 
 		$GLOBALS['arch046_checkbox_blocks'] = array();
 		$pay_page = new CheckoutConsentCheckbox( static fn(): bool => true );

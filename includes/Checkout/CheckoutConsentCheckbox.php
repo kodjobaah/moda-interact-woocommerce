@@ -8,6 +8,10 @@ defined( 'ABSPATH' ) || exit;
 final class CheckoutConsentCheckbox {
 	public const CLASSIC_FIELD = 'moda_interact_whatsapp_recovery_opt_in';
 	public const BLOCK_FIELD = 'moda-interact/whatsapp-recovery-opt-in';
+	// A separate action (not a second consent checkbox) for a returning customer.
+	public const CLASSIC_WITHDRAW_FIELD = 'moda_interact_whatsapp_recovery_withdrawal';
+	public const BLOCK_WITHDRAW_FIELD = 'moda-interact/whatsapp-recovery-withdrawal';
+	public const WITHDRAW_VALUE = 'withdraw';
 	public const DISCLOSURE_VERSION = 'moda.woo.whatsapp-recovery-marketing.v1';
 
 	private $eligible;
@@ -65,6 +69,20 @@ final class CheckoutConsentCheckbox {
 				'data-moda-consent-locale' => self::disclosure()['locale'],
 			),
 		);
+		// The opt-in starts unchecked on every checkout. A *different*, explicit
+		// choice is needed to revoke consent granted on a previous checkout.
+		$fields['billing'][ self::CLASSIC_WITHDRAW_FIELD ] = array(
+			'type' => 'select',
+			'label' => __( 'Earlier WhatsApp reminder permission', 'moda-interact' ),
+			'required' => false,
+			'default' => 'unchanged',
+			'priority' => is_numeric( $billing_phone_priority ) ? (int) $billing_phone_priority + 2 : 111,
+			'class' => array( 'form-row-wide' ),
+			'options' => array(
+				'unchanged' => __( 'Keep earlier permission unchanged', 'moda-interact' ),
+				self::WITHDRAW_VALUE => __( 'Withdraw earlier WhatsApp reminder permission', 'moda-interact' ),
+			),
+		);
 		return $fields;
 	}
 
@@ -109,6 +127,21 @@ final class CheckoutConsentCheckbox {
 				'data-moda-consent-version' => self::DISCLOSURE_VERSION,
 				'data-moda-consent-locale' => self::disclosure()['locale'],
 			),
+		) );
+		// A select in the order area does not hydrate previous profile consent
+		// or create consent simply because the shopper visits checkout.
+		woocommerce_register_additional_checkout_field( array(
+			'id' => self::BLOCK_WITHDRAW_FIELD,
+			'location' => 'order',
+			'type' => 'select',
+			'label' => __( 'Earlier WhatsApp reminder permission', 'moda-interact' ),
+			'optionalLabel' => __( 'Earlier WhatsApp reminder permission', 'moda-interact' ),
+			'placeholder' => __( 'Keep earlier permission unchanged', 'moda-interact' ),
+			'required' => false,
+			'options' => array( array(
+				'value' => self::WITHDRAW_VALUE,
+				'label' => __( 'Withdraw earlier WhatsApp reminder permission', 'moda-interact' ),
+			) ),
 		) );
 		$this->registered = true;
 	}

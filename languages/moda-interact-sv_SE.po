@@ -2207,3 +2207,15 @@ msgstr "Registrera kundens STOP"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Spara ärendet i dina egna register; Moda lagrar inte denna referens."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:76
+msgid "Earlier WhatsApp reminder permission"
+msgstr "Tidigare samtycke till WhatsApp-påminnelser"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:82
+msgid "Keep earlier permission unchanged"
+msgstr "Behåll tidigare samtycke oförändrat"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:83
+msgid "Withdraw earlier WhatsApp reminder permission"
+msgstr "Återkalla tidigare samtycke till WhatsApp-påminnelser"

@@ -9,7 +9,7 @@ const source = readFileSync(
 	'utf8'
 );
 
-test('a deliberate Classic checkbox change uses the supported Woo checkout review lifecycle', () => {
+test('deliberate Classic consent or withdrawal changes use the Woo checkout review lifecycle', () => {
 	const body = {};
 	let listener;
 	let ajaxReview = 0;
@@ -20,7 +20,7 @@ test('a deliberate Classic checkbox change uses the supported Woo checkout revie
 				assert.equal(event, 'change');
 				assert.equal(
 					selector,
-					'input[name="moda_interact_whatsapp_recovery_opt_in"]'
+					'input[name="moda_interact_whatsapp_recovery_opt_in"], select[name="moda_interact_whatsapp_recovery_withdrawal"]'
 				);
 				listener = callback;
 			},

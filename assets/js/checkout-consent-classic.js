@@ -6,11 +6,10 @@
 	if (!$) {
 		return;
 	}
-	$(document.body).on(
-		'change',
-		'input[name="moda_interact_whatsapp_recovery_opt_in"]',
-		function () {
-			$(document.body).trigger('update_checkout');
-		}
-	);
+	const selectFields =
+		'input[name="moda_interact_whatsapp_recovery_opt_in"], ' +
+		'select[name="moda_interact_whatsapp_recovery_withdrawal"]';
+	$(document.body).on('change', selectFields, function () {
+		$(document.body).trigger('update_checkout');
+	});
 })(typeof jQuery === 'undefined' ? null : jQuery);

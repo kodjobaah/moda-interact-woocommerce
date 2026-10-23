@@ -31,6 +31,8 @@ final class CheckoutConsentCapture {
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'endCheckout' ), 20, 1 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'endCheckout' ), 20, 1 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueueClassicChange' ) );
+		add_action( 'wp_logout', array( $this, 'invalidatePendingSession' ) );
+		add_action( 'wp_login', array( $this, 'invalidatePendingSession' ) );
 	}
 
 	public function enqueueClassicChange(): void {
@@ -55,8 +57,13 @@ final class CheckoutConsentCapture {
 		if ( ! is_array( $fields ) || ! isset( $fields['billing_phone'] ) ||
 			! is_string( $fields['billing_phone'] ) ) return;
 		$selection = array_key_exists( CheckoutConsentCheckbox::CLASSIC_FIELD, $fields );
+		$withdrawal = $fields[ CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD ] ?? 'unchanged';
+		if ( ! is_string( $withdrawal ) || ! in_array( $withdrawal, array( 'unchanged', CheckoutConsentCheckbox::WITHDRAW_VALUE ), true ) ) return;
+		// Conflicting actions cannot become a customer permission decision.
+		if ( $selection && CheckoutConsentCheckbox::WITHDRAW_VALUE === $withdrawal ) return;
 		$this->observe( 'CLASSIC', $selection, $fields['billing_phone'],
-			CheckoutConsentPhone::verifiedCountry( $fields['billing_country'] ?? null ), true );
+			CheckoutConsentPhone::verifiedCountry( $fields['billing_country'] ?? null ), true,
+			CheckoutConsentCheckbox::WITHDRAW_VALUE === $withdrawal );
 	}
 
 	public function blocksDraft( mixed $request ): void {
@@ -84,7 +91,20 @@ final class CheckoutConsentCapture {
 		if ( ! is_array( $stage ) || ( $stage['checkoutKey'] ?? null ) !== CheckoutKey::current() ||
 			( $stage['principal'] ?? null ) !== $this->currentPrincipal() ||
 			! is_int( $stage['observedAt'] ?? null ) || time() - $stage['observedAt'] > 240 ) return;
-		$this->observeBlocksCustomer( true, $customer );
+		$this->observeBlocksCustomer( 'GRANT' === ( $stage['choice'] ?? 'GRANT' ),
+			$customer, 'REVOKE' === ( $stage['choice'] ?? null ) );
+	}
+
+	/** A logout/login must not leave a pending consent job attributed to the old identity. */
+	public function invalidatePendingSession(): void {
+		$session = function_exists( 'WC' ) ? ( WC()->session ?? null ) : null;
+		if ( ! $session ) return;
+		$state = $session->get( self::SESSION_FIELD );
+		if ( is_array( $state ) && is_array( $state['pending'] ?? null ) ) {
+			$this->publisher->cancelPending( $state['pending'] );
+		}
+		$session->set( self::SESSION_FIELD, null );
+		$session->set( self::BLOCKS_STAGE, null );
 	}
 
 	private function currentPrincipal(): ?string {
@@ -95,13 +115,13 @@ final class CheckoutConsentCapture {
 			( function_exists( 'get_current_user_id' ) ? (int) get_current_user_id() : 0 ) );
 	}
 
-	private function observeBlocksCustomer( bool $checked, mixed $customer ): void {
+	private function observeBlocksCustomer( bool $checked, mixed $customer, bool $withdraw = false ): void {
 		if ( ! is_object( $customer ) || ! method_exists( $customer, 'get_billing_phone' ) ) return;
 		$phone = $customer->get_billing_phone();
 		$country = method_exists( $customer, 'get_billing_country' ) ? $customer->get_billing_country() : null;
 		$verified = CheckoutConsentPhone::verifiedCountry( $country );
 		if ( ! is_string( $phone ) || null === CheckoutConsentPhone::normalize( $phone, $verified ) ) return;
-		$this->observe( 'BLOCKS', $checked, $phone, $verified, true );
+		$this->observe( 'BLOCKS', $checked, $phone, $verified, true, $withdraw );
 		$session = WC()->session ?? null;
 		if ( $session ) $session->set( self::BLOCKS_STAGE, null );
 	}
@@ -113,25 +133,28 @@ final class CheckoutConsentCapture {
 			! $this->verifiedStoreApiRequest( $request ) ) return;
 		$payload = $request->get_json_params();
 		if ( ! is_array( $payload ) || ! isset( $payload['additional_fields'] ) ||
-			! is_array( $payload['additional_fields'] ) ||
-			! array_key_exists( CheckoutConsentCheckbox::BLOCK_FIELD, $payload['additional_fields'] ) ) return;
-		$selected = $payload['additional_fields'][ CheckoutConsentCheckbox::BLOCK_FIELD ];
-		if ( ! in_array( $selected, array( true, false, '1', '0', 'true', 'false', 1, 0 ), true ) ) return;
-		// The checkbox PUT may arrive before the server's billing phone. Stage
-		// only the explicit selection in this WC session; no consent is recorded
-		// until another authenticated Store API request supplies a valid phone.
+			! is_array( $payload['additional_fields'] ) ) return;
+		$fields = $payload['additional_fields'];
+		$has_checkbox = array_key_exists( CheckoutConsentCheckbox::BLOCK_FIELD, $fields );
+		$selection = $has_checkbox ? $fields[ CheckoutConsentCheckbox::BLOCK_FIELD ] : null;
+		if ( $has_checkbox && ! in_array( $selection, array( true, false, '1', '0', 'true', 'false', 1, 0 ), true ) ) return;
+		$withdrawal = $fields[ CheckoutConsentCheckbox::BLOCK_WITHDRAW_FIELD ] ?? '';
+		if ( ! is_string( $withdrawal ) || ! in_array( $withdrawal, array( '', 'unchanged', CheckoutConsentCheckbox::WITHDRAW_VALUE ), true ) ) return;
+		$withdraw = CheckoutConsentCheckbox::WITHDRAW_VALUE === $withdrawal;
+		if ( ! $has_checkbox && ! $withdraw ) return;
+		$checked = $has_checkbox && in_array( $selection, array( true, '1', 'true', 1 ), true );
+		if ( $withdraw && $checked ) return; // two contradictory commands in one update
 		$session = WC()->session ?? null;
 		if ( ! $session ) return;
-		$checked = in_array( $selected, array( true, '1', 'true', 1 ), true );
-		if ( $checked && null !== CheckoutKey::current() && null !== $this->currentPrincipal() ) {
+		if ( ( $checked || $withdraw ) && null !== CheckoutKey::current() && null !== $this->currentPrincipal() ) {
 			$session->set( self::BLOCKS_STAGE, array(
 				'checkoutKey' => CheckoutKey::current(), 'principal' => $this->currentPrincipal(),
-				'observedAt' => time(),
+				'choice' => $withdraw ? 'REVOKE' : 'GRANT', 'observedAt' => time(),
 			) );
 		} else {
 			$session->set( self::BLOCKS_STAGE, null );
 		}
-		$this->observeBlocksCustomer( $checked, WC()->customer ?? null );
+		$this->observeBlocksCustomer( $checked, WC()->customer ?? null, $withdraw );
 	}
 
 	private function verifiedStoreApiRequest( object $request ): bool {
@@ -153,8 +176,9 @@ final class CheckoutConsentCapture {
 	}
 
 	/** Session observation, transition deduplication and monotonic event identity. */
-	public function observe( string $mode, bool $checked, mixed $phone, ?string $country, bool $verified ): bool {
-		if ( ! $verified || ! in_array( $mode, array( 'CLASSIC', 'BLOCKS' ), true ) ) return false;
+	public function observe( string $mode, bool $checked, mixed $phone, ?string $country, bool $verified, bool $explicit_withdrawal = false ): bool {
+		if ( ! $verified || ! in_array( $mode, array( 'CLASSIC', 'BLOCKS' ), true ) ||
+			( $explicit_withdrawal && $checked ) ) return false;
 		$woo = function_exists( 'WC' ) ? WC() : null;
 		$session = $woo->session ?? null;
 		$cart = $woo->cart ?? null;
@@ -172,24 +196,39 @@ final class CheckoutConsentCapture {
 		$principal = hash( 'sha256', $session_id . '|' . $user_id );
 		if ( ! is_array( $state ) || ( $state['checkoutKey'] ?? null ) !== $key ||
 			( $state['principal'] ?? null ) !== $principal ) {
+			if ( is_array( $state['pending'] ?? null ) ) $this->publisher->cancelPending( $state['pending'] );
 			// A changed login/guest session must not inherit another user's checkbox.
 			$state = array( 'checkoutKey' => $key, 'principal' => $principal,
-				'canonicalPhone' => $canonical, 'checked' => false, 'observedAt' => null, 'pending' => null );
+				'canonicalPhone' => $canonical, 'checked' => false,
+				'explicitWithdrawalIssued' => false, 'awaitingNeutralSelection' => $prior_identity,
+				'observedAt' => null, 'pending' => null );
 			$session->set( self::SESSION_FIELD, $state );
 			// For a new session, accept a deliberate checked request from the
 			// initially unchecked control only if no previous session identity existed.
-			if ( $checked && $prior_identity ) return false;
+			if ( ( $checked || $explicit_withdrawal ) && $prior_identity ) return false;
 		}
 		if ( $state['canonicalPhone'] !== $canonical ) {
+			if ( is_array( $state['pending'] ?? null ) ) $this->publisher->cancelPending( $state['pending'] );
 			// A changed phone is never covered by an older grant: require a new
 			// unchecked -> checked transition on the newly observed recipient.
 			$state['canonicalPhone'] = $canonical;
 			$state['checked'] = false;
+			$state['awaitingNeutralSelection'] = true;
+			$state['explicitWithdrawalIssued'] = false;
 			$state['pending'] = null;
 			$session->set( self::SESSION_FIELD, $state );
 			return false;
 		}
-		if ( $checked === $state['checked'] ) {
+		if ( ! empty( $state['awaitingNeutralSelection'] ) ) {
+			// A stale checked/withdraw value from another tab is not a fresh
+			// decision for a changed account or billing number.
+			if ( $checked || $explicit_withdrawal ) return false;
+			$state['awaitingNeutralSelection'] = false;
+			$session->set( self::SESSION_FIELD, $state );
+			return false;
+		}
+		if ( $checked === $state['checked'] &&
+			( ! $explicit_withdrawal || ! empty( $state['explicitWithdrawalIssued'] ) ) ) {
 			// Lost-ACK replay: retry exactly the same event/ID/body, never a new GRANT.
 			if ( is_array( $state['pending'] ) ) {
 				if ( $this->publisher->publish( $state['pending'], false ) ) {
@@ -200,7 +239,8 @@ final class CheckoutConsentCapture {
 			}
 			return false;
 		}
-		if ( $checked && ! ( $this->eligibility ?? new CheckoutConsentEligibility() )->eligible() ) return false;
+		if ( ( $checked || $explicit_withdrawal ) &&
+			! ( $this->eligibility ?? new CheckoutConsentEligibility() )->eligible() ) return false;
 		// Never construct a positive event from an unchecked default or a phone match.
 		$observed_at = $this->timestamp( $state['observedAt'] ?? null );
 		if ( null === $observed_at ) return false;
@@ -230,7 +270,9 @@ final class CheckoutConsentCapture {
 			),
 			'disclosure' => $disclosure,
 		);
+		if ( is_array( $state['pending'] ?? null ) ) $this->publisher->cancelPending( $state['pending'] );
 		$state['checked'] = $checked;
+		$state['explicitWithdrawalIssued'] = $explicit_withdrawal;
 		$state['observedAt'] = $observed_at;
 		$state['pending'] = $event;
 		$session->set( self::SESSION_FIELD, $state );

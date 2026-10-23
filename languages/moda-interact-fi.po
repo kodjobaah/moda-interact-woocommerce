@@ -2199,3 +2199,15 @@ msgstr "Kirjaa asiakkaan STOP"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Säilytä tukipyyntö omissa tiedoissasi; Moda ei tallenna tätä viitettä."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:76
+msgid "Earlier WhatsApp reminder permission"
+msgstr "Aiempi lupa WhatsApp-muistutuksiin"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:82
+msgid "Keep earlier permission unchanged"
+msgstr "Säilytä aiempi lupa ennallaan"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:83
+msgid "Withdraw earlier WhatsApp reminder permission"
+msgstr "Peruuta aiempi lupa WhatsApp-muistutuksiin"

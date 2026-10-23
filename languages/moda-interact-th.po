@@ -2146,3 +2146,15 @@ msgstr "บันทึก STOP ของลูกค้า"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "เก็บตั๋วไว้ในบันทึกของคุณเอง Moda ไม่จัดเก็บรหัสอ้างอิงนี้"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:76
+msgid "Earlier WhatsApp reminder permission"
+msgstr "ความยินยอมก่อนหน้าสำหรับการแจ้งเตือนผ่าน WhatsApp"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:82
+msgid "Keep earlier permission unchanged"
+msgstr "คงความยินยอมก่อนหน้าไว้โดยไม่เปลี่ยนแปลง"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:83
+msgid "Withdraw earlier WhatsApp reminder permission"
+msgstr "ถอนความยินยอมก่อนหน้าสำหรับการแจ้งเตือนผ่าน WhatsApp"

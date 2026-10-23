@@ -2181,3 +2181,15 @@ msgstr "고객 STOP 기록"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "티켓을 자체 기록에 보관하세요. Moda는 이 참조를 저장하지 않습니다."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:76
+msgid "Earlier WhatsApp reminder permission"
+msgstr "이전 WhatsApp 알림 동의"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:82
+msgid "Keep earlier permission unchanged"
+msgstr "이전 동의를 변경하지 않음"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:83
+msgid "Withdraw earlier WhatsApp reminder permission"
+msgstr "이전 WhatsApp 알림 동의 철회"

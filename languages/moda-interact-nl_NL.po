@@ -2226,3 +2226,15 @@ msgstr "STOP van klant vastleggen"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Bewaar het ticket in uw eigen administratie; Moda slaat deze referentie niet op."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:76
+msgid "Earlier WhatsApp reminder permission"
+msgstr "Eerdere toestemming voor WhatsApp-herinneringen"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:82
+msgid "Keep earlier permission unchanged"
+msgstr "Eerdere toestemming ongewijzigd laten"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:83
+msgid "Withdraw earlier WhatsApp reminder permission"
+msgstr "Eerdere toestemming voor WhatsApp-herinneringen intrekken"

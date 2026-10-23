@@ -15,6 +15,7 @@ final class CheckoutConsentPublisher {
 	public const ACTION = 'moda_interact_dispatch_woo_checkout_consent';
 	private const GROUP = 'moda-interact-consent';
 	private const MAX_ATTEMPTS = 3;
+	private const RETRY_LEASE_PREFIX = 'moda_woo_consent_retry_';
 
 	public function __construct(
 		private readonly ?ModaApiClient $api = null,
@@ -40,8 +41,27 @@ final class CheckoutConsentPublisher {
 		if ( $attempt < 2 || $attempt > self::MAX_ATTEMPTS ) return;
 		$current = ( $this->installation ?? new InstallationStore() )->read();
 		if ( 'valid' !== $current['state'] || $current['record']['installationId'] !== $installation_id ||
-			$current['record']['shopId'] !== $shop_id || ! $this->installationMatches( $current['record'] ) ) return;
+			$current['record']['shopId'] !== $shop_id || ! $this->installationMatches( $current['record'] ) ||
+			! $this->hasRetryLease( $event, $current['record'] ) ) return;
 		$this->publishFor( $event, $current['record'], $attempt, true );
+	}
+
+	/** Revoke an outstanding background retry when checkout/session/phone identity changes.
+	 * The transient stores no customer contact or consent payload.
+	 */
+	public function cancelPending( array $event ): void {
+		if ( function_exists( 'delete_transient' ) && is_string( $event['eventId'] ?? null ) ) {
+			delete_transient( self::RETRY_LEASE_PREFIX . hash( 'sha256', $event['eventId'] ) );
+		}
+	}
+
+	private function hasRetryLease( array $event, array $record ): bool {
+		if ( ! is_string( $event['eventId'] ?? null ) || ! function_exists( 'get_transient' ) ) return false;
+		$lease = get_transient( self::RETRY_LEASE_PREFIX . hash( 'sha256', $event['eventId'] ) );
+		return is_array( $lease ) &&
+			( $lease['installationId'] ?? null ) === $record['installationId'] &&
+			( $lease['shopId'] ?? null ) === $record['shopId'] &&
+			( $lease['credentialVersion'] ?? null ) === $record['credentialVersion'];
 	}
 
 	private function installationMatches( array $record ): bool {
@@ -58,14 +78,24 @@ final class CheckoutConsentPublisher {
 		try {
 			$client = $this->api ?? new ModaApiClient( ModaApiConfiguration::fromServerConfiguration() );
 			$client->publishWooConsent( $record, $event );
+			$this->cancelPending( $event );
 			return true;
 		} catch ( ModaApiClientException $error ) {
 			// An API contract/conflict rejection is definitive; do not replay over a later REVOKE.
 			if ( null !== $error->http_status && $error->http_status >= 400 && $error->http_status < 500 &&
-				! in_array( $error->http_status, array( 408, 429 ), true ) ) return false;
+				! in_array( $error->http_status, array( 408, 429 ), true ) ) {
+				$this->cancelPending( $event );
+				return false;
+			}
 		} catch ( \Throwable $error ) { /* Checkout stays usable, with no claimed ACK. */ }
-		if ( $retry && $attempt < self::MAX_ATTEMPTS && function_exists( 'as_schedule_single_action' ) ) {
+		if ( $retry && $attempt < self::MAX_ATTEMPTS && function_exists( 'as_schedule_single_action' ) &&
+			function_exists( 'set_transient' ) ) {
 			try {
+				// At most four minutes: a stale page or ended session cannot
+				// authorise an unbounded deferred GRANT. Missing lease fails closed.
+				if ( true !== set_transient( self::RETRY_LEASE_PREFIX . hash( 'sha256', $event['eventId'] ),
+					array( 'installationId' => $record['installationId'], 'shopId' => $record['shopId'],
+						'credentialVersion' => $record['credentialVersion'] ), 240 ) ) return false;
 				$delay = 1 === $attempt ? 20 : 60;
 				as_schedule_single_action( time() + $delay, self::ACTION, array(
 				'event' => $event, 'installationId' => $record['installationId'],
