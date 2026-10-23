@@ -23,11 +23,6 @@ msgstr "%1$s / cada 30 días"
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#. Description of the plugin
-#: moda-interact.php
-msgid "A WooCommerce Admin extension foundation for Moda Interact."
-msgstr "Una extensión de administración de WooCommerce para Moda Interact."
-
 #: src/billing-screen.js:23 src/billing-screen.js:27
 msgid ""
 "A billing change is already in progress. Refresh the billing summary before "
@@ -1280,10 +1275,6 @@ msgstr "Mensaje automático"
 msgid "Back to recoveries"
 msgstr "Volver a recuperaciones"
 
-#: src/recoveries/detail/context/checkout-context-panel.js:10
-msgid "Checkout context"
-msgstr "Contexto del pago"
-
 #: src/recoveries/detail/conversation/conversation-panel.js:18
 #: src/recoveries/detail/conversation/conversation-panel.js:26
 msgid "Conversation"
@@ -1297,10 +1288,6 @@ msgstr "Cliente"
 msgid "Jump to latest"
 msgstr "Ir a los últimos mensajes"
 
-#: src/recoveries/detail/context/recovery-milestones.js:21
-msgid "Milestones"
-msgstr "Hitos"
-
 #: src/recoveries/detail/conversation/conversation-message.js:34
 msgid "Moda assistant"
 msgstr "Asistente de Moda"
@@ -1312,10 +1299,6 @@ msgstr "No hay conversación registrada."
 #: src/recoveries/detail/context/related-recoveries.js:32
 msgid "No related recoveries."
 msgstr "No hay recuperaciones relacionadas."
-
-#: src/recoveries/detail/conversation/conversation-panel.js:22
-msgid "Read-only conversation history."
-msgstr "Historial de conversación de solo lectura."
 
 #: src/recoveries/detail/recovery-detail-header.js:14
 #: src/recoveries/detail/recovery-detail-header.js:17
@@ -2225,3 +2208,215 @@ msgstr "Registrar STOP del cliente"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Conserve el ticket en sus propios registros; Moda no almacena esta referencia."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Checking message…"
+msgstr "Comprobando mensaje…"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message blocked. Nothing was sent."
+msgstr "Mensaje no enviado. Revísalo antes de volver a intentarlo."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message requires review."
+msgstr "Este mensaje debe revisarse antes de enviarse."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message screening unavailable. Check status before retrying."
+msgstr "La revisión del contenido no está disponible temporalmente. El mensaje no se ha enviado."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Accepted / queued. Not yet sent."
+msgstr "Una respuesta en cola no confirma el envío por WhatsApp."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Provider confirmed sent."
+msgstr "Enviado"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message failed."
+msgstr "Fallido"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message cancelled."
+msgstr "No enviado"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Delivery outcome unknown. Check status."
+msgstr "Entrega no confirmada"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Conversation changed. Refresh before retrying."
+msgstr "El control de la conversación ha cambiado. Actualiza la página antes de volver a intentarlo."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human messaging is unavailable for this store."
+msgstr "Las respuestas humanas están desactivadas temporalmente para esta tienda."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The customer service window is closed."
+msgstr "Ventana de respuesta cerrada"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Recovery follow-up is not available."
+msgstr "No hay seguimiento disponible"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Approved follow-up template unavailable."
+msgstr "No hay ninguna plantilla aprobada para el seguimiento de la recuperación."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Please revise the message."
+msgstr "Mensaje no enviado. Revísalo antes de volver a intentarlo."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Unable to confirm the command. Check status before retrying."
+msgstr "El mensaje no se envió. Comprueba el estado antes de volver a intentarlo."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human conversation controls"
+msgstr "Controles de la conversación"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over"
+msgstr "Tomar el control"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Resume AI"
+msgstr "Reanudar IA"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer reply window open until"
+msgstr "El cliente puede responder hasta"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer service window closed."
+msgstr "Ventana de respuesta cerrada"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over to reply as the merchant."
+msgstr "Toma el control de la conversación para responder como comerciante."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The recovery follow-up was already used."
+msgstr "Seguimiento ya utilizado"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "No server-approved recovery follow-up template is currently available."
+msgstr "No hay ninguna plantilla aprobada para el seguimiento de la recuperación."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Retry same request"
+msgstr "Reintentar la misma solicitud"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Check status"
+msgstr "Actualizar estado"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Done"
+msgstr "Listo"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message blocked by moderation."
+msgstr "Mensaje no enviado. Revísalo antes de volver a intentarlo."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Moderation temporarily unavailable."
+msgstr "La revisión del contenido no está disponible temporalmente. El mensaje no se ha enviado."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Checkout basket"
+msgstr "Cesta"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved checkout items unavailable."
+msgstr "La cesta guardada no está disponible."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Item unavailable"
+msgstr "No disponible"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Unit price"
+msgstr "Precio unitario"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Line total"
+msgstr "Total de la línea"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved recovery total"
+msgstr "Total guardado"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Some saved checkout details are unavailable."
+msgstr "Parte de la información de la cesta no estaba disponible cuando se guardó la recuperación."
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Una extensión de administración de WooCommerce para Moda Interact."
+
+msgid "A queued reply is not a confirmed WhatsApp send."
+msgstr "Una respuesta en cola no confirma el envío por WhatsApp."
+
+msgid "Basket saved when this recovery was detected. Prices are not live."
+msgstr "La cesta se guardó al detectar esta recuperación. Los precios no están actualizados."
+
+msgid "Follow-up"
+msgstr "Seguimiento"
+
+msgid "Initial outreach"
+msgstr "Contacto inicial"
+
+msgid "Merchant in control"
+msgstr "Comerciante al mando"
+
+msgid "Queue reply"
+msgstr "Poner respuesta en cola"
+
+msgid "Recovery activity"
+msgstr "Actividad de recuperación"
+
+msgid "Reply to customer"
+msgstr "Responder al cliente"

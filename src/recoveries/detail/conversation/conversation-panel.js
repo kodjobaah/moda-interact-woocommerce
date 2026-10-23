@@ -2,9 +2,37 @@ import { createElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ConversationMessage } from './conversation-message';
 import { DetailSectionState } from '../states/detail-section-state';
+import { HumanModeControls } from '../human/human-mode-controls';
+import { HumanReplyComposer } from '../human/human-reply-composer';
+import { HumanCommandStatus } from '../human/human-command-status';
+
+// Show day breaks only for actual API-backed conversation messages.
+function messageTimeline(messages) {
+	const entries = [];
+	let lastDay = null;
+	for (const message of messages) {
+		if (message.day && message.day !== lastDay) {
+			entries.push(
+				createElement(
+					'li',
+					{
+						key: `day-${message.id}`,
+						className: 'moda-recovery-detail__day',
+					},
+					message.day
+				)
+			);
+		}
+		lastDay = message.day;
+		entries.push(
+			createElement(ConversationMessage, { key: message.id, message })
+		);
+	}
+	return entries;
+}
 
 /**
- * Independent conversation state and controls; Stage 1 has no active API actions.
+ * Independent conversation state and controls, including optional human actions.
  * @param {Object}                 root0
  * @param {string}                 root0.state
  * @param {Array<Object>}          root0.messages
@@ -15,6 +43,8 @@ import { DetailSectionState } from '../states/detail-section-state';
  * @param {(() => void)|undefined} root0.onNext
  * @param {(() => void)|undefined} root0.onJumpLatest
  * @param {(() => void)|undefined} root0.onRefresh
+ * @param {Object|null}            root0.summary
+ * @param {Object|null}            root0.human
  */
 export function ConversationPanel({
 	state = 'UNAVAILABLE',
@@ -26,6 +56,8 @@ export function ConversationPanel({
 	onNext,
 	onJumpLatest,
 	onRefresh,
+	summary = null,
+	human = null,
 }) {
 	const busy = state === 'LOADING';
 	return createElement(
@@ -57,16 +89,27 @@ export function ConversationPanel({
 		),
 		createElement(
 			'p',
-			null,
-			__('Read-only conversation history.', 'moda-interact')
-		),
-		createElement(
-			'p',
-			null,
+			{ className: 'moda-recovery-detail__timezone' },
 			__('Time zone', 'moda-interact'),
 			': ',
 			timeZone || __('Not available', 'moda-interact')
 		),
+		summary?.conversation && human
+			? createElement(HumanModeControls, { summary, human })
+			: null,
+		state === 'READY' && messages.length
+			? createElement(
+					'ol',
+					{ className: 'moda-recovery-detail__messages' },
+					...messageTimeline(messages)
+				)
+			: createElement(DetailSectionState, {
+					state: state === 'READY' ? 'EMPTY' : state,
+					emptyMessage: __(
+						'No conversation recorded.',
+						'moda-interact'
+					),
+				}),
 		createElement(
 			'nav',
 			{
@@ -104,23 +147,15 @@ export function ConversationPanel({
 				__('Next', 'moda-interact')
 			)
 		),
-		state === 'READY' && messages.length
-			? createElement(
-					'ol',
-					{ className: 'moda-recovery-detail__messages' },
-					...messages.map((message) =>
-						createElement(ConversationMessage, {
-							key: message.id,
-							message,
-						})
-					)
-				)
-			: createElement(DetailSectionState, {
-					state: state === 'READY' ? 'EMPTY' : state,
-					emptyMessage: __(
-						'No conversation recorded.',
-						'moda-interact'
-					),
+		summary?.conversation && human
+			? createElement(HumanReplyComposer, {
+					key: summary.conversation.id,
+					summary,
+					human,
 				})
+			: null,
+		summary?.conversation && human
+			? createElement(HumanCommandStatus, { human })
+			: null
 	);
 }

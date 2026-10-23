@@ -23,11 +23,6 @@ msgstr "%1$s / 每 30 天"
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#. Description of the plugin
-#: moda-interact.php
-msgid "A WooCommerce Admin extension foundation for Moda Interact."
-msgstr "Moda Interact 的 WooCommerce 管理介面擴充功能基礎元件。"
-
 #: src/billing-screen.js:23 src/billing-screen.js:27
 msgid ""
 "A billing change is already in progress. Refresh the billing summary before "
@@ -1199,10 +1194,6 @@ msgstr "自動訊息"
 msgid "Back to recoveries"
 msgstr "返回挽回清單"
 
-#: src/recoveries/detail/context/checkout-context-panel.js:10
-msgid "Checkout context"
-msgstr "結帳資訊"
-
 #: src/recoveries/detail/conversation/conversation-panel.js:18
 #: src/recoveries/detail/conversation/conversation-panel.js:26
 msgid "Conversation"
@@ -1216,10 +1207,6 @@ msgstr "客戶"
 msgid "Jump to latest"
 msgstr "跳至最新訊息"
 
-#: src/recoveries/detail/context/recovery-milestones.js:21
-msgid "Milestones"
-msgstr "進度記錄"
-
 #: src/recoveries/detail/conversation/conversation-message.js:34
 msgid "Moda assistant"
 msgstr "Moda 助理"
@@ -1231,10 +1218,6 @@ msgstr "沒有已記錄的對話。"
 #: src/recoveries/detail/context/related-recoveries.js:32
 msgid "No related recoveries."
 msgstr "沒有相關挽回。"
-
-#: src/recoveries/detail/conversation/conversation-panel.js:22
-msgid "Read-only conversation history."
-msgstr "唯讀對話歷程。"
 
 #: src/recoveries/detail/recovery-detail-header.js:14
 #: src/recoveries/detail/recovery-detail-header.js:17
@@ -2132,3 +2115,215 @@ msgstr "記錄客戶 STOP"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "請在自己的紀錄中保留工單；Moda 不會儲存此編號。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Checking message…"
+msgstr "正在檢查訊息…"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message blocked. Nothing was sent."
+msgstr "訊息未傳送，請修改後重試。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message requires review."
+msgstr "此訊息需要審核後才能傳送。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message screening unavailable. Check status before retrying."
+msgstr "內容檢查暫時無法使用。訊息尚未傳送。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Accepted / queued. Not yet sent."
+msgstr "回覆已排入佇列並不代表 WhatsApp 傳送成功。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Provider confirmed sent."
+msgstr "已傳送"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message failed."
+msgstr "失敗"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message cancelled."
+msgstr "未傳送"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Delivery outcome unknown. Check status."
+msgstr "尚未確認送達"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Conversation changed. Refresh before retrying."
+msgstr "對話控制狀態已變更，請重新整理後再試。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human messaging is unavailable for this store."
+msgstr "此商店目前已停用人工回覆。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The customer service window is closed."
+msgstr "顧客回覆時限已結束"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Recovery follow-up is not available."
+msgstr "暫無可用的後續訊息"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Approved follow-up template unavailable."
+msgstr "目前沒有可用的已核准復原跟進訊息範本。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Please revise the message."
+msgstr "訊息未傳送，請修改後重試。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Unable to confirm the command. Check status before retrying."
+msgstr "訊息未傳送。重試前請確認狀態。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human conversation controls"
+msgstr "對話控制"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over"
+msgstr "接管對話"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Resume AI"
+msgstr "恢復 AI"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer reply window open until"
+msgstr "顧客可回覆至"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer service window closed."
+msgstr "顧客回覆時限已結束"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over to reply as the merchant."
+msgstr "接管對話後即可代表商家回覆。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The recovery follow-up was already used."
+msgstr "後續訊息已使用"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "No server-approved recovery follow-up template is currently available."
+msgstr "目前沒有可用的已核准復原跟進訊息範本。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Retry same request"
+msgstr "重試相同請求"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Check status"
+msgstr "重新整理狀態"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Done"
+msgstr "完成"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message blocked by moderation."
+msgstr "訊息未傳送，請修改後重試。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Moderation temporarily unavailable."
+msgstr "內容檢查暫時無法使用。訊息尚未傳送。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Checkout basket"
+msgstr "購物車"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved checkout items unavailable."
+msgstr "無法查看已儲存的購物車。"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Item unavailable"
+msgstr "無法使用"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Unit price"
+msgstr "單價"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Line total"
+msgstr "項目總計"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved recovery total"
+msgstr "已儲存的總額"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Some saved checkout details are unavailable."
+msgstr "儲存此復原作業時，部分購物車資訊無法取得。"
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Moda Interact 的 WooCommerce 管理介面擴充功能基礎元件。"
+
+msgid "A queued reply is not a confirmed WhatsApp send."
+msgstr "回覆已排入佇列並不代表 WhatsApp 傳送成功。"
+
+msgid "Basket saved when this recovery was detected. Prices are not live."
+msgstr "這是偵測到此復原作業時儲存的購物車快照，價格並非即時價格。"
+
+msgid "Follow-up"
+msgstr "後續訊息"
+
+msgid "Initial outreach"
+msgstr "首次聯絡"
+
+msgid "Merchant in control"
+msgstr "商家接管中"
+
+msgid "Queue reply"
+msgstr "排隊傳送回覆"
+
+msgid "Recovery activity"
+msgstr "挽回活動"
+
+msgid "Reply to customer"
+msgstr "回覆顧客"

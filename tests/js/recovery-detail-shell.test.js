@@ -173,8 +173,13 @@ describe('ARCH-035 Recovery Detail UI Stage 1', () => {
 			},
 		});
 		expect(words(detail)).toContain('Ada Lovelace');
-		expect(words(detail)).toContain('Read-only conversation history.');
-		expect(words(detail)).toContain('Milestones');
+		expect(
+			descendants(detail, 'h2').some((heading) =>
+				words(heading).includes('Conversation')
+			)
+		).toBe(true);
+		expect(words(detail)).not.toContain('Read-only conversation history.');
+		expect(words(detail)).toContain('Recovery activity');
 		expect(words(detail)).toContain('Related recoveries');
 		expect(descendants(detail, 'details')[0].props.open).toBe(true);
 		expect(descendants(detail, 'time')).toHaveLength(1);

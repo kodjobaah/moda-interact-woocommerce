@@ -23,11 +23,6 @@ msgstr "%1$s / 30 päivän välein"
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#. Description of the plugin
-#: moda-interact.php
-msgid "A WooCommerce Admin extension foundation for Moda Interact."
-msgstr "Moda Interactin WooCommerce-hallintalaajennuksen perusta."
-
 #: src/billing-screen.js:23 src/billing-screen.js:27
 msgid ""
 "A billing change is already in progress. Refresh the billing summary before "
@@ -1261,10 +1256,6 @@ msgstr "Automaattinen viesti"
 msgid "Back to recoveries"
 msgstr "Takaisin palautuksiin"
 
-#: src/recoveries/detail/context/checkout-context-panel.js:10
-msgid "Checkout context"
-msgstr "Kassan tiedot"
-
 #: src/recoveries/detail/conversation/conversation-panel.js:18
 #: src/recoveries/detail/conversation/conversation-panel.js:26
 msgid "Conversation"
@@ -1278,10 +1269,6 @@ msgstr "Asiakas"
 msgid "Jump to latest"
 msgstr "Siirry uusimpiin"
 
-#: src/recoveries/detail/context/recovery-milestones.js:21
-msgid "Milestones"
-msgstr "Vaiheet"
-
 #: src/recoveries/detail/conversation/conversation-message.js:34
 msgid "Moda assistant"
 msgstr "Moda-avustaja"
@@ -1293,10 +1280,6 @@ msgstr "Keskustelua ei ole tallennettu."
 #: src/recoveries/detail/context/related-recoveries.js:32
 msgid "No related recoveries."
 msgstr "Ei liittyviä palautuksia."
-
-#: src/recoveries/detail/conversation/conversation-panel.js:22
-msgid "Read-only conversation history."
-msgstr "Keskusteluhistoria vain lukuun."
 
 #: src/recoveries/detail/recovery-detail-header.js:14
 #: src/recoveries/detail/recovery-detail-header.js:17
@@ -2199,3 +2182,215 @@ msgstr "Kirjaa asiakkaan STOP"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Säilytä tukipyyntö omissa tiedoissasi; Moda ei tallenna tätä viitettä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Checking message…"
+msgstr "Tarkistetaan viestiä…"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message blocked. Nothing was sent."
+msgstr "Viestiä ei lähetetty — muokkaa sitä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message requires review."
+msgstr "Tämä viesti on tarkistettava ennen lähettämistä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message screening unavailable. Check status before retrying."
+msgstr "Sisällön tarkistus ei ole tilapäisesti käytettävissä. Viestiä ei lähetetty."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Accepted / queued. Not yet sent."
+msgstr "Jonossa oleva vastaus ei tarkoita vahvistettua WhatsApp-lähetystä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Provider confirmed sent."
+msgstr "Lähetetty"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message failed."
+msgstr "Epäonnistui"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Message cancelled."
+msgstr "Ei lähetetty"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Delivery outcome unknown. Check status."
+msgstr "Toimitusta ei vahvistettu"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Conversation changed. Refresh before retrying."
+msgstr "Keskustelun hallinta muuttui. Päivitä sivu ennen uutta yritystä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human messaging is unavailable for this store."
+msgstr "Ihmisen lähettämät vastaukset on poistettu käytöstä tässä kaupassa."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The customer service window is closed."
+msgstr "Vastausikkuna suljettu"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Recovery follow-up is not available."
+msgstr "Seurantaviestiä ei ole saatavilla"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Approved follow-up template unavailable."
+msgstr "Hyväksyttyä ostoskorin palautuksen seurantaviestipohjaa ei ole saatavilla."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Please revise the message."
+msgstr "Viestiä ei lähetetty — muokkaa sitä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Unable to confirm the command. Check status before retrying."
+msgstr "Viestiä ei lähetetty. Tarkista tila ennen uutta yritystä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Human conversation controls"
+msgstr "Keskustelun hallinta"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over"
+msgstr "Ota hallinta"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Resume AI"
+msgstr "Jatka tekoälyllä"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer reply window open until"
+msgstr "Asiakkaan vastausaika päättyy"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Customer service window closed."
+msgstr "Vastausikkuna suljettu"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Take Over to reply as the merchant."
+msgstr "Ota keskustelu hallintaasi lähettääksesi kauppiaan vastauksen."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "The recovery follow-up was already used."
+msgstr "Seurantaviesti on jo käytetty"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "No server-approved recovery follow-up template is currently available."
+msgstr "Hyväksyttyä ostoskorin palautuksen seurantaviestipohjaa ei ole saatavilla."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Retry same request"
+msgstr "Yritä samaa pyyntöä uudelleen"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Check status"
+msgstr "Päivitä tila"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/human/human-conversation-controls.js
+msgid "Done"
+msgstr "Valmis"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Message blocked by moderation."
+msgstr "Viestiä ei lähetetty — muokkaa sitä."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/conversation/conversation-message.js
+msgid "Moderation temporarily unavailable."
+msgstr "Sisällön tarkistus ei ole tilapäisesti käytettävissä. Viestiä ei lähetetty."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Checkout basket"
+msgstr "Ostoskori"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved checkout items unavailable."
+msgstr "Tallennettu ostoskori ei ole saatavilla."
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Item unavailable"
+msgstr "Ei saatavilla"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Unit price"
+msgstr "Yksikköhinta"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Line total"
+msgstr "Rivin summa"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Saved recovery total"
+msgstr "Tallennettu summa"
+
+#. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
+#: src/recoveries/detail/context/checkout-basket.js
+msgid "Some saved checkout details are unavailable."
+msgstr "Osa ostoskorin tiedoista puuttui, kun palautustapaus tallennettiin."
+
+#. Description of the plugin
+#: moda-interact.php
+msgid "A WooCommerce Admin extension foundation for Moda Interact."
+msgstr "Moda Interactin WooCommerce-hallintalaajennuksen perusta."
+
+msgid "A queued reply is not a confirmed WhatsApp send."
+msgstr "Jonossa oleva vastaus ei tarkoita vahvistettua WhatsApp-lähetystä."
+
+msgid "Basket saved when this recovery was detected. Prices are not live."
+msgstr "Ostoskori tallennettiin, kun tämä palautustapaus havaittiin. Hinnat eivät ole ajantasaisia."
+
+msgid "Follow-up"
+msgstr "Seurantaviesti"
+
+msgid "Initial outreach"
+msgstr "Ensimmäinen yhteydenotto"
+
+msgid "Merchant in control"
+msgstr "Kauppias hallitsee"
+
+msgid "Queue reply"
+msgstr "Lisää vastaus jonoon"
+
+msgid "Recovery activity"
+msgstr "Palautuksen tapahtumat"
+
+msgid "Reply to customer"
+msgstr "Vastaa asiakkaalle"

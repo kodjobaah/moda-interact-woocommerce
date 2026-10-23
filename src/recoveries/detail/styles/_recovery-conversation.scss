@@ -96,3 +96,125 @@
 		justify-content: center;
 	}
 }
+
+.moda-recovery-detail__timezone {
+	margin: -5px 0 0;
+	color: var(--moda-muted);
+	font-size: 12px;
+}
+
+.moda-recovery-detail__human-controls {
+	display: grid;
+	gap: 8px;
+	padding-top: 10px;
+	border-top: 1px solid var(--moda-border);
+}
+
+// Keep the mode indicator and label together while aligning its action with
+// Shopify's right-hand Resume AI/Take Over position.
+.moda-recovery-detail__human-mode {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.moda-recovery-detail__human-mode-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.moda-recovery-detail__human-mode > .button {
+	flex: 0 0 auto;
+	margin-inline-start: auto;
+}
+
+.moda-recovery-detail__control-indicator {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	border-radius: 100%;
+	background: #2f8d6c;
+}
+
+.moda-recovery-detail__availability {
+	padding: 11px 12px;
+	background: #f4f7f6;
+	border: 1px solid var(--moda-border);
+	border-radius: 9px;
+}
+
+.moda-recovery-detail__availability p {
+	margin: 0 0 6px;
+	font-size: 12px;
+}
+.moda-recovery-detail__availability p:last-child { margin-bottom: 0; }
+
+.moda-recovery-detail__day {
+	text-align: center;
+	color: var(--moda-muted);
+	font-size: 12px;
+	padding: 7px 0;
+}
+
+.moda-recovery-detail__messages {
+	gap: 8px;
+	padding: 6px 0;
+}
+
+.moda-recovery-detail__bubble {
+	max-width: 82%;
+}
+
+.moda-recovery-detail__reply-region {
+	display: grid;
+	gap: 8px;
+	border-top: 1px solid var(--moda-border);
+	padding-top: 14px;
+}
+
+.moda-recovery-detail__composer {
+	display: grid;
+	gap: 8px;
+}
+
+.moda-recovery-detail__composer textarea {
+	width: 100%;
+	min-width: 0;
+	border-radius: 8px;
+	border-color: var(--moda-border);
+}
+
+.moda-recovery-detail__composer-actions {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.moda-recovery-detail__muted {
+	color: var(--moda-muted);
+	font-size: 12px;
+}
+
+.moda-recovery-detail__command {
+	display: grid;
+	gap: 6px;
+	padding: 12px;
+	border: 1px solid var(--moda-border);
+	border-radius: 9px;
+	background: #f4f7f6;
+}
+
+.moda-recovery-detail__command p { margin: 0; }
+.moda-recovery-detail__checked { font-size: 12px; color: var(--moda-muted); }
+.moda-recovery-detail__command-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 600px) {
+	.moda-recovery-detail__bubble { max-width: 96%; }
+	.moda-recovery-detail__composer-actions .button { width: 100%; }
+}

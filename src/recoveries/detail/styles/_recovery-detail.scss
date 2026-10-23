@@ -1,7 +1,7 @@
 // Shopify Recovery Detail structure within the existing WordPress Admin menu.
 .moda-recovery-detail {
 	display: grid;
-	gap: 22px;
+	gap: 18px;
 	width: min(100%, 1160px);
 	min-width: 0;
 	margin: 0 auto;
@@ -43,7 +43,7 @@
 
 .moda-recovery-detail__customer > h1 {
 	margin: 0 0 10px;
-	font-size: clamp(24px, 3vw, 30px);
+	font-size: clamp(21px, 2.2vw, 26px);
 	font-weight: 650;
 	line-height: 1.2;
 }
@@ -122,45 +122,175 @@
 	color: var(--moda-forest-800);
 }
 
+// Independent Shopify-parity sidebar cards; each section remains API-backed.
+.moda-recovery-detail__aside {
+	display: grid;
+	align-content: start;
+	gap: 12px;
+	min-width: 0;
+}
+
+.moda-recovery-detail__aside > * {
+	box-sizing: border-box;
+	width: 100%;
+}
+
 .moda-recovery-detail__aside details > summary {
 	cursor: pointer;
 	font-size: 14px;
 	font-weight: 700;
 }
 
-.moda-recovery-detail__context-body {
-	display: grid;
-	gap: 20px;
-	padding-top: 16px;
+.moda-recovery-detail__aside details > summary h2 {
+	display: inline;
+	font-size: 15px;
 }
 
-.moda-recovery-detail__milestones-section,
-.moda-recovery-detail__related {
-	display: grid;
-	gap: 14px;
-	min-width: 0;
+.moda-recovery-detail__basket-card,
+.moda-recovery-detail__activity-card {
+	padding: 16px 18px;
 }
 
-.moda-recovery-detail__milestones {
+.moda-recovery-detail__basket {
 	display: grid;
-	gap: 12px;
+	gap: 10px;
+	padding-top: 12px;
+}
+
+.moda-recovery-detail__basket-total {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 8px;
 	margin: 0;
 }
 
-.moda-recovery-detail__milestones dt {
+.moda-recovery-detail__basket-total span,
+.moda-recovery-detail__basket-notice,
+.moda-recovery-detail__basket-price span {
 	font-size: 12px;
 	color: var(--moda-muted);
 }
 
-.moda-recovery-detail__milestones dd {
-	margin: 4px 0 0;
-	font-size: 13px;
-	font-weight: 650;
+.moda-recovery-detail__basket-notice {
+	margin: 0;
+	line-height: 1.5;
+}
+
+.moda-recovery-detail__basket-items {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.moda-recovery-detail__basket-items li {
+	display: flex;
+	gap: 12px;
+	padding: 12px 0;
+	align-items: flex-start;
+	min-width: 0;
+	border-top: 1px solid var(--moda-border);
+	overflow-wrap: anywhere;
+}
+
+.moda-recovery-detail__basket-items img {
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.moda-recovery-detail__basket-product {
+	flex: 1 1 100px;
+	min-width: 0;
+}
+
+.moda-recovery-detail__basket-product p {
+	margin: 5px 0 0;
+	font-size: 12px;
+}
+
+.moda-recovery-detail__basket-price {
+	display: grid;
+	gap: 3px;
+	text-align: end;
+}
+
+.moda-recovery-detail__activity-card h2 {
+	margin-bottom: 16px;
+}
+
+.moda-recovery-detail__milestones-section {
+	display: grid;
+	gap: 0;
+}
+
+.moda-recovery-detail__milestones {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.moda-recovery-detail__milestones li {
+	position: relative;
+	display: grid;
+	gap: 4px;
+	margin-inline-start: 5px;
+	padding: 0 0 16px 18px;
+	border-inline-start: 1px solid var(--moda-border);
+}
+
+.moda-recovery-detail__milestones li::before {
+	content: '';
+	position: absolute;
+	inset-inline-start: -5px;
+	top: 5px;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: #6b9c84;
+}
+
+.moda-recovery-detail__milestones li:last-child {
+	padding-bottom: 3px;
+	border-color: transparent;
+}
+
+.moda-recovery-detail__milestones strong,
+.moda-recovery-detail__follow-up-state strong {
+	font-size: 12px;
+}
+
+.moda-recovery-detail__milestones span,
+.moda-recovery-detail__follow-up-state span {
+	font-size: 12px;
+	color: var(--moda-muted);
+}
+
+.moda-recovery-detail__follow-up-state {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 8px;
+	padding-top: 12px;
+	margin-top: 10px;
+	border-top: 1px solid var(--moda-border);
+}
+
+.moda-recovery-detail__related-card {
+	padding: 14px 18px;
 }
 
 .moda-recovery-detail__related {
-	padding-top: 16px;
-	border-top: 1px solid var(--moda-border);
+	display: grid;
+	gap: 12px;
+	min-width: 0;
+	padding-top: 12px;
+}
+
+.moda-recovery-detail__related-actions {
+	display: flex;
+	justify-content: flex-end;
 }
 
 .moda-recovery-detail__related-list {
@@ -191,6 +321,10 @@
 
 	.moda-recovery-detail__layout {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.moda-recovery-detail__aside {
+		order: -1;
 	}
 }
 
