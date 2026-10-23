@@ -2058,3 +2058,12 @@ msgstr ""
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr ""
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr ""
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr ""

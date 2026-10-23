@@ -248,3 +248,62 @@ it('supports explicit refresh, reconnect, and post-revision-conflict messaging',
 	);
 	expect(text(reloaded)).toContain('latest offers have been loaded');
 });
+
+it('explains a locked selection without advertising offers as available', () => {
+	const onSelect = vi.fn();
+	const current = {
+		campaignId: 'selected-campaign',
+		merchantTitle: 'Current bonus',
+		remainingQuantity: 4,
+		locked: true,
+		expiresAt: '2026-10-31T00:00:00.000Z',
+	};
+	const model = {
+		status: 'READY',
+		selection: current,
+		offers: [fixture],
+		offersPagination: { page: 1, totalPages: 1 },
+		history: { entries: [], page: 1, totalPages: 1 },
+	};
+	const lockedScreen = PromotionsScreen({ model, onSelect });
+	expect(text(lockedScreen)).toContain(
+		`You cannot select another promotion until your current promotion expires (${formatDate(current.expiresAt)}).`
+	);
+	expect(text(lockedScreen)).toContain('Selection locked');
+	expect(text(lockedScreen)).not.toContain('Available now');
+	const [lockedButton] = nodes(lockedScreen, 'button');
+	expect(lockedButton.props.disabled).toBe(true);
+	lockedButton.props.onClick();
+	expect(onSelect).not.toHaveBeenCalled();
+
+	const unlockedScreen = PromotionsScreen({
+		model: { ...model, selection: null },
+		onSelect,
+	});
+	expect(text(unlockedScreen)).toContain('Available now');
+	expect(text(unlockedScreen)).not.toContain('Selection locked');
+	expect(text(unlockedScreen)).not.toContain(
+		'You cannot select another promotion'
+	);
+	const [unlockedButton] = nodes(unlockedScreen, 'button');
+	expect(unlockedButton.props.disabled).toBe(false);
+	unlockedButton.props.onClick();
+	expect(onSelect).toHaveBeenCalledExactlyOnceWith(fixture.id);
+});
+
+it('distinguishes exhaustion, prior claim and ineligibility', () => {
+	for (const [changes, label] of [
+		[{ exhausted: true }, 'Exhausted'],
+		[{ previouslyClaimed: true }, 'Previously claimed'],
+		[{ eligible: false }, 'Not available'],
+		[{ selectable: false }, 'Not available'],
+	]) {
+		const root = PromotionCards({
+			offers: [{ ...fixture, ...changes }],
+			onSelect: vi.fn(),
+		});
+		expect(text(root)).toContain(label);
+		expect(text(root)).not.toContain('Available now');
+		expect(nodes(root, 'button')[0].props.disabled).toBe(true);
+	}
+});

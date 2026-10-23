@@ -2052,3 +2052,12 @@ msgstr "프로모션 크레딧"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "출처 미확인"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "선택 잠김"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "현재 프로모션이 만료될 때(%s)까지 다른 프로모션을 선택할 수 없습니다."

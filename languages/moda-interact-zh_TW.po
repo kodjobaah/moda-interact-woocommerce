@@ -2003,3 +2003,12 @@ msgstr "促銷額度"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "未歸屬"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "選擇已鎖定"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "目前的促銷活動到期（%s）之前，您無法選擇其他促銷活動。"

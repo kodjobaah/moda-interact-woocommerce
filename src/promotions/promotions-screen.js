@@ -187,6 +187,20 @@ export function PromotionsScreen({
 					)
 				)
 			: null,
+		selected?.locked && selected.expiresAt
+			? createElement(
+					'p',
+					{ className: 'moda-promotions__notice' },
+					sprintf(
+						/* translators: %s: current promotion's expiry date. */
+						__(
+							'You cannot select another promotion until your current promotion expires (%s).',
+							'moda-interact'
+						),
+						formatDate(selected.expiresAt)
+					)
+				)
+			: null,
 		notice
 			? createElement(
 					'p',

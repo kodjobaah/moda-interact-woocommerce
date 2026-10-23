@@ -5,7 +5,7 @@ import { formatDate, formatQuantity } from '../billing/presentation-formatters';
 const display = (value) =>
 	value === null || value === undefined ? '—' : String(value);
 
-function offerStatus(offer, isCurrent) {
+function offerStatus(offer, isCurrent, locked) {
 	if (isCurrent) {
 		return __('Current promotion', 'moda-interact');
 	}
@@ -14,6 +14,12 @@ function offerStatus(offer, isCurrent) {
 	}
 	if (offer.previouslyClaimed) {
 		return __('Previously claimed', 'moda-interact');
+	}
+	if (locked) {
+		return __('Selection locked', 'moda-interact');
+	}
+	if (!offer.eligible || !offer.selectable) {
+		return __('Not available', 'moda-interact');
 	}
 	return __('Available now', 'moda-interact');
 }
@@ -62,7 +68,7 @@ export function PromotionCards({
 					createElement(
 						'span',
 						{ className: 'moda-promotions__status' },
-						offerStatus(offer, isCurrent)
+						offerStatus(offer, isCurrent, locked)
 					),
 					createElement(
 						'strong',

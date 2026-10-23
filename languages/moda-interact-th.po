@@ -2017,3 +2017,12 @@ msgstr "เครดิตส่งเสริมการขาย"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "ไม่สามารถระบุแหล่งที่มา"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "ล็อกการเลือก"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "คุณไม่สามารถเลือกโปรโมชันอื่นได้จนกว่าโปรโมชันปัจจุบันจะหมดอายุ (%s)"

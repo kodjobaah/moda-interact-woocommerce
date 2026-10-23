@@ -2097,3 +2097,12 @@ msgstr "Promotiecredits"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Niet toegewezen"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Selectie vergrendeld"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Je kunt pas een andere promotie selecteren wanneer de huidige is verlopen (%s)."

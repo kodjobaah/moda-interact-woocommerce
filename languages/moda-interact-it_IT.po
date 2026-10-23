@@ -2095,3 +2095,12 @@ msgstr "Crediti promozionali"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Non attribuito"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Selezione bloccata"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Non puoi selezionare un’altra promozione fino alla scadenza di quella attuale (%s)."

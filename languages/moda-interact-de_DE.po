@@ -2106,3 +2106,12 @@ msgstr "Aktionsguthaben"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Nicht zugeordnet"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Auswahl gesperrt"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Sie können erst nach Ablauf der aktuellen Aktion (%s) eine andere auswählen."

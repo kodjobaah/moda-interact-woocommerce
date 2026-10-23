@@ -35,6 +35,20 @@ export function UsageHistoryResults({ history, locale }) {
 	const events = data.usageEvents;
 	const first = events.length ? (state.page - 1) * state.pageSize + 1 : 0;
 	const last = events.length ? first + events.length - 1 : 0;
+	let periodHeading = null;
+	if (paging.periodStart && paging.periodEnd) {
+		periodHeading = createElement(
+			'h2',
+			null,
+			`${formatDate(paging.periodStart)} — ${formatDate(paging.periodEnd)}`
+		);
+	} else if (state.view === 'current' && paging.billId === null) {
+		periodHeading = createElement(
+			'h2',
+			null,
+			__('Lifetime usage', 'moda-interact')
+		);
+	}
 	const headers = [
 		__('Event type', 'moda-interact'),
 		__('Recovery', 'moda-interact'),
@@ -52,19 +66,7 @@ export function UsageHistoryResults({ history, locale }) {
 		createElement(
 			'div',
 			{ className: 'moda-usage__period-title' },
-			paging.periodStart && paging.periodEnd
-				? createElement(
-						'h2',
-						null,
-						`${formatDate(paging.periodStart)} — ${formatDate(paging.periodEnd)}`
-					)
-				: state.view === 'current' && paging.billId === null
-					? createElement(
-							'h2',
-							null,
-							__('Lifetime usage', 'moda-interact')
-						)
-					: null,
+			periodHeading,
 			createElement(
 				'p',
 				null,

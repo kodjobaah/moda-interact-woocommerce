@@ -2055,3 +2055,12 @@ msgstr "プロモーションクレジット"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "未分類"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "選択はロックされています"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "現在のプロモーションの有効期限（%s）が切れるまで、別のプロモーションは選択できません。"
