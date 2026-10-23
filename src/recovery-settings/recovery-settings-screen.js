@@ -1,6 +1,7 @@
 import { createElement } from '@wordpress/element';
 import { RecoverySettingsHeader } from './recovery-settings-header';
 import { RecoveryBehaviourPanel } from './recovery-behaviour-panel';
+import { WhatsAppConsentGuidance } from './whatsapp-consent-guidance';
 import { FeaturePreferencesPanel } from './feature-preferences-panel';
 import { StoreAssistantContext } from './store-assistant-context';
 import { StoreProfileAccordion } from './store-profile-accordion';
@@ -48,6 +49,7 @@ export function RecoverySettingsScreen(props) {
 			onRefreshPolicy,
 			onSavePolicy,
 		}),
+		createElement(WhatsAppConsentGuidance),
 		createElement(FeaturePreferencesPanel, {
 			state: featurePreferencesState,
 			onRefresh: onRefreshFeatures,

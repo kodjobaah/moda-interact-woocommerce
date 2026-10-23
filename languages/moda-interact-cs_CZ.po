@@ -2070,3 +2070,19 @@ msgstr "Výběr je uzamčen"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Další akci můžete vybrat až po skončení aktuální akce (%s)."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "Souhlasím se zasíláním marketingových připomenutí přes WhatsApp od %s o položkách ponechaných v nedokončené objednávce v tomto obchodě na své fakturační telefonní číslo. Je to dobrovolné; souhlas mohu odvolat kontaktováním obchodu. Nezaškrtnuté políčko neodvolává dříve udělený souhlas."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "Souhlas s připomenutím nedokončeného nákupu přes WhatsApp"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda při způsobilém dokončování nákupu zobrazuje nezaškrtnuté políčko pro marketing přes WhatsApp. Týká se připomenutí nedokončených nákupů v tomto obchodě, nikoli aktualizací objednávek. Zobrazení políčka nebo získání telefonního čísla není souhlas; Moda musí ověřit výslovnou volbu."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Bez ověřeného souhlasu nelze zahájit obnovení nedokončeného nákupu. Zákazníci mohou obchod kontaktovat a souhlas odvolat. Nezaškrtnuté políčko při další návštěvě neodvolává předchozí souhlas; aktuální volbu je nutné před obnovením ověřit."

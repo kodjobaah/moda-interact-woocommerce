@@ -2088,3 +2088,19 @@ msgstr "Valg låst"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Du kan først vælge en anden kampagne, når den aktuelle udløber (%s)."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "Jeg accepterer at modtage WhatsApp-markedsføringspåmindelser fra %s om varer, jeg efterlader i en uafsluttet betaling i denne butik, på mit faktureringstelefonnummer. Det er frivilligt; jeg kan trække mit samtykke tilbage ved at kontakte butikken. Et ikke-markeret felt ophæver ikke et tidligere samtykke."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "Samtykke til WhatsApp-påmindelser om uafsluttet betaling"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda viser et WhatsApp-markedsføringsfelt, der som udgangspunkt ikke er markeret, ved relevante betalinger. Det gælder påmindelser fra denne butik om uafsluttede køb, ikke ordreopdateringer. Et felt eller et telefonnummer er ikke samtykke; Moda skal kontrollere et aktivt valg."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Uden bekræftet tilladelse kan gendannelse af checkout ikke starte. Kunder kan kontakte butikken for at trække samtykket tilbage. Et ikke-markeret felt ved et senere besøg ophæver ikke tidligere samtykke; den aktuelle præference skal kontrolleres først."

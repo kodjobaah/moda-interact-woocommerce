@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
 import { FeaturePreferencesPanel } from '../../src/recovery-settings/feature-preferences-panel';
+import { WhatsAppConsentGuidance } from '../../src/recovery-settings/whatsapp-consent-guidance';
 import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
 import { StoreAssistantContext } from '../../src/recovery-settings/store-assistant-context';
 import { StoreProfileAccordion } from '../../src/recovery-settings/store-profile-accordion';
@@ -49,17 +50,18 @@ function buttons(node, found = []) {
 }
 
 describe('Woo Recovery Settings category presentation', () => {
-	it('orders cards like Shopify: summary, recovery controls, conversation features, then store context', () => {
+	it('orders cards: summary, recovery controls, WhatsApp consent guidance, features, then store context', () => {
 		const view = RecoverySettingsScreen({
 			state: { status: 'IDLE', data: null },
 			featurePreferencesState: { status: 'UNAVAILABLE', data: null },
 		});
 		const children = view.props.children;
 		expect(children[1].type).toBe(RecoveryBehaviourPanel);
-		expect(children[2].type).toBe(FeaturePreferencesPanel);
-		expect(children[3].type).toBe(StoreAssistantContext);
-		expect(children[3].props.storeProfile.type).toBe(StoreProfileAccordion);
-		expect(children[3].props.merchantKnowledge.type).toBe(
+		expect(children[2].type).toBe(WhatsAppConsentGuidance);
+		expect(children[3].type).toBe(FeaturePreferencesPanel);
+		expect(children[4].type).toBe(StoreAssistantContext);
+		expect(children[4].props.storeProfile.type).toBe(StoreProfileAccordion);
+		expect(children[4].props.merchantKnowledge.type).toBe(
 			MerchantKnowledgePanel
 		);
 	});

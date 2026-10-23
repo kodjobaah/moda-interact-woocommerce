@@ -2087,3 +2087,19 @@ msgstr "Valg låst"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Du kan ikke velge en annen kampanje før den gjeldende utløper (%s)."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "Jeg samtykker til å motta markedsføringspåminnelser på WhatsApp fra %s om varer jeg lar ligge i en ufullført utsjekking i denne butikken, på telefonnummeret mitt for fakturering. Dette er valgfritt; jeg kan trekke samtykket tilbake ved å kontakte butikken. En uavkrysset boks trekker ikke tilbake tidligere samtykke."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "Samtykke til WhatsApp-påminnelser om ufullført utsjekking"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda viser en WhatsApp-markedsføringsboks som i utgangspunktet ikke er avkrysset, ved kvalifiserte utsjekkinger. Den gjelder påminnelser fra denne butikken om ufullførte kjøp, ikke ordreoppdateringer. En synlig boks eller et innsamlet telefonnummer er ikke samtykke; Moda må bekrefte et uttrykkelig valg."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Uten bekreftet tillatelse kan gjenoppretting av utsjekking ikke starte. Kunder kan kontakte butikken for å trekke tilbake samtykket. En uavkrysset boks ved et senere besøk trekker ikke tilbake tidligere samtykke; gjeldende preferanse må sjekkes før gjenoppretting."

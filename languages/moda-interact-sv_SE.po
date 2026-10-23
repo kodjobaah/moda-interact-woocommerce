@@ -2087,3 +2087,19 @@ msgstr "Val låst"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Du kan inte välja en annan kampanj förrän den nuvarande löper ut (%s)."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "Jag godkänner att få WhatsApp-marknadsföringspåminnelser från %s om varor som jag lämnar i en ofullständig kassa i den här butiken, till mitt faktureringstelefonnummer. Det är frivilligt; jag kan återkalla mitt samtycke genom att kontakta butiken. En omarkerad ruta återkallar inte tidigare samtycke."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "Samtycke till WhatsApp-påminnelser om ofullständiga köp"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda visar en från början omarkerad ruta för WhatsApp-marknadsföring vid kvalificerade kassor. Den gäller påminnelser från butiken om ofullständiga köp, inte orderuppdateringar. Att visa en ruta eller samla in ett telefonnummer är inte samtycke; Moda måste verifiera ett uttryckligt val."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Utan verifierat tillstånd kan återhämtning av ett ofullständigt köp inte börja. Kunder kan kontakta butiken för att återkalla samtycke. En omarkerad ruta vid ett senare besök återkallar inte tidigare samtycke; aktuell inställning måste kontrolleras före återhämtning."

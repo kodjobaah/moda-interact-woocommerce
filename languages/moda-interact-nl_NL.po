@@ -2106,3 +2106,19 @@ msgstr "Selectie vergrendeld"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Je kunt pas een andere promotie selecteren wanneer de huidige is verlopen (%s)."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "Ik ga ermee akkoord om van %s WhatsApp-marketingherinneringen te ontvangen over artikelen die ik bij het afrekenen in deze winkel achterlaat, op mijn factuurtelefoonnummer. Dit is optioneel; ik kan mijn toestemming intrekken door contact op te nemen met de winkel. Het niet aanvinken van dit vakje trekt eerdere toestemming niet in."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "Toestemming voor WhatsApp-herinneringen bij onafgeronde bestellingen"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda toont een aanvankelijk uitgevinkt WhatsApp-marketingvakje bij geschikte afrekenprocessen. Het gaat om herinneringen van deze winkel aan onafgeronde aankopen, niet om bestelupdates. Een vakje tonen of een telefoonnummer verzamelen is geen toestemming; Moda moet een uitdrukkelijke keuze controleren."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Zonder geverifieerde toestemming kan herstel van een onafgeronde bestelling niet starten. Klanten kunnen contact opnemen met de winkel om toestemming in te trekken. Een later uitgevinkt vakje trekt eerdere toestemming niet in; controleer de actuele voorkeur vóór herstel."
