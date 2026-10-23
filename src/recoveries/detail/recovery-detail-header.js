@@ -31,8 +31,18 @@ export function RecoveryDetailHeader({ detail = null }) {
 				{ id: 'moda-recovery-detail-heading', dir: 'auto' },
 				name
 			),
-			detail?.customerEmail
+			detail?.customerEmail && detail.customerEmail !== name
 				? createElement('p', { dir: 'auto' }, detail.customerEmail)
+				: null,
+			detail?.customerSite
+				? createElement(
+						'p',
+						{
+							className: 'moda-recovery-detail__site',
+							dir: 'auto',
+						},
+						detail.customerSite
+					)
 				: null
 		),
 		createElement(

@@ -49,12 +49,54 @@ final class RecoveryDetailResponseValidator {
 			$value['incomplete'] === ( null === $value['amount'] || null === $value['currency'] );
 	}
 
+	/** PHP only relays persisted basket data; missing item amounts are legitimate. */
+	private static function money( mixed $money ): bool {
+		return self::exact( $money, array( 'amount', 'currency' ) ) &&
+			( null === $money['amount'] || ( is_string( $money['amount'] ) && preg_match( '/^-?\d{1,40}(?:\.\d{1,30})?$/D', $money['amount'] ) ) ) &&
+			( null === $money['currency'] || ( is_string( $money['currency'] ) && preg_match( '/^[A-Z]{3}$/D', $money['currency'] ) ) );
+	}
+
+	private static function basket( mixed $basket ): bool {
+		if ( ! self::exact( $basket, array( 'items', 'recoveryTotal', 'unavailableReason' ) ) ||
+			! self::money( $basket['recoveryTotal'] ) || ! is_array( $basket['items'] ) ||
+			! array_is_list( $basket['items'] ) || count( $basket['items'] ) > 50 ||
+			! in_array( $basket['unavailableReason'], array( null, 'missing_snapshot', 'invalid_snapshot', 'oversized_snapshot', 'partial_snapshot' ), true ) ) return false;
+		foreach ( $basket['items'] as $item ) {
+			if ( ! self::exact( $item, array( 'title', 'variantTitle', 'quantity', 'unitPrice', 'lineTotal', 'imageUrl' ) ) ||
+				! self::nullableText( $item['title'], 255 ) || ! self::nullableText( $item['variantTitle'], 255 ) ||
+				( null !== $item['quantity'] && ( ! is_int( $item['quantity'] ) || $item['quantity'] < 1 || $item['quantity'] > 1000000 ) ) ||
+				( null !== $item['unitPrice'] && ! self::money( $item['unitPrice'] ) ) ||
+				( null !== $item['lineTotal'] && ! self::money( $item['lineTotal'] ) ) ||
+				( null !== $item['imageUrl'] && ( ! is_string( $item['imageUrl'] ) || strlen( $item['imageUrl'] ) > 1024 ||
+					! preg_match( '#^https://[^\s/?\#]+(?:[/?\#][^\s]*)?$#D', $item['imageUrl'] ) ) ) ) return false;
+		}
+		return true;
+	}
+
+	private static function conversation( mixed $conversation ): bool {
+		if ( null === $conversation ) return true;
+		if ( ! self::exact( $conversation, array( 'id', 'controlMode', 'controlRevision', 'lastInboundAt', 'windowExpiresAt', 'followUp' ) ) ||
+			! self::identity( $conversation['id'] ) ||
+			! in_array( $conversation['controlMode'], array( 'AI', 'HUMAN' ), true ) ||
+			! is_int( $conversation['controlRevision'] ) || $conversation['controlRevision'] < 0 ||
+			! self::nullableTimestamp( $conversation['lastInboundAt'] ) ||
+			! self::nullableTimestamp( $conversation['windowExpiresAt'] ) ||
+			! self::exact( $conversation['followUp'], array( 'sequence2Used', 'initiatedBy' ) ) ) return false;
+		return is_bool( $conversation['followUp']['sequence2Used'] ) &&
+			in_array( $conversation['followUp']['initiatedBy'], array( null, 'HUMAN', 'AGENT', 'AUTOMATION' ), true );
+	}
+
 	public static function isSummary( mixed $data ): bool {
-		if ( ! self::exact( $data, array( 'schemaVersion', 'timeZone', 'id', 'status', 'value', 'customer', 'hasConversation', 'milestones' ) ) ||
+		if ( ! self::exact( $data, array( 'schemaVersion', 'timeZone', 'id', 'status', 'value', 'customer', 'hasConversation', 'basket', 'conversation', 'humanMessagingAllowed', 'humanMessagingStatus', 'milestones' ) ) ||
 			1 !== $data['schemaVersion'] || ! self::identity( $data['id'] ) ||
 			! in_array( $data['status'], self::STATUS, true ) || ! self::value( $data['value'] ) ||
 			! is_string( $data['timeZone'] ) || '' === $data['timeZone'] || strlen( $data['timeZone'] ) > 128 ||
-			! is_bool( $data['hasConversation'] ) ) return false;
+			! is_bool( $data['hasConversation'] ) || ! self::basket( $data['basket'] ) ||
+			! self::conversation( $data['conversation'] ) ||
+			$data['hasConversation'] !== ( null !== $data['conversation'] ) ||
+			! is_bool( $data['humanMessagingAllowed'] ) ||
+			! in_array( $data['humanMessagingStatus'], array( 'ACTIVE', 'SUSPENDED' ), true ) ||
+			$data['humanMessagingAllowed'] !== ( 'ACTIVE' === $data['humanMessagingStatus'] ) ) return false;
 		if ( null !== $data['customer'] && ( ! self::exact( $data['customer'], array( 'firstName', 'lastName', 'email' ) ) ||
 			! self::nullableText( $data['customer']['firstName'], 80 ) ||
 			! self::nullableText( $data['customer']['lastName'], 80 ) ||
@@ -67,13 +109,15 @@ final class RecoveryDetailResponseValidator {
 	}
 
 	private static function message( mixed $item ): bool {
-		if ( ! self::exact( $item, array( 'id', 'createdAt', 'direction', 'sender', 'content', 'delivery' ) ) ||
+		if ( ! self::exact( $item, array( 'id', 'createdAt', 'direction', 'sender', 'content', 'delivery', 'moderationStatus', 'moderationReasonCode' ) ) ||
 			! self::identity( $item['id'] ) || ! self::timestamp( $item['createdAt'] ) ||
 			( null !== $item['direction'] && ! in_array( $item['direction'], self::DIRECTION, true ) ) ||
 			( null !== $item['sender'] && ! in_array( $item['sender'], self::SENDER, true ) ) ||
 			! self::exact( $item['content'], array( 'type', 'text', 'transcriptionStatus' ) ) ||
 			! in_array( $item['content']['type'], self::TYPE, true ) ||
 			! self::nullableText( $item['content']['text'], 32000 ) ||
+			! in_array( $item['moderationStatus'], array( 'PENDING', 'ALLOW', 'BLOCK', 'REVIEW_REQUIRED', 'RETRYABLE_ERROR' ), true ) ||
+			! in_array( $item['moderationReasonCode'], array( null, 'moderation_blocked', 'moderation_review_required', 'moderation_empty_input', 'moderation_unavailable' ), true ) ||
 			( null !== $item['content']['transcriptionStatus'] && ! in_array( $item['content']['transcriptionStatus'], self::TRANSCRIPTION, true ) ) ) return false;
 		$d = $item['delivery'];
 		return null === $d || ( self::exact( $d, array( 'status', 'sentAt', 'deliveredAt', 'readAt' ) ) &&

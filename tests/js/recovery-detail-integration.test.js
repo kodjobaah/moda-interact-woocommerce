@@ -20,6 +20,30 @@ const summary = {
 		email: 'ada@example.invalid',
 	},
 	hasConversation: true,
+	basket: {
+		items: [
+			{
+				title: 'Book',
+				variantTitle: null,
+				quantity: 2,
+				unitPrice: { amount: '20.00', currency: 'GBP' },
+				lineTotal: null,
+				imageUrl: null,
+			},
+		],
+		recoveryTotal: { amount: '89.99', currency: 'GBP' },
+		unavailableReason: null,
+	},
+	conversation: {
+		id: 'conv_1',
+		controlMode: 'AI',
+		controlRevision: 1,
+		lastInboundAt: null,
+		windowExpiresAt: null,
+		followUp: { sequence2Used: false, initiatedBy: null },
+	},
+	humanMessagingAllowed: true,
+	humanMessagingStatus: 'ACTIVE',
 	milestones: {
 		detectedAt: '2026-10-09T12:00:00.000Z',
 		messageSentAt: '2026-10-09T13:00:00.000Z',
@@ -33,6 +57,8 @@ const message = {
 	createdAt: '2026-10-09T13:00:00.000Z',
 	direction: 'OUTBOUND',
 	sender: 'AGENT',
+	moderationStatus: 'ALLOW',
+	moderationReasonCode: null,
 	content: {
 		type: 'TEXT',
 		text: 'Hi, see https://example.test',

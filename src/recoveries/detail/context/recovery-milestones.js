@@ -8,7 +8,7 @@ function milestoneLabel(key) {
 		case 'started':
 			return __('Started', 'moda-interact');
 		case 'sent':
-			return __('Message sent', 'moda-interact');
+			return __('Initial outreach', 'moda-interact');
 		case 'engaged':
 			return __('Engaged', 'moda-interact');
 		case 'recovered':
@@ -21,26 +21,30 @@ function milestoneLabel(key) {
 }
 
 /**
- * Only display actual provided milestones, never an assumed event timeline.
+ * Render recorded recovery events, not inferred timestamps or follow-up sends.
  * @param {Object}      root0
  * @param {Object|null} root0.milestones
+ * @param {boolean}     root0.followUpUsed
  */
-export function RecoveryMilestones({ milestones = null }) {
+export function RecoveryMilestones({
+	milestones = null,
+	followUpUsed = false,
+}) {
 	const entries = MILESTONES.filter((key) => milestones?.[key]);
 	return createElement(
 		'section',
 		{ className: 'moda-recovery-detail__milestones-section' },
-		createElement('h3', null, __('Milestones', 'moda-interact')),
+		createElement('h2', null, __('Recovery activity', 'moda-interact')),
 		entries.length
 			? createElement(
-					'dl',
+					'ol',
 					{ className: 'moda-recovery-detail__milestones' },
 					...entries.map((key) =>
 						createElement(
-							'div',
+							'li',
 							{ key },
-							createElement('dt', null, milestoneLabel(key)),
-							createElement('dd', null, milestones[key])
+							createElement('strong', null, milestoneLabel(key)),
+							createElement('span', null, milestones[key])
 						)
 					)
 				)
@@ -51,6 +55,24 @@ export function RecoveryMilestones({ milestones = null }) {
 						'This section is not yet available for WooCommerce.',
 						'moda-interact'
 					)
-				)
+				),
+		createElement(
+			'div',
+			{ className: 'moda-recovery-detail__follow-up-state' },
+			createElement('strong', null, __('Follow-up', 'moda-interact')),
+			createElement(
+				'span',
+				null,
+				followUpUsed
+					? __(
+							'The recovery follow-up was already used.',
+							'moda-interact'
+						)
+					: __(
+							'Recovery follow-up is not available.',
+							'moda-interact'
+						)
+			)
+		)
 	);
 }

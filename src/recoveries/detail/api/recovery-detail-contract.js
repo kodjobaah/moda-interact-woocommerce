@@ -14,6 +14,20 @@ const DIRECTION = ['INBOUND', 'OUTBOUND'];
 const SENDER = ['CUSTOMER', 'AGENT', 'AUTOMATION', 'HUMAN'];
 const DELIVERY = ['PENDING', 'SENT', 'DELIVERED', 'READ', 'FAILED'];
 const CONTENT = ['TEXT', 'AUDIO', 'UNSUPPORTED'];
+const MODERATION = [
+	'PENDING',
+	'ALLOW',
+	'BLOCK',
+	'REVIEW_REQUIRED',
+	'RETRYABLE_ERROR',
+];
+const MODERATION_REASON = [
+	null,
+	'moderation_blocked',
+	'moderation_review_required',
+	'moderation_empty_input',
+	'moderation_unavailable',
+];
 const TRANSCRIPTION = [
 	'NOT_REQUIRED',
 	'PENDING',
@@ -68,6 +82,83 @@ function valueDto(value) {
 	);
 }
 
+function money(value) {
+	return (
+		object(value, ['amount', 'currency']) &&
+		(value.amount === null ||
+			(typeof value.amount === 'string' && DECIMAL.test(value.amount))) &&
+		(value.currency === null ||
+			(typeof value.currency === 'string' &&
+				/^[A-Z]{3}$/.test(value.currency)))
+	);
+}
+
+function basket(value) {
+	return (
+		object(value, ['items', 'recoveryTotal', 'unavailableReason']) &&
+		money(value.recoveryTotal) &&
+		[
+			null,
+			'missing_snapshot',
+			'invalid_snapshot',
+			'oversized_snapshot',
+			'partial_snapshot',
+		].includes(value.unavailableReason) &&
+		Array.isArray(value.items) &&
+		value.items.length <= 50 &&
+		value.items.every(
+			(item) =>
+				object(item, [
+					'title',
+					'variantTitle',
+					'quantity',
+					'unitPrice',
+					'lineTotal',
+					'imageUrl',
+				]) &&
+				text(item.title, 255) &&
+				text(item.variantTitle, 255) &&
+				(item.quantity === null ||
+					(Number.isSafeInteger(item.quantity) &&
+						item.quantity > 0 &&
+						item.quantity <= 1000000)) &&
+				(item.unitPrice === null || money(item.unitPrice)) &&
+				(item.lineTotal === null || money(item.lineTotal)) &&
+				(item.imageUrl === null ||
+					(typeof item.imageUrl === 'string' &&
+						item.imageUrl.length <= 1024 &&
+						/^https:\/\/[^\s/?#]+(?:[/?#][^\s]*)?$/.test(
+							item.imageUrl
+						)))
+		)
+	);
+}
+
+function conversation(value) {
+	return (
+		value === null ||
+		(object(value, [
+			'id',
+			'controlMode',
+			'controlRevision',
+			'lastInboundAt',
+			'windowExpiresAt',
+			'followUp',
+		]) &&
+			validRecoveryId(value.id) &&
+			['AI', 'HUMAN'].includes(value.controlMode) &&
+			Number.isSafeInteger(value.controlRevision) &&
+			value.controlRevision >= 0 &&
+			nullableTime(value.lastInboundAt) &&
+			nullableTime(value.windowExpiresAt) &&
+			object(value.followUp, ['sequence2Used', 'initiatedBy']) &&
+			typeof value.followUp.sequence2Used === 'boolean' &&
+			[null, 'HUMAN', 'AGENT', 'AUTOMATION'].includes(
+				value.followUp.initiatedBy
+			))
+	);
+}
+
 function summary(value) {
 	if (
 		!object(value, [
@@ -78,6 +169,10 @@ function summary(value) {
 			'value',
 			'customer',
 			'hasConversation',
+			'basket',
+			'conversation',
+			'humanMessagingAllowed',
+			'humanMessagingStatus',
 			'milestones',
 		]) ||
 		value.schemaVersion !== 1 ||
@@ -87,7 +182,14 @@ function summary(value) {
 		typeof value.timeZone !== 'string' ||
 		!value.timeZone ||
 		value.timeZone.length > 128 ||
-		typeof value.hasConversation !== 'boolean'
+		typeof value.hasConversation !== 'boolean' ||
+		!basket(value.basket) ||
+		!conversation(value.conversation) ||
+		value.hasConversation !== (value.conversation !== null) ||
+		typeof value.humanMessagingAllowed !== 'boolean' ||
+		!['ACTIVE', 'SUSPENDED'].includes(value.humanMessagingStatus) ||
+		value.humanMessagingAllowed !==
+			(value.humanMessagingStatus === 'ACTIVE')
 	) {
 		return false;
 	}
@@ -126,6 +228,8 @@ function message(value) {
 			'sender',
 			'content',
 			'delivery',
+			'moderationStatus',
+			'moderationReasonCode',
 		]) ||
 		!validRecoveryId(value.id) ||
 		!time(value.createdAt) ||
@@ -134,6 +238,8 @@ function message(value) {
 		!object(value.content, ['type', 'text', 'transcriptionStatus']) ||
 		!CONTENT.includes(value.content.type) ||
 		!text(value.content.text, 32000) ||
+		!MODERATION.includes(value.moderationStatus) ||
+		!MODERATION_REASON.includes(value.moderationReasonCode) ||
 		(value.content.transcriptionStatus !== null &&
 			!TRANSCRIPTION.includes(value.content.transcriptionStatus))
 	) {

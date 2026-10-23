@@ -35,12 +35,7 @@ export function RelatedRecoveries({
 		},
 		createElement(
 			'div',
-			{ className: 'moda-recovery-detail__section-heading' },
-			createElement(
-				'h3',
-				{ id: 'moda-recovery-related-title' },
-				__('Related recoveries', 'moda-interact')
-			),
+			{ className: 'moda-recovery-detail__related-actions' },
 			createElement(
 				'button',
 				{

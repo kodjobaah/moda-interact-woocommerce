@@ -16,7 +16,35 @@ function formatDateTime(instant, zone, locale) {
 	}
 }
 
-function formatMoney(value, locale) {
+function formatConversationDay(instant, zone, locale) {
+	if (!instant) {
+		return null;
+	}
+	try {
+		return new Intl.DateTimeFormat(locale, {
+			dateStyle: 'medium',
+			timeZone: zone,
+		}).format(new Date(instant));
+	} catch {
+		return null;
+	}
+}
+
+function formatConversationTime(instant, zone, locale) {
+	if (!instant) {
+		return null;
+	}
+	try {
+		return new Intl.DateTimeFormat(locale, {
+			timeStyle: 'short',
+			timeZone: zone,
+		}).format(new Date(instant));
+	} catch {
+		return null;
+	}
+}
+
+export function formatDetailMoney(value, locale = resolveBillingLocale()) {
 	if (
 		!value ||
 		value.incomplete ||
@@ -59,18 +87,43 @@ function deliveryLabel(status) {
 	}
 }
 
-export function detailSummaryDisplay(dto, locale = resolveBillingLocale()) {
-	const name = [dto.customer?.firstName, dto.customer?.lastName]
+/**
+ * Shopify fixture names may append a store URL using the explicit `--` marker.
+ * Remove only recognised store suffixes, preserving the actual customer name.
+ */
+export function recoveryCustomerHeading(customer, fallback) {
+	const raw = [customer?.firstName, customer?.lastName]
 		.filter(Boolean)
 		.join(' ');
+	let store = null;
+	const name = raw
+		.replace(
+			/--(https?:\/\/[^\s]+|[a-z0-9-]+\.myshopify\.com)(?=\s|$)/giu,
+			(_match, value) => {
+				store ??= value;
+				return ' ';
+			}
+		)
+		.replace(/\s+/gu, ' ')
+		.trim();
+	return { name: name || customer?.email || fallback, store };
+}
+
+export function detailSummaryDisplay(dto, locale = resolveBillingLocale()) {
+	const heading = recoveryCustomerHeading(
+		dto.customer,
+		__('Guest', 'moda-interact')
+	);
 	const at = (value) => formatDateTime(value, dto.timeZone, locale);
 	return {
-		customerName:
-			name || dto.customer?.email || __('Guest', 'moda-interact'),
+		customerName: heading.name,
+		customerSite: heading.store,
 		customerEmail: dto.customer?.email ?? null,
 		status: dto.status,
-		checkoutValue: formatMoney(dto.value, locale),
+		checkoutValue: formatDetailMoney(dto.value, locale),
 		startedAt: at(dto.milestones.detectedAt),
+		basket: dto.basket,
+		followUpUsed: dto.conversation?.followUp?.sequence2Used === true,
 		milestones: {
 			started: at(dto.milestones.detectedAt),
 			sent: at(dto.milestones.messageSentAt),
@@ -101,7 +154,11 @@ export function detailMessagesDisplay(
 			contentType: item.content.type,
 			text: item.content.text,
 			createdAt: formatDateTime(item.createdAt, zone, locale),
+			day: formatConversationDay(item.createdAt, zone, locale),
+			time: formatConversationTime(item.createdAt, zone, locale),
 			deliveryStatus: deliveryLabel(item.delivery?.status),
+			moderationStatus: item.moderationStatus,
+			moderationReasonCode: item.moderationReasonCode,
 			sentAt: formatDateTime(item.delivery?.sentAt, zone, locale),
 			deliveredAt: formatDateTime(
 				item.delivery?.deliveredAt,
@@ -123,7 +180,7 @@ export function detailRelatedDisplay(
 		label:
 			formatDateTime(item.detectedAt, zone, locale) ??
 			__('Unavailable', 'moda-interact'),
-		checkoutValue: formatMoney(item.value, locale),
+		checkoutValue: formatDetailMoney(item.value, locale),
 		status: item.status,
 	}));
 }

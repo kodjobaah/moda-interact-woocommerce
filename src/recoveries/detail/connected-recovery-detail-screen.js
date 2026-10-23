@@ -1,6 +1,7 @@
 import { createElement } from '@wordpress/element';
 import { RecoveryDetailScreen } from './recovery-detail-screen';
 import { useRecoveryDetail } from './hooks/use-recovery-detail';
+import { useHumanConversation } from './human/use-human-conversation';
 import {
 	detailSummaryDisplay,
 	detailMessagesDisplay,
@@ -18,6 +19,14 @@ export function ConnectedRecoveryDetailScreen({ route }) {
 	const { summary, messages, related } = controller.state;
 	const timeZone = summary.status === 'READY' ? summary.data.timeZone : null;
 	const query = readRecoveryListQuery(route.listHref.split('?')[1] ?? '');
+	const human = useHumanConversation(
+		route.recoveryId,
+		summary.status === 'READY' ? summary.data : null,
+		() => {
+			void controller.refreshSummary();
+			void controller.latestMessages();
+		}
+	);
 	return createElement(RecoveryDetailScreen, {
 		route,
 		status: summary.status,
@@ -26,6 +35,8 @@ export function ConnectedRecoveryDetailScreen({ route }) {
 				? detailSummaryDisplay(summary.data)
 				: null,
 		conversation: {
+			summary: summary.status === 'READY' ? summary.data : null,
+			human,
 			state: summary.status === 'READY' ? messages.status : 'UNAVAILABLE',
 			timeZone,
 			messages:
