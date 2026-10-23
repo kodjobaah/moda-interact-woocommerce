@@ -2026,3 +2026,19 @@ msgstr "ล็อกการเลือก"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "คุณไม่สามารถเลือกโปรโมชันอื่นได้จนกว่าโปรโมชันปัจจุบันจะหมดอายุ (%s)"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "ฉันยินยอมรับข้อความเตือนการตลาดทาง WhatsApp จาก %s เกี่ยวกับสินค้าที่ค้างอยู่ในขั้นตอนชำระเงินที่ยังไม่เสร็จของร้านนี้ ส่งไปยังหมายเลขโทรศัพท์สำหรับเรียกเก็บเงินของฉัน การยินยอมเป็นทางเลือกและสามารถถอนความยินยอมได้โดยติดต่อร้านค้า การไม่เลือกช่องนี้ไม่ใช่การถอนความยินยอมที่เคยให้ไว้"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "ความยินยอมสำหรับการเตือนการชำระเงินค้างผ่าน WhatsApp"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda แสดงช่องยินยอมการตลาดผ่าน WhatsApp ที่ไม่ถูกเลือกไว้ล่วงหน้าในหน้าชำระเงินที่เข้าเกณฑ์ ใช้สำหรับเตือนการสั่งซื้อที่ยังไม่เสร็จของร้านนี้ ไม่ใช่การอัปเดตคำสั่งซื้อ การแสดงช่องหรือเก็บเบอร์โทรศัพท์ไม่ถือเป็นความยินยอม Moda ต้องตรวจสอบการเลือกอย่างชัดเจน"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "หากไม่มีการยืนยันความยินยอม จะไม่สามารถเริ่มติดตามการชำระเงินค้างได้ ลูกค้าสามารถติดต่อร้านค้าเพื่อถอนความยินยอม การไม่เลือกช่องในครั้งถัดไปไม่ได้ยกเลิกความยินยอมเดิม ต้องตรวจสอบความต้องการปัจจุบันก่อนเริ่มติดตาม"

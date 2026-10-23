@@ -2113,3 +2113,19 @@ msgstr "Sélection verrouillée"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Vous ne pouvez pas sélectionner une autre promotion avant l’expiration de la promotion actuelle (%s)."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "J’accepte de recevoir de %s des rappels marketing sur WhatsApp concernant les articles laissés dans un paiement inachevé dans cette boutique, sur mon numéro de téléphone de facturation. C’est facultatif ; je peux retirer mon consentement en contactant la boutique. Ne pas cocher cette case ne révoque pas un consentement donné précédemment."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "Autorisation des rappels de panier abandonné sur WhatsApp"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda affiche une case de consentement marketing WhatsApp non cochée lors des paiements admissibles. Elle concerne les rappels de cette boutique pour les paiements inachevés, et non les mises à jour de commande. Afficher une case ou recueillir un numéro ne constitue pas un consentement ; Moda doit vérifier un choix explicite."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Sans autorisation vérifiée, la récupération du panier ne peut pas commencer. Les clients peuvent contacter la boutique pour retirer leur consentement. Une case non cochée lors d’une visite ultérieure ne révoque pas un accord antérieur ; la préférence actuelle du client doit être vérifiée avant toute récupération."

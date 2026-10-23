@@ -2009,3 +2009,19 @@ msgstr "选择已锁定"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "当前促销活动到期（%s）之前，您无法选择其他促销活动。"
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "我同意接收 %s 通过 WhatsApp 向我的账单电话号码发送的营销提醒，内容涉及我在本店未完成结账时留下的商品。此项为自愿选择；我可以联系商店撤回同意。本次未勾选不会撤销我之前作出的同意。"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "WhatsApp 未完成结账提醒同意"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda 会在符合条件的结账页面显示默认未勾选的 WhatsApp 营销选项。该选项仅用于本店针对未完成结账的提醒，而非订单状态更新。显示选项或收集电话号码并不构成同意；Moda 必须验证客户的明确选择。"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "未经验证的许可，不得开始未完成结账挽回。客户可以联系商店撤回同意。以后访问时未勾选该选项并不撤销先前的同意；开始挽回前必须核查客户当前的意愿。"

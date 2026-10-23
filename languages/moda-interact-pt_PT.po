@@ -2101,3 +2101,19 @@ msgstr "Seleção bloqueada"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Não pode selecionar outra promoção até que a atual expire (%s)."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "Concordo em receber de %s lembretes de marketing por WhatsApp sobre artigos deixados num checkout inacabado nesta loja, para o meu número de telefone de faturação. É opcional; posso retirar o consentimento contactando a loja. Deixar esta caixa por selecionar não revoga o consentimento que dei anteriormente."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "Consentimento para lembretes de checkout inacabado por WhatsApp"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "A Moda apresenta uma caixa de marketing por WhatsApp inicialmente desmarcada nos checkouts elegíveis. Abrange lembretes desta loja sobre compras inacabadas, não atualizações de encomendas. Apresentar uma caixa ou recolher um telefone não é consentimento; a Moda tem de verificar uma escolha expressa."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Sem autorização verificada, a recuperação do checkout não pode começar. Os clientes podem contactar a loja para retirar o consentimento. Uma caixa desmarcada numa visita posterior não revoga um consentimento anterior; a preferência atual deve ser verificada antes da recuperação."

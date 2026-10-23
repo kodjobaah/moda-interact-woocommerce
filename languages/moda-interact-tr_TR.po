@@ -2073,3 +2073,19 @@ msgstr "Seçim kilitli"
 #: src/promotions/promotions-screen.js
 msgid "You cannot select another promotion until your current promotion expires (%s)."
 msgstr "Mevcut promosyonun süresi dolana kadar (%s) başka bir promosyon seçemezsiniz."
+
+#: includes/Checkout/CheckoutConsentCheckbox.php:37
+msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
+msgstr "Bu mağazada yarım bıraktığım ödeme işlemlerindeki ürünler hakkında %s tarafından fatura telefon numarama WhatsApp üzerinden pazarlama hatırlatmaları gönderilmesini kabul ediyorum. İsteğe bağlıdır; mağazayla iletişime geçerek onayımı geri çekebilirim. Kutuyu işaretlememek daha önce verdiğim onayı geri çekmez."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:14
+msgid "WhatsApp checkout-recovery permission"
+msgstr "WhatsApp yarım kalan ödeme hatırlatmaları için izin"
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:19
+msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
+msgstr "Moda, uygun ödeme sayfalarında başlangıçta işaretlenmemiş bir WhatsApp pazarlama kutusu gösterir. Bu kutu sipariş güncellemelerini değil, bu mağazanın yarım kalan alışveriş hatırlatmalarını kapsar. Kutu göstermek veya telefon numarası almak onay değildir; Moda açık seçimi doğrulamalıdır."
+
+#: src/recovery-settings/whatsapp-consent-guidance.js:27
+msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
+msgstr "Doğrulanmış izin olmadan yarım kalan ödeme kurtarma işlemi başlatılamaz. Müşteriler onaylarını geri çekmek için mağazaya başvurabilir. Daha sonraki ziyarette kutunun işaretlenmemesi önceki onayı iptal etmez; kurtarma öncesinde güncel tercih doğrulanmalıdır."
