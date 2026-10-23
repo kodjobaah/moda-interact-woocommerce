@@ -2103,3 +2103,107 @@ msgstr "Moda visar en från början omarkerad ruta för WhatsApp-marknadsföring
 #: src/recovery-settings/whatsapp-consent-guidance.js:27
 msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
 msgstr "Utan verifierat tillstånd kan återhämtning av ett ofullständigt köp inte börja. Kunder kan kontakta butiken för att återkalla samtycke. En omarkerad ruta vid ett senare besök återkallar inte tidigare samtycke; aktuell inställning måste kontrolleras före återhämtning."
+
+#: src/recoveries/customer-selection/selection-messages.js:6
+msgid "Check the phone format or ticket reference."
+msgstr "Kontrollera telefonformatet eller ärendereferensen."
+
+#: src/recoveries/customer-selection/selection-messages.js:8
+msgid "No matching customer phone in this store."
+msgstr "Inget matchande kundtelefonnummer finns i butiken."
+
+#: src/recoveries/customer-selection/selection-messages.js:10
+msgid "Multiple phone records match. Contact support."
+msgstr "Flera telefonposter matchar. Kontakta support."
+
+#: src/recoveries/customer-selection/selection-messages.js:12
+msgid "Re-enabling requires the customer to have opted in."
+msgstr "Återaktivering kräver att kunden har samtyckt."
+
+#: src/recoveries/customer-selection/selection-messages.js:14
+msgid "Customer STOP cannot be cleared by the merchant."
+msgstr "Kundens STOP kan inte tas bort av handlaren."
+
+#: src/recoveries/customer-selection/selection-messages.js:16
+msgid "Only store administrators can manage this selection."
+msgstr "Endast butiksadministratörer kan hantera detta val."
+
+#: src/recoveries/customer-selection/selection-messages.js:20
+msgid "Reconnect the store before changing recovery selection."
+msgstr "Anslut butiken igen innan du ändrar återhämtningsvalet."
+
+#: src/recoveries/customer-selection/selection-messages.js:22
+msgid "Unable to verify the result. Look up the phone again."
+msgstr "Resultatet kunde inte verifieras. Sök efter numret igen."
+
+#: src/recoveries/customer-selection/selection-panel.js:29
+msgid "Customer STOP blocks all WhatsApp contact."
+msgstr "Kundens STOP blockerar all kontakt via WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:31
+msgid "Merchant recovery suppression is active."
+msgstr "Handlarens blockering av återhämtning är aktiv."
+
+#: src/recoveries/customer-selection/selection-panel.js:33
+msgid "Customer phone is eligible for recovery selection."
+msgstr "Kundens nummer kan väljas för återhämtning."
+
+#: src/recoveries/customer-selection/selection-panel.js:34
+msgid "Customer phone is not eligible for recovery."
+msgstr "Kundens nummer är inte berättigat till återhämtning."
+
+#: src/recoveries/customer-selection/selection-panel.js:41
+msgid "Customer recovery selection"
+msgstr "Kundval för återhämtning"
+
+#: src/recoveries/customer-selection/selection-panel.js:42
+msgid "Select an existing customer phone by international digits without +. Merchant selection never grants WhatsApp consent."
+msgstr "Välj ett befintligt kundnummer med internationella siffror utan +. Handlarens val ger aldrig WhatsApp-samtycke."
+
+#: src/recoveries/customer-selection/selection-panel.js:44
+msgid "Customer phone"
+msgstr "Kundens telefonnummer"
+
+#: src/recoveries/customer-selection/selection-panel.js:50
+msgid "Look up phone"
+msgstr "Sök telefonnummer"
+
+#: src/recoveries/customer-selection/selection-panel.js:55
+msgid "WhatsApp consent: granted"
+msgstr "WhatsApp-samtycke: beviljat"
+
+#: src/recoveries/customer-selection/selection-panel.js:56
+msgid "WhatsApp consent: not granted"
+msgstr "WhatsApp-samtycke: inte beviljat"
+
+#: src/recoveries/customer-selection/selection-panel.js:59
+msgid "Selection was already recorded."
+msgstr "Detta val har redan registrerats."
+
+#: src/recoveries/customer-selection/selection-panel.js:60
+msgid "Customer recovery selection updated."
+msgstr "Kundens återhämtningsval uppdaterat."
+
+#: src/recoveries/customer-selection/selection-panel.js:64
+msgid "Suppress recovery"
+msgstr "Blockera återhämtning"
+
+#: src/recoveries/customer-selection/selection-panel.js:67
+msgid "Re-enable recovery"
+msgstr "Återaktivera återhämtning"
+
+#: src/recoveries/customer-selection/selection-panel.js:69
+msgid "External support ticket reference"
+msgstr "Extern supportärendereferens"
+
+#: src/recoveries/customer-selection/selection-panel.js:76
+msgid "I confirm the customer requested STOP outside WhatsApp."
+msgstr "Jag bekräftar att kunden begärde STOP utanför WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:80
+msgid "Record customer STOP"
+msgstr "Registrera kundens STOP"
+
+#: src/recoveries/customer-selection/selection-panel.js:70
+msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr "Spara ärendet i dina egna register; Moda lagrar inte denna referens."

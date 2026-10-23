@@ -2086,3 +2086,107 @@ msgstr "Moda při způsobilém dokončování nákupu zobrazuje nezaškrtnuté p
 #: src/recovery-settings/whatsapp-consent-guidance.js:27
 msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
 msgstr "Bez ověřeného souhlasu nelze zahájit obnovení nedokončeného nákupu. Zákazníci mohou obchod kontaktovat a souhlas odvolat. Nezaškrtnuté políčko při další návštěvě neodvolává předchozí souhlas; aktuální volbu je nutné před obnovením ověřit."
+
+#: src/recoveries/customer-selection/selection-messages.js:6
+msgid "Check the phone format or ticket reference."
+msgstr "Zkontrolujte formát čísla nebo referenci tiketu."
+
+#: src/recoveries/customer-selection/selection-messages.js:8
+msgid "No matching customer phone in this store."
+msgstr "V tomto obchodě nebylo nalezeno odpovídající telefonní číslo zákazníka."
+
+#: src/recoveries/customer-selection/selection-messages.js:10
+msgid "Multiple phone records match. Contact support."
+msgstr "Odpovídá více telefonních záznamů. Kontaktujte podporu."
+
+#: src/recoveries/customer-selection/selection-messages.js:12
+msgid "Re-enabling requires the customer to have opted in."
+msgstr "Opětovná aktivace vyžaduje souhlas zákazníka."
+
+#: src/recoveries/customer-selection/selection-messages.js:14
+msgid "Customer STOP cannot be cleared by the merchant."
+msgstr "Obchodník nemůže zrušit zákazníkovo STOP."
+
+#: src/recoveries/customer-selection/selection-messages.js:16
+msgid "Only store administrators can manage this selection."
+msgstr "Tento výběr mohou spravovat pouze správci obchodu."
+
+#: src/recoveries/customer-selection/selection-messages.js:20
+msgid "Reconnect the store before changing recovery selection."
+msgstr "Před změnou výběru obnovy znovu připojte obchod."
+
+#: src/recoveries/customer-selection/selection-messages.js:22
+msgid "Unable to verify the result. Look up the phone again."
+msgstr "Výsledek nelze ověřit. Vyhledejte číslo znovu."
+
+#: src/recoveries/customer-selection/selection-panel.js:29
+msgid "Customer STOP blocks all WhatsApp contact."
+msgstr "Zákazníkovo STOP blokuje veškerý kontakt přes WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:31
+msgid "Merchant recovery suppression is active."
+msgstr "Blokování obnovy obchodníkem je aktivní."
+
+#: src/recoveries/customer-selection/selection-panel.js:33
+msgid "Customer phone is eligible for recovery selection."
+msgstr "Telefon zákazníka lze vybrat pro obnovu."
+
+#: src/recoveries/customer-selection/selection-panel.js:34
+msgid "Customer phone is not eligible for recovery."
+msgstr "Telefon zákazníka není pro obnovu způsobilý."
+
+#: src/recoveries/customer-selection/selection-panel.js:41
+msgid "Customer recovery selection"
+msgstr "Výběr zákazníků pro obnovu"
+
+#: src/recoveries/customer-selection/selection-panel.js:42
+msgid "Select an existing customer phone by international digits without +. Merchant selection never grants WhatsApp consent."
+msgstr "Vyberte existující číslo zákazníka v mezinárodním formátu bez +. Výběr obchodníka nikdy neuděluje souhlas s WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:44
+msgid "Customer phone"
+msgstr "Telefon zákazníka"
+
+#: src/recoveries/customer-selection/selection-panel.js:50
+msgid "Look up phone"
+msgstr "Vyhledat číslo"
+
+#: src/recoveries/customer-selection/selection-panel.js:55
+msgid "WhatsApp consent: granted"
+msgstr "Souhlas WhatsApp: udělen"
+
+#: src/recoveries/customer-selection/selection-panel.js:56
+msgid "WhatsApp consent: not granted"
+msgstr "Souhlas WhatsApp: neudělen"
+
+#: src/recoveries/customer-selection/selection-panel.js:59
+msgid "Selection was already recorded."
+msgstr "Tento výběr již byl zaznamenán."
+
+#: src/recoveries/customer-selection/selection-panel.js:60
+msgid "Customer recovery selection updated."
+msgstr "Výběr zákazníka pro obnovu aktualizován."
+
+#: src/recoveries/customer-selection/selection-panel.js:64
+msgid "Suppress recovery"
+msgstr "Zakázat obnovu"
+
+#: src/recoveries/customer-selection/selection-panel.js:67
+msgid "Re-enable recovery"
+msgstr "Znovu povolit obnovu"
+
+#: src/recoveries/customer-selection/selection-panel.js:69
+msgid "External support ticket reference"
+msgstr "Reference externího tiketu podpory"
+
+#: src/recoveries/customer-selection/selection-panel.js:76
+msgid "I confirm the customer requested STOP outside WhatsApp."
+msgstr "Potvrzuji, že zákazník požádal o STOP mimo WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:80
+msgid "Record customer STOP"
+msgstr "Zaznamenat zákazníkovo STOP"
+
+#: src/recoveries/customer-selection/selection-panel.js:70
+msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr "Uchovejte tiket ve svých záznamech; Moda tuto referenci neukládá."

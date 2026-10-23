@@ -2121,3 +2121,107 @@ msgstr "Moda muestra una casilla de marketing por WhatsApp sin marcar inicialmen
 #: src/recovery-settings/whatsapp-consent-guidance.js:27
 msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
 msgstr "Sin permiso verificado no puede iniciarse la recuperación de compras. Los clientes pueden contactar con la tienda para retirar el consentimiento. Dejar la casilla sin marcar en una visita posterior no revoca un permiso anterior; debe comprobarse la preferencia actual antes de la recuperación."
+
+#: src/recoveries/customer-selection/selection-messages.js:6
+msgid "Check the phone format or ticket reference."
+msgstr "Compruebe el formato del teléfono o la referencia del ticket."
+
+#: src/recoveries/customer-selection/selection-messages.js:8
+msgid "No matching customer phone in this store."
+msgstr "No hay ningún teléfono de cliente coincidente en esta tienda."
+
+#: src/recoveries/customer-selection/selection-messages.js:10
+msgid "Multiple phone records match. Contact support."
+msgstr "Hay varios registros coincidentes. Contacte con soporte."
+
+#: src/recoveries/customer-selection/selection-messages.js:12
+msgid "Re-enabling requires the customer to have opted in."
+msgstr "Para reactivar, el cliente debe haber dado su consentimiento."
+
+#: src/recoveries/customer-selection/selection-messages.js:14
+msgid "Customer STOP cannot be cleared by the merchant."
+msgstr "El comerciante no puede anular el STOP del cliente."
+
+#: src/recoveries/customer-selection/selection-messages.js:16
+msgid "Only store administrators can manage this selection."
+msgstr "Solo los administradores de la tienda pueden gestionar esta selección."
+
+#: src/recoveries/customer-selection/selection-messages.js:20
+msgid "Reconnect the store before changing recovery selection."
+msgstr "Vuelva a conectar la tienda antes de cambiar la selección de recuperación."
+
+#: src/recoveries/customer-selection/selection-messages.js:22
+msgid "Unable to verify the result. Look up the phone again."
+msgstr "No se pudo verificar el resultado. Busque el teléfono de nuevo."
+
+#: src/recoveries/customer-selection/selection-panel.js:29
+msgid "Customer STOP blocks all WhatsApp contact."
+msgstr "El STOP del cliente bloquea todo contacto por WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:31
+msgid "Merchant recovery suppression is active."
+msgstr "La supresión de recuperación del comerciante está activa."
+
+#: src/recoveries/customer-selection/selection-panel.js:33
+msgid "Customer phone is eligible for recovery selection."
+msgstr "El teléfono del cliente puede seleccionarse para recuperación."
+
+#: src/recoveries/customer-selection/selection-panel.js:34
+msgid "Customer phone is not eligible for recovery."
+msgstr "El teléfono del cliente no es apto para recuperación."
+
+#: src/recoveries/customer-selection/selection-panel.js:41
+msgid "Customer recovery selection"
+msgstr "Selección de recuperación de clientes"
+
+#: src/recoveries/customer-selection/selection-panel.js:42
+msgid "Select an existing customer phone by international digits without +. Merchant selection never grants WhatsApp consent."
+msgstr "Seleccione un teléfono existente con dígitos internacionales sin +. La selección del comerciante nunca otorga consentimiento para WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:44
+msgid "Customer phone"
+msgstr "Teléfono del cliente"
+
+#: src/recoveries/customer-selection/selection-panel.js:50
+msgid "Look up phone"
+msgstr "Buscar teléfono"
+
+#: src/recoveries/customer-selection/selection-panel.js:55
+msgid "WhatsApp consent: granted"
+msgstr "Consentimiento WhatsApp: concedido"
+
+#: src/recoveries/customer-selection/selection-panel.js:56
+msgid "WhatsApp consent: not granted"
+msgstr "Consentimiento WhatsApp: no concedido"
+
+#: src/recoveries/customer-selection/selection-panel.js:59
+msgid "Selection was already recorded."
+msgstr "Esta selección ya está registrada."
+
+#: src/recoveries/customer-selection/selection-panel.js:60
+msgid "Customer recovery selection updated."
+msgstr "Selección de recuperación del cliente actualizada."
+
+#: src/recoveries/customer-selection/selection-panel.js:64
+msgid "Suppress recovery"
+msgstr "Suprimir recuperación"
+
+#: src/recoveries/customer-selection/selection-panel.js:67
+msgid "Re-enable recovery"
+msgstr "Reactivar recuperación"
+
+#: src/recoveries/customer-selection/selection-panel.js:69
+msgid "External support ticket reference"
+msgstr "Referencia de ticket de soporte externo"
+
+#: src/recoveries/customer-selection/selection-panel.js:76
+msgid "I confirm the customer requested STOP outside WhatsApp."
+msgstr "Confirmo que el cliente solicitó STOP fuera de WhatsApp."
+
+#: src/recoveries/customer-selection/selection-panel.js:80
+msgid "Record customer STOP"
+msgstr "Registrar STOP del cliente"
+
+#: src/recoveries/customer-selection/selection-panel.js:70
+msgid "Keep the ticket in your own records; Moda does not store this reference."
+msgstr "Conserve el ticket en sus propios registros; Moda no almacena esta referencia."

@@ -758,6 +758,54 @@ final class ModaApiClient {
 		return is_string( $id ) && strlen( $id ) <= 128 && 1 === preg_match( '/^[A-Za-z0-9_-]+$/D', $id );
 	}
 
+	/** API-005: privileged Woo merchant status; Shop is derived by the hosted installation. */
+	public function merchantRecoverySelectionStatus( array $connection, string $phone ): array {
+		if ( ! RecoverySelectionContracts::phone( $phone ) ) throw new ModaApiClientException( 'invalid_request', 400 );
+		return $this->recoverySelectionRequest( $connection, 'GET', $phone, null );
+	}
+
+	public function merchantRecoverySelectionCommand( array $connection, array $input ): array {
+		if ( ! RecoverySelectionContracts::command( $input ) ) throw new ModaApiClientException( 'invalid_request', 400 );
+		return $this->recoverySelectionRequest( $connection, 'POST', null, $input );
+	}
+
+	/** The assertion header is generated here, never copied from the WordPress request. */
+	private function recoverySelectionRequest( array $connection, string $method, ?string $phone, ?array $input ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
+		$path = '/v1/woocommerce/customer-recovery-selection';
+		if ( null !== $phone ) $path .= '?canonicalPhone=' . rawurlencode( $phone );
+		$body = null === $input ? null : wp_json_encode( $input );
+		if ( null !== $input && ( ! is_string( $body ) || strlen( $body ) > 2048 ) ) {
+			throw new ModaApiClientException( 'invalid_request', 400 );
+		}
+		$headers = array_merge( self::installationHeaders( $connection ), array(
+			'X-Moda-WP-Admin-Verified' => '1', 'Cache-Control' => 'no-store',
+		) );
+		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
+		$response = $this->request( $path, $method, $headers, $body, self::DEFAULT_TIMEOUT_SECONDS, 4097 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status ) {
+			$errors = array( 400 => 'invalid_request', 401 => 'unauthorized',
+				403 => 'admin_authorization_required', 404 => 'customer_phone_not_found',
+				413 => 'request_too_large', 503 => 'selection_unavailable' );
+			if ( 409 === $status ) {
+				try { $code = self::decodeErrorBody( $response )['error'] ?? null; }
+				catch ( ModaApiClientException $error ) { $code = null; }
+				$allowed = array( 'ambiguous_customer_phone', 'stale_no_contact_revision',
+					'customer_consent_required', 'customer_stop_authoritative' );
+				throw new ModaApiClientException( in_array( $code, $allowed, true ) ? $code : 'selection_unavailable',
+					in_array( $code, $allowed, true ) ? 409 : 503 );
+			}
+			throw new ModaApiClientException( $errors[ $status ] ?? 'selection_unavailable', isset( $errors[ $status ] ) ? $status : 503 );
+		}
+		try { $payload = $this->jsonBody( $response, 4096 ); }
+		catch ( ModaApiClientException $error ) { throw new ModaApiClientException( 'remote_response_invalid', 502 ); }
+		if ( ! RecoverySelectionContracts::status( $payload, 'POST' === $method ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 502 );
+		}
+		return $payload;
+	}
+
 	/** API-020: installation-scoped Support history and two-way commands. */
 	public function merchantSupportHistory( array $connection, int $page, int $page_size ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) || $page < 1 || $page > 999999 ||
