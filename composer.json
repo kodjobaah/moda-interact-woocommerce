@@ -23,6 +23,7 @@
             "@php -l includes/Rest/UsageHistoryController.php",
             "@php -l tests/UsageHistoryControllerTest.php",
             "@php -l includes/Api/SupportResponseValidator.php",
+            "@php -l includes/Api/PromotionsResponseValidator.php",
             "@php -l includes/Api/MerchantKnowledgeContracts.php",
             "@php -l includes/Rest/MerchantKnowledgeController.php",
 			"@php -l includes/Api/RestReadResponseValidator.php",
@@ -51,6 +52,7 @@
 			"@php -l includes/Rest/RecoveryListController.php",
 			"@php -l includes/Rest/RecoveryDetailController.php",
             "@php -l includes/Rest/SupportController.php",
+            "@php -l includes/Rest/PromotionsController.php",
 			"@php -l includes/StoreCategory/SelectionInput.php",
 			"@php -l includes/StoreContext/StoreContextResolver.php",
 			"@php -l includes/Security/Base64Url.php",
@@ -77,6 +79,7 @@
 			"@php -l tests/RecoveryListControllerTest.php",
 			"@php -l tests/RecoveryDetailControllerTest.php",
             "@php -l tests/SupportControllerTest.php",
+            "@php -l tests/PromotionsControllerTest.php",
             "@php -l tests/MerchantKnowledgeControllerTest.php",
             "@php -l tests/MerchantKnowledgeUploadControllerTest.php",
             "@php -l tests/fixtures/MerchantKnowledgeTestBase.php"

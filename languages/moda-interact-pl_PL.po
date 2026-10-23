@@ -2017,6 +2017,46 @@ msgstr "Pozostałe miejsca na przesyłanie plików: %1$s (wspólne ze stronami W
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Osiągnięto wspólny limit źródeł wiedzy w Twoim planie."
 
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Wybrano"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Wykorzystano"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Zamknięto"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Nie spełnia już warunków"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Ponownie otwarto"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Nie masz uprawnień do przeglądania promocji."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Połącz ponownie Moda Interact, aby zobaczyć promocje."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "Promocje uległy zmianie. Odśwież, aby zobaczyć najnowsze oferty."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "Promocje uległy zmianie. Wczytano najnowsze oferty."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "Promocja nie spełnia już warunków. Wczytano najnowsze oferty."
+
 #: src/usage-history/usage-history-results.js
 msgid "Charged against"
 msgstr "Pobrano z"
@@ -2040,3 +2080,12 @@ msgstr "Kredyty promocyjne"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Nieprzypisane"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Wybór zablokowany"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Nie możesz wybrać innej promocji, dopóki bieżąca nie wygaśnie (%s)."

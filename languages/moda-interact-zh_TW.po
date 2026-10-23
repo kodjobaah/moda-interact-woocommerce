@@ -1940,6 +1940,46 @@ msgstr "剩餘檔案上傳名額：%1$s（與網頁共用，總計 %2$s 個來�
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "已達到目前方案的共用知識來源上限。"
 
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "已選取"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "已使用"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "已關閉"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "不再符合資格"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "已重新開放"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "您沒有權限檢視促銷活動。"
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "請重新連線 Moda Interact 以檢視促銷活動。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "促銷活動已變更。請重新整理以查看最新優惠。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "促銷活動已變更。已載入最新優惠。"
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "此促銷活動不再符合資格。已載入最新優惠。"
+
 #: src/usage-history/usage-history-results.js
 msgid "Charged against"
 msgstr "扣抵來源"
@@ -1963,3 +2003,12 @@ msgstr "促銷額度"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "未歸屬"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "選擇已鎖定"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "目前的促銷活動到期（%s）之前，您無法選擇其他促銷活動。"

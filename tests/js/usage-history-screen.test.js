@@ -109,17 +109,36 @@ describe('usage history presentation', () => {
 	it('provides the connection page when credentials must be re-established', () => {
 		const ui = UsageHistoryView({ history: history('RECONNECT') });
 		const links = walk(ui).filter((node) => node.type === 'a');
-		expect(links.some((node) => node.props.href === 'admin.php?page=moda-interact')).toBe(true);
+		expect(
+			links.some(
+				(node) => node.props.href === 'admin.php?page=moda-interact'
+			)
+		).toBe(true);
 	});
 
 	it('renders a signed Free lifetime usage total even without BillingPeriod', () => {
 		const free = {
 			...data,
-			usagePagination: { ...data.usagePagination, billId: null, periodStart: null, periodEnd: null, totalQuantity: -2 },
+			usagePagination: {
+				...data.usagePagination,
+				billId: null,
+				periodStart: null,
+				periodEnd: null,
+				totalQuantity: -2,
+			},
 		};
-		const rendered = UsageHistoryResults({ history: history('READY', free), locale: 'en-GB' });
+		const rendered = UsageHistoryResults({
+			history: history('READY', free),
+			locale: 'en-GB',
+		});
 		const nodes = walk(rendered);
-		expect(nodes.some((node) => node.type === 'p' && [].concat(node.props.children).includes('-2'))).toBe(true);
+		expect(
+			nodes.some(
+				(node) =>
+					node.type === 'p' &&
+					[].concat(node.props.children).includes('-2')
+			)
+		).toBe(true);
 	});
 
 	it('announces an empty usage period without presenting it as unavailable', () => {
@@ -142,14 +161,28 @@ describe('usage history presentation', () => {
 		const nodes = walk(controls);
 		const selects = nodes.filter((node) => node.type === 'select');
 		expect(selects).toHaveLength(2); // Event type and rows per page only.
-		expect(nodes.some((node) => node.props.className === 'moda-usage__period-paging')).toBe(false);
-		selects[0].props.onChange({ target: { value: 'RECOVERY_CONVERSATION' } });
+		expect(
+			nodes.some(
+				(node) => node.props.className === 'moda-usage__period-paging'
+			)
+		).toBe(false);
+		selects[0].props.onChange({
+			target: { value: 'RECOVERY_CONVERSATION' },
+		});
 		selects[1].props.onChange({ target: { value: '25' } });
 		expect(h.setKind).toHaveBeenCalledWith('RECOVERY_CONVERSATION');
 		expect(h.setPageSize).toHaveBeenCalledWith(25);
 		expect(h.setPeriod).not.toHaveBeenCalled();
-		const results = walk(UsageHistoryResults({ history: h, locale: 'en-GB' }));
-		expect(results.some((node) => node.type === 'h2' && String(node.props.children).includes('Oct'))).toBe(true);
+		const results = walk(
+			UsageHistoryResults({ history: h, locale: 'en-GB' })
+		);
+		expect(
+			results.some(
+				(node) =>
+					node.type === 'h2' &&
+					String(node.props.children).includes('Oct')
+			)
+		).toBe(true);
 	});
 
 	it('past paid usage auto-selects its effective period and retains period and event pagination', () => {
@@ -162,46 +195,125 @@ describe('usage history presentation', () => {
 		expect(selects[0].props.value).toBe('bill_one'); // API auto-selection.
 		selects[0].props.onChange({ target: { value: 'bill_one' } });
 		expect(h.setPeriod).toHaveBeenCalledWith('bill_one');
-		expect(nodes.some((node) => node.props.className === 'moda-usage__period-paging')).toBe(true);
-		nodes.filter((node) => node.type === 'button').find((button) => button.props.onClick && button.props.disabled === false && String(button.props.children).includes('Next')).props.onClick();
+		expect(
+			nodes.some(
+				(node) => node.props.className === 'moda-usage__period-paging'
+			)
+		).toBe(true);
+		nodes
+			.filter((node) => node.type === 'button')
+			.find(
+				(button) =>
+					button.props.onClick &&
+					button.props.disabled === false &&
+					String(button.props.children).includes('Next')
+			)
+			.props.onClick();
 		expect(h.setPeriodCursor).toHaveBeenCalledWith('valid');
-		const results = walk(UsageHistoryResults({ history: h, locale: 'en-GB' }));
+		const results = walk(
+			UsageHistoryResults({ history: h, locale: 'en-GB' })
+		);
 		expect(results.filter((node) => node.type === 'th')).toHaveLength(6);
-		expect(results.some((node) => node.type === 'a' && node.props.href.includes('recovery_01'))).toBe(true);
-		results.filter((node) => node.type === 'button').at(-1).props.onClick();
+		expect(
+			results.some(
+				(node) =>
+					node.type === 'a' && node.props.href.includes('recovery_01')
+			)
+		).toBe(true);
+		results
+			.filter((node) => node.type === 'button')
+			.at(-1)
+			.props.onClick();
 		expect(h.setPage).toHaveBeenCalledWith(2);
 	});
 
 	it('current Free lifetime usage clearly has no billing period', () => {
-		const free = { ...data, periodPage: { items: [], previousCursor: null, nextCursor: null },
-			usagePagination: { ...data.usagePagination, billId: null, periodStart: null, periodEnd: null } };
+		const free = {
+			...data,
+			periodPage: { items: [], previousCursor: null, nextCursor: null },
+			usagePagination: {
+				...data.usagePagination,
+				billId: null,
+				periodStart: null,
+				periodEnd: null,
+			},
+		};
 		const h = history('READY', free);
-		const nodes = walk(UsageHistoryResults({ history: h, locale: 'en-GB' }));
-		expect(nodes.some((node) => node.type === 'h2' && node.props.children === 'Lifetime usage')).toBe(true);
-		expect(walk(UsageHistoryToolbar({ history: h, locale: 'en-GB' })).filter((node) => node.type === 'select')).toHaveLength(2);
+		const nodes = walk(
+			UsageHistoryResults({ history: h, locale: 'en-GB' })
+		);
+		expect(
+			nodes.some(
+				(node) =>
+					node.type === 'h2' &&
+					node.props.children === 'Lifetime usage'
+			)
+		).toBe(true);
+		expect(
+			walk(UsageHistoryToolbar({ history: h, locale: 'en-GB' })).filter(
+				(node) => node.type === 'select'
+			)
+		).toHaveLength(2);
 	});
 
 	it('displays attributed charge source, unknown v2 evidence and legacy v1 distinctly', () => {
-		expect(usageChargeLabel('LIFETIME_FREE_CREDITS')).toBe('Lifetime Free credits');
-		expect(usageChargeLabel('INCLUDED_PLAN_ALLOWANCE')).toBe('Included plan allowance');
+		expect(usageChargeLabel('LIFETIME_FREE_CREDITS')).toBe(
+			'Lifetime Free credits'
+		);
+		expect(usageChargeLabel('INCLUDED_PLAN_ALLOWANCE')).toBe(
+			'Included plan allowance'
+		);
 		expect(usageChargeLabel('PURCHASED_TOP_UP')).toBe('Purchased top-up');
-		expect(usageChargeLabel('PROMOTIONAL_CREDITS')).toBe('Promotional credits');
+		expect(usageChargeLabel('PROMOTIONAL_CREDITS')).toBe(
+			'Promotional credits'
+		);
 		expect(usageChargeLabel('NOT_APPLICABLE')).toBe('Not applicable');
 		expect(usageChargeLabel('UNATTRIBUTED')).toBe('Unattributed');
 		expect(usageChargeLabel(undefined)).toBe('Not available');
 		const v2 = {
 			...data,
 			schemaVersion: 2,
-			usageEvents: [{ ...data.usageEvents[0], chargedAgainst: 'PURCHASED_TOP_UP', quantity: -1 }],
+			usageEvents: [
+				{
+					...data.usageEvents[0],
+					chargedAgainst: 'PURCHASED_TOP_UP',
+					quantity: -1,
+				},
+			],
 		};
-		const rendered = walk(UsageHistoryResults({ history: history('READY', v2), locale: 'en-GB' }));
-		const headers = rendered.filter((node) => node.type === 'th').map((node) => node.props.children);
-		expect(headers).toEqual(['Event type', 'Recovery', 'Customer', 'Charged against', 'Quantity', 'Recorded at']);
-		expect(rendered.filter((node) => node.type === 'td').map((node) => node.props.children))
-			.toContain('Purchased top-up');
-		const legacy = walk(UsageHistoryResults({ history: history('READY', data), locale: 'en-GB' }));
-		expect(legacy.filter((node) => node.type === 'td').map((node) => node.props.children))
-			.toContain('Not available');
+		const rendered = walk(
+			UsageHistoryResults({
+				history: history('READY', v2),
+				locale: 'en-GB',
+			})
+		);
+		const headers = rendered
+			.filter((node) => node.type === 'th')
+			.map((node) => node.props.children);
+		expect(headers).toEqual([
+			'Event type',
+			'Recovery',
+			'Customer',
+			'Charged against',
+			'Quantity',
+			'Recorded at',
+		]);
+		expect(
+			rendered
+				.filter((node) => node.type === 'td')
+				.map((node) => node.props.children)
+		).toContain('Purchased top-up');
+		const legacy = walk(
+			UsageHistoryResults({
+				history: history('READY', data),
+				locale: 'en-GB',
+			})
+		);
+		expect(
+			legacy
+				.filter((node) => node.type === 'td')
+				.map((node) => node.props.children)
+		).toContain('Not available');
 	});
 
 	it('uses translated admin locale formatting rather than a store language', () => {

@@ -10,7 +10,7 @@ import { RecoveriesScreen } from '../../src/recoveries/recoveries-screen';
 import { ConnectedBillingScreen } from '../../src/billing/connected-billing-screen';
 import { SupportScreen } from '../../src/support/support-screen';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
-import { PromotionsScreen } from '../../src/promotions/promotions-screen';
+import { ConnectedPromotionsScreen } from '../../src/promotions/connected-promotions-screen';
 import { UsageHistoryScreen } from '../../src/usage-history/usage-history-screen';
 
 const actions = {
@@ -63,7 +63,7 @@ describe('native merchant navigation', () => {
 		['RECOVERIES', RecoveriesScreen],
 		['BILLING', ConnectedBillingScreen],
 		['USAGE', UsageHistoryScreen],
-		['PROMOTIONS', PromotionsScreen],
+		['PROMOTIONS', ConnectedPromotionsScreen],
 		['SUPPORT', SupportScreen],
 		['RECOVERY', RecoverySettingsScreen],
 	])(

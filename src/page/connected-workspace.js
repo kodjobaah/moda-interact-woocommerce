@@ -1,7 +1,7 @@
 import { createElement } from '@wordpress/element';
 import { ConnectedBillingScreen } from '../billing/connected-billing-screen';
 import { OverviewScreen } from '../overview-screen';
-import { PromotionsScreen } from '../promotions/promotions-screen';
+import { ConnectedPromotionsScreen } from '../promotions/connected-promotions-screen';
 import { RecoveriesScreen } from '../recoveries/recoveries-screen';
 import { RecoverySettingsScreen } from '../recovery-settings/recovery-settings-screen';
 import { SupportScreen } from '../support/support-screen';
@@ -54,7 +54,10 @@ export function ConnectedWorkspace({
 			onSetView: actions.setBillingView,
 		});
 	} else if (activeSurface === 'PROMOTIONS') {
-		activeContent = createElement(PromotionsScreen, { key: 'promotions' });
+		activeContent = createElement(ConnectedPromotionsScreen, {
+			key: `promotions:${connectionIdentity}`,
+			onReconnect: actions.retryConnection,
+		});
 	} else if (activeSurface === 'RECOVERY') {
 		activeContent = createElement(RecoverySettingsScreen, {
 			key: 'recovery-settings',

@@ -1,10 +1,11 @@
 import { createElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { formatDate, formatQuantity } from '../billing/presentation-formatters';
 
 const display = (value) =>
 	value === null || value === undefined ? '—' : String(value);
 
-function offerStatus(offer, isCurrent) {
+function offerStatus(offer, isCurrent, locked) {
 	if (isCurrent) {
 		return __('Current promotion', 'moda-interact');
 	}
@@ -13,6 +14,12 @@ function offerStatus(offer, isCurrent) {
 	}
 	if (offer.previouslyClaimed) {
 		return __('Previously claimed', 'moda-interact');
+	}
+	if (locked) {
+		return __('Selection locked', 'moda-interact');
+	}
+	if (!offer.eligible || !offer.selectable) {
+		return __('Not available', 'moda-interact');
 	}
 	return __('Available now', 'moda-interact');
 }
@@ -48,6 +55,9 @@ export function PromotionCards({
 				!locked &&
 				!busy &&
 				!offer.exhausted &&
+				offer.eligible === true &&
+				offer.selectable === true &&
+				!offer.previouslyClaimed &&
 				typeof onSelect === 'function';
 			return createElement(
 				'article',
@@ -58,7 +68,7 @@ export function PromotionCards({
 					createElement(
 						'span',
 						{ className: 'moda-promotions__status' },
-						offerStatus(offer, isCurrent)
+						offerStatus(offer, isCurrent, locked)
 					),
 					createElement(
 						'strong',
@@ -66,7 +76,7 @@ export function PromotionCards({
 						sprintf(
 							/* translators: %s: promotional recovery-credit quantity. */
 							__('%s credits', 'moda-interact'),
-							display(offer.quantity)
+							formatQuantity(offer.quantity)
 						)
 					)
 				),
@@ -86,7 +96,7 @@ export function PromotionCards({
 					sprintf(
 						/* translators: %s: promotion expiry date supplied by merchant API. */
 						__('Expires %s', 'moda-interact'),
-						display(offer.expiresAt)
+						formatDate(offer.expiresAt)
 					)
 				),
 				createElement(

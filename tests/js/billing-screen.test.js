@@ -384,19 +384,31 @@ describe('Billing screen', () => {
 			},
 		});
 		const state = readyState(data);
-		const hero = BillingHero({ state, onRefresh: vi.fn(), onSetView: vi.fn() });
+		const hero = BillingHero({
+			state,
+			onRefresh: vi.fn(),
+			onSetView: vi.fn(),
+		});
 		const toolbar = findElement(
 			hero,
-			(node) => node.props.className === 'moda-interact-billing-hub__toolbar'
+			(node) =>
+				node.props.className === 'moda-interact-billing-hub__toolbar'
 		);
 		const controls = findElements(
 			toolbar,
 			(node) => node.type === 'a' || node.type === 'button'
 		);
 
-		expect(controls.map(textContent)).toEqual(['Usage history', 'Refresh billing']);
-		expect(controls[0].props.href).toBe('admin.php?page=moda-interact-usage-history');
-		expect(controls[0].props.className).toContain('moda-interact-billing-hub__history');
+		expect(controls.map(textContent)).toEqual([
+			'Usage history',
+			'Refresh billing',
+		]);
+		expect(controls[0].props.href).toBe(
+			'admin.php?page=moda-interact-usage-history'
+		);
+		expect(controls[0].props.className).toContain(
+			'moda-interact-billing-hub__history'
+		);
 
 		// BillingScreen no longer renders a second, mid-page Usage history link.
 		const screen = BillingScreen({
@@ -408,10 +420,12 @@ describe('Billing screen', () => {
 			onPurchaseTopUp: vi.fn(),
 			onSetView: vi.fn(),
 		});
-		expect(findElements(
-			screen,
-			(node) => node.props.className === 'moda-usage__billing-link'
-		)).toHaveLength(0);
+		expect(
+			findElements(
+				screen,
+				(node) => node.props.className === 'moda-usage__billing-link'
+			)
+		).toHaveLength(0);
 
 		for (const other of [
 			readyState(presentation()),
@@ -422,10 +436,14 @@ describe('Billing screen', () => {
 				onRefresh: vi.fn(),
 				onSetView: vi.fn(),
 			});
-			expect(findElements(
-				unavailable,
-				(node) => node.type === 'a' && node.props.href?.includes('usage-history')
-			)).toHaveLength(0);
+			expect(
+				findElements(
+					unavailable,
+					(node) =>
+						node.type === 'a' &&
+						node.props.href?.includes('usage-history')
+				)
+			).toHaveLength(0);
 		}
 	});
 

@@ -27,13 +27,14 @@ export function BillingHero({ state, onRefresh, onSetView }) {
 				{ className: 'moda-interact-billing-hub__toolbar' },
 				ready && state.data?.surfaces?.usageHistoryAllowed
 					? createElement(
-						'a',
-						{
-							href: 'admin.php?page=moda-interact-usage-history',
-							className: 'button moda-interact-billing-hub__history',
-						},
-						__('Usage history', 'moda-interact')
-					)
+							'a',
+							{
+								href: 'admin.php?page=moda-interact-usage-history',
+								className:
+									'button moda-interact-billing-hub__history',
+							},
+							__('Usage history', 'moda-interact')
+						)
 					: null,
 				createElement(
 					'button',

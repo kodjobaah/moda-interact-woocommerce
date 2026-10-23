@@ -276,3 +276,12 @@
 		padding: 16px;
 	}
 }
+
+.moda-promotions__notice {
+	margin: 0;
+	padding: 12px 16px;
+	border: 1px solid var(--moda-promo-edge);
+	border-radius: 12px;
+	background: var(--moda-forest-50);
+	color: var(--moda-forest-900);
+}

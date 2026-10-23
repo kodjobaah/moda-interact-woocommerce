@@ -2016,6 +2016,46 @@ msgstr "Ledige pladser til filuploads: %1$s (deles med websider; i alt %2$s kild
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Den fælles grænse for videnskilder i dit abonnement er nået."
 
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Valgt"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Brugt"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Lukket"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Ikke længere berettiget"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Genåbnet"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Du har ikke tilladelse til at se kampagner."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Tilslut Moda Interact igen for at se kampagner."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "Kampagnerne er ændret. Opdater for at se de seneste tilbud."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "Kampagnerne er ændret. De seneste tilbud er indlæst."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "Kampagnen er ikke længere berettiget. De seneste tilbud er indlæst."
+
 #: src/usage-history/usage-history-results.js
 msgid "Charged against"
 msgstr "Trukket fra"
@@ -2039,3 +2079,12 @@ msgstr "Kampagnekreditter"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Ikke tilknyttet"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Valg låst"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Du kan først vælge en anden kampagne, når den aktuelle udløber (%s)."

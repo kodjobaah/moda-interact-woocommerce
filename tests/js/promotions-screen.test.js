@@ -1,6 +1,7 @@
 import { expect, it, vi } from 'vitest';
 import { PromotionsScreen } from '../../src/promotions/promotions-screen';
 import { PromotionHistory } from '../../src/promotions/history';
+import { formatDate } from '../../src/billing/presentation-formatters';
 import {
 	PromotionCards,
 	PromotionPager,
@@ -43,9 +44,13 @@ const fixture = {
 	merchantTitle: 'Autumn',
 	merchantDescription: 'Five credits',
 	quantity: 5,
-	expiresAt: '2026-11-01',
+	expiresAt: '2026-11-01T00:00:00.000Z',
+	remainingQuantity: 5,
 	previouslyClaimed: false,
 	exhausted: false,
+	eligible: true,
+	selectable: true,
+	currentlySelected: false,
 };
 
 it('renders honest unavailable, loading, error and denied states without fake offers or select actions', () => {
@@ -69,7 +74,7 @@ it('renders Shopify-like offer card content but disables unbacked selection', ()
 	const [button] = nodes(root, 'button');
 	expect(text(root)).toContain('Autumn');
 	expect(text(root)).toContain('5 credits');
-	expect(text(root)).toContain('Expires 2026-11-01');
+	expect(text(root)).toContain(`Expires ${formatDate(fixture.expiresAt)}`);
 	expect(button.props.disabled).toBe(true);
 	expect(button.props.type).toBe('button');
 });
@@ -137,8 +142,12 @@ it('paginates independently, supports empty state and keeps history disclosure s
 				{
 					campaignId: 'a',
 					campaignTitle: 'Autumn',
+					status: 'USED',
+					quantityGranted: 5,
+					committedQuantity: 3,
 					remainingQuantity: 2,
-					expiresAt: '2026-11-01',
+					lastSelectedAt: '2026-10-12T00:00:00.000Z',
+					expiresAt: '2026-11-01T00:00:00.000Z',
 				},
 			],
 			totalEntries: 1,
@@ -169,4 +178,132 @@ it('uses compact promotions and history headings in the unavailable state', () =
 		'Promotion offers are not yet available for WooCommerce.'
 	);
 	expect(nodes(screen, 'article')).toHaveLength(0);
+});
+
+it.each([
+	['SELECTED', 'Selected'],
+	['USED', 'Used'],
+	['EXHAUSTED', 'Exhausted'],
+	['EXPIRED', 'Expired'],
+	['CLOSED', 'Closed'],
+	['NO_LONGER_ELIGIBLE', 'No longer eligible'],
+	['REOPENED', 'Reopened'],
+])('renders API-021 history status %s as %s', (status, label) => {
+	const root = PromotionHistory({
+		history: {
+			entries: [
+				{
+					campaignId: 'campaign-a',
+					campaignTitle: 'Autumn',
+					status,
+					quantityGranted: 5,
+					committedQuantity: 2,
+					remainingQuantity: 3,
+					lastSelectedAt: '2026-10-20T00:00:00.000Z',
+					expiresAt: '2026-11-01T00:00:00.000Z',
+				},
+			],
+			totalEntries: 1,
+			totalPages: 1,
+		},
+	});
+	expect(text(root)).toContain(label);
+	expect(text(root)).toContain('Granted 5');
+	expect(text(root)).not.toContain('Unavailable');
+});
+
+it('supports explicit refresh, reconnect, and post-revision-conflict messaging', () => {
+	const onRefresh = vi.fn();
+	const onReconnect = vi.fn();
+	const expired = PromotionsScreen({
+		model: { status: 'RECONNECT_REQUIRED' },
+		onRefresh,
+		onReconnect,
+	});
+	expect(text(expired)).toContain('Reconnect Moda Interact');
+	nodes(expired, 'button')[0].props.onClick();
+	expect(onReconnect).toHaveBeenCalledOnce();
+	expect(onRefresh).not.toHaveBeenCalled();
+	const conflict = PromotionsScreen({
+		model: { status: 'CONFLICT' },
+		onRefresh,
+	});
+	expect(nodes(conflict, 'p').some((p) => p.props.role === 'alert')).toBe(
+		true
+	);
+	nodes(conflict, 'button')[0].props.onClick();
+	expect(onRefresh).toHaveBeenCalledOnce();
+	const reloaded = PromotionsScreen({
+		model: {
+			status: 'READY',
+			selection: null,
+			offers: [],
+			offersPagination: { page: 1, totalPages: 1 },
+			history: { page: 1, entries: [], totalPages: 1 },
+			error: 'CONFLICT',
+		},
+	});
+	expect(nodes(reloaded, 'p').some((p) => p.props.role === 'alert')).toBe(
+		true
+	);
+	expect(text(reloaded)).toContain('latest offers have been loaded');
+});
+
+it('explains a locked selection without advertising offers as available', () => {
+	const onSelect = vi.fn();
+	const current = {
+		campaignId: 'selected-campaign',
+		merchantTitle: 'Current bonus',
+		remainingQuantity: 4,
+		locked: true,
+		expiresAt: '2026-10-31T00:00:00.000Z',
+	};
+	const model = {
+		status: 'READY',
+		selection: current,
+		offers: [fixture],
+		offersPagination: { page: 1, totalPages: 1 },
+		history: { entries: [], page: 1, totalPages: 1 },
+	};
+	const lockedScreen = PromotionsScreen({ model, onSelect });
+	expect(text(lockedScreen)).toContain(
+		`You cannot select another promotion until your current promotion expires (${formatDate(current.expiresAt)}).`
+	);
+	expect(text(lockedScreen)).toContain('Selection locked');
+	expect(text(lockedScreen)).not.toContain('Available now');
+	const [lockedButton] = nodes(lockedScreen, 'button');
+	expect(lockedButton.props.disabled).toBe(true);
+	lockedButton.props.onClick();
+	expect(onSelect).not.toHaveBeenCalled();
+
+	const unlockedScreen = PromotionsScreen({
+		model: { ...model, selection: null },
+		onSelect,
+	});
+	expect(text(unlockedScreen)).toContain('Available now');
+	expect(text(unlockedScreen)).not.toContain('Selection locked');
+	expect(text(unlockedScreen)).not.toContain(
+		'You cannot select another promotion'
+	);
+	const [unlockedButton] = nodes(unlockedScreen, 'button');
+	expect(unlockedButton.props.disabled).toBe(false);
+	unlockedButton.props.onClick();
+	expect(onSelect).toHaveBeenCalledExactlyOnceWith(fixture.id);
+});
+
+it('distinguishes exhaustion, prior claim and ineligibility', () => {
+	for (const [changes, label] of [
+		[{ exhausted: true }, 'Exhausted'],
+		[{ previouslyClaimed: true }, 'Previously claimed'],
+		[{ eligible: false }, 'Not available'],
+		[{ selectable: false }, 'Not available'],
+	]) {
+		const root = PromotionCards({
+			offers: [{ ...fixture, ...changes }],
+			onSelect: vi.fn(),
+		});
+		expect(text(root)).toContain(label);
+		expect(text(root)).not.toContain('Available now');
+		expect(nodes(root, 'button')[0].props.disabled).toBe(true);
+	}
 });

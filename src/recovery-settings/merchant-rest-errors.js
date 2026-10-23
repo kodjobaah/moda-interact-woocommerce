@@ -12,6 +12,10 @@ const CODES = new Set([
 	'INVALID_REQUEST',
 	'REQUEST_TOO_LARGE',
 	'NOT_FOUND',
+	'PROMOTION_STALE',
+	'PROMOTION_CONFLICT',
+	'PROMOTION_INELIGIBLE',
+	'REMOTE_RESPONSE_INVALID',
 ]);
 
 export function merchantRestError(error, unavailable = 'REMOTE_UNAVAILABLE') {

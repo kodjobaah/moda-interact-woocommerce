@@ -195,9 +195,7 @@ export class UsageHistoryController {
 				this.publish({
 					...this.state,
 					status:
-						data.state === 'unavailable'
-							? 'UNAVAILABLE'
-							: 'READY',
+						data.state === 'unavailable' ? 'UNAVAILABLE' : 'READY',
 					data,
 				});
 			}

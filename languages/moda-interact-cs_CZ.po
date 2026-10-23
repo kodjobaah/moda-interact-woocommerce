@@ -1998,6 +1998,46 @@ msgstr "Zbývající místa pro nahrání souborů: %1$s (sdílená s webovými 
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Byl dosažen sdílený limit zdrojů znalostí ve vašem tarifu."
 
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Vybráno"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Použito"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Uzavřeno"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Již nesplňuje podmínky"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Znovu otevřeno"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Nemáte oprávnění zobrazit propagační akce."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Pro zobrazení propagačních akcí znovu připojte Moda Interact."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "Propagační akce se změnily. Obnovte stránku pro zobrazení nejnovějších nabídek."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "Propagační akce se změnily. Nejnovější nabídky byly načteny."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "Propagační akce již nesplňuje podmínky. Nejnovější nabídky byly načteny."
+
 #: src/usage-history/usage-history-results.js
 msgid "Charged against"
 msgstr "Účtováno z"
@@ -2021,3 +2061,12 @@ msgstr "Propagační kredity"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Bez přiřazeného zdroje"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Výběr je uzamčen"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Další akci můžete vybrat až po skončení aktuální akce (%s)."

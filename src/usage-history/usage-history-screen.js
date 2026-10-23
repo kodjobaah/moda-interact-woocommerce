@@ -125,8 +125,14 @@ export function UsageHistoryView({ history, locale = resolveBillingLocale() }) {
 						state.status === 'RECONNECT'
 							? createElement(
 									'a',
-									{ href: CONNECTION_HREF, className: 'button' },
-									__('Reconnect Moda Interact', 'moda-interact')
+									{
+										href: CONNECTION_HREF,
+										className: 'button',
+									},
+									__(
+										'Reconnect Moda Interact',
+										'moda-interact'
+									)
 								)
 							: null,
 						state.status === 'INVALID_CURSOR' ||

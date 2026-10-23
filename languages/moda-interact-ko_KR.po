@@ -1989,6 +1989,46 @@ msgstr "파일 업로드 가능 잔여 슬롯: %1$s개(웹페이지와 공유, �
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "현재 요금제의 공유 지식 소스 한도에 도달했습니다."
 
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "선택됨"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "사용됨"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "종료됨"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "더 이상 대상이 아님"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "다시 열림"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "프로모션을 볼 권한이 없습니다."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "프로모션을 보려면 Moda Interact를 다시 연결하세요."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "프로모션이 변경되었습니다. 최신 혜택을 보려면 새로고침하세요."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "프로모션이 변경되었습니다. 최신 혜택을 불러왔습니다."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "이 프로모션은 더 이상 대상이 아닙니다. 최신 혜택을 불러왔습니다."
+
 #: src/usage-history/usage-history-results.js
 msgid "Charged against"
 msgstr "차감된 항목"
@@ -2012,3 +2052,12 @@ msgstr "프로모션 크레딧"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "출처 미확인"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "선택 잠김"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "현재 프로모션이 만료될 때(%s)까지 다른 프로모션을 선택할 수 없습니다."

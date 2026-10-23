@@ -2015,6 +2015,46 @@ msgstr "Återstående platser för filuppladdning: %1$s (delas med webbsidor; to
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "Din abonnemangsgräns för delade kunskapskällor har nåtts."
 
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Vald"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Använd"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Stängd"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Inte längre berättigad"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Återöppnad"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Du har inte behörighet att se kampanjer."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Anslut Moda Interact igen för att se kampanjer."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "Kampanjerna har ändrats. Uppdatera för att se de senaste erbjudandena."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "Kampanjerna har ändrats. De senaste erbjudandena har lästs in."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "Kampanjen är inte längre berättigad. De senaste erbjudandena har lästs in."
+
 #: src/usage-history/usage-history-results.js
 msgid "Charged against"
 msgstr "Debiterat från"
@@ -2038,3 +2078,12 @@ msgstr "Kampanjkrediter"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Inte tillskrivet"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Val låst"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Du kan inte välja en annan kampanj förrän den nuvarande löper ut (%s)."

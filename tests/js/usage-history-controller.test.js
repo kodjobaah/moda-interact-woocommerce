@@ -120,7 +120,11 @@ describe('Woo usage history controller', () => {
 		await settle();
 		c.setPeriodCursor('nextperiod');
 		await settle();
-		expect(read.mock.lastCall[0]).toMatchObject({ periodCursor: 'nextperiod', periodId: '', page: 1 });
+		expect(read.mock.lastCall[0]).toMatchObject({
+			periodCursor: 'nextperiod',
+			periodId: '',
+			page: 1,
+		});
 		c.setView('current');
 		await settle();
 		expect(c.state).toMatchObject({
@@ -182,8 +186,13 @@ describe('Woo usage history controller', () => {
 
 	it('does not issue duplicate requests while loading or restore stale data on disconnect', async () => {
 		const resolvers = [];
-		const read = vi.fn(() => new Promise((resolve) => resolvers.push(resolve)));
-		const c = new UsageHistoryController({ available: true, getHistory: read });
+		const read = vi.fn(
+			() => new Promise((resolve) => resolvers.push(resolve))
+		);
+		const c = new UsageHistoryController({
+			available: true,
+			getHistory: read,
+		});
 		c.setActive(true);
 		c.refresh();
 		c.refresh();
@@ -201,7 +210,11 @@ describe('Woo usage history controller', () => {
 	});
 
 	it('does not treat an unavailable paid period as a real empty history', async () => {
-		const c = new UsageHistoryController({ available: true, getHistory: async () => page({ state: 'unavailable', usageEvents: [] }) });
+		const c = new UsageHistoryController({
+			available: true,
+			getHistory: async () =>
+				page({ state: 'unavailable', usageEvents: [] }),
+		});
 		c.setActive(true);
 		await settle();
 		expect(c.state.status).toBe('UNAVAILABLE');

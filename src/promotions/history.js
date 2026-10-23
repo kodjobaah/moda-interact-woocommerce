@@ -1,21 +1,22 @@
 import { createElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { PromotionPager } from './presentation';
+import { formatDate, formatQuantity } from '../billing/presentation-formatters';
 
 const display = (value) =>
 	value === null || value === undefined ? '—' : String(value);
 
 function historyStatus(status) {
-	if (status === 'EXPIRED') {
-		return __('Expired', 'moda-interact');
-	}
-	if (status === 'EXHAUSTED') {
-		return __('Exhausted', 'moda-interact');
-	}
-	if (status === 'ACTIVE') {
-		return __('Active', 'moda-interact');
-	}
-	return __('Unavailable', 'moda-interact');
+	const values = {
+		SELECTED: __('Selected', 'moda-interact'),
+		USED: __('Used', 'moda-interact'),
+		EXHAUSTED: __('Exhausted', 'moda-interact'),
+		EXPIRED: __('Expired', 'moda-interact'),
+		CLOSED: __('Closed', 'moda-interact'),
+		NO_LONGER_ELIGIBLE: __('No longer eligible', 'moda-interact'),
+		REOPENED: __('Reopened', 'moda-interact'),
+	};
+	return values[status] ?? __('Unavailable', 'moda-interact');
 }
 
 /**
@@ -87,7 +88,7 @@ export function PromotionHistory({
 								sprintf(
 									/* translators: %s: total promotional credits granted. */
 									__('Granted %s', 'moda-interact'),
-									display(entry.quantityGranted)
+									formatQuantity(entry.quantityGranted)
 								)
 							),
 							createElement(
@@ -96,7 +97,7 @@ export function PromotionHistory({
 								sprintf(
 									/* translators: %s: promotional credits consumed. */
 									__('Used %s', 'moda-interact'),
-									display(entry.committedQuantity)
+									formatQuantity(entry.committedQuantity)
 								)
 							),
 							createElement(
@@ -105,7 +106,7 @@ export function PromotionHistory({
 								sprintf(
 									/* translators: %s: promotional credits remaining. */
 									__('Remaining %s', 'moda-interact'),
-									display(entry.remainingQuantity)
+									formatQuantity(entry.remainingQuantity)
 								)
 							),
 							createElement(
@@ -114,7 +115,9 @@ export function PromotionHistory({
 								sprintf(
 									/* translators: %s: last promotion-selection date. */
 									__('Selected %s', 'moda-interact'),
-									display(entry.lastSelectedAt)
+									entry.lastSelectedAt
+										? formatDate(entry.lastSelectedAt)
+										: '—'
 								)
 							),
 							createElement(
@@ -123,7 +126,7 @@ export function PromotionHistory({
 								sprintf(
 									/* translators: %s: promotion expiry date. */
 									__('Expires %s', 'moda-interact'),
-									display(entry.expiresAt)
+									formatDate(entry.expiresAt)
 								)
 							)
 						)

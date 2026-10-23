@@ -2034,6 +2034,46 @@ msgstr "Beschikbare plekken voor bestandsuploads: %1$s (gedeeld met webpagina’
 msgid "Your plan's shared knowledge-source limit has been reached."
 msgstr "De gedeelde limiet voor kennisbronnen van je abonnement is bereikt."
 
+#: src/promotions/history.js
+msgid "Selected"
+msgstr "Geselecteerd"
+
+#: src/promotions/history.js
+msgid "Used"
+msgstr "Gebruikt"
+
+#: src/promotions/history.js
+msgid "Closed"
+msgstr "Gesloten"
+
+#: src/promotions/history.js
+msgid "No longer eligible"
+msgstr "Niet langer in aanmerking komend"
+
+#: src/promotions/history.js
+msgid "Reopened"
+msgstr "Heropend"
+
+#: src/promotions/promotions-screen.js
+msgid "You do not have permission to view promotions."
+msgstr "Je hebt geen toestemming om promoties te bekijken."
+
+#: src/promotions/promotions-screen.js
+msgid "Reconnect Moda Interact to view promotions."
+msgstr "Verbind Moda Interact opnieuw om promoties te bekijken."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. Refresh to see the latest offers."
+msgstr "De promoties zijn gewijzigd. Vernieuw om de nieuwste aanbiedingen te zien."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotions changed. The latest offers have been loaded."
+msgstr "De promoties zijn gewijzigd. De nieuwste aanbiedingen zijn geladen."
+
+#: src/promotions/promotions-screen.js
+msgid "Promotion is no longer eligible. The latest offers have been loaded."
+msgstr "De promotie komt niet meer in aanmerking. De nieuwste aanbiedingen zijn geladen."
+
 #: src/usage-history/usage-history-results.js
 msgid "Charged against"
 msgstr "Afgeschreven van"
@@ -2057,3 +2097,12 @@ msgstr "Promotiecredits"
 #: src/usage-history/usage-history-results.js
 msgid "Unattributed"
 msgstr "Niet toegewezen"
+
+#: src/promotions/presentation.js
+msgid "Selection locked"
+msgstr "Selectie vergrendeld"
+
+#. translators: %s: current promotion expiry date.
+#: src/promotions/promotions-screen.js
+msgid "You cannot select another promotion until your current promotion expires (%s)."
+msgstr "Je kunt pas een andere promotie selecteren wanneer de huidige is verlopen (%s)."

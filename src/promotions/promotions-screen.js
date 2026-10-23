@@ -2,12 +2,31 @@ import { createElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { PromotionCards, PromotionPager } from './presentation';
 import { PromotionHistory } from './history';
+import { formatDate, formatQuantity } from '../billing/presentation-formatters';
 
 function nonReadyMessage(status) {
-	if (status === 'LOADING') {
+	if (status === 'LOADING' || status === 'IDLE') {
 		return __('Loading…', 'moda-interact');
 	}
-	if (status === 'ERROR' || status === 'DENIED') {
+	if (status === 'DENIED') {
+		return __(
+			'You do not have permission to view promotions.',
+			'moda-interact'
+		);
+	}
+	if (status === 'RECONNECT_REQUIRED') {
+		return __(
+			'Reconnect Moda Interact to view promotions.',
+			'moda-interact'
+		);
+	}
+	if (status === 'CONFLICT') {
+		return __(
+			'Promotions changed. Refresh to see the latest offers.',
+			'moda-interact'
+		);
+	}
+	if (status === 'ERROR') {
 		return __('This section could not be loaded.', 'moda-interact');
 	}
 	return __(
@@ -16,16 +35,33 @@ function nonReadyMessage(status) {
 	);
 }
 
+function noticeMessage(code) {
+	if (code === 'CONFLICT') {
+		return __(
+			'Promotions changed. The latest offers have been loaded.',
+			'moda-interact'
+		);
+	}
+	if (code === 'PROMOTION_INELIGIBLE') {
+		return __(
+			'Promotion is no longer eligible. The latest offers have been loaded.',
+			'moda-interact'
+		);
+	}
+	return null;
+}
+
 /**
- * Render only authoritative states. Production has no approved promotions API
- * adapter under ARCH-035; it passes the default UNAVAILABLE model and never
- * enables campaign selection. READY states are used in component fixtures.
+ * Render only validated, authoritative API-021 state from the connected controller.
+ * Promotional recovery credits are not WooCommerce coupons or purchased credits.
  *
  * @param {Object}                              root0               Component properties.
  * @param {Object}                              root0.model         Authoritative state.
  * @param {((campaignId: string) => void)|null} root0.onSelect      Selection callback.
  * @param {((page: number) => void)|null}       root0.onOffersPage  Offer paging callback.
  * @param {((page: number) => void)|null}       root0.onHistoryPage History paging callback.
+ * @param {(() => void)|null}                   root0.onRefresh     Reload from API.
+ * @param {(() => void)|null}                   root0.onReconnect   Revalidate installation.
  * @return {Object} Promotions screen.
  */
 export function PromotionsScreen({
@@ -33,24 +69,35 @@ export function PromotionsScreen({
 	onSelect = null,
 	onOffersPage = null,
 	onHistoryPage = null,
+	onRefresh = null,
+	onReconnect = null,
 }) {
 	const ready = model.status === 'READY';
 	const selected = ready ? model.selection : null;
 	const offers = ready ? (model.offers ?? []) : [];
+	const otherOffers = offers.filter(
+		(offer) => offer.id !== selected?.campaignId
+	);
 	const pagination = ready ? (model.offersPagination ?? {}) : {};
+	const notice = ready ? noticeMessage(model.error) : null;
 	let offerBody;
 	if (!ready) {
 		offerBody = createElement(
 			'p',
 			{
-				role: ['ERROR', 'DENIED'].includes(model.status)
+				role: [
+					'ERROR',
+					'DENIED',
+					'RECONNECT_REQUIRED',
+					'CONFLICT',
+				].includes(model.status)
 					? 'alert'
 					: 'status',
 				className: 'moda-promotions__empty',
 			},
 			nonReadyMessage(model.status)
 		);
-	} else if (offers.length === 0) {
+	} else if (otherOffers.length === 0) {
 		offerBody = createElement(
 			'p',
 			{ role: 'status', className: 'moda-promotions__empty' },
@@ -58,7 +105,7 @@ export function PromotionsScreen({
 		);
 	} else {
 		offerBody = createElement(PromotionCards, {
-			offers: offers.filter((offer) => offer.id !== selected?.campaignId),
+			offers: otherOffers,
 			selected,
 			locked: selected?.locked,
 			busy: model.saving === true,
@@ -94,7 +141,7 @@ export function PromotionsScreen({
 				)
 			)
 		),
-		selected?.locked
+		selected
 			? createElement(
 					'aside',
 					{ className: 'moda-promotions__current', role: 'status' },
@@ -124,7 +171,7 @@ export function PromotionsScreen({
 						sprintf(
 							/* translators: %s: remaining credits on the current promotion. */
 							__('Remaining %s', 'moda-interact'),
-							String(selected.remainingQuantity ?? 0)
+							formatQuantity(selected.remainingQuantity ?? 0)
 						)
 					),
 					createElement(
@@ -133,9 +180,32 @@ export function PromotionsScreen({
 						sprintf(
 							/* translators: %s: selected promotion expiry date. */
 							__('Expires %s', 'moda-interact'),
-							String(selected.expiresAt ?? '—')
+							selected.expiresAt
+								? formatDate(selected.expiresAt)
+								: '—'
 						)
 					)
+				)
+			: null,
+		selected?.locked && selected.expiresAt
+			? createElement(
+					'p',
+					{ className: 'moda-promotions__notice' },
+					sprintf(
+						/* translators: %s: current promotion's expiry date. */
+						__(
+							'You cannot select another promotion until your current promotion expires (%s).',
+							'moda-interact'
+						),
+						formatDate(selected.expiresAt)
+					)
+				)
+			: null,
+		notice
+			? createElement(
+					'p',
+					{ role: 'alert', className: 'moda-promotions__notice' },
+					notice
 				)
 			: null,
 		createElement(
@@ -159,11 +229,41 @@ export function PromotionsScreen({
 				)
 			),
 			offerBody,
+			!ready &&
+				(onRefresh ||
+					(model.status === 'RECONNECT_REQUIRED' && onReconnect))
+				? createElement(
+						'button',
+						{
+							type: 'button',
+							className: 'button',
+							onClick:
+								model.status === 'RECONNECT_REQUIRED'
+									? onReconnect
+									: onRefresh,
+						},
+						model.status === 'RECONNECT_REQUIRED'
+							? __('Reconnect Moda Interact', 'moda-interact')
+							: __('Refresh', 'moda-interact')
+					)
+				: null,
+			ready && onRefresh
+				? createElement(
+						'button',
+						{
+							type: 'button',
+							className: 'button',
+							disabled: model.saving === true,
+							onClick: onRefresh,
+						},
+						__('Refresh', 'moda-interact')
+					)
+				: null,
 			ready
 				? createElement(PromotionPager, {
 						page: pagination.page,
 						totalPages: pagination.totalPages,
-						onPage: onOffersPage,
+						onPage: model.saving ? null : onOffersPage,
 					})
 				: null
 		),
@@ -171,7 +271,7 @@ export function PromotionsScreen({
 			? createElement(PromotionHistory, {
 					history: model.history,
 					page: model.history?.page,
-					onPage: onHistoryPage,
+					onPage: model.saving ? null : onHistoryPage,
 				})
 			: createElement(
 					'details',

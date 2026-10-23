@@ -85,7 +85,8 @@ function event(value, version) {
 			id(source.recoveryId, RECOVERY_ID) &&
 			(source.customerName === null ||
 				(typeof source.customerName === 'string' &&
-					new TextEncoder().encode(source.customerName).length <= 512 &&
+					new TextEncoder().encode(source.customerName).length <=
+						512 &&
 					!/[\x00-\x1F\x7F]/.test(source.customerName))))
 	);
 }
@@ -155,10 +156,10 @@ function validFilters({ view, periodId, kind, page, pageSize, periodCursor }) {
 		page >= 1 &&
 		page <= 1000 &&
 		SIZES.includes(pageSize) &&
-		(typeof periodId === 'string' &&
-			(periodId === '' || id(periodId))) &&
-		(typeof periodCursor === 'string' &&
-			(periodCursor === '' || id(periodCursor, CURSOR)))
+		typeof periodId === 'string' &&
+		(periodId === '' || id(periodId)) &&
+		typeof periodCursor === 'string' &&
+		(periodCursor === '' || id(periodCursor, CURSOR))
 	);
 }
 
@@ -186,19 +187,29 @@ function failureCode(error) {
 	}
 	if (
 		values.some((value) =>
-			['rest_forbidden', 'USAGE_HISTORY_DENIED', 'permission_denied'].includes(
-				value
-			)
+			[
+				'rest_forbidden',
+				'USAGE_HISTORY_DENIED',
+				'permission_denied',
+			].includes(value)
 		) ||
 		error?.status === 403 ||
 		error?.data?.status === 403
 	) {
 		return 'permission_denied';
 	}
-	if (values.some((value) => ['INVALID_CURSOR', 'invalid_cursor'].includes(value))) {
+	if (
+		values.some((value) =>
+			['INVALID_CURSOR', 'invalid_cursor'].includes(value)
+		)
+	) {
 		return 'invalid_cursor';
 	}
-	if (values.some((value) => ['INVALID_PERIOD', 'invalid_period'].includes(value))) {
+	if (
+		values.some((value) =>
+			['INVALID_PERIOD', 'invalid_period'].includes(value)
+		)
+	) {
 		return 'invalid_period';
 	}
 	return 'remote_unavailable';
@@ -212,7 +223,8 @@ export function createUsageHistoryClient(request = apiFetch) {
 			if (!validFilters(filters)) {
 				throw new Error('invalid_request');
 			}
-			const { view, periodId, kind, page, pageSize, periodCursor } = filters;
+			const { view, periodId, kind, page, pageSize, periodCursor } =
+				filters;
 			const params = new URLSearchParams({
 				view,
 				kind,
