@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "description": "Portable exact-recipient and Shopify Customer ID golden vectors. Illustrative values for pure validation tests only; never send or call them. Equivalence does not imply consent, reachability or ownership.",
+  "phoneCases": [
+    { "id": "gb-national", "input": "07400 123456", "verifiedCountryCode": "GB", "e164": "+447400123456" },
+    { "id": "gb-international", "input": "+44 7400 123456", "verifiedCountryCode": null, "e164": "+447400123456" },
+    { "id": "gb-compact-international", "input": "+447400123456", "verifiedCountryCode": "GB", "e164": "+447400123456" },
+    { "id": "gb-reserved-fictional", "input": "+44 7700 900123", "verifiedCountryCode": null, "reject": "INVALID_NUMBER" },
+    { "id": "us-national", "input": "(213) 373-4253", "verifiedCountryCode": "US", "e164": "+12133734253" },
+    { "id": "us-international", "input": "+1 213 373 4253", "verifiedCountryCode": null, "e164": "+12133734253" },
+    { "id": "fr-national", "input": "06 12 34 56 78", "verifiedCountryCode": "FR", "e164": "+33612345678" },
+    { "id": "fr-international", "input": "+33 6 12 34 56 78", "verifiedCountryCode": null, "e164": "+33612345678" },
+    { "id": "national-country-unknown", "input": "07400 123456", "verifiedCountryCode": null, "reject": "COUNTRY_REQUIRED" },
+    { "id": "unverified-country-code", "input": "07400 123456", "verifiedCountryCode": "ZZ", "reject": "UNSUPPORTED_COUNTRY" },
+    { "id": "foreign-context", "input": "+44 7400 123456", "verifiedCountryCode": "US", "reject": "COUNTRY_MISMATCH" },
+    { "id": "extension", "input": "07400 123456 ext. 42", "verifiedCountryCode": "GB", "reject": "EXTENSION_UNSUPPORTED" },
+    { "id": "extension-hash", "input": "+447400123456#42", "verifiedCountryCode": null, "reject": "EXTENSION_UNSUPPORTED" },
+    { "id": "ambiguous-short-number", "input": "900123", "verifiedCountryCode": "GB", "reject": "INVALID_NUMBER" },
+    { "id": "invalid-international-country", "input": "+999123456789", "verifiedCountryCode": null, "reject": "INVALID_NUMBER" },
+    { "id": "embedded-free-text", "input": "Call +447400123456", "verifiedCountryCode": null, "reject": "INVALID_FORMAT" }
+  ],
+  "shopifyCustomerCases": [
+    { "id": "numeric-webhook-number", "input": 123456789, "numericId": "123456789", "gid": "gid://shopify/Customer/123456789" },
+    { "id": "numeric-webhook-string", "input": "123456789", "numericId": "123456789", "gid": "gid://shopify/Customer/123456789" },
+    { "id": "graphql-customer-gid", "input": "gid://shopify/Customer/123456789", "numericId": "123456789", "gid": "gid://shopify/Customer/123456789" },
+    { "id": "64bit-boundary-string", "input": "9223372036854775807", "numericId": "9223372036854775807", "gid": "gid://shopify/Customer/9223372036854775807" }
+  ],
+  "rejectedShopifyCustomerCases": [
+    { "id": "wrong-resource", "input": "gid://shopify/Order/123", "code": "INVALID_CUSTOMER_ID" },
+    { "id": "missing-resource-id", "input": "gid://shopify/Customer/", "code": "INVALID_CUSTOMER_ID" },
+    { "id": "zero", "input": "0", "code": "INVALID_CUSTOMER_ID" },
+    { "id": "leading-zeroes", "input": "000123", "code": "INVALID_CUSTOMER_ID" },
+    { "id": "query-suffix", "input": "gid://shopify/Customer/123?shop=other", "code": "INVALID_CUSTOMER_ID" },
+    { "id": "principal-string", "input": "shop_user_123", "code": "INVALID_CUSTOMER_ID" },
+    { "id": "negative", "input": -1, "code": "INVALID_CUSTOMER_ID" },
+    { "id": "unsafe-js-number", "input": 9007199254740992, "code": "INVALID_CUSTOMER_ID" },
+    { "id": "overflow", "input": "9223372036854775808", "code": "CUSTOMER_ID_OUT_OF_RANGE" }
+  ],
+  "shopifyScopeCases": [
+    { "id": "numeric-gid-same-shop", "shopA": "shop-a", "shopB": "shop-a", "customerA": "123456789", "customerB": "gid://shopify/Customer/123456789", "equal": true },
+    { "id": "same-id-different-shop", "shopA": "shop-a", "shopB": "shop-b", "customerA": "123456789", "customerB": "gid://shopify/Customer/123456789", "equal": false },
+    { "id": "different-customer", "shopA": "shop-a", "shopB": "shop-a", "customerA": "123456789", "customerB": "123456790", "equal": false }
+  ],
+  "recipientLifecycleCases": [
+    { "id": "number-rotated", "before": "+447400123456", "after": "+447400123457", "sameNumber": false, "grantCarriesAcrossPrincipal": false },
+    { "id": "reassigned-to-other-person", "before": "+447400123456", "after": "+447400123456", "sameNumber": true, "grantCarriesAcrossPrincipal": false }
+  ]
+}

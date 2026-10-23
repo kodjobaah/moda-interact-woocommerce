@@ -24,6 +24,9 @@ require_once __DIR__ . '/Checkout/CheckoutActivityPublisher.php';
 require_once __DIR__ . '/Checkout/CheckoutCapture.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentEligibility.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCheckbox.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentPhone.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentPublisher.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentCapture.php';
 require_once __DIR__ . '/Checkout/OrderLifecycleCapture.php';
 
 use ModaInteract\WooCommerce\Admin\Setup;
@@ -48,6 +51,8 @@ use ModaInteract\WooCommerce\Rest\PromotionsController;
 use ModaInteract\WooCommerce\Rest\RecoverySelectionController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCheckbox;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentCapture;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentPublisher;
 use ModaInteract\WooCommerce\Checkout\CheckoutActivityPublisher;
 use ModaInteract\WooCommerce\Checkout\OrderLifecycleCapture;
 
@@ -123,6 +128,7 @@ final class Runtime {
 		$activity_publisher = new CheckoutActivityPublisher();
 		( new CheckoutCapture( $activity_publisher ) )->register();
 		( new CheckoutConsentCheckbox() )->register();
+		( new CheckoutConsentCapture( new CheckoutConsentPublisher() ) )->register();
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();
 		if ( is_admin() ) {
 			new Setup();

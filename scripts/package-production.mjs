@@ -98,6 +98,7 @@ function verifyPackage() {
 		'moda-interact/README.md',
 		'moda-interact/CHANGELOG.md',
 		'moda-interact/includes/Api/ModaApiConfiguration.php',
+		'moda-interact/assets/js/checkout-consent-classic.js',
 		'moda-interact/build/index.js',
 		'moda-interact/build/index.css',
 		'moda-interact/build/index.asset.php',
@@ -184,6 +185,7 @@ function verifyPackage() {
 	const runtimePaths = entries.filter(
 		(entry) =>
 			entry.startsWith('moda-interact/includes/') ||
+			entry.startsWith('moda-interact/assets/js/') ||
 			entry === 'moda-interact/moda-interact.php' ||
 			/^moda-interact\/build\/.*\.(?:js|css)$/.test(entry)
 	);
@@ -200,6 +202,7 @@ function verifyPackage() {
 			.map(([path]) => path)
 			.join(','),
 		'moda-interact/includes/Api/ModaApiConfiguration.php',
+		'moda-interact/assets/js/checkout-consent-classic.js',
 		'production API origin must be owned by the PHP API configuration only'
 	);
 	assert.match(
