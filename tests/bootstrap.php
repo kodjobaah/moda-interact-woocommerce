@@ -62,8 +62,13 @@ function current_user_can( $capability ) {
 }
 
 function wp_verify_nonce( $nonce, $action ) {
+	if ( isset( $GLOBALS['arch046_nonce_action'] ) ) {
+		return $action === $GLOBALS['arch046_nonce_action'] && $nonce === 'arch046-fixture-nonce' ? 1 : false;
+	}
 	return 'wp_rest' === $action && 'fixture_rest_nonce' === $nonce && $GLOBALS['moda_interact_valid_rest_nonce'] ? 1 : false;
 }
+
+function get_current_user_id() { return $GLOBALS['arch046_current_user_id'] ?? 0; }
 
 function get_user_locale() {
 	return $GLOBALS['moda_interact_user_locale'] ?? 'en_US';

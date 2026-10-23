@@ -61,8 +61,10 @@ final class Arch035Cart {
 }
 final class Arch035Customer {
 	public string $email = '';
+	public string $phone = '';
 	public function get_billing_email(): string { return $this->email; }
-	public function get_billing_phone(): string { return ''; }
+	public function get_billing_phone(): string { return $this->phone; }
+	public function get_billing_country(): string { return 'GB'; }
 	public function get_billing_first_name(): string { return ''; }
 	public function get_billing_last_name(): string { return ''; }
 }
@@ -159,6 +161,20 @@ final class CheckoutCaptureTest extends TestCase {
 		$this->capture->capture();
 		self::assertCount( 3, $GLOBALS['arch035_queued'] );
 		self::assertNotSame( $first['checkoutKey'], $GLOBALS['arch035_queued'][2]['args']['event']['checkoutKey'] );
+	}
+
+	public function test_checkout_activity_v2_projects_verified_recipient_without_new_consent(): void {
+		$GLOBALS['arch035_wc']->customer->phone = '+447400123456';
+		$this->capture->capture();
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		$event = $GLOBALS['arch035_queued'][0]['args']['event'];
+		self::assertSame( 'woo.activity.v2', $event['schemaVersion'] );
+		self::assertSame( '447400123456', $event['checkout']['contact']['canonicalPhone'] );
+		self::assertArrayNotHasKey( 'verifiedCountryCode', $event['checkout']['contact'], 'Unverified billing country is not asserted' );
+		self::assertArrayNotHasKey( 'consent', $event );
+		$this->publisher->deliver( ...array_values( $GLOBALS['arch035_queued'][0]['args'] ) );
+		self::assertSame( '/v1/woocommerce/activity', parse_url( $this->sent[0][0], PHP_URL_PATH ) );
+		self::assertSame( $event, json_decode( $this->sent[0][1]['body'], true ) );
 	}
 
 	public function test_retry_preserves_event_and_never_blocks_checkout_on_remote_failure(): void {

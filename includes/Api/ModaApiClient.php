@@ -72,7 +72,8 @@ final class ModaApiClient {
 	public function publishActivity( array $connection, array $event ): void {
 		$type = $event['eventType'] ?? null;
 		if ( ! InstallationStore::isValidRecord( $connection ) ||
-			( $event['schemaVersion'] ?? null ) !== 'woo.activity.v1' ||
+			! in_array( $event['schemaVersion'] ?? null, array( 'woo.activity.v1', 'woo.activity.v2' ), true ) ||
+			( $event['schemaVersion'] === 'woo.activity.v2' && 'CHECKOUT_UPDATED' !== $type ) ||
 			! in_array( $type, array( 'CHECKOUT_UPDATED', 'ORDER_PLACED', 'ORDER_PAID', 'ORDER_CANCELLED' ), true ) ||
 			isset( $event['shopId'] ) ||
 			( 'CHECKOUT_UPDATED' === $type ? ! isset( $event['checkout'] ) || isset( $event['order'] ) :
@@ -90,6 +91,37 @@ final class ModaApiClient {
 		if ( ! self::hasExactKeys( $payload, array( 'status' ) ) || 'accepted' !== $payload['status'] ) {
 			throw new ModaApiClientException( 'remote_response_invalid', $status );
 		}
+	}
+
+
+	/** API-001 synchronous consent command; only a committed PostgreSQL ACK is success. */
+	public function publishWooConsent( array $connection, array $event ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			( $event['schemaVersion'] ?? null ) !== 'woo.whatsapp-consent.v1' ||
+			! in_array( $event['decision'] ?? null, array( 'GRANT', 'REVOKE' ), true ) ||
+			isset( $event['shopId'] ) || isset( $event['customerId'] ) || isset( $event['credential'] ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = wp_json_encode( $event );
+		if ( ! is_string( $body ) || strlen( $body ) > 8192 ) throw new ModaApiClientException( 'invalid_request' );
+		$response = $this->request( '/v1/woocommerce/whatsapp-consent', 'POST', array_merge(
+			self::installationHeaders( $connection ), array( 'Content-Type' => 'application/json; charset=utf-8' )
+		), $body, self::DEFAULT_TIMEOUT_SECONDS, 8192 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status ) throw new ModaApiClientException(
+			$status >= 400 && $status < 500 ? 'remote_rejected' : 'remote_unavailable', $status );
+		$result = $this->jsonBody( $response, 8192 );
+		if ( ! self::hasExactKeys( $result, array( 'schemaVersion', 'status', 'decision', 'consentRevision', 'decisionSequence' ) ) ||
+			$result['schemaVersion'] !== 'woo.whatsapp-consent.v1' ||
+			! in_array( $result['status'], array( 'recorded', 'duplicate' ), true ) ||
+			$result['decision'] !== $event['decision'] ||
+			! is_string( $result['consentRevision'] ) ||
+			! preg_match( '/^(0|[1-9][0-9]*)$/D', $result['consentRevision'] ) ||
+			! is_string( $result['decisionSequence'] ) ||
+			! preg_match( '/^(0|[1-9][0-9]*)$/D', $result['decisionSequence'] ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $result;
 	}
 
 	public function probe( array $connection ): array {

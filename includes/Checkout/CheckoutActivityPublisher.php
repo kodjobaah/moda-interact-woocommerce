@@ -35,6 +35,22 @@ final class CheckoutActivityPublisher {
 			'occurredAt' => gmdate( 'Y-m-d\TH:i:s' ) . '.000Z',
 			'checkout' => $snapshot,
 		);
+		// API-001's authenticated HTTP v2 envelope binds the activity to the
+		// *same* exact recipient normaliser as consent. The Background queue stays v1.
+		$contact = $event['checkout']['contact'] ?? null;
+		if ( is_array( $contact ) && isset( $contact['phone'] ) ) {
+			$country = null;
+			$customer = function_exists( 'WC' ) ? ( WC()->customer ?? null ) : null;
+			if ( is_object( $customer ) && method_exists( $customer, 'get_billing_country' ) ) {
+				$country = CheckoutConsentPhone::verifiedCountry( $customer->get_billing_country() );
+			}
+			$canonical = CheckoutConsentPhone::normalize( $contact['phone'], $country );
+			if ( null !== $canonical ) {
+				$event['schemaVersion'] = 'woo.activity.v2';
+				$event['checkout']['contact']['canonicalPhone'] = $canonical;
+				if ( null !== $country ) $event['checkout']['contact']['verifiedCountryCode'] = $country;
+			}
+		}
 		return $this->queue( $event );
 	}
 
@@ -109,7 +125,8 @@ final class CheckoutActivityPublisher {
 	}
 
 	private static function validActivityEvent( array $event ): bool {
-		return ( $event['schemaVersion'] ?? null ) === 'woo.activity.v1' &&
+		return in_array( $event['schemaVersion'] ?? null, array( 'woo.activity.v1', 'woo.activity.v2' ), true ) &&
+			( $event['schemaVersion'] !== 'woo.activity.v2' || ( $event['eventType'] ?? null ) === 'CHECKOUT_UPDATED' ) &&
 			CheckoutKey::valid( $event['eventId'] ?? null ) &&
 			CheckoutKey::valid( $event['checkoutKey'] ?? null ) &&
 			( ( ( $event['eventType'] ?? null ) === 'CHECKOUT_UPDATED' && isset( $event['checkout'] ) && ! isset( $event['order'] ) ) ||

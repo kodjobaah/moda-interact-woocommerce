@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 final class CheckoutConsentCheckbox {
 	public const CLASSIC_FIELD = 'moda_interact_whatsapp_recovery_opt_in';
 	public const BLOCK_FIELD = 'moda-interact/whatsapp-recovery-opt-in';
-	public const DISCLOSURE_VERSION = 'woo-whatsapp-recovery-v1';
+	public const DISCLOSURE_VERSION = 'moda.woo.whatsapp-recovery-marketing.v1';
 
 	private $eligible;
 	private bool $registered = false;
@@ -33,14 +33,17 @@ final class CheckoutConsentCheckbox {
 			$hostname = parse_url( home_url( '/' ), PHP_URL_HOST );
 			$store = is_string( $hostname ) && '' !== $hostname ? $hostname : 'this store';
 		}
+		$site_url = rtrim( (string) home_url( '/' ), '/' );
+		$connection = ( new \ModaInteract\WooCommerce\Connection\InstallationStore() )->read();
+		if ( 'valid' === $connection['state'] ) $site_url = $connection['record']['canonicalSiteUrl'];
 		return array(
 			'version' => self::DISCLOSURE_VERSION,
-			'locale' => get_locale(),
+			'locale' => str_replace( '_', '-', get_locale() ),
 			'text' => sprintf(
 				/* translators: %s: the merchant's displayed store name. */
 				__( 'I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously.', 'moda-interact' ),
 				$store
-			),
+			) . ' (' . $site_url . ')',
 		);
 	}
 

@@ -125,7 +125,7 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		self::assertSame( 96, $field['priority'] );
 		self::assertStringContainsString( 'WhatsApp marketing reminders', $field['label'] );
 		self::assertStringContainsString( 'Test Merchant', $field['label'] );
-		self::assertSame( 'en_GB', $field['custom_attributes']['data-moda-consent-locale'] );
+		self::assertSame( 'en-GB', $field['custom_attributes']['data-moda-consent-locale'] );
 		self::assertSame( CheckoutConsentCheckbox::DISCLOSURE_VERSION, $field['custom_attributes']['data-moda-consent-version'] );
 		self::assertSame( $result, $checkbox->classicFields( $result ), 'One checkbox after a repeated filter pass' );
 		$enabled = false;
@@ -178,8 +178,8 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 	public function test_disclosure_is_a_versioned_locale_specific_purpose_not_a_grant(): void {
 		$GLOBALS['moda_interact_store_locale'] = 'fr_FR';
 		$disclosure = CheckoutConsentCheckbox::disclosure();
-		self::assertSame( 'fr_FR', $disclosure['locale'] );
-		self::assertSame( 'woo-whatsapp-recovery-v1', $disclosure['version'] );
+		self::assertSame( 'fr-FR', $disclosure['locale'] );
+		self::assertSame( 'moda.woo.whatsapp-recovery-marketing.v1', $disclosure['version'] );
 		self::assertStringContainsString( 'unfinished checkout', $disclosure['text'] );
 	}
 }
