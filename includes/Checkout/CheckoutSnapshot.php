@@ -9,10 +9,15 @@ final class CheckoutSnapshot {
 	public static function fromCart( mixed $cart, mixed $customer ): ?array {
 		if ( ! is_object( $cart ) || ! method_exists( $cart, 'get_cart' ) || ! method_exists( $cart, 'get_total' ) ) return null;
 		$currency = function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : null;
-		$total = self::money( $cart->get_total( 'edit' ) );
-		if ( ! is_string( $currency ) || ! preg_match( '/^[A-Z]{3}$/D', $currency ) || null === $total ) return null;
+		if ( ! is_string( $currency ) || ! preg_match( '/^[A-Z]{3}$/D', $currency ) ) return null;
 		$lines = $cart->get_cart();
-		if ( ! is_array( $lines ) || array() === $lines ) return null;
+		if ( ! is_array( $lines ) ) return null;
+		// A verified empty cart is different from unavailable/oversized item data.
+		// Woo may still hold its pre-removal total until calculate_totals() runs;
+		// calculate_totals() itself skips the after-totals hook for an empty cart.
+		if ( array() === $lines ) return array( 'currency' => $currency, 'total' => '0.00', 'items' => array() );
+		$total = self::money( $cart->get_total( 'edit' ) );
+		if ( null === $total ) return null;
 		$snapshot = array( 'currency' => $currency, 'total' => $total );
 		// Never publish a misleading *partial* basket if a shop has more than 50 lines.
 		if ( count( $lines ) <= 50 ) {
