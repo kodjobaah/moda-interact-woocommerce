@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { compileCatalogues } from '../../scripts/i18n/compile.mjs';
+import { compileCatalogues } from '../../../scripts/i18n/compile.mjs';
 
 const testAssets = 'tests/integration/.localization-fixture-assets';
 

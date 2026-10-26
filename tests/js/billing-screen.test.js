@@ -630,22 +630,22 @@ describe('Billing screen', () => {
 			tree,
 			(node) => node.props.role === 'alertdialog'
 		);
-		const document = { activeElement: null };
+		const ownerDocumentFixture = { activeElement: null };
 		const keepButton = {
 			focus() {
-				document.activeElement = keepButton;
+				ownerDocumentFixture.activeElement = keepButton;
 			},
 		};
 		const confirmButton = {
 			focus() {
-				document.activeElement = confirmButton;
+				ownerDocumentFixture.activeElement = confirmButton;
 			},
 		};
 		const event = (key, shiftKey = false) => ({
 			key,
 			shiftKey,
 			currentTarget: {
-				ownerDocument: document,
+				ownerDocument: ownerDocumentFixture,
 				querySelectorAll: () => [keepButton, confirmButton],
 			},
 			preventDefault: vi.fn(),
@@ -665,12 +665,12 @@ describe('Billing screen', () => {
 		const reverseAtStart = event('Tab', true);
 		dialog.props.onKeyDown(reverseAtStart);
 		expect(reverseAtStart.preventDefault).toHaveBeenCalledOnce();
-		expect(document.activeElement).toBe(confirmButton);
+		expect(ownerDocumentFixture.activeElement).toBe(confirmButton);
 
 		const forwardAtEnd = event('Tab');
 		dialog.props.onKeyDown(forwardAtEnd);
 		expect(forwardAtEnd.preventDefault).toHaveBeenCalledOnce();
-		expect(document.activeElement).toBe(keepButton);
+		expect(ownerDocumentFixture.activeElement).toBe(keepButton);
 
 		const escape = event('Escape');
 		dialog.props.onKeyDown(escape);
@@ -680,12 +680,12 @@ describe('Billing screen', () => {
 
 		const cancelTrigger = {
 			focus: vi.fn(() => {
-				document.activeElement = cancelTrigger;
+				ownerDocumentFixture.activeElement = cancelTrigger;
 			}),
 		};
 		restoreCancelDialogFocus({ current: cancelTrigger });
 		expect(cancelTrigger.focus).toHaveBeenCalledOnce();
-		expect(document.activeElement).toBe(cancelTrigger);
+		expect(ownerDocumentFixture.activeElement).toBe(cancelTrigger);
 	});
 
 	it('requires the explicit confirmation button to submit cancellation', () => {

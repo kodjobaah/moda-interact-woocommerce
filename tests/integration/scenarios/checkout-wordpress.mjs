@@ -4,7 +4,7 @@ import {
 	assertNeverActiveEmpty,
 	assertClassicClearRefill,
 	assertStoreApiClearRefill,
-} from './checkout-clear-refill-wordpress.mjs';
+	} from '../checkout-clear-refill-wordpress.mjs';
 
 // Real HTTP checkout sessions; unlike the PHPUnit hook doubles these requests
 // pass through WooCommerce's cart, checkout and Store API controllers.
@@ -126,21 +126,6 @@ async function assertHttpOk(response, context) {
 	}
 }
 
-function actionRows(wp, parseJsonOutput) {
-	return parseJsonOutput(
-		wp(
-			'eval',
-			`
-    $store = ActionScheduler::store();
-    $ids = $store->query_actions(array('hook' => 'moda_interact_dispatch_checkout_activity', 'group' => 'moda-interact-activity', 'status' => ActionScheduler_Store::STATUS_PENDING, 'per_page' => 100));
-    $rows = array();
-    foreach ($ids as $id) { $a = $store->fetch_action($id); $rows[] = array('id' => $id, 'args' => $a->get_args()); }
-    echo wp_json_encode($rows);
-  `
-		)
-	);
-}
-
 // Exercise the published Action Scheduler callback without changing its retry
 // delay. Checkout and order tests share the same queued delivery contract.
 export async function deliverCapturedAction(wpAsync, action) {
@@ -235,6 +220,7 @@ export async function assertCheckoutWordPress({
 	wp,
 	wpAsync,
 	parseJsonOutput,
+	getPendingCheckoutActions,
 	getActivityRequests,
 	setActivityStatus,
 }) {
@@ -288,7 +274,7 @@ export async function assertCheckoutWordPress({
 			siteUrl,
 			checkoutPage: fixture.classicCheckoutPage,
 			createSession: session,
-			getActions: () => actionRows(wp, parseJsonOutput),
+			getActions: getPendingCheckoutActions,
 		});
 		for (const [kind, cookie] of [
 			['guest', ''],
@@ -312,9 +298,7 @@ export async function assertCheckoutWordPress({
 				200,
 				`${kind} classic checkout page`
 			);
-			const classicBefore = checkoutEvents(
-				actionRows(wp, parseJsonOutput)
-			);
+			const classicBefore = checkoutEvents(getPendingCheckoutActions());
 			const form = new URLSearchParams({
 				post_data: new URLSearchParams({
 					billing_first_name: 'Classic',
@@ -349,9 +333,7 @@ export async function assertCheckoutWordPress({
 				classicResponse,
 				`${kind} classic checkout AJAX`
 			);
-			const classicAfter = checkoutEvents(
-				actionRows(wp, parseJsonOutput)
-			);
+			const classicAfter = checkoutEvents(getPendingCheckoutActions());
 			assert.ok(
 				classicAfter.length > classicBefore.length,
 				`${kind}: Classic AJAX must emit checkout activity`
@@ -373,7 +355,7 @@ export async function assertCheckoutWordPress({
 				reviewNonce,
 				reviewBody: form.get('post_data'),
 				initialEvent: classicEvent,
-				getActions: () => actionRows(wp, parseJsonOutput),
+				getActions: getPendingCheckoutActions,
 			});
 			process.stdout.write(
 				`ARCH-035 Classic ${kind}: checkout AJAX capture PASS\n`
@@ -411,9 +393,9 @@ export async function assertCheckoutWordPress({
 			// With an existing key (notably a logged-in shopper who just used
 			// Classic checkout), cart/update-customer can publish that changed
 			// snapshot first. PATCH must not duplicate an identical observation.
-			const previous = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const previous = checkoutEvents(getPendingCheckoutActions());
 			await persistBlocksBilling(blocks, body.billing_address, kind);
-			const afterCustomer = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const afterCustomer = checkoutEvents(getPendingCheckoutActions());
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'PATCH',
 				headers: { 'content-type': 'application/json' },
@@ -424,7 +406,7 @@ export async function assertCheckoutWordPress({
 				200,
 				`${kind} Store API PATCH: ${await r.clone().text()}`
 			);
-			const after = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const after = checkoutEvents(getPendingCheckoutActions());
 			const customerAdded = newCheckoutActions(previous, afterCustomer);
 			const patchAdded = newCheckoutActions(afterCustomer, after);
 			const initialAdded = newCheckoutActions(previous, after);
@@ -462,16 +444,14 @@ export async function assertCheckoutWordPress({
 				body.billing_address.first_name,
 				`${kind}: first queued Store API snapshot must contain updated billing name`
 			);
-			// Identical PATCH must not publish an additional event.
+			// An identical PATCH must not publish another event after the first update.
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'PATCH',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify(body),
 			});
 			assert.equal(r.status, 200);
-			const unchangedRows = checkoutEvents(
-				actionRows(wp, parseJsonOutput)
-			);
+			const unchangedRows = checkoutEvents(getPendingCheckoutActions());
 			assert.equal(
 				newCheckoutActions(after, unchangedRows).length,
 				0,
@@ -489,7 +469,7 @@ export async function assertCheckoutWordPress({
 			const responseMatches =
 				patchResult?.billing_address?.first_name ===
 				body.billing_address.first_name;
-			const revisedRows = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const revisedRows = checkoutEvents(getPendingCheckoutActions());
 			const revisedAdded = newCheckoutActions(unchangedRows, revisedRows);
 			const diagnostic = changedCheckoutDiagnostic(
 				unchangedRows,
@@ -532,7 +512,7 @@ export async function assertCheckoutWordPress({
 				sentBefore,
 				'capture must not synchronously call the Moda API'
 			);
-			const outageRows = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const outageRows = checkoutEvents(getPendingCheckoutActions());
 			const outageAdded = newCheckoutActions(revisedRows, outageRows);
 			assert.ok(
 				outageAdded.length > 0,
@@ -562,7 +542,7 @@ export async function assertCheckoutWordPress({
 				failedRequests.length > 0,
 				'503 must be observed by the HTTPS fixture'
 			);
-			const pending = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const pending = checkoutEvents(getPendingCheckoutActions());
 			const retry = pending.find(
 				(row) =>
 					row.args.attempt === 2 &&
@@ -587,11 +567,11 @@ export async function assertCheckoutWordPress({
 				productId: fixture.product,
 				checkoutBody: body,
 				initialEvent: first,
-				getActions: () => actionRows(wp, parseJsonOutput),
+				getActions: getPendingCheckoutActions,
 			});
 			// Capture order events before placement, so HPOS order creation can be
 			// verified separately from earlier checkout events.
-			const beforeOrder = actionRows(wp, parseJsonOutput);
+			const beforeOrder = getPendingCheckoutActions();
 			// Place an actual order using Woo Store API; verify HPOS order-object metadata.
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'POST',
@@ -634,7 +614,7 @@ export async function assertCheckoutWordPress({
 				checkoutKey: first.checkoutKey,
 				beforeOrder,
 				checkoutAction: newestAction(revisedAdded),
-				getActions: () => actionRows(wp, parseJsonOutput),
+				getActions: getPendingCheckoutActions,
 				newActions: newCheckoutActions,
 				deliverAction: (action) =>
 					deliverCapturedAction(wpAsync, action),
