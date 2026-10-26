@@ -60,14 +60,25 @@ export async function assertOrderWordPress({
 			`${kind}: activity API must accept either source order`
 		);
 	}
-	// payment_complete(), not a processing/completed status label, is
-	// the authoritative Woo payment signal for ORDER_PAID.
+	// Gateway variation: Woo sets its paid status directly without calling
+	// payment_complete(). That transition is still paid evidence in HPOS.
 	await wpAsync(
 		'eval',
 		`
 		$order = wc_get_order(${Number(orderId)});
-		$order->update_status('pending');
-		if (!$order->payment_complete('arch035-fixture')) throw new Exception('payment_complete failed');
+		$order->update_status('on-hold');
+	`
+	);
+	assert.equal(
+		orderEvents(getActions(), orderId, 'ORDER_PAID').length,
+		0,
+		`${kind}: on-hold status must not imply paid`
+	);
+	await wpAsync(
+		'eval',
+		`
+		$order = wc_get_order(${Number(orderId)});
+		$order->update_status('processing'); // Simulates a gateway status update.
 	`
 	);
 	const afterPaid = getActions();
@@ -76,8 +87,22 @@ export async function assertOrderWordPress({
 		orderId,
 		'ORDER_PAID'
 	);
-	assert.equal(paid.length, 1, `${kind}: confirmed payment must emit once`);
+	assert.equal(paid.length, 1, `${kind}: Woo confirmed paid status must emit once`);
 	assert.equal(paid[0].args.event.checkoutKey, checkoutKey);
+	// Woo's payment-complete and payment-status callbacks must reuse this event.
+	await wpAsync(
+		'eval',
+		`
+		$order = wc_get_order(${Number(orderId)});
+		$order->update_status('pending');
+		if (!$order->payment_complete('arch048-fixture')) throw new Exception('payment_complete failed');
+	`
+	);
+	assert.equal(
+		orderEvents(getActions(), orderId, 'ORDER_PAID').length,
+		1,
+		`${kind}: payment_complete after a paid transition must deduplicate`
+	);
 	await wpAsync(
 		'eval',
 		`do_action('woocommerce_payment_complete', ${Number(orderId)});`
@@ -178,7 +203,21 @@ export async function assertOrderWordPress({
 		allCancellationEvents[0].args.event.eventId,
 		allCancellationEvents[1].args.event.eventId
 	);
+	await wpAsync(
+		'eval',
+		`
+		$order = wc_get_order(${Number(orderId)});
+		$order->update_status('failed');
+		$order->update_status('refunded');
+		do_action('woocommerce_payment_complete', $order->get_id());
+	`
+	);
+	assert.equal(
+		orderEvents(getActions(), orderId, 'ORDER_PAID').length,
+		1,
+		`${kind}: failed/refunded and a stray payment callback cannot reverse confirmed prior state`
+	);
 	process.stdout.write(
-		`ARCH-035 Order ${kind}: placed, payment, cancellation, replay, 503, HPOS PASS\n`
+		`ARCH-048 Order ${kind}: placed, status-paid, payment, cancellation, replay, 503, HPOS PASS\n`
 	);
 }
