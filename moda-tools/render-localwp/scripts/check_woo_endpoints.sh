@@ -5,16 +5,16 @@ set -euo pipefail
 ORIGIN="${1:-}"
 LOCAL_API_ORIGIN="${MODA_LOCAL_API_ORIGIN:-http://127.0.0.1:3100}"
 if [[ -z "$ORIGIN" ]]; then
-  echo 'Usage: check_woo_endpoints.sh https://YOUR-URL.ngrok-free.app' >&2
+  echo 'Usage: check_woo_endpoints.sh <public-tunnel-https-origin>' >&2
   exit 2
 fi
 for program in curl jq; do
   command -v "$program" >/dev/null || { echo "Missing '$program'" >&2; exit 2; }
 done
 
-# Strict origin-only, ngrok HTTPS URL to avoid unexpected requests to arbitrary hosts.
-if [[ ! "$ORIGIN" =~ ^https://[a-zA-Z0-9-]+\.(ngrok-free\.app|ngrok\.app|ngrok\.io)/?$ ]]; then
-  echo 'ERROR: Expected a public HTTPS ngrok origin with no extra path.' >&2
+# Strict origin-only tunnel URL to avoid unexpected requests to arbitrary hosts.
+if [[ ! "$ORIGIN" =~ ^https://[a-zA-Z0-9-]+\.(ngrok-free\.app|ngrok\.app|ngrok\.io|loca\.lt|localtunnel\.me|trycloudflare\.com)/?$ ]]; then
+  echo 'ERROR: Expected a supported public HTTPS tunnel origin with no extra path.' >&2
   exit 2
 fi
 ORIGIN="${ORIGIN%/}"
@@ -24,7 +24,7 @@ body="$(mktemp)"
 trap 'rm -f "$headers" "$body"' EXIT
 
 echo "WordPress REST: $ORIGIN/wp-json/"
-status="$(curl --connect-timeout 5 --max-time 20 -sS -D "$headers" -o "$body" -w '%{http_code}' "$ORIGIN/wp-json/")" || {
+status="$(curl --connect-timeout 5 --max-time 20 -sS -H 'bypass-tunnel-reminder: true' -D "$headers" -o "$body" -w '%{http_code}' "$ORIGIN/wp-json/")" || {
   echo 'FAIL: Tunnel/network error.' >&2
   exit 1
 }
@@ -34,7 +34,7 @@ if [[ "$status" != '200' ]]; then
   exit 1
 fi
 if ! jq -e . "$body" >/dev/null 2>&1; then
-  echo 'FAIL: Response is not JSON (ngrok warning, LocalWP page or other HTML).' >&2
+  echo 'FAIL: Response is not JSON (tunnel warning, LocalWP page or other HTML).' >&2
   head -c 150 "$body"; echo
   exit 1
 fi

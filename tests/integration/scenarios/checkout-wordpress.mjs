@@ -121,21 +121,6 @@ async function assertHttpOk(response, context) {
 	}
 }
 
-function actionRows(wp, parseJsonOutput) {
-	return parseJsonOutput(
-		wp(
-			'eval',
-			`
-    $store = ActionScheduler::store();
-    $ids = $store->query_actions(array('hook' => 'moda_interact_dispatch_checkout_activity', 'group' => 'moda-interact-activity', 'status' => ActionScheduler_Store::STATUS_PENDING, 'per_page' => 100));
-    $rows = array();
-    foreach ($ids as $id) { $a = $store->fetch_action($id); $rows[] = array('id' => $id, 'args' => $a->get_args()); }
-    echo wp_json_encode($rows);
-  `
-		)
-	);
-}
-
 // Exercise the published Action Scheduler callback without changing its retry
 // delay. Checkout and order tests share the same queued delivery contract.
 export async function deliverCapturedAction(wpAsync, action) {
@@ -230,6 +215,7 @@ export async function assertCheckoutWordPress({
 	wp,
 	wpAsync,
 	parseJsonOutput,
+	getPendingCheckoutActions,
 	getActivityRequests,
 	setActivityStatus,
 }) {
@@ -301,9 +287,7 @@ export async function assertCheckoutWordPress({
 				200,
 				`${kind} classic checkout page`
 			);
-			const classicBefore = checkoutEvents(
-				actionRows(wp, parseJsonOutput)
-			);
+			const classicBefore = checkoutEvents(getPendingCheckoutActions());
 			const form = new URLSearchParams({
 				post_data: new URLSearchParams({
 					billing_first_name: 'Classic',
@@ -338,9 +322,7 @@ export async function assertCheckoutWordPress({
 				classicResponse,
 				`${kind} classic checkout AJAX`
 			);
-			const classicAfter = checkoutEvents(
-				actionRows(wp, parseJsonOutput)
-			);
+			const classicAfter = checkoutEvents(getPendingCheckoutActions());
 			assert.ok(
 				classicAfter.length > classicBefore.length,
 				`${kind}: Classic AJAX must emit checkout activity`
@@ -389,7 +371,7 @@ export async function assertCheckoutWordPress({
 			// A real Blocks checkout first persists the customer address, then
 			// sends checkout PATCH to observe the updated cart/customer state.
 			await persistBlocksBilling(blocks, body.billing_address, kind);
-			const previous = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const previous = checkoutEvents(getPendingCheckoutActions());
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'PATCH',
 				headers: { 'content-type': 'application/json' },
@@ -400,33 +382,23 @@ export async function assertCheckoutWordPress({
 				200,
 				`${kind} Store API PATCH: ${await r.clone().text()}`
 			);
-			const after = checkoutEvents(actionRows(wp, parseJsonOutput));
-			assert.ok(
-				after.length > previous.length,
-				`${kind}: PATCH must enqueue an event`
-			);
-			const initialAdded = newCheckoutActions(previous, after);
-			assert.ok(
-				initialAdded.length > 0,
-				`${kind}: initial PATCH must create a new action ID`
-			);
-			const first = newestAction(initialAdded).args.event;
-			assertEvent(first);
-			// Identical PATCH must not publish an additional event.
+			// An identical PATCH must not publish another event, so one snapshot
+			// after both requests proves the first enqueued and the second deduplicated.
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'PATCH',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify(body),
 			});
 			assert.equal(r.status, 200);
-			const unchangedRows = checkoutEvents(
-				actionRows(wp, parseJsonOutput)
-			);
+			const unchangedRows = checkoutEvents(getPendingCheckoutActions());
+			const initialAdded = newCheckoutActions(previous, unchangedRows);
 			assert.equal(
-				newCheckoutActions(after, unchangedRows).length,
-				0,
-				`${kind}: identical PATCH must not enqueue another action`
+				initialAdded.length,
+				1,
+				`${kind}: initial PATCH must enqueue one action and identical PATCH must deduplicate`
 			);
+			const first = newestAction(initialAdded).args.event;
+			assertEvent(first);
 			body.billing_address.first_name = 'Updated';
 			await persistBlocksBilling(blocks, body.billing_address, kind);
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
@@ -439,7 +411,7 @@ export async function assertCheckoutWordPress({
 			const responseMatches =
 				patchResult?.billing_address?.first_name ===
 				body.billing_address.first_name;
-			const revisedRows = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const revisedRows = checkoutEvents(getPendingCheckoutActions());
 			const revisedAdded = newCheckoutActions(unchangedRows, revisedRows);
 			const diagnostic = changedCheckoutDiagnostic(
 				unchangedRows,
@@ -482,7 +454,7 @@ export async function assertCheckoutWordPress({
 				sentBefore,
 				'capture must not synchronously call the Moda API'
 			);
-			const outageRows = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const outageRows = checkoutEvents(getPendingCheckoutActions());
 			const outageAdded = newCheckoutActions(revisedRows, outageRows);
 			assert.ok(
 				outageAdded.length > 0,
@@ -512,7 +484,7 @@ export async function assertCheckoutWordPress({
 				failedRequests.length > 0,
 				'503 must be observed by the HTTPS fixture'
 			);
-			const pending = checkoutEvents(actionRows(wp, parseJsonOutput));
+			const pending = checkoutEvents(getPendingCheckoutActions());
 			const retry = pending.find(
 				(row) =>
 					row.args.attempt === 2 &&
@@ -533,7 +505,7 @@ export async function assertCheckoutWordPress({
 			);
 			// Capture order events before placement, so HPOS order creation can be
 			// verified separately from earlier checkout events.
-			const beforeOrder = actionRows(wp, parseJsonOutput);
+			const beforeOrder = getPendingCheckoutActions();
 			// Place an actual order using Woo Store API; verify HPOS order-object metadata.
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'POST',
@@ -576,7 +548,7 @@ export async function assertCheckoutWordPress({
 				checkoutKey: first.checkoutKey,
 				beforeOrder,
 				checkoutAction: newestAction(revisedAdded),
-				getActions: () => actionRows(wp, parseJsonOutput),
+				getActions: getPendingCheckoutActions,
 				newActions: newCheckoutActions,
 				deliverAction: (action) =>
 					deliverCapturedAction(wpAsync, action),

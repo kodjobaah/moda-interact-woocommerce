@@ -15,8 +15,8 @@ import {
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { availableWpEnvHostPort } from './wp-env-host-port.mjs';
-import { assertReleaseLocales } from './release-locales.mjs';
-import { assertReleaseBrowserLocales } from './release-browser-locales.mjs';
+import { assertReleaseLocales } from './scenarios/release-locales.mjs';
+import { assertReleaseBrowserLocales } from './scenarios/release-browser-locales.mjs';
 
 const repository = resolve(import.meta.dirname, '../..');
 const baselineCommit = '98273e4ebdfa9a78146cb897fb905ef97a6814e7';

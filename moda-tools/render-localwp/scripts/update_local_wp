@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Update the LocalWP WooCommerce sandbox's canonical URL for ngrok testing.
+"""Update the LocalWP WooCommerce sandbox's canonical URL for public tunnel testing.
 
 Usage:
     update_local_wp https://your-tunnel.ngrok-free.app
+    update_local_wp https://your-subdomain.loca.lt
+    update_local_wp https://random-name.trycloudflare.com
     update_local_wp --status
     update_local_wp --restore
     update_local_wp URL --root '/custom/Local Sites/woocommerce-sandbox/app/public'
@@ -34,15 +36,16 @@ DEFAULT_ROOT = Path(os.environ.get(
 )).expanduser()
 
 
-def ngrok_origin(value: str) -> str:
-    """Accept a public HTTPS ngrok hostname, not an arbitrary URL or local target."""
+def public_tunnel_origin(value: str) -> str:
+    """Accept supported public HTTPS tunnel hosts, not arbitrary URLs or local targets."""
     url = urlsplit(value)
     host = url.hostname or ""
-    if (url.scheme != "https" or not re.fullmatch(r"[a-z0-9-]+\.(?:ngrok-free\.app|ngrok\.app|ngrok\.io)", host, re.I)):
-        raise ValueError("Provide an HTTPS ngrok domain, e.g. https://example.ngrok-free.app")
+    if (url.scheme != "https" or not re.fullmatch(
+            r"[a-z0-9-]+\.(?:ngrok-free\.app|ngrok\.app|ngrok\.io|loca\.lt|localtunnel\.me|trycloudflare\.com)", host, re.I)):
+        raise ValueError("Provide an HTTPS ngrok, localtunnel or Cloudflare Quick Tunnel domain")
     if (url.username or url.password or url.port not in (None, 443) or
             url.path not in ("", "/") or url.query or url.fragment):
-        raise ValueError("Use only the HTTPS ngrok origin (no path, credentials, query or fragment)")
+        raise ValueError("Use only the HTTPS tunnel origin (no path, credentials, query or fragment)")
     return "https://" + host.lower()
 
 
@@ -52,7 +55,7 @@ def make_block(origin: str) -> str:
         "// Development tunnel only. Remove with: update_local_wp --restore\n"
         f"define('WP_HOME', '{origin}');\n"
         f"define('WP_SITEURL', '{origin}');\n"
-        "// ngrok terminates TLS before forwarding the request to LocalWP.\n"
+        "// The public tunnel terminates TLS before forwarding the request to LocalWP.\n"
         "if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&\n"
         "    $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {\n"
         "    $_SERVER['HTTPS'] = 'on';\n"
@@ -105,7 +108,7 @@ def execute(args: argparse.Namespace) -> int:
             match = re.search(r"define\('WP_HOME', '([^']+)'\)", current.group())
             print("Managed tunnel URL:", match.group(1) if match else "(unknown)")
         else:
-            print("No managed ngrok override in", config)
+            print("No managed tunnel override in", config)
         return 0
     if args.restore:
         if not current:
@@ -113,7 +116,7 @@ def execute(args: argparse.Namespace) -> int:
             return 0
         revised = old[:current.start()] + old[current.end():]
     else:
-        origin = ngrok_origin(args.url)
+        origin = public_tunnel_origin(args.url)
         unmanaged = old[:current.start()] + old[current.end():] if current else old
         if PREEXISTING_URL.search(unmanaged):
             print("ERROR: wp-config.php already defines WP_HOME/WP_SITEURL outside the managed block.", file=sys.stderr)
@@ -138,21 +141,21 @@ def execute(args: argparse.Namespace) -> int:
         print("WordPress WP_HOME and WP_SITEURL now use:", origin)
     print("Configuration:", config)
     print("Backup:", backup)
-    print("Keep the ngrok tunnel running with its LocalWP host-header rewrite.")
+    print("Keep the tunnel running with its LocalWP host-header routing.")
     print("Note: Changing canonical identity may require a new Moda installation/read authorisation.")
     return 0
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("url", nargs="?", help="Public HTTPS ngrok origin")
+    parser.add_argument("url", nargs="?", help="Public HTTPS ngrok, localtunnel or Cloudflare Quick Tunnel origin")
     parser.add_argument("--root", default=str(DEFAULT_ROOT), help="LocalWP WordPress app/public directory")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--restore", action="store_true", help="Remove only this script's managed override")
     mode.add_argument("--status", action="store_true", help="Display the current managed override")
     args = parser.parse_args()
     if not args.restore and not args.status and not args.url:
-        parser.error("Provide <ngrok_url>, or use --status / --restore")
+        parser.error("Provide <tunnel_url>, or use --status / --restore")
     if (args.restore or args.status) and args.url:
         parser.error("--status and --restore do not take a URL")
     try:

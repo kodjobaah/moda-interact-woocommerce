@@ -2,6 +2,11 @@
 
 **Runbook version:** 1.0 · **Validated scenario:** 15 October 2026 · **Audience:** developer testing a disposable WooCommerce Sandbox in LocalWP.
 
+*** MAKIING SURE YOU DO THS..TO RESET***
+```code
+wp option delete moda_interact_woocommerce_connection
+```
+
 This runbook reproduces the successful end-to-end topology:
 
 ```text
@@ -25,15 +30,15 @@ Render recovery worker ──► BullMQ/Redis ──► Woo coupon worker
 **Key rules:**
 
 - **LocalWP and Moda Interact API run on your Mac. Background runs on Render.** The local API and Render Background must access the **same PostgreSQL database**.
-- The Woo store is exposed to Render through **ngrok HTTPS**. WordPress/LocalWP must advertise that exact tunnel hostname.
+- The Woo store is exposed to Render through **ngrok or localtunnel HTTPS**. WordPress/LocalWP must advertise that exact tunnel hostname.
 - **Background does not need a per-shop URL environment variable.** It reads `WooCommerceInstallation.canonicalSiteUrl` from PostgreSQL.
 - **Background owns catalogue registration and provider synchronisation**. Merchant API owns `ShopifyDiscount.isAvailable` checkbox selections. Do not manually create catalogue records.
 - The API and Background services have **different connection-mode configurations**. Do not set Render to `local-development`.
-- **Avoid a rotating tunnel URL:** every new hostname can mean a new Woo installation, new Shop and new REST-read authorisation. Use a reserved ngrok domain if available.
+- **Avoid a rotating tunnel URL:** every new hostname can mean a new Woo installation, new Shop and new REST-read authorisation. Use a reserved ngrok domain or stable localtunnel subdomain if available.
 - Keep this runbook out of production merchant environments. Never commit credentials, tokens, connection exports, SQL backups or keyrings.
 
 
-Prerequisites: LocalWP, ngrok with authentication configured, macOS Terminal, Python 3, `curl`, `jq`, `node`/`npm`, and WP-CLI through **LocalWP → WooCommerce Sandbox → Site Shell**. The scripts do **not** connect to or change Render, Woo REST authorisation grants or Moda PostgreSQL.
+Prerequisites: LocalWP, ngrok or localtunnel, macOS Terminal, Python 3, `curl`, `jq`, `node`/`npm`, and WP-CLI through **LocalWP → WooCommerce Sandbox → Site Shell**. The scripts do **not** connect to or change Render, Woo REST authorisation grants or Moda PostgreSQL.
 
 The default LocalWP WordPress root is:
 
@@ -108,16 +113,16 @@ echo PHP_EOL;
 
 Expected result: `200`. If PHP cannot reach the API, do not reconnect yet; inspect the WordPress API origin, API process and local network restrictions.
 
-## 2. Start ngrok with LocalWP Host-header rewriting
+## 2. Start a public HTTPS tunnel with LocalWP host routing
 
-From one terminal:
+From one terminal, the launcher defaults to ngrok:
 
 ```bash
 cd ~/moda-tools/ARCH-036-render-localwp
 ./scripts/start_woo_tunnel.sh
 ```
 
-This runs the equivalent of:
+This starts ngrok with the equivalent of:
 
 ```bash
 ngrok http --host-header=rewrite http://woocommerce-sandbox.local
@@ -125,9 +130,27 @@ ngrok http --host-header=rewrite http://woocommerce-sandbox.local
 
 LocalWP routes incoming requests using the original `.local` hostname. Without `--host-header=rewrite`, you may get **LocalWP 404: Site Not Found** even when ngrok itself is working.
 
-Keep the ngrok process running throughout the test. Copy the **current `https://...ngrok-free.app` forwarding URL**. For a reserved domain, set `NGROK_DOMAIN=your-reserved.ngrok-free.app` before running the launcher.
+Keep ngrok running throughout the test. Copy the **current `https://...ngrok-free.app` forwarding URL**. For a reserved domain, set `NGROK_DOMAIN=your-reserved.ngrok-free.app` before running the launcher.
 
-**Avoid using a URL from an earlier ngrok session.** Your tested domains changed several times (`fd7f...`, `c6a8...`, `1a57...`).
+To use localtunnel instead, select it through the same launcher:
+
+```bash
+WOO_TUNNEL_PROVIDER=localtunnel ./scripts/start_woo_tunnel.sh
+```
+
+The launcher routes to `woocommerce-sandbox.local` by default. Set `LOCALWP_ORIGIN` to override the local host/port, and optionally set `LOCALTUNNEL_SUBDOMAIN` for a stable localtunnel name. Keep it running and copy the HTTPS URL it prints (usually `https://...loca.lt`). Localtunnel has no local inspection API, so its URL must be passed to the preparation/check scripts. The scripts send localtunnel's `bypass-tunnel-reminder` header when probing the WordPress REST endpoint.
+
+That bypass header is used only by the local preparation/check scripts. It does not make the Render Background worker send the header, so a passing local probe does **not** establish that Render can read Woo data through localtunnel. Use ngrok for the Render worker flow unless the worker's HTTP client is separately configured and reviewed to send localtunnel's required header.
+
+To use a Cloudflare Quick Tunnel, install `cloudflared` and select it through the launcher:
+
+```bash
+WOO_TUNNEL_PROVIDER=cloudflared ./scripts/start_woo_tunnel.sh
+```
+
+The launcher runs `cloudflared tunnel --url "$LOCALWP_ORIGIN" --http-host-header <LOCALWP_HOST>` so LocalWP receives the hostname it expects (by default, `woocommerce-sandbox.local`) instead of the public tunnel hostname. Copy the generated `https://*.trycloudflare.com` URL and pass it to `prepare_woo_render_test.sh` or `check_woo_endpoints.sh`. Quick Tunnel URLs are temporary and change when restarted; use a named Cloudflare Tunnel and your own hostname if a stable URL is required. The tunnel exposes the local WordPress site publicly while running; stop it when testing is done.
+
+**Avoid using a URL from an earlier tunnel session.** ngrok, localtunnel, and Cloudflare Quick Tunnel URLs can change when restarted.
 
 ## 3. Prepare the WordPress public identity
 
@@ -138,7 +161,14 @@ cd ~/moda-tools/ARCH-036-render-localwp
 ./scripts/prepare_woo_render_test.sh 'https://CURRENT-TUNNEL.ngrok-free.app'
 ```
 
-If ngrok's local inspection API is enabled at `127.0.0.1:4040`, you can omit the URL and let the script discover the first public HTTPS tunnel:
+For localtunnel, either pass the URL or set it in the environment:
+
+```bash
+./scripts/prepare_woo_render_test.sh 'https://CURRENT-SUBDOMAIN.loca.lt'
+LOCAL_TUNNEL_URL=' https://inspired-minimize-tap-above.trycloudflare.com' ./scripts/prepare_woo_render_test.sh
+```
+
+If ngrok's local inspection API is enabled at `127.0.0.1:4040`, you can omit the URL and let the script discover the first public HTTPS ngrok tunnel. For localtunnel or Cloudflare Quick Tunnel, pass the URL or set `LOCAL_TUNNEL_URL` because they do not provide this ngrok inspection endpoint:
 
 ```bash
 ./scripts/prepare_woo_render_test.sh
@@ -175,10 +205,12 @@ The `--restore` command removes the managed block; it does **not** erase Moda co
 ./scripts/check_woo_endpoints.sh 'https://CURRENT-TUNNEL.ngrok-free.app'
 ```
 
+The endpoint checker also accepts `https://...loca.lt`, `https://...localtunnel.me` and `https://...trycloudflare.com` origins.
+
 Or:
 
 ```bash
-curl -sS 'https://CURRENT-TUNNEL.ngrok-free.app/wp-json/' \
+curl -sS -H 'bypass-tunnel-reminder: true' 'https://CURRENT-TUNNEL.ngrok-free.app/wp-json/' \
   | jq '{home, url}'
 ```
 
@@ -301,9 +333,10 @@ Once CURRENT, visit **Moda Interact → Recovery settings**, click **Refresh** i
 
 | Symptom | Cause / next step |
 |---|---|
+| Cloudflare HTTP 530 from a Quick Tunnel | Confirm the `cloudflared` process is still running and use the `trycloudflare.com` URL printed by that same current process. Inspect its terminal output for origin/DNS connection errors; the preparation script prints the Cloudflare response excerpt. |
 | LocalWP **404 Site Not Found** via ngrok | Start tunnel with `--host-header=rewrite`; verify local site is running. |
 | `/wp-json/` 200 but `home` or `url` still `.local` | Run `prepare_woo_render_test.sh` with **current** tunnel; inspect conflicts in `wp-config.php`. |
-| `jq` reports invalid numeric literal | `curl` got non-JSON (ngrok warning, HTML, redirect or error). Check `curl -i URL/wp-json/`. |
+| `jq` reports invalid numeric literal | `curl` got non-JSON (tunnel warning, HTML, redirect or error). Check `curl -i URL/wp-json/`. |
 | `curl: (56) Failure writing output...` after `| head -c` | The `head` process closed early; avoid piping a huge REST response into `head`. |
 | WordPress login page | Expected; use LocalWP WordPress admin account, or reset via Site Shell WP-CLI. |
 | `SITE_URL_CHANGED` / “address differs” | Plugin's stored installation is bound to the older canonical URL. Inspect state; for **disposable sandbox only**, back up then clear local connection option and reconnect. |
@@ -312,19 +345,19 @@ Once CURRENT, visit **Moda Interact → Recovery settings**, click **Refresh** i
 | Render `grant_missing`, `grant_changed` or `grant_unavailable` | Complete or renew read authorisation for the **current installation**. Verify compatible key material and credential versions. |
 | Redis Insight does not show queued jobs | Look under `bull:woo-coupon-sync:*`; completed/failed jobs may be auto-removed. Use structured logs and `syncRequestedAt`. |
 | `CURRENT` but merchant cannot see coupons | Confirm the **same shop ID**, local API uses same database, plugin is connected to new installation, API-002 endpoint is installed, and click Refresh. |
-| Another ngrok URL after restart | Run `update_local_wp`/prepare again; canonical URL change may create another Shop and require a new read grant. Prefer a reserved domain. |
+| Another tunnel URL after restart | Run `update_local_wp`/prepare again; canonical URL change may create another Shop and require a new read grant. Prefer a stable domain. |
 | Old `.local` shop repeatedly failing | Leave historical records intact while testing; plan a separately reviewed official uninstall/deactivation, not direct SQL deletion. |
 
 ## 8. When finished
 
-- Stop the ngrok process (`Ctrl+C`) and remove any public-exposure test credential risk.
+- Stop the tunnel process (`Ctrl+C`) and remove any public-exposure test credential risk.
 - When you want to return to normal LocalWP `.local` access, from the kit run:
 
 ```bash
 python3 scripts/update_local_wp --restore
 ```
 
-- The plugin's saved ngrok-based installation will then no longer match `.local`. This is expected. Restoring the WordPress URLs **does not revert** a cloud installation or read grant; keep test identity cleanup deliberate.
+- The plugin's saved tunnel-based installation will then no longer match `.local`. This is expected. Restoring the WordPress URLs **does not revert** a cloud installation or read grant; keep test identity cleanup deliberate.
 - Never leave an unstable ngrok URL or local credentials configured on a real customer installation.
 
 ## Daily quick start (after the first setup)
@@ -332,9 +365,9 @@ python3 scripts/update_local_wp --restore
 ```text
 1. Start LocalWP WooCommerce Sandbox.
 2. Start local API: cd /path/to/moda-interact-api && npm run dev
-3. Launch ./scripts/start_woo_tunnel.sh  (leave running)
-4. Run ./scripts/prepare_woo_render_test.sh [current ngrok HTTPS origin]
-5. Run ./scripts/check_woo_endpoints.sh <current ngrok HTTPS origin>
+3. Launch ./scripts/start_woo_tunnel.sh (ngrok), WOO_TUNNEL_PROVIDER=localtunnel ./scripts/start_woo_tunnel.sh, or WOO_TUNNEL_PROVIDER=cloudflared ./scripts/start_woo_tunnel.sh; leave it running.
+4. Run ./scripts/prepare_woo_render_test.sh [current HTTPS origin; use LOCAL_TUNNEL_URL for localtunnel]
+5. Run ./scripts/check_woo_endpoints.sh <current HTTPS origin>
 6. If hostname changed, connect/re-authorise sandbox in WordPress as needed.
 7. Watch Render recovery-worker coupon log events.
 8. Check scripts/check_woo_catalogue.sql and refresh Recovery settings.
