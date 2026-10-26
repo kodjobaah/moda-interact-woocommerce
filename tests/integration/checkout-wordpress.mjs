@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
 import { assertOrderWordPress } from './order-wordpress.mjs';
+import {
+	assertNeverActiveEmpty,
+	assertClassicClearRefill,
+	assertStoreApiClearRefill,
+} from './checkout-clear-refill-wordpress.mjs';
 
 // Real HTTP checkout sessions; unlike the PHPUnit hook doubles these requests
 // pass through WooCommerce's cart, checkout and Store API controllers.
@@ -279,6 +284,12 @@ export async function assertCheckoutWordPress({
 	);
 
 	try {
+		await assertNeverActiveEmpty({
+			siteUrl,
+			checkoutPage: fixture.classicCheckoutPage,
+			createSession: session,
+			getActions: () => actionRows(wp, parseJsonOutput),
+		});
 		for (const [kind, cookie] of [
 			['guest', ''],
 			['customer', customerCookie],
@@ -353,7 +364,17 @@ export async function assertCheckoutWordPress({
 				classicAdded.length > 0,
 				`${kind}: Classic AJAX must create a new action ID`
 			);
-			assertEvent(newestAction(classicAdded).args.event);
+			const classicEvent = newestAction(classicAdded).args.event;
+			assertEvent(classicEvent);
+			await assertClassicClearRefill({
+				kind,
+				browser: classic,
+				productId: fixture.product,
+				reviewNonce,
+				reviewBody: form.get('post_data'),
+				initialEvent: classicEvent,
+				getActions: () => actionRows(wp, parseJsonOutput),
+			});
 			process.stdout.write(
 				`ARCH-035 Classic ${kind}: checkout AJAX capture PASS\n`
 			);
@@ -386,10 +407,13 @@ export async function assertCheckoutWordPress({
 					postcode: 'SE1 1AA',
 				},
 			};
-			// A real Blocks checkout first persists the customer address, then
-			// sends checkout PATCH to observe the updated cart/customer state.
-			await persistBlocksBilling(blocks, body.billing_address, kind);
+			// A real Blocks checkout saves customer address separately from PATCH.
+			// With an existing key (notably a logged-in shopper who just used
+			// Classic checkout), cart/update-customer can publish that changed
+			// snapshot first. PATCH must not duplicate an identical observation.
 			const previous = checkoutEvents(actionRows(wp, parseJsonOutput));
+			await persistBlocksBilling(blocks, body.billing_address, kind);
+			const afterCustomer = checkoutEvents(actionRows(wp, parseJsonOutput));
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'PATCH',
 				headers: { 'content-type': 'application/json' },
@@ -401,17 +425,43 @@ export async function assertCheckoutWordPress({
 				`${kind} Store API PATCH: ${await r.clone().text()}`
 			);
 			const after = checkoutEvents(actionRows(wp, parseJsonOutput));
-			assert.ok(
-				after.length > previous.length,
-				`${kind}: PATCH must enqueue an event`
-			);
+			const customerAdded = newCheckoutActions(previous, afterCustomer);
+			const patchAdded = newCheckoutActions(afterCustomer, after);
 			const initialAdded = newCheckoutActions(previous, after);
 			assert.ok(
 				initialAdded.length > 0,
-				`${kind}: initial PATCH must create a new action ID`
+				`${kind}: customer update or checkout PATCH must enqueue an event ` +
+					`(customer actions: ${customerAdded.length}, PATCH actions: ${patchAdded.length})`
 			);
+			// Both routes may emit if PATCH observes a genuinely different cart.
+			// Reject only duplicate snapshots for the same checkout identity.
+			for (const customerAction of customerAdded) {
+				for (const patchAction of patchAdded) {
+					if (
+						customerAction.args.event.checkoutKey ===
+						patchAction.args.event.checkoutKey
+					) {
+						assert.notDeepEqual(
+							patchAction.args.event.checkout,
+							customerAction.args.event.checkout,
+							`${kind}: checkout PATCH must not duplicate a customer-update snapshot`
+						);
+					}
+				}
+			}
 			const first = newestAction(initialAdded).args.event;
 			assertEvent(first);
+			assert.ok(
+				initialAdded.every(
+					(row) => row.args.event.checkoutKey === first.checkoutKey
+				),
+				`${kind}: Store API customer update and PATCH must use one checkout key`
+			);
+			assert.equal(
+				first.checkout?.contact?.firstName,
+				body.billing_address.first_name,
+				`${kind}: first queued Store API snapshot must contain updated billing name`
+			);
 			// Identical PATCH must not publish an additional event.
 			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
 				method: 'PATCH',
@@ -453,7 +503,7 @@ export async function assertCheckoutWordPress({
 			);
 			assert.ok(
 				revisedAdded.length > 0,
-				`${kind}: changed PATCH must enqueue a new action: ${diagnostic}`
+				`${kind}: changed customer update or PATCH must enqueue a new action: ${diagnostic}`
 			);
 			const revised = newestAction(revisedAdded).args.event;
 			assert.equal(
@@ -486,7 +536,7 @@ export async function assertCheckoutWordPress({
 			const outageAdded = newCheckoutActions(revisedRows, outageRows);
 			assert.ok(
 				outageAdded.length > 0,
-				`${kind}: outage PATCH must create a new action`
+				`${kind}: outage customer update or PATCH must create a new action`
 			);
 			const outageEvent = newestAction(outageAdded).args.event;
 			assertEvent(outageEvent);
@@ -531,6 +581,14 @@ export async function assertCheckoutWordPress({
 						item.status === 202
 				)
 			);
+			await assertStoreApiClearRefill({
+				kind,
+				browser: blocks,
+				productId: fixture.product,
+				checkoutBody: body,
+				initialEvent: first,
+				getActions: () => actionRows(wp, parseJsonOutput),
+			});
 			// Capture order events before placement, so HPOS order creation can be
 			// verified separately from earlier checkout events.
 			const beforeOrder = actionRows(wp, parseJsonOutput);
