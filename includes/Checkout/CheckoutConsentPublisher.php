@@ -73,7 +73,7 @@ final class CheckoutConsentPublisher {
 
 	private function publishFor( array $event, array $record, int $attempt, bool $retry ): bool {
 		if ( ! self::valid( $event ) ) return false;
-		$when = strtotime( $event['checkoutAction']['occurredAt'] );
+		$when = strtotime( $event['occurredAt'] );
 		if ( false === $when || time() - $when > 240 || $when > time() + 1 ) return false;
 		try {
 			$client = $this->api ?? new ModaApiClient( ModaApiConfiguration::fromServerConfiguration() );
@@ -107,12 +107,24 @@ final class CheckoutConsentPublisher {
 	}
 
 	private static function valid( array $event ): bool {
-		return ( $event['schemaVersion'] ?? null ) === 'woo.whatsapp-consent.v1' &&
-			CheckoutKey::valid( $event['eventId'] ?? null ) && CheckoutKey::valid( $event['checkoutAction']['checkoutKey'] ?? null ) &&
-			in_array( $event['decision'] ?? null, array( 'GRANT', 'REVOKE' ), true ) &&
-			isset( $event['canonicalPhone'] ) && is_string( $event['canonicalPhone'] ) &&
-			1 === preg_match( '/^[1-9][0-9]{1,14}$/D', $event['canonicalPhone'] ) &&
-			is_string( $event['checkoutAction']['occurredAt'] ?? null ) &&
-			is_string( wp_json_encode( $event ) ) && strlen( wp_json_encode( $event ) ) <= 8192;
+		if ( array_keys( $event ) !== array( 'schemaVersion', 'eventId', 'decision', 'canonicalPhone', 'occurredAt', 'disclosure' ) ||
+			'woo.whatsapp-consent.v2' !== $event['schemaVersion'] || ! CheckoutKey::valid( $event['eventId'] ) ||
+			! in_array( $event['decision'], array( 'GRANT', 'REVOKE' ), true ) ||
+			! is_string( $event['canonicalPhone'] ) ||
+			1 !== preg_match( '/^[1-9][0-9]{1,14}$/D', $event['canonicalPhone'] ) ||
+			! is_string( $event['occurredAt'] ) ||
+			1 !== preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/D', $event['occurredAt'] ) ||
+			false === strtotime( $event['occurredAt'] ) ) return false;
+		if ( 'GRANT' === $event['decision'] ) {
+			$disclosure = $event['disclosure'];
+			if ( ! is_array( $disclosure ) || array_keys( $disclosure ) !== array( 'version', 'locale', 'text' ) ||
+				! is_string( $disclosure['version'] ) ||
+				1 !== preg_match( '/^moda\.woo\.whatsapp-recovery-marketing\.v[1-9][0-9]*$/D', $disclosure['version'] ) ||
+				! is_string( $disclosure['locale'] ) ||
+				1 !== preg_match( '/^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{2,8}){0,4}$/D', $disclosure['locale'] ) ||
+				! is_string( $disclosure['text'] ) || '' === $disclosure['text'] || strlen( $disclosure['text'] ) > 4000 ) return false;
+		} elseif ( null !== $event['disclosure'] ) return false;
+		$json = wp_json_encode( $event );
+		return is_string( $json ) && strlen( $json ) <= 8192;
 	}
 }

@@ -1662,11 +1662,11 @@ msgstr "Opcjonalne"
 msgid "Always enabled"
 msgstr "Zawsze włączone"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "Obecnie włączona"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "Obecnie wyłączona"
 
@@ -2073,20 +2073,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "Nie możesz wybrać innej promocji, dopóki bieżąca nie wygaśnie (%s)."
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "Wyrażam zgodę na otrzymywanie od %s przypomnień marketingowych przez WhatsApp o produktach pozostawionych w niedokończonym zamówieniu w tym sklepie, na mój numer telefonu do rozliczeń. Zgoda jest dobrowolna; mogę ją wycofać, kontaktując się ze sklepem. Niezaznaczenie pola nie cofa zgody udzielonej wcześniej."
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "Wysyłaj mi przez WhatsApp informacje o zakupach, przypomnienia i oferty."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "Zgoda na przypomnienia WhatsApp o niedokończonych zakupach"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda wyświetla domyślnie niezaznaczone pole zgody marketingowej WhatsApp przy kwalifikujących się zamówieniach. Dotyczy ono przypomnień tego sklepu o niedokończonych zakupach, a nie aktualizacji zamówień. Samo pole lub podanie numeru telefonu nie stanowi zgody; Moda musi zweryfikować świadomy wybór."
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "Moda automatycznie dodaje opcjonalne, domyślnie niezaznaczone pole zgody na marketingowe przypomnienia WhatsApp o niedokończonych zakupach, gdy Checkout Recovery jest dostępne. Ręczna instalacja nie jest potrzebna. Klasyczna kasa: za numerem telefonu do rozliczeń. Blocks: w sekcji Informacje o zamówieniu."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "Bez zweryfikowanej zgody nie można rozpocząć odzyskiwania niedokończonego zamówienia. Klient może skontaktować się ze sklepem, aby wycofać zgodę. Niezaznaczone pole przy kolejnej wizycie nie cofa wcześniejszej zgody; należy sprawdzić aktualną preferencję przed odzyskiwaniem."
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery wymaga zweryfikowanej decyzji klienta, a nie tylko numeru telefonu. Pozostawienie pola niezaznaczonego podczas późniejszej wizyty nie cofa wcześniejszej zgody; klienci mogą skontaktować się ze sklepem, aby ją wycofać."
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2191,18 +2191,6 @@ msgstr "Zapisz STOP klienta"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Zachowaj zgłoszenie we własnych rejestrach; Moda nie zapisuje tego identyfikatora."
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:76
-msgid "Earlier WhatsApp reminder permission"
-msgstr "Wcześniejsza zgoda na przypomnienia WhatsApp"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:82
-msgid "Keep earlier permission unchanged"
-msgstr "Pozostaw wcześniejszą zgodę bez zmian"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:83
-msgid "Withdraw earlier WhatsApp reminder permission"
-msgstr "Wycofaj wcześniejszą zgodę na przypomnienia WhatsApp"
 
 #. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
 #: src/recoveries/detail/human/human-conversation-controls.js
@@ -2416,3 +2404,27 @@ msgstr "Aktywność odzyskiwania"
 
 msgid "Reply to customer"
 msgstr "Odpowiedz klientowi"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "Zgoda na WhatsApp została już udzielona"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "Wycofaj zgodę na WhatsApp"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "Czy chcesz wycofać zgodę na WhatsApp?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "Podaj numer telefonu do faktury, aby zapisać zgodę na WhatsApp."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "Nie udało się zaktualizować zgody na WhatsApp. Spróbuj ponownie."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Zapisano Twoją zgodę na wiadomości WhatsApp, ale nie udało się potwierdzić aktualnego uprawnienia."

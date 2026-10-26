@@ -1660,11 +1660,11 @@ msgstr "Valfri"
 msgid "Always enabled"
 msgstr "Alltid aktiverad"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "Aktiverad nu"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "Inaktiverad nu"
 
@@ -2071,20 +2071,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "Du kan inte välja en annan kampanj förrän den nuvarande löper ut (%s)."
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "Jag godkänner att få WhatsApp-marknadsföringspåminnelser från %s om varor som jag lämnar i en ofullständig kassa i den här butiken, till mitt faktureringstelefonnummer. Det är frivilligt; jag kan återkalla mitt samtycke genom att kontakta butiken. En omarkerad ruta återkallar inte tidigare samtycke."
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "Skicka shoppinguppdateringar, påminnelser och erbjudanden till mig via WhatsApp."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "Samtycke till WhatsApp-påminnelser om ofullständiga köp"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda visar en från början omarkerad ruta för WhatsApp-marknadsföring vid kvalificerade kassor. Den gäller påminnelser från butiken om ofullständiga köp, inte orderuppdateringar. Att visa en ruta eller samla in ett telefonnummer är inte samtycke; Moda måste verifiera ett uttryckligt val."
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "Moda lägger automatiskt till en valfri, från början omarkerad kryssruta för WhatsApp-marknadsföringspåminnelser om oavslutade köp när Checkout Recovery är tillgängligt. Ingen manuell installation behövs. Klassisk kassa: efter faktureringstelefonnumret. Blocks: under Orderinformation."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "Utan verifierat tillstånd kan återhämtning av ett ofullständigt köp inte börja. Kunder kan kontakta butiken för att återkalla samtycke. En omarkerad ruta vid ett senare besök återkallar inte tidigare samtycke; aktuell inställning måste kontrolleras före återhämtning."
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery kräver ett verifierat kundval, inte bara ett telefonnummer. Att lämna rutan omarkerad vid ett senare besök återkallar inte ett tidigare samtycke; kunder kan kontakta butiken för att återkalla det."
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2189,18 +2189,6 @@ msgstr "Registrera kundens STOP"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "Spara ärendet i dina egna register; Moda lagrar inte denna referens."
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:76
-msgid "Earlier WhatsApp reminder permission"
-msgstr "Tidigare samtycke till WhatsApp-påminnelser"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:82
-msgid "Keep earlier permission unchanged"
-msgstr "Behåll tidigare samtycke oförändrat"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:83
-msgid "Withdraw earlier WhatsApp reminder permission"
-msgstr "Återkalla tidigare samtycke till WhatsApp-påminnelser"
 
 #. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
 #: src/recoveries/detail/human/human-conversation-controls.js
@@ -2414,3 +2402,27 @@ msgstr "Återställningsaktivitet"
 
 msgid "Reply to customer"
 msgstr "Svara kunden"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "WhatsApp-samtycke har redan getts"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "Återkalla WhatsApp-samtycke"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "Vill du återkalla ditt WhatsApp-samtycke?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "Ange ett faktureringstelefonnummer för att spara WhatsApp-samtycket."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "Det gick inte att uppdatera WhatsApp-samtycket. Försök igen."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Ditt samtycke till WhatsApp-meddelanden har registrerats, men den aktuella behörigheten kunde inte bekräftas."

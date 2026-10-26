@@ -9,11 +9,21 @@ final class CheckoutKey {
 	public const SESSION_FIELD = 'moda_interact_checkout_key';
 	public const ORDER_META = '_moda_checkout_key';
 
+	/** Read an existing checkout identity without creating a session value. */
+	public static function existing(): ?string {
+		$woo = function_exists( 'WC' ) ? WC() : null;
+		$session = $woo->session ?? null;
+		if ( ! $session || ! method_exists( $session, 'get' ) ) return null;
+		$key = $session->get( self::SESSION_FIELD );
+		return self::valid( $key ) ? $key : null;
+	}
+
+	/** Write path only: callers of read-only consent status use existing(). */
 	public static function current(): ?string {
+		$key = self::existing();
+		if ( null !== $key ) return $key;
 		$session = WC()->session ?? null;
 		if ( ! $session ) return null;
-		$key = $session->get( self::SESSION_FIELD );
-		if ( self::valid( $key ) ) return $key;
 		$key = 'woo-' . bin2hex( random_bytes( 16 ) );
 		$session->set( self::SESSION_FIELD, $key );
 		return $key;

@@ -12,6 +12,21 @@ use PHPUnit\Framework\TestCase;
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentEligibility.php';
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentCheckbox.php';
 
+if ( ! function_exists( 'switch_to_locale' ) ) {
+	function switch_to_locale( $locale ) {
+		$GLOBALS['arch046_checkbox_locale_stack'][] = get_locale();
+		$GLOBALS['arch046_checkbox_switched_locales'][] = $locale;
+		$GLOBALS['moda_interact_store_locale'] = $locale;
+		return true;
+	}
+}
+if ( ! function_exists( 'restore_previous_locale' ) ) {
+	function restore_previous_locale() {
+		$GLOBALS['moda_interact_store_locale'] = array_pop( $GLOBALS['arch046_checkbox_locale_stack'] );
+		return true;
+	}
+}
+
 if ( ! function_exists( 'add_filter' ) ) {
 	function add_filter( $name, $callback, $priority = 10, $accepted_args = 1 ) {
 		$GLOBALS['arch046_checkbox_filters'][ $name ][] = $callback;
@@ -40,7 +55,9 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		$GLOBALS['arch046_order_received'] = false;
 		$GLOBALS['arch046_order_pay'] = false;
 		$GLOBALS['moda_interact_test_hooks'] = array();
-		$GLOBALS['moda_interact_options'] = array( 'blogname' => 'Test Merchant' );
+		$GLOBALS['moda_interact_options'] = array( 'blogname' => 'Test Merchant', 'WPLANG' => 'en_GB' );
+		$GLOBALS['arch046_checkbox_locale_stack'] = array();
+		$GLOBALS['arch046_checkbox_switched_locales'] = array();
 		$GLOBALS['moda_interact_home_url'] = 'https://merchant.example';
 		$GLOBALS['moda_interact_store_locale'] = 'en_GB';
 		$_SERVER['REQUEST_URI'] = '/';
@@ -123,14 +140,10 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		self::assertFalse( $field['required'] );
 		self::assertSame( 0, $field['default'] );
 		self::assertSame( 96, $field['priority'] );
-		$withdrawal = $result['billing'][ CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD ];
-		self::assertSame( 'select', $withdrawal['type'] );
-		self::assertFalse( $withdrawal['required'] );
-		self::assertSame( 'unchanged', $withdrawal['default'] );
-		self::assertSame( 97, $withdrawal['priority'] );
-		self::assertArrayHasKey( CheckoutConsentCheckbox::WITHDRAW_VALUE, $withdrawal['options'] );
-		self::assertStringContainsString( 'WhatsApp marketing reminders', $field['label'] );
-		self::assertStringContainsString( 'Test Merchant', $field['label'] );
+		self::assertCount( 2, $result['billing'], 'No withdrawal select is registered' );
+		self::assertSame( 'Send me WhatsApp shopping updates, reminders and offers.', $field['label'] );
+		self::assertStringNotContainsString( 'Test Merchant', $field['label'] );
+		self::assertStringNotContainsString( 'https://merchant.example', $field['label'] );
 		self::assertSame( 'en-GB', $field['custom_attributes']['data-moda-consent-locale'] );
 		self::assertSame( CheckoutConsentCheckbox::DISCLOSURE_VERSION, $field['custom_attributes']['data-moda-consent-version'] );
 		self::assertSame( $result, $checkbox->classicFields( $result ), 'One checkbox after a repeated filter pass' );
@@ -151,19 +164,8 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		$checkbox->registerBlocksForCheckoutPage();
 		$_SERVER['REQUEST_URI'] = '/wp-json/wc/store/v1/checkout';
 		$checkbox->registerBlocksForStoreApi();
-		self::assertCount( 2, $GLOBALS['arch046_checkbox_blocks'] );
-		$field = $GLOBALS['arch046_checkbox_blocks'][0];
-		$withdrawal = $GLOBALS['arch046_checkbox_blocks'][1];
-		self::assertSame( CheckoutConsentCheckbox::BLOCK_WITHDRAW_FIELD, $withdrawal['id'] );
-		self::assertSame( 'select', $withdrawal['type'] );
-		self::assertSame( 'order', $withdrawal['location'] );
-		self::assertFalse( $withdrawal['required'] );
-		self::assertCount( 1, $withdrawal['options'] );
-		self::assertSame( CheckoutConsentCheckbox::BLOCK_FIELD, $field['id'] );
-		self::assertSame( 'order', $field['location'] );
-		self::assertSame( 'checkbox', $field['type'] );
-		self::assertFalse( $field['required'] );
-		self::assertSame( $field['label'], $field['optionalLabel'] );
+		self::assertSame( array(), $GLOBALS['arch046_checkbox_blocks'],
+			'SlotFill owns the Blocks checkbox; no native duplicate opt-in is registered' );
 	}
 
 	public function test_inactive_or_order_received_pages_do_not_register_blocks(): void {
@@ -177,7 +179,7 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		self::assertSame( array(), $GLOBALS['arch046_checkbox_blocks'] );
 		$_SERVER['REQUEST_URI'] = '/?rest_route=%2Fwc%2Fstore%2Fv1%2Fcheckout';
 		$checkbox->registerBlocksForStoreApi();
-		self::assertCount( 2, $GLOBALS['arch046_checkbox_blocks'] );
+		self::assertCount( 0, $GLOBALS['arch046_checkbox_blocks'] );
 
 		$GLOBALS['arch046_checkbox_blocks'] = array();
 		$pay_page = new CheckoutConsentCheckbox( static fn(): bool => true );
@@ -188,10 +190,32 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 	}
 
 	public function test_disclosure_is_a_versioned_locale_specific_purpose_not_a_grant(): void {
-		$GLOBALS['moda_interact_store_locale'] = 'fr_FR';
+		$GLOBALS['moda_interact_options']['WPLANG'] = 'fr_FR';
 		$disclosure = CheckoutConsentCheckbox::disclosure();
 		self::assertSame( 'fr-FR', $disclosure['locale'] );
-		self::assertSame( 'moda.woo.whatsapp-recovery-marketing.v1', $disclosure['version'] );
-		self::assertStringContainsString( 'unfinished checkout', $disclosure['text'] );
+		self::assertSame( 'moda.woo.whatsapp-recovery-marketing.v3', $disclosure['version'] );
+		self::assertSame( 'Send me WhatsApp shopping updates, reminders and offers.', $disclosure['text'] );
+		self::assertStringNotContainsString( 'Test Merchant', $disclosure['text'] );
+		self::assertStringNotContainsString( 'https://merchant.example', $disclosure['text'] );
+		self::assertSame( array( 'fr_FR' ), $GLOBALS['arch046_checkbox_switched_locales'] );
+		self::assertSame( 'en_GB', get_locale(), 'Restore original locale after rendering' );
 	}
+	public function test_disclosure_uses_site_language_not_administrator_request_locale(): void {
+		$GLOBALS['moda_interact_store_locale'] = 'fr_FR';
+		$GLOBALS['moda_interact_options']['WPLANG'] = 'de_DE';
+		$disclosure = CheckoutConsentCheckbox::disclosure();
+		self::assertSame( 'de-DE', $disclosure['locale'] );
+		self::assertSame( array( 'de_DE' ), $GLOBALS['arch046_checkbox_switched_locales'] );
+		self::assertSame( 'fr_FR', get_locale() );
+		self::assertSame( 'Send me WhatsApp shopping updates, reminders and offers.', $disclosure['text'] );
+	}
+
+	public function test_empty_site_language_uses_default_english(): void {
+		$GLOBALS['moda_interact_options']['WPLANG'] = '';
+		$disclosure = CheckoutConsentCheckbox::disclosure();
+		self::assertSame( 'en-US', $disclosure['locale'] );
+		self::assertSame( 'Send me WhatsApp shopping updates, reminders and offers.', $disclosure['text'] );
+		self::assertSame( 'en_GB', get_locale() );
+	}
+
 }

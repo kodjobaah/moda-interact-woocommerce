@@ -4,12 +4,44 @@
 
 require_once __DIR__ . '/Arch046CartTokenUtils.php';
 
-foreach ( array( 'CheckoutKey', 'CheckoutConsentPhone', 'CheckoutConsentCheckbox', 'CheckoutConsentEligibility', 'CheckoutConsentPublisher', 'CheckoutConsentCapture' ) as $name ) {
+// WordPress implementations exist in production. Test doubles never expose
+// server-held grant capabilities to browser state.
+if ( ! function_exists( 'wp_salt' ) ) {
+	function wp_salt( $scheme = 'auth' ) { return str_repeat( 'arch046-fixture-secret-', 2 ); }
+}
+if ( ! function_exists( 'get_user_meta' ) ) {
+	function get_user_meta( $user_id, $key, $single = false ) {
+		return $GLOBALS['arch046_user_meta'][$user_id][$key] ?? '';
+	}
+}
+if ( ! function_exists( 'update_user_meta' ) ) {
+	function update_user_meta( $user_id, $key, $value ) {
+		$GLOBALS['arch046_user_meta'][$user_id][$key] = $value;
+		return true;
+	}
+}
+if ( ! function_exists( 'delete_user_meta' ) ) {
+	function delete_user_meta( $user_id, $key ) {
+		unset( $GLOBALS['arch046_user_meta'][$user_id][$key] );
+		return true;
+	}
+}
+
+
+foreach ( array( 'CheckoutKey', 'CheckoutConsentPhone', 'CheckoutConsentCheckbox', 'CheckoutConsentEligibility', 'CheckoutConsentPublisher', 'CheckoutConsentProof', 'CheckoutConsentStatusReader', 'CheckoutConsentCapture', 'CheckoutConsentActions' ) as $name ) {
 	require_once dirname( __DIR__, 2 ) . '/includes/Checkout/' . $name . '.php';
 }
 
 if ( ! function_exists( 'WC' ) ) {
 	function WC() { return $GLOBALS['arch035_wc']; }
+}
+if ( ! function_exists( 'wc_load_cart' ) ) {
+	function wc_load_cart() {
+		$GLOBALS['arch046_wc_load_cart_calls'] = ( $GLOBALS['arch046_wc_load_cart_calls'] ?? 0 ) + 1;
+		if ( isset( $GLOBALS['arch046_lazy_checkout_session'] ) ) {
+			WC()->session = $GLOBALS['arch046_lazy_checkout_session'];
+		}
+	}
 }
 if ( ! function_exists( 'as_schedule_single_action' ) ) {
 	function as_schedule_single_action( $timestamp, $hook, $args, $group, $unique ) {

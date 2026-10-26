@@ -1586,11 +1586,11 @@ msgstr "選用"
 msgid "Always enabled"
 msgstr "始終啟用"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "目前已啟用"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "目前已停用"
 
@@ -1997,20 +1997,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "目前的促銷活動到期（%s）之前，您無法選擇其他促銷活動。"
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "我同意接收 %s 透過 WhatsApp 傳送至我的帳單電話號碼的行銷提醒，內容涉及我在本店未完成結帳時留下的商品。此為自願選項；我可以聯絡商店撤回同意。這次未勾選不會撤銷先前給予的同意。"
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "透過 WhatsApp 傳送購物資訊、提醒及優惠給我。"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "WhatsApp 未完成結帳提醒同意"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda 會在符合條件的結帳頁面顯示預設未勾選的 WhatsApp 行銷選項。該選項僅用於本店針對未完成結帳的提醒，而非訂單狀態更新。顯示選項或蒐集電話號碼並不構成同意；Moda 必須驗證顧客的明確選擇。"
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "當 Checkout Recovery 可用時，Moda 會自動加入一個預設未勾選的選用核取方塊，用於接收未完成結帳的 WhatsApp 行銷提醒。無須手動安裝。傳統結帳：在帳單電話號碼之後。Blocks：位於「訂單資訊」中。"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "未經驗證的許可，不得開始未完成結帳挽回。顧客可以聯絡商店撤回同意。日後造訪時未勾選此選項並不撤銷先前的同意；開始挽回前必須確認顧客目前的意願。"
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery 需要經過驗證的顧客主動選擇，而不只是電話號碼。之後未勾選核取方塊不會撤銷先前的同意；顧客可以聯絡商店撤銷同意。"
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2115,18 +2115,6 @@ msgstr "記錄客戶 STOP"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "請在自己的紀錄中保留工單；Moda 不會儲存此編號。"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:76
-msgid "Earlier WhatsApp reminder permission"
-msgstr "先前的 WhatsApp 提醒同意"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:82
-msgid "Keep earlier permission unchanged"
-msgstr "維持先前的同意不變"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:83
-msgid "Withdraw earlier WhatsApp reminder permission"
-msgstr "撤回先前的 WhatsApp 提醒同意"
 
 #. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
 #: src/recoveries/detail/human/human-conversation-controls.js
@@ -2339,3 +2327,27 @@ msgstr "挽回活動"
 
 msgid "Reply to customer"
 msgstr "回覆顧客"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "已授予 WhatsApp 訊息許可"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "撤回 WhatsApp 訊息許可"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "確定要撤回 WhatsApp 訊息許可嗎？"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "請輸入帳單電話號碼以儲存 WhatsApp 訊息許可。"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "無法更新 WhatsApp 授權。請再試一次。"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "已記錄您接收 WhatsApp 訊息的同意，但無法驗證目前的授權狀態。"

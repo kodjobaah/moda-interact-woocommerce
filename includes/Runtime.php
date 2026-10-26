@@ -28,6 +28,11 @@ require_once __DIR__ . '/Checkout/CheckoutConsentEligibility.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCheckbox.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentPhone.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentPublisher.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentProof.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentStatusReader.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentActions.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentStoreApi.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentPresentation.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCapture.php';
 require_once __DIR__ . '/Checkout/OrderLifecycleCapture.php';
 
@@ -55,6 +60,9 @@ use ModaInteract\WooCommerce\Rest\RecoverySelectionController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCheckbox;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCapture;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentActions;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentStoreApi;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentPresentation;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentPublisher;
 use ModaInteract\WooCommerce\Checkout\CheckoutActivityPublisher;
 use ModaInteract\WooCommerce\Checkout\OrderLifecycleCapture;
@@ -132,7 +140,11 @@ final class Runtime {
 		$activity_publisher = new CheckoutActivityPublisher();
 		( new CheckoutCapture( $activity_publisher ) )->register();
 		( new CheckoutConsentCheckbox() )->register();
-		( new CheckoutConsentCapture( new CheckoutConsentPublisher() ) )->register();
+		$consent_capture = new CheckoutConsentCapture( new CheckoutConsentPublisher() );
+		$consent_capture->register();
+		( new CheckoutConsentActions( $consent_capture ) )->register();
+		( new CheckoutConsentStoreApi( $consent_capture ) )->register();
+		( new CheckoutConsentPresentation() )->register();
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();
 		if ( is_admin() ) {
 			new Setup();

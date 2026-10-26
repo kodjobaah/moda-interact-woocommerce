@@ -8,11 +8,8 @@ defined( 'ABSPATH' ) || exit;
 final class CheckoutConsentCheckbox {
 	public const CLASSIC_FIELD = 'moda_interact_whatsapp_recovery_opt_in';
 	public const BLOCK_FIELD = 'moda-interact/whatsapp-recovery-opt-in';
-	// A separate action (not a second consent checkbox) for a returning customer.
-	public const CLASSIC_WITHDRAW_FIELD = 'moda_interact_whatsapp_recovery_withdrawal';
-	public const BLOCK_WITHDRAW_FIELD = 'moda-interact/whatsapp-recovery-withdrawal';
-	public const WITHDRAW_VALUE = 'withdraw';
-	public const DISCLOSURE_VERSION = 'moda.woo.whatsapp-recovery-marketing.v1';
+
+	public const DISCLOSURE_VERSION = 'moda.woo.whatsapp-recovery-marketing.v3';
 
 	private $eligible;
 	private bool $registered = false;
@@ -24,30 +21,30 @@ final class CheckoutConsentCheckbox {
 	public function register(): void {
 		// Classic fields are requested by Woo on the checkout request itself.
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'classicFields' ), 20, 1 );
-		// Woo's supported additional-field API may register after woocommerce_init;
-		// `wp` has the resolved checkout query, while REST needs its own lifecycle.
-		add_action( 'wp', array( $this, 'registerBlocksForCheckoutPage' ), 5, 0 );
-		add_action( 'rest_api_init', array( $this, 'registerBlocksForStoreApi' ), 0, 0 );
+		// Blocks owns one controlled checkbox in Checkout Fields using Woo Store
+		// API; do not register a duplicate Additional Checkout Field.
 	}
 
-	/** Identical, versioned disclosure for both checkout modes and later API evidence. */
+	/**
+	 * Concise versioned consent text shared by Classic, Blocks and API evidence.
+	 * Use the shop's configured Site Language, not a logged-in admin's locale.
+	 * The authenticated installation supplies the merchant identity to the API.
+	 */
 	public static function disclosure(): array {
-		$store = trim( strip_tags( (string) get_option( 'blogname', '' ) ) );
-		if ( '' === $store ) {
-			$hostname = parse_url( home_url( '/' ), PHP_URL_HOST );
-			$store = is_string( $hostname ) && '' !== $hostname ? $hostname : 'this store';
+		$configured_locale = get_option( 'WPLANG', '' );
+		$locale = is_string( $configured_locale ) && preg_match( '/^[a-z]{2,3}(?:_[A-Za-z]{2,4})?$/D', $configured_locale )
+			? $configured_locale : 'en_US';
+		$switched = function_exists( 'switch_to_locale' ) && $locale !== get_locale()
+			? switch_to_locale( $locale ) : false;
+		try {
+			$text = __( 'Send me WhatsApp shopping updates, reminders and offers.', 'moda-interact' );
+		} finally {
+			if ( $switched ) restore_previous_locale();
 		}
-		$site_url = rtrim( (string) home_url( '/' ), '/' );
-		$connection = ( new \ModaInteract\WooCommerce\Connection\InstallationStore() )->read();
-		if ( 'valid' === $connection['state'] ) $site_url = $connection['record']['canonicalSiteUrl'];
 		return array(
 			'version' => self::DISCLOSURE_VERSION,
-			'locale' => str_replace( '_', '-', get_locale() ),
-			'text' => sprintf(
-				/* translators: %s: the merchant's displayed store name. */
-				__( 'I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously.', 'moda-interact' ),
-				$store
-			) . ' (' . $site_url . ')',
+			'locale' => str_replace( '_', '-', $locale ),
+			'text' => $text,
 		);
 	}
 
@@ -69,20 +66,8 @@ final class CheckoutConsentCheckbox {
 				'data-moda-consent-locale' => self::disclosure()['locale'],
 			),
 		);
-		// The opt-in starts unchecked on every checkout. A *different*, explicit
-		// choice is needed to revoke consent granted on a previous checkout.
-		$fields['billing'][ self::CLASSIC_WITHDRAW_FIELD ] = array(
-			'type' => 'select',
-			'label' => __( 'Earlier WhatsApp reminder permission', 'moda-interact' ),
-			'required' => false,
-			'default' => 'unchanged',
-			'priority' => is_numeric( $billing_phone_priority ) ? (int) $billing_phone_priority + 2 : 111,
-			'class' => array( 'form-row-wide' ),
-			'options' => array(
-				'unchanged' => __( 'Keep earlier permission unchanged', 'moda-interact' ),
-				self::WITHDRAW_VALUE => __( 'Withdraw earlier WhatsApp reminder permission', 'moda-interact' ),
-			),
-		);
+		// Withdrawing is a separate proof-backed action, never a select field.
+		// API-006 must verify current consent before any withdrawal UI is exposed.
 		return $fields;
 	}
 
@@ -110,39 +95,11 @@ final class CheckoutConsentCheckbox {
 	}
 
 	public function registerBlocksField(): void {
-		if ( $this->registered || ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) return;
-		if ( ! ( $this->eligible )() ) return;
-		$label = self::disclosure()['text'];
-		// 'order' (not 'contact') prevents prior customer-profile consent from
-		// being hydrated into a checked box at the next checkout. This value is
-		// NOT abandonment-time consent evidence; WOOCOMMERCE-002 owns that write.
-		woocommerce_register_additional_checkout_field( array(
-			'id' => self::BLOCK_FIELD,
-			'location' => 'order',
-			'type' => 'checkbox',
-			'label' => $label,
-			'optionalLabel' => $label,
-			'required' => false,
-			'attributes' => array(
-				'data-moda-consent-version' => self::DISCLOSURE_VERSION,
-				'data-moda-consent-locale' => self::disclosure()['locale'],
-			),
-		) );
-		// A select in the order area does not hydrate previous profile consent
-		// or create consent simply because the shopper visits checkout.
-		woocommerce_register_additional_checkout_field( array(
-			'id' => self::BLOCK_WITHDRAW_FIELD,
-			'location' => 'order',
-			'type' => 'select',
-			'label' => __( 'Earlier WhatsApp reminder permission', 'moda-interact' ),
-			'optionalLabel' => __( 'Earlier WhatsApp reminder permission', 'moda-interact' ),
-			'placeholder' => __( 'Keep earlier permission unchanged', 'moda-interact' ),
-			'required' => false,
-			'options' => array( array(
-				'value' => self::WITHDRAW_VALUE,
-				'label' => __( 'Withdraw earlier WhatsApp reminder permission', 'moda-interact' ),
-			) ),
-		) );
+		// This registered Additional Checkout Field would remain visibly unchecked
+		// even after API-006 confirms an existing grant. The Blocks consent control
+		// now belongs to the Woo SlotFill checkout extension, which can render
+		// either existing permission or a fresh unchecked opt-in as appropriate.
+		// No additional field is registered (and none is persisted on the order).
 		$this->registered = true;
 	}
 }

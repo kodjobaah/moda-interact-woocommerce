@@ -62,6 +62,7 @@ function current_user_can( $capability ) {
 }
 
 function wp_verify_nonce( $nonce, $action ) {
+	if ( 'wc_store_api' === $action && 'fixture_store_nonce' === $nonce ) return 1;
 	if ( isset( $GLOBALS['arch046_nonce_action'] ) ) {
 		return $action === $GLOBALS['arch046_nonce_action'] && $nonce === 'arch046-fixture-nonce' ? 1 : false;
 	}

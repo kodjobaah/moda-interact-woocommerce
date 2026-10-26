@@ -1600,11 +1600,11 @@ msgstr "ไม่บังคับ"
 msgid "Always enabled"
 msgstr "เปิดใช้งานเสมอ"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "เปิดใช้งานอยู่"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "ปิดใช้งานอยู่"
 
@@ -2011,20 +2011,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "คุณไม่สามารถเลือกโปรโมชันอื่นได้จนกว่าโปรโมชันปัจจุบันจะหมดอายุ (%s)"
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "ฉันยินยอมรับข้อความเตือนการตลาดทาง WhatsApp จาก %s เกี่ยวกับสินค้าที่ค้างอยู่ในขั้นตอนชำระเงินที่ยังไม่เสร็จของร้านนี้ ส่งไปยังหมายเลขโทรศัพท์สำหรับเรียกเก็บเงินของฉัน การยินยอมเป็นทางเลือกและสามารถถอนความยินยอมได้โดยติดต่อร้านค้า การไม่เลือกช่องนี้ไม่ใช่การถอนความยินยอมที่เคยให้ไว้"
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "ส่งข่าวสารการช้อปปิ้ง การแจ้งเตือน และข้อเสนอให้ฉันทาง WhatsApp"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "ความยินยอมสำหรับการเตือนการชำระเงินค้างผ่าน WhatsApp"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda แสดงช่องยินยอมการตลาดผ่าน WhatsApp ที่ไม่ถูกเลือกไว้ล่วงหน้าในหน้าชำระเงินที่เข้าเกณฑ์ ใช้สำหรับเตือนการสั่งซื้อที่ยังไม่เสร็จของร้านนี้ ไม่ใช่การอัปเดตคำสั่งซื้อ การแสดงช่องหรือเก็บเบอร์โทรศัพท์ไม่ถือเป็นความยินยอม Moda ต้องตรวจสอบการเลือกอย่างชัดเจน"
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "เมื่อ Checkout Recovery พร้อมใช้งาน Moda จะเพิ่มช่องทำเครื่องหมายแบบไม่บังคับที่ไม่ได้เลือกไว้ล่วงหน้าโดยอัตโนมัติ สำหรับรับข้อความการตลาดทาง WhatsApp เพื่อเตือนเกี่ยวกับการชำระเงินที่ยังไม่เสร็จ ไม่ต้องติดตั้งเอง เช็กเอาต์แบบคลาสสิก: หลังหมายเลขโทรศัพท์สำหรับเรียกเก็บเงิน Blocks: ในส่วนข้อมูลคำสั่งซื้อ"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "หากไม่มีการยืนยันความยินยอม จะไม่สามารถเริ่มติดตามการชำระเงินค้างได้ ลูกค้าสามารถติดต่อร้านค้าเพื่อถอนความยินยอม การไม่เลือกช่องในครั้งถัดไปไม่ได้ยกเลิกความยินยอมเดิม ต้องตรวจสอบความต้องการปัจจุบันก่อนเริ่มติดตาม"
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery ต้องอาศัยการตัดสินใจของลูกค้าที่ผ่านการยืนยัน ไม่ใช่เพียงหมายเลขโทรศัพท์ การไม่เลือกช่องทำเครื่องหมายในการเข้าชมครั้งหลังไม่ได้เพิกถอนความยินยอมเดิม ลูกค้าสามารถติดต่อร้านค้าเพื่อขอเพิกถอนได้"
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2129,18 +2129,6 @@ msgstr "บันทึก STOP ของลูกค้า"
 #: src/recoveries/customer-selection/selection-panel.js:70
 msgid "Keep the ticket in your own records; Moda does not store this reference."
 msgstr "เก็บตั๋วไว้ในบันทึกของคุณเอง Moda ไม่จัดเก็บรหัสอ้างอิงนี้"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:76
-msgid "Earlier WhatsApp reminder permission"
-msgstr "ความยินยอมก่อนหน้าสำหรับการแจ้งเตือนผ่าน WhatsApp"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:82
-msgid "Keep earlier permission unchanged"
-msgstr "คงความยินยอมก่อนหน้าไว้โดยไม่เปลี่ยนแปลง"
-
-#: includes/Checkout/CheckoutConsentCheckbox.php:83
-msgid "Withdraw earlier WhatsApp reminder permission"
-msgstr "ถอนความยินยอมก่อนหน้าสำหรับการแจ้งเตือนผ่าน WhatsApp"
 
 #. ARCH-040: Reuses reviewed Moda Recovery Detail terminology; locale changes should be reviewed with native speakers.
 #: src/recoveries/detail/human/human-conversation-controls.js
@@ -2353,3 +2341,27 @@ msgstr "กิจกรรมการกู้คืน"
 
 msgid "Reply to customer"
 msgstr "ตอบลูกค้า"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "อนุญาตให้ส่งข้อความ WhatsApp แล้ว"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "ถอนความยินยอมสำหรับ WhatsApp"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "คุณต้องการถอนความยินยอมสำหรับ WhatsApp หรือไม่?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "กรอกหมายเลขโทรศัพท์สำหรับการเรียกเก็บเงินเพื่อบันทึกความยินยอมสำหรับ WhatsApp"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "ไม่สามารถอัปเดตการยินยอม WhatsApp ได้ โปรดลองอีกครั้ง"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "บันทึกการยินยอมรับข้อความผ่าน WhatsApp ของคุณแล้ว แต่ไม่สามารถยืนยันสถานะการอนุญาตปัจจุบันได้"

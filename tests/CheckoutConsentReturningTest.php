@@ -1,31 +1,37 @@
 <?php
 
-/** ARCH-046-WOOCOMMERCE-003: returning checkout actions, not WordPress E2E. */
+/** ARCH-046-WOOCOMMERCE-003 v2-only returning-consent and fail-closed proof tests. */
 
 use ModaInteract\WooCommerce\Api\ModaApiClient;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentActions;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCheckbox;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentEligibility;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentProof;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentPublisher;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentStatusReader;
+use ModaInteract\WooCommerce\Checkout\CheckoutKey;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
 use ModaInteract\WooCommerce\Connection\SiteIdentity;
 use ModaInteract\WooCommerce\Security\Base64Url;
 use PHPUnit\Framework\TestCase;
 
-// Reuse the same Woo WC-session, Store API request, and Cart-Token fixtures.
 require_once __DIR__ . '/fixtures/Arch046CheckoutTestFakes.php';
 
 final class CheckoutConsentReturningTest extends TestCase {
 	private array $requests = array();
 	private CheckoutConsentCapture $capture;
 	private CheckoutConsentPublisher $publisher;
+	private CheckoutConsentProof $proof;
+	private CheckoutConsentEligibility $eligibility;
 	private bool $feature = true;
 	private bool $unavailable = false;
 
 	protected function setUp(): void {
 		$GLOBALS['arch046_nonce_action'] = 'update-order-review';
 		$GLOBALS['arch046_current_user_id'] = 0;
+		$GLOBALS['arch046_user_meta'] = array();
 		$GLOBALS['moda_interact_home_url'] = 'https://merchant.example';
 		$GLOBALS['moda_interact_store_locale'] = 'en_GB';
 		$GLOBALS['moda_interact_options'] = array( 'blogname' => 'Test Merchant' );
@@ -57,232 +63,379 @@ final class CheckoutConsentReturningTest extends TestCase {
 			$this->requests[] = array( $url, $request );
 			if ( $this->unavailable ) return $this->response( 503, array( 'error' => 'unavailable' ) );
 			$event = json_decode( $request['body'], true );
-			return $this->response( 200, array( 'schemaVersion' => 'woo.whatsapp-consent.v1',
+			return $this->response( 200, array( 'schemaVersion' => 'woo.whatsapp-consent.v2',
 				'status' => 'recorded', 'decision' => $event['decision'],
 				'consentRevision' => (string) count( $this->requests ),
 				'decisionSequence' => (string) count( $this->requests ) ) );
 		};
 		$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), $transport );
 		$site = new SiteIdentity( ModaApiConfiguration::MODE_PUBLIC, static fn( string $host ) => array( '93.184.216.34' ) );
-		$publisher = new CheckoutConsentPublisher( $client, new InstallationStore(), $site );
-		$this->publisher = $publisher;
-		$eligibility = new CheckoutConsentEligibility( $client, $site, new InstallationStore() );
-		$this->capture = new CheckoutConsentCapture( $publisher, $eligibility );
+		$this->publisher = new CheckoutConsentPublisher( $client, new InstallationStore(), $site );
+		$this->eligibility = new CheckoutConsentEligibility( $client, $site, new InstallationStore() );
+		$this->proof = new CheckoutConsentProof();
+		$this->capture = new CheckoutConsentCapture( $this->publisher, $this->eligibility, $this->proof );
 	}
 
-	protected function tearDown(): void { unset( $GLOBALS['arch046_nonce_action'], $GLOBALS['arch046_current_user_id'] ); }
+	protected function tearDown(): void {
+		unset( $GLOBALS['arch046_nonce_action'], $GLOBALS['arch046_current_user_id'] );
+	}
 
 	private function response( int $status, array $payload ): array {
 		return array( 'response' => array( 'code' => $status ),
 			'headers' => array( 'content-type' => 'application/json' ), 'body' => json_encode( $payload ) );
 	}
 
-	private function classic( bool $checked, string $phone = '+447400123456', string $nonce = 'arch046-fixture-nonce' ): void {
-		$_POST['security'] = $nonce;
+	private function classic( bool $checked, string $phone = '+447400123456',
+		bool $legacyWithdraw = false, bool $explicitUncheck = false, bool $explicitGrant = true ): void {
+		$_POST['security'] = 'arch046-fixture-nonce';
 		$this->capture->classicReview( 'billing_phone=' . rawurlencode( $phone ) . '&billing_country=GB' .
-			( $checked ? '&' . CheckoutConsentCheckbox::CLASSIC_FIELD . '=1' : '' ) );
+			( $checked ? '&' . CheckoutConsentCheckbox::CLASSIC_FIELD . '=1' : '' ) .
+			( $checked && $explicitGrant ? '&moda_interact_whatsapp_recovery_checked_action=1' : '' ) .
+			( $legacyWithdraw ? '&moda_interact_whatsapp_recovery_withdrawal=withdraw' : '' ) .
+			( $explicitUncheck ? '&moda_interact_whatsapp_recovery_unchecked_action=1' : '' ) );
 	}
 
-	/** Returning customers can revoke without first ticking the default-unchecked opt-in. */
-	public function test_later_classic_checkout_explicit_withdrawal_does_not_mint_a_grant(): void {
-		$this->classic( true );
-		self::assertCount( 1, $this->requests );
-		$this->capture->endCheckout();
-		$_POST['security'] = 'arch046-fixture-nonce';
-		$form = 'billing_phone=%2B447400123456&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw';
-		$this->capture->classicReview( $form );
-		$this->capture->classicReview( $form );
-		self::assertCount( 2, $this->requests, 'Replayed choice cannot mint another REVOKE' );
-		$grant = json_decode( $this->requests[0][1]['body'], true );
-		$revoke = json_decode( $this->requests[1][1]['body'], true );
-		self::assertSame( 'GRANT', $grant['decision'] );
-		self::assertSame( 'REVOKE', $revoke['decision'] );
-		self::assertSame( $grant['canonicalPhone'], $revoke['canonicalPhone'] );
-		self::assertNotSame( $grant['eventId'], $revoke['eventId'] );
-		self::assertSame( 'UNCHECKED', $revoke['checkoutAction']['selection'] );
-		self::assertNull( $revoke['disclosure'] );
-		self::assertCount( 0, $GLOBALS['moda_interact_external_requests'], 'No consent-driven checkout or recovery activity' );
+	private function enableConfirmedStatus(): void {
+		$this->capture = new CheckoutConsentCapture( $this->publisher, $this->eligibility,
+			$this->proof, new CheckoutConsentStatusReader( static fn( array $proof ): string => 'CONFIRMED_GRANTED' ) );
 	}
 
-	public function test_returning_classic_unchecked_default_and_conflicting_selection_never_withdraw(): void {
-		$_POST['security'] = 'arch046-fixture-nonce';
-		$base = 'billing_phone=%2B447400123456&billing_country=GB';
-		$this->capture->classicReview( $base );
-		$this->capture->classicReview( $base . '&' . CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=unchanged' );
-		self::assertCount( 0, $this->requests );
-		$this->capture->classicReview( $base . '&' . CheckoutConsentCheckbox::CLASSIC_FIELD . '=1&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw' );
-		$this->capture->classicReview( $base . '&' . CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=invalid' );
-		self::assertCount( 0, $this->requests, 'Contradictory or malformed choice cannot be recorded' );
-		$this->capture->classicReview( $base . '&' . CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw' );
-		self::assertCount( 1, $this->requests );
-		self::assertSame( 'REVOKE', json_decode( $this->requests[0][1]['body'], true )['decision'] );
+	private function event( int $index ): array {
+		return json_decode( $this->requests[$index][1]['body'], true );
 	}
 
-	public function test_later_blocks_explicit_withdrawal_is_verified_and_deduplicated(): void {
-		$GLOBALS['arch046_nonce_action'] = 'wc_store_api';
-		$fields = array( CheckoutConsentCheckbox::BLOCK_FIELD => false,
-			CheckoutConsentCheckbox::BLOCK_WITHDRAW_FIELD => 'withdraw' );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $fields, 'forged' ) );
-		self::assertCount( 0, $this->requests );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $fields ) );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $fields ) );
-		self::assertCount( 1, $this->requests );
-		$event = json_decode( $this->requests[0][1]['body'], true );
-		self::assertSame( 'REVOKE', $event['decision'] );
-		self::assertSame( 'BLOCKS', $event['checkoutAction']['checkoutMode'] );
-		self::assertSame( '447400123456', $event['canonicalPhone'] );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
-			CheckoutConsentCheckbox::BLOCK_FIELD => true,
-			CheckoutConsentCheckbox::BLOCK_WITHDRAW_FIELD => 'withdraw',
-		) ) );
-		self::assertCount( 1, $this->requests, 'Conflicting simultaneous GRANT/REVOKE denied' );
-	}
-
-	public function test_later_blocks_withdrawal_waits_for_verified_phone_and_never_inherits_login(): void {
-		$GLOBALS['arch046_nonce_action'] = 'wc_store_api';
-		$customer = $GLOBALS['arch046_woo']->customer;
-		$customer->phone = '';
-		$fields = array( CheckoutConsentCheckbox::BLOCK_WITHDRAW_FIELD => 'withdraw' );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $fields ) );
-		self::assertCount( 0, $this->requests );
-		$stage = $GLOBALS['arch046_woo']->session->get( 'moda_interact_checkout_blocks_waiting_for_phone_v1' );
-		self::assertSame( 'REVOKE', $stage['choice'] );
-		$GLOBALS['arch046_current_user_id'] = 44;
-		$customer->phone = '+447400123456';
-		$this->capture->blocksBillingUpdated( $customer, new Arch046CheckoutRequest( array(), 'arch046-fixture-nonce', 'POST' ) );
-		self::assertCount( 0, $this->requests, 'A different login cannot inherit another tab withdrawal' );
-		$GLOBALS['arch046_current_user_id'] = 0;
-		$customer->phone = '';
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $fields ) );
-		$customer->phone = '+447400123456';
-		$this->capture->blocksBillingUpdated( $customer, new Arch046CheckoutRequest( array(), 'arch046-fixture-nonce', 'POST' ) );
-		self::assertCount( 1, $this->requests );
-		self::assertSame( 'REVOKE', json_decode( $this->requests[0][1]['body'], true )['decision'] );
-		$this->capture->blocksBillingUpdated( $customer, new Arch046CheckoutRequest( array(), 'arch046-fixture-nonce', 'POST' ) );
-		self::assertCount( 1, $this->requests );
-	}
-
-	public function test_returning_checkout_changed_phone_must_be_reobserved_before_withdrawal(): void {
-		$_POST['security'] = 'arch046-fixture-nonce';
-		$initial = 'billing_phone=%2B447400123456&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=unchanged';
-		$this->capture->classicReview( $initial );
-		$changed = 'billing_phone=%2B447400123457&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw';
-		$this->capture->classicReview( $changed );
-		self::assertCount( 0, $this->requests, 'Changed phone cannot inherit previous choice' );
-		$this->capture->classicReview( $changed );
-		self::assertCount( 0, $this->requests, 'Repeated stale choice still cannot act' );
-		$this->capture->classicReview( 'billing_phone=%2B447400123457&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=unchanged' );
-		$this->capture->classicReview( $changed );
-		self::assertCount( 1, $this->requests );
-		self::assertSame( '447400123457', json_decode( $this->requests[0][1]['body'], true )['canonicalPhone'] );
-	}
-
-	public function test_explicit_withdrawal_fails_closed_on_feature_or_installation_revocation(): void {
-		$_POST['security'] = 'arch046-fixture-nonce';
-		$action = 'billing_phone=%2B447400123456&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw';
-		$this->feature = false;
-		$this->capture->classicReview( $action );
-		self::assertCount( 0, $this->requests );
-		$this->feature = true;
-		$connection = ( new InstallationStore() )->read()['record'];
-		unset( $GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] );
-		$this->capture->classicReview( $action );
-		self::assertCount( 0, $this->requests );
-		( new InstallationStore() )->save( $connection );
-		$this->capture->classicReview( $action );
-		self::assertCount( 1, $this->requests );
-	}
-
-	public function test_later_withdrawal_outage_replays_identical_event_without_checkout_side_effect(): void {
-		$_POST['security'] = 'arch046-fixture-nonce';
-		$action = 'billing_phone=%2B447400123456&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw';
-		$this->unavailable = true;
-		$this->capture->classicReview( $action );
-		self::assertCount( 1, $this->requests );
-		$first = json_decode( $this->requests[0][1]['body'], true );
-		self::assertSame( 'REVOKE', $first['decision'] );
-		$this->unavailable = false;
-		$this->capture->classicReview( $action );
-		self::assertCount( 2, $this->requests );
-		self::assertSame( $first, json_decode( $this->requests[1][1]['body'], true ) );
-		$this->capture->classicReview( $action );
-		self::assertCount( 2, $this->requests );
-		self::assertCount( 0, $GLOBALS['moda_interact_external_requests'] );
-	}
-
-	public function test_returning_checkout_requires_new_explicit_grant_after_withdrawal(): void {
-		$_POST['security'] = 'arch046-fixture-nonce';
-		$withdraw = 'billing_phone=%2B447400123456&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw';
-		$this->capture->classicReview( $withdraw );
-		self::assertCount( 1, $this->requests );
-		$this->capture->endCheckout();
-		// New checkout starts unchecked regardless of previous permission.
+	public function test_v2_only_exact_payload_and_neutral_unchecked_refresh(): void {
 		$this->classic( false );
+		$this->classic( false, '+447400123456', true );
+		self::assertCount( 0, $this->requests, 'Legacy dropdown is inert' );
+		$this->classic( true );
 		self::assertCount( 1, $this->requests );
+		$event = $this->event( 0 );
+		self::assertSame( array( 'schemaVersion', 'eventId', 'decision', 'canonicalPhone', 'occurredAt', 'disclosure' ), array_keys( $event ) );
+		self::assertSame( 'woo.whatsapp-consent.v2', $event['schemaVersion'] );
+		self::assertSame( 'GRANT', $event['decision'] );
+		self::assertSame( array( 'version', 'locale', 'text' ), array_keys( $event['disclosure'] ) );
+		$this->classic( false, '+447400123456', true );
+		$this->classic( false );
+		self::assertCount( 1, $this->requests, 'Unchecked refresh and forged old select are neutral' );
+		self::assertNotNull( $this->proof->forCurrentShopper( $event['canonicalPhone'] ) );
+	}
+
+	public function test_proof_is_retained_only_after_hosted_ack_and_retried_with_original_id(): void {
+		$this->unavailable = true;
+		$this->classic( true );
+		self::assertCount( 1, $this->requests );
+		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
+		$this->unavailable = false;
 		$this->classic( true );
 		self::assertCount( 2, $this->requests );
-		$revoked = json_decode( $this->requests[0][1]['body'], true );
-		$regranted = json_decode( $this->requests[1][1]['body'], true );
-		self::assertSame( array( 'REVOKE', 'GRANT' ), array( $revoked['decision'], $regranted['decision'] ) );
-		self::assertSame( $revoked['canonicalPhone'], $regranted['canonicalPhone'] );
-		self::assertNotSame( $revoked['eventId'], $regranted['eventId'] );
-		self::assertCount( 0, $GLOBALS['moda_interact_external_requests'] );
+		self::assertSame( $this->requests[0][1]['body'], $this->requests[1][1]['body'] );
+		self::assertSame( $this->event( 0 )['eventId'],
+			$this->proof->forCurrentShopper( '447400123456' )['grantEventId'] );
 	}
 
-	public function test_previous_session_action_scheduler_retry_is_cancelled_on_login_and_phone_change(): void {
-		$this->unavailable = true;
+	public function test_guest_proof_cannot_cross_phone_checkout_or_account_boundary(): void {
 		$this->classic( true );
-		self::assertCount( 1, $this->requests );
-		$scheduled = $GLOBALS['arch035_delayed'][0]['args'];
-		$this->unavailable = false;
-		$this->capture->invalidatePendingSession();
-		$this->publisher->deliver( ...array_values( $scheduled ) );
-		self::assertCount( 1, $this->requests, 'Previous account retry is cancelled on logout/login' );
+		self::assertNotNull( $this->proof->forCurrentShopper( '447400123456' ) );
+		self::assertNull( $this->proof->forCurrentShopper( '447400123457' ) );
+		$GLOBALS['arch046_woo']->session->set( 'customer_id', 'another-guest-session' );
+		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
+		$GLOBALS['arch046_woo']->session->set( 'customer_id', 'guest-session-1' );
+		$GLOBALS['arch046_current_user_id'] = 24;
+		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
+	}
 
-		$this->unavailable = true;
+	public function test_account_bound_proof_survives_checkout_but_not_another_account_or_installation(): void {
+		$GLOBALS['arch046_current_user_id'] = 42;
 		$this->classic( true );
-		self::assertCount( 2, $this->requests );
-		$old_phone = $GLOBALS['arch035_delayed'][1]['args'];
-		$this->unavailable = false;
-		$this->classic( true, '+447400123457' );
-		$this->publisher->deliver( ...array_values( $old_phone ) );
-		self::assertCount( 2, $this->requests, 'Phone-change invalidates pending previous-phone retry' );
-	}
-
-	public function test_returning_blocks_withdrawal_requires_matching_guest_cart_token(): void {
-		$GLOBALS['arch046_nonce_action'] = 'wc_store_api';
-		$choice = array( CheckoutConsentCheckbox::BLOCK_WITHDRAW_FIELD => 'withdraw' );
-		$token = \Automattic\WooCommerce\StoreApi\Utilities\CartTokenUtils::get_cart_token( 'guest-session-1' );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $choice, '', 'PUT', 'forged' ) );
-		self::assertCount( 0, $this->requests );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $choice, '', 'PUT', $token ) );
-		self::assertCount( 1, $this->requests );
-		self::assertSame( 'REVOKE', json_decode( $this->requests[0][1]['body'], true )['decision'] );
-		$GLOBALS['arch046_woo']->session->set( 'customer_id', 'another-guest' );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( $choice, '', 'PUT', $token ) );
-		self::assertCount( 1, $this->requests );
-	}
-	public function test_queued_decision_cannot_cross_credential_rotation_with_same_installation_id(): void {
-		$_POST['security'] = 'arch046-fixture-nonce';
-		$this->unavailable = true;
-		$this->capture->classicReview( 'billing_phone=%2B447400123456&billing_country=GB&' .
-			CheckoutConsentCheckbox::CLASSIC_WITHDRAW_FIELD . '=withdraw' );
-		self::assertCount( 1, $this->requests );
-		$scheduled = $GLOBALS['arch035_delayed'][0]['args'];
+		self::assertNotNull( $this->proof->forCurrentShopper( '447400123456' ) );
+		$this->capture->endCheckout();
+		self::assertNotNull( $this->proof->forCurrentShopper( '447400123456' ) );
+		$GLOBALS['arch046_current_user_id'] = 43;
+		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
+		$GLOBALS['arch046_current_user_id'] = 42;
 		$record = ( new InstallationStore() )->read()['record'];
 		$record['credentialVersion']++;
 		( new InstallationStore() )->save( $record );
-		$this->unavailable = false;
-		$this->publisher->deliver( ...array_values( $scheduled ) );
-		self::assertCount( 1, $this->requests, 'Credential rotation must invalidate previously attested event' );
+		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
+	}
+
+	public function test_separate_withdrawal_command_requires_current_remote_confirmation(): void {
+		$this->classic( true );
+		$this->classic( false );
+		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertCount( 1, $this->requests, 'With no API-006 reader, a local grant proof cannot authorise withdrawal' );
+		$this->enableConfirmedStatus();
+		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertCount( 2, $this->requests );
+		$event = $this->event( 1 );
+		self::assertSame( 'REVOKE', $event['decision'] );
+		self::assertNull( $event['disclosure'] );
+		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
+		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertCount( 2, $this->requests );
+	}
+
+	public function test_independent_wordpress_route_requires_nonce_confirmation_and_server_proof(): void {
+		$this->classic( true );
+		$this->classic( false );
+		$this->enableConfirmedStatus();
+		$actions = new CheckoutConsentActions( $this->capture );
+		$actions->registerRoute();
+		self::assertArrayHasKey( 'moda-interact/v1/checkout-consent/withdraw', $GLOBALS['moda_interact_registered_rest_routes'] );
+		unset( $GLOBALS['arch046_nonce_action'] );
+		$make = static function ( string $nonce, bool $confirmed ) {
+			return new class( $nonce, $confirmed ) {
+				public function __construct( private string $nonce, private bool $confirmed ) {}
+				public function get_method(): string { return 'POST'; }
+				public function get_header( $header ): ?string {
+					return 'x-wp-nonce' === strtolower( $header ) ? $this->nonce : null;
+				}
+				public function get_json_params(): array {
+					return array( 'mode' => 'CLASSIC', 'confirmed' => $this->confirmed,
+						'form' => 'billing_phone=%2B447400123456&billing_country=GB' );
+				}
+			};
+		};
+		self::assertFalse( $actions->permitted( $make( 'invalid', true ) ) );
+		self::assertSame( 'unverified', $actions->withdraw( $make( 'fixture_rest_nonce', false ) )['status'] );
+		self::assertCount( 1, $this->requests );
+		self::assertSame( 'withdrawn', $actions->withdraw( $make( 'fixture_rest_nonce', true ) )['status'] );
+		self::assertCount( 2, $this->requests );
+	}
+
+	public function test_blocks_accepted_checkbox_transition_can_revoke_in_same_checkout(): void {
+		$GLOBALS['arch046_nonce_action'] = 'wc_store_api';
+		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
+			CheckoutConsentCheckbox::BLOCK_FIELD => true,
+		) ) );
+		self::assertCount( 1, $this->requests );
+		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
+			CheckoutConsentCheckbox::BLOCK_FIELD => false,
+			'moda-interact/whatsapp-recovery-withdrawal' => 'withdraw',
+		) ) );
+		self::assertCount( 2, $this->requests, 'Verified true-to-false Blocks transition sends REVOKE' );
+		self::assertSame( 'GRANT', $this->event( 0 )['decision'] );
+		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
+		self::assertNull( $this->event( 1 )['disclosure'] );
+		self::assertSame( 'woo.whatsapp-consent.v2', $this->event( 1 )['schemaVersion'] );
+		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
+			CheckoutConsentCheckbox::BLOCK_FIELD => false,
+		) ) );
+		self::assertCount( 2, $this->requests, 'Repeated false Blocks state cannot duplicate REVOKE' );
+	}
+	public function test_account_proof_withdrawal_on_later_checkout_does_not_need_previous_checkbox_observation(): void {
+		$GLOBALS['arch046_current_user_id'] = 42;
+		$this->classic( true );
+		self::assertCount( 1, $this->requests );
+		$this->capture->endCheckout();
+		// A later authenticated account checkout has a different Woo session.
+		$GLOBALS['arch046_woo']->session = new Arch046Session();
+		$this->enableConfirmedStatus();
+		self::assertTrue( $this->capture->hasConfirmedPermission( '+447400123456', 'GB' ) );
+		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertCount( 2, $this->requests );
+		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
+		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
+	}
+
+	public function test_proof_and_remote_diagnostics_preserve_fail_closed_authority(): void {
+		$missing = $this->capture->permissionStatus( '+447400123456', 'GB' );
+		self::assertSame( array( 'confirmed' => false, 'reason' => 'consent_proof_missing' ), $missing );
+		$this->classic( true );
+		$proof = $this->proof->inspectForCurrentShopper( '447400123456' );
+		self::assertSame( '', $proof['reason'] );
+		self::assertArrayHasKey( 'grantEventId', $proof['proof'] );
+		self::assertSame( array( 'confirmed' => false, 'reason' => 'consent_status_remote_unverified' ),
+			( new CheckoutConsentStatusReader( static fn( array $p ): string => 'UNVERIFIED' ) )->inspect( $proof['proof'] ) );
+		self::assertSame( array( 'confirmed' => false, 'reason' => 'consent_status_remote_unavailable' ),
+			( new CheckoutConsentStatusReader( static function (): string {
+				throw new \RuntimeException( 'no sensitive exception text in response' );
+			} ) )->inspect( $proof['proof'] ) );
+		self::assertSame( array( 'confirmed' => true, 'reason' => '' ),
+			( new CheckoutConsentStatusReader( static fn( array $p ): string => 'CONFIRMED_GRANTED' ) )->inspect( $proof['proof'] ) );
+		self::assertSame( 'consent_proof_phone_mismatch',
+			$this->proof->inspectForCurrentShopper( '447400123457' )['reason'] );
+		$GLOBALS['arch046_woo']->session->set( 'customer_id', 'new-guest-principal' );
+		self::assertSame( 'consent_proof_checkout_mismatch',
+			$this->proof->inspectForCurrentShopper( '447400123456' )['reason'] );
+		// Proof diagnostics must never leak the capability to the browser.
+		self::assertArrayNotHasKey( 'grantEventId', $missing );
+		self::assertCount( 1, $this->requests, 'Status/proof reads never publish another event' );
+	}
+
+	public function test_api006_status_client_uses_authenticated_body_only_proof_and_rejects_bad_response(): void {
+		$requests = array();
+		$transport = static function ( string $url, array $request ) use ( &$requests ) {
+			$requests[] = array( $url, $request );
+			return array( 'response' => array( 'code' => 200 ),
+				'headers' => array( 'content-type' => 'application/json' ),
+				'body' => json_encode( array( 'schemaVersion' => 'woo.whatsapp-consent-status.v1',
+					'state' => 'CONFIRMED_GRANTED' ) ) );
+		};
+		$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), $transport );
+		$proof = array( 'grantEventId' => 'woo-consent-example', 'canonicalPhone' => '447400123456' );
+		$record = ( new InstallationStore() )->read()['record'];
+		self::assertSame( 'CONFIRMED_GRANTED', $client->wooConsentStatus( $record, $proof ) );
+		self::assertCount( 1, $requests );
+		self::assertStringEndsWith( '/v1/woocommerce/whatsapp-consent/status', $requests[0][0] );
+		self::assertStringNotContainsString( 'woo-consent-example', $requests[0][0] );
+		self::assertSame( array( 'schemaVersion', 'canonicalPhone', 'grantEventId' ),
+			array_keys( json_decode( $requests[0][1]['body'], true ) ) );
+		self::assertArrayHasKey( 'Authorization', $requests[0][1]['headers'] );
+		self::assertSame( 'no-store', $requests[0][1]['headers']['Cache-Control'] );
+	}
+
+	public function test_shop_checkout_status_route_discloses_no_proof_or_phone(): void {
+		$this->classic( true );
+		$this->enableConfirmedStatus();
+		$actions = new CheckoutConsentActions( $this->capture );
+		unset( $GLOBALS['arch046_nonce_action'] );
+		$request = new class {
+			public function get_method(): string { return 'POST'; }
+			public function get_header( $header ): ?string {
+				return strtolower( $header ) === 'x-wp-nonce' ? 'fixture_rest_nonce' : null;
+			}
+			public function get_json_params(): array { return array( 'mode' => 'CLASSIC',
+				'form' => 'billing_phone=%2B447400123456&billing_country=GB' ); }
+		};
+		self::assertSame( array( 'confirmed' => true, 'reason' => '' ), $actions->status( $request ) );
+		self::assertCount( 1, $this->requests, 'Reading must not write new consent evidence' );
+		$this->proof->clearCurrent();
+		self::assertSame( array( 'confirmed' => false, 'reason' => 'consent_proof_missing' ), $actions->status( $request ) );
+	}
+
+	public function test_custom_rest_permission_never_initializes_or_creates_checkout_state(): void {
+		unset( $GLOBALS['arch046_nonce_action'] );
+		$session = WC()->session;
+		$GLOBALS['arch046_lazy_checkout_session'] = $session;
+		$GLOBALS['arch046_wc_load_cart_calls'] = 0;
+		$actions = new CheckoutConsentActions( $this->capture );
+		$request = static function ( string $nonce ) {
+			return new class( $nonce ) {
+				public function __construct( private string $nonce ) {}
+				public function get_method(): string { return 'POST'; }
+				public function get_header( $name ): ?string {
+					return 'x-wp-nonce' === strtolower( $name ) ? $this->nonce : null;
+				}
+			};
+		};
+		try {
+			$session->set( CheckoutKey::SESSION_FIELD, null );
+			self::assertFalse( $actions->permitted( $request( 'invalid' ) ) );
+			self::assertTrue( $actions->permitted( $request( 'fixture_rest_nonce' ) ) );
+			self::assertNull( $session->get( CheckoutKey::SESSION_FIELD ),
+				'Permission validation must not allocate a Moda checkout key' );
+			WC()->session = null;
+			self::assertFalse( $actions->permitted( $request( 'fixture_rest_nonce' ) ),
+				'Missing Woo session must fail closed rather than initialize merchant state' );
+			self::assertNull( WC()->session );
+			self::assertSame( 0, $GLOBALS['arch046_wc_load_cart_calls'],
+				'Even valid requests cannot call wc_load_cart' );
+		} finally {
+			WC()->session = $session;
+			unset( $GLOBALS['arch046_lazy_checkout_session'], $GLOBALS['arch046_wc_load_cart_calls'] );
+		}
+	}
+
+	public function test_status_read_cannot_generate_new_checkout_key(): void {
+		$this->classic( true );
+		$session = WC()->session;
+		self::assertNotNull( $session->get( CheckoutKey::SESSION_FIELD ) );
+		$session->set( CheckoutKey::SESSION_FIELD, null );
+		unset( $GLOBALS['arch046_nonce_action'] );
+		$actions = new CheckoutConsentActions( $this->capture );
+		$request = new class {
+			public function get_method(): string { return 'POST'; }
+			public function get_header( $header ): ?string {
+				return 'x-wp-nonce' === strtolower( $header ) ? 'fixture_rest_nonce' : null;
+			}
+			public function get_json_params(): array { return array( 'mode' => 'BLOCKS' ); }
+		};
+		self::assertSame( array( 'confirmed' => false, 'reason' => 'consent_proof_checkout_mismatch' ), $actions->status( $request ) );
+		self::assertNull( $session->get( CheckoutKey::SESSION_FIELD ) );
+		self::assertCount( 1, $this->requests, 'Status read does not publish an event' );
+	}
+
+	public function test_choice_reports_unavailable_checkout_objects_without_bootstrapping_them(): void {
+		unset( $GLOBALS['arch046_nonce_action'] );
+		$actions = new CheckoutConsentActions( $this->capture );
+		$request = new class {
+			public function get_method(): string { return 'POST'; }
+			public function get_header( $header ): ?string {
+				return match ( strtolower( $header ) ) {
+					'x-wp-nonce' => 'fixture_rest_nonce',
+					'x-wc-store-api-nonce' => 'fixture_store_nonce',
+					default => null,
+				};
+			}
+			public function get_json_params(): array { return array( 'mode' => 'BLOCKS', 'checked' => true ); }
+		};
+		$cart = WC()->cart;
+		$customer = WC()->customer;
+		$GLOBALS['arch046_wc_load_cart_calls'] = 0;
+		try {
+			WC()->customer = null;
+			self::assertSame( array( 'status' => 'unverified', 'reason' => 'billing_contact_unavailable' ),
+				$actions->choice( $request ) );
+			self::assertNull( WC()->customer );
+			WC()->customer = $customer;
+			WC()->cart = null;
+			self::assertSame( array( 'status' => 'unverified', 'reason' => 'capture_observe_cart_unavailable' ),
+				$actions->choice( $request ) );
+			self::assertNull( WC()->cart );
+			WC()->cart = new class {
+				public function get_cart(): array { return array(); }
+			};
+			self::assertSame( array( 'status' => 'unverified', 'reason' => 'capture_observe_cart_empty' ),
+				$actions->choice( $request ) );
+			self::assertCount( 0, $this->requests );
+			self::assertSame( 0, $GLOBALS['arch046_wc_load_cart_calls'] );
+		} finally {
+			WC()->cart = $cart;
+			WC()->customer = $customer;
+			unset( $GLOBALS['arch046_wc_load_cart_calls'] );
+		}
+		self::assertSame( 'recorded', $actions->choice( $request )['status'],
+			'Valid checkout objects still record explicit consent' );
+		self::assertCount( 1, $this->requests );
+	}
+
+	public function test_blocks_slotfill_choice_requires_both_rest_and_store_nonces(): void {
+		unset( $GLOBALS['arch046_nonce_action'] );
+		$actions = new CheckoutConsentActions( $this->capture );
+		$make = static function ( string $nonce ) {
+			return new class( $nonce ) {
+				public function __construct( private string $nonce ) {}
+				public function get_method(): string { return 'POST'; }
+				public function get_header( $header ): ?string {
+					return match ( strtolower( $header ) ) {
+						'x-wp-nonce' => 'fixture_rest_nonce',
+						'x-wc-store-api-nonce' => $this->nonce,
+						default => null,
+					};
+				}
+				public function get_json_params(): array {
+					return array( 'mode' => 'BLOCKS', 'checked' => true );
+				}
+			};
+		};
+		self::assertSame( 'unverified', $actions->choice( $make( 'invalid' ) )['status'] );
+		self::assertCount( 0, $this->requests );
+		self::assertSame( 'recorded', $actions->choice( $make( 'fixture_store_nonce' ) )['status'] );
+		self::assertCount( 1, $this->requests );
+		self::assertSame( 'GRANT', $this->event( 0 )['decision'] );
+	}
+
+	public function test_customer_can_withdraw_existing_permission_after_feature_is_disabled(): void {
+		$GLOBALS['arch046_current_user_id'] = 42;
+		$this->classic( true );
+		$this->capture->endCheckout();
+		$GLOBALS['arch046_woo']->session = new Arch046Session();
+		$this->feature = false;
+		$this->enableConfirmedStatus();
+		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
 	}
 
 }
