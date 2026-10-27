@@ -2390,3 +2390,19 @@ msgstr ""
 #: src/recoveries/detail/human/human-reply-composer.js:39
 msgid "Reply to customer"
 msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Initial recovery notice"
+msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Notify me when initial recovery outreach starts"
+msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr ""

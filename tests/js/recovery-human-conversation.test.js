@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { createConversationCommandClient } from '../../src/recoveries/detail/human/conversation-command-client';
 import {
 	parseCommandResponse,
@@ -33,6 +33,8 @@ const status = {
 	moderationStatus: 'moderation_allowed',
 	moderationReasonCode: null,
 };
+
+afterEach(() => vi.useRealTimers());
 
 describe('ARCH-040 WooCommerce recovery human commands', () => {
 	it('enforces strict bounded hosted response contracts', () => {
@@ -130,6 +132,8 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 	});
 
 	it('never sends twice on pending click; ambiguous retry reuses the same key', async () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date('2026-10-23T12:00:00.000Z'));
 		let accept;
 		const call = vi.fn(
 			() =>

@@ -2324,3 +2324,15 @@ msgstr "挽回活动"
 
 msgid "Reply to customer"
 msgstr "回复客户"
+
+msgid "Initial recovery notice"
+msgstr "首次恢复通知"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "选择是否在首次恢复消息开始时接收通知。"
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "首次恢复消息开始时通知我"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "此通知不会改变发送给客户的消息，也不会影响恢复额度的使用。"

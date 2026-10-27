@@ -2385,3 +2385,15 @@ msgstr "Průběh obnovy"
 
 msgid "Reply to customer"
 msgstr "Odpovědět zákazníkovi"
+
+msgid "Initial recovery notice"
+msgstr "Upozornění na zahájení obnovy"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Zvolte, zda chcete dostat upozornění při zahájení první zprávy obnovy."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Upozornit při zahájení první zprávy obnovy"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Toto upozornění nemění zprávy zákazníkům ani využití kreditů na obnovu."

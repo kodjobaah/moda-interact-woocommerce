@@ -28,8 +28,8 @@ final class RecoveryPolicyResponseValidator {
 
 	public static function isValid( mixed $data ): bool {
 		return is_array( $data ) && self::keys( $data, array(
-			'schemaVersion', 'revision', 'merchant', 'effective', 'source', 'overrideActive', 'offerSelectionAvailable',
-		) ) && 1 === $data['schemaVersion'] && is_string( $data['revision'] ) &&
+			'schemaVersion', 'revision', 'merchant', 'effective', 'source', 'overrideActive', 'offerSelectionAvailable', 'notifyOnInitialRecoveryOutreach',
+		) ) && 2 === $data['schemaVersion'] && is_bool( $data['notifyOnInitialRecoveryOutreach'] ) && is_string( $data['revision'] ) &&
 			( 'UNCONFIGURED' === $data['revision'] ||
 				( 1 === preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/D', $data['revision'] ) &&
 				false !== strtotime( $data['revision'] ) ) ) &&
@@ -43,10 +43,10 @@ final class RecoveryPolicyResponseValidator {
 	/** The Woo policy writes only delay and follow-up fields; never a provider coupon. */
 	public static function isUpdate( mixed $data ): bool {
 		if ( ! is_array( $data ) || ! self::keys( $data, array(
-			'expectedRevision', 'recoveryDelayMinutes', 'followUpEnabled', 'followUpDelayMinutes',
+			'expectedRevision', 'recoveryDelayMinutes', 'followUpEnabled', 'followUpDelayMinutes', 'notifyOnInitialRecoveryOutreach',
 		) ) ) return false;
 		return self::isValid( array(
-			'schemaVersion' => 1, 'revision' => $data['expectedRevision'],
+			'schemaVersion' => 2, 'revision' => $data['expectedRevision'],
 			'merchant' => array(
 				'recoveryDelayMinutes' => $data['recoveryDelayMinutes'], 'recoveryOfferMode' => 'NONE',
 				'followUpEnabled' => $data['followUpEnabled'], 'followUpDelayMinutes' => $data['followUpDelayMinutes'],
@@ -56,6 +56,7 @@ final class RecoveryPolicyResponseValidator {
 				'followUpEnabled' => $data['followUpEnabled'], 'followUpDelayMinutes' => $data['followUpDelayMinutes'],
 			),
 			'source' => 'MERCHANT', 'overrideActive' => false, 'offerSelectionAvailable' => false,
+			'notifyOnInitialRecoveryOutreach' => $data['notifyOnInitialRecoveryOutreach'],
 		) );
 	}
 }

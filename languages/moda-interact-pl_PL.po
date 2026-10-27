@@ -2404,3 +2404,15 @@ msgstr "Aktywność odzyskiwania"
 
 msgid "Reply to customer"
 msgstr "Odpowiedz klientowi"
+
+msgid "Initial recovery notice"
+msgstr "Powiadomienie o rozpoczęciu odzyskiwania"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Wybierz, czy chcesz otrzymać powiadomienie o rozpoczęciu pierwszej wiadomości odzyskiwania."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Powiadom mnie o rozpoczęciu pierwszej wiadomości odzyskiwania"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "To powiadomienie nie zmienia wiadomości do klientów ani wykorzystania kredytów odzyskiwania."

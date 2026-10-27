@@ -2379,3 +2379,15 @@ msgstr "リカバリーの履歴"
 
 msgid "Reply to customer"
 msgstr "顧客に返信"
+
+msgid "Initial recovery notice"
+msgstr "初回リカバリー通知"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "最初のリカバリーメッセージが開始されたときに通知を受け取るか選択します。"
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "最初のリカバリーメッセージ開始時に通知する"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "この通知によって顧客へのメッセージやリカバリークレジットの使用が変わることはありません。"
