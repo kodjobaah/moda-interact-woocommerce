@@ -2430,3 +2430,15 @@ msgstr "Wiederherstellungsverlauf"
 
 msgid "Reply to customer"
 msgstr "Kundenantwort"
+
+msgid "Initial recovery notice"
+msgstr "Hinweis zum Beginn der Wiederherstellung"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Wählen Sie, ob Sie eine Benachrichtigung erhalten möchten, wenn die erste Wiederherstellungsnachricht beginnt."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Benachrichtigen, wenn die erste Wiederherstellungsnachricht beginnt"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Dieser Hinweis ändert weder Kundennachrichten noch die Nutzung von Wiederherstellungsguthaben."

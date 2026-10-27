@@ -2388,3 +2388,15 @@ msgstr "Kurtarma etkinliği"
 
 msgid "Reply to customer"
 msgstr "Müşteriye yanıt ver"
+
+msgid "Initial recovery notice"
+msgstr "İlk kurtarma bildirimi"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "İlk kurtarma mesajı başladığında bildirim alıp almak istemediğinizi seçin."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "İlk kurtarma mesajı başladığında bana bildir"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Bu bildirim müşteri mesajlarını veya kurtarma kredisi kullanımını değiştirmez."

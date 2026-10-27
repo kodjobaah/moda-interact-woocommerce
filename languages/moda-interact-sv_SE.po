@@ -2402,3 +2402,15 @@ msgstr "Återställningsaktivitet"
 
 msgid "Reply to customer"
 msgstr "Svara kunden"
+
+msgid "Initial recovery notice"
+msgstr "Avisering om första återhämtningskontakten"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Välj om du vill få en avisering när det första återhämtningsmeddelandet börjar."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Meddela mig när det första återhämtningsmeddelandet börjar"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Aviseringen ändrar inte kundmeddelanden eller användningen av återhämtningskrediter."

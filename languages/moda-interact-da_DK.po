@@ -2403,3 +2403,15 @@ msgstr "Gendannelsesaktivitet"
 
 msgid "Reply to customer"
 msgstr "Svar kunden"
+
+msgid "Initial recovery notice"
+msgstr "Meddelelse om første gendannelseskontakt"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Vælg, om du vil have en meddelelse, når den første gendannelseskontakt starter."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Giv mig besked, når den første gendannelseskontakt starter"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Denne meddelelse ændrer ikke kundebeskeder eller brugen af gendannelseskreditter."

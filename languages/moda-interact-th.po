@@ -2341,3 +2341,15 @@ msgstr "กิจกรรมการกู้คืน"
 
 msgid "Reply to customer"
 msgstr "ตอบลูกค้า"
+
+msgid "Initial recovery notice"
+msgstr "การแจ้งเตือนการกู้คืนครั้งแรก"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "เลือกว่าต้องการรับการแจ้งเตือนเมื่อเริ่มการติดต่อเพื่อกู้คืนครั้งแรกหรือไม่"
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "แจ้งเตือนเมื่อเริ่มการติดต่อเพื่อกู้คืนครั้งแรก"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "การแจ้งเตือนนี้ไม่เปลี่ยนข้อความถึงลูกค้าหรือการใช้เครดิตการกู้คืน"

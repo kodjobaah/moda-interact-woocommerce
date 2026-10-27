@@ -65,8 +65,9 @@ export function parseMerchantRecoveryPolicy(input) {
 			'source',
 			'overrideActive',
 			'offerSelectionAvailable',
+			'notifyOnInitialRecoveryOutreach',
 		]) ||
-		input.schemaVersion !== 1 ||
+		input.schemaVersion !== 2 ||
 		typeof input.revision !== 'string' ||
 		!(
 			input.revision === 'UNCONFIGURED' ||
@@ -80,7 +81,8 @@ export function parseMerchantRecoveryPolicy(input) {
 		!['MERCHANT', 'ADMIN_OVERRIDE'].includes(input.source) ||
 		typeof input.overrideActive !== 'boolean' ||
 		input.overrideActive !== (input.source === 'ADMIN_OVERRIDE') ||
-		input.offerSelectionAvailable !== false
+		input.offerSelectionAvailable !== false ||
+		typeof input.notifyOnInitialRecoveryOutreach !== 'boolean'
 	) {
 		throw new Error('REMOTE_RESPONSE_INVALID');
 	}
@@ -88,7 +90,7 @@ export function parseMerchantRecoveryPolicy(input) {
 }
 
 /**
- * Convert the validated local draft into the exact four-field PUT body.
+ * Convert the validated local draft into the exact five-field PUT body.
  *
  * @param {Object} current Persisted merchant policy response.
  * @param {Object} draft   Current form input values.
@@ -104,6 +106,8 @@ export function makeRecoveryPolicyUpdate(current, draft) {
 		: null;
 	if (
 		!/^(?:0|[1-9]\d*)$/.test(draft.recoveryDelayMinutes) ||
+		typeof draft.followUpEnabled !== 'boolean' ||
+		typeof draft.notifyOnInitialRecoveryOutreach !== 'boolean' ||
 		!Number.isInteger(start) ||
 		start < 0 ||
 		start > 10080 ||
@@ -120,6 +124,8 @@ export function makeRecoveryPolicyUpdate(current, draft) {
 		recoveryDelayMinutes: start,
 		followUpEnabled: draft.followUpEnabled,
 		followUpDelayMinutes: followUp,
+		notifyOnInitialRecoveryOutreach:
+			draft.notifyOnInitialRecoveryOutreach,
 	};
 }
 
@@ -156,7 +162,9 @@ export function createRecoveryPolicyClient(request = apiFetch) {
 					result.merchant.followUpEnabled !==
 						update.followUpEnabled ||
 					result.merchant.followUpDelayMinutes !==
-						update.followUpDelayMinutes
+						update.followUpDelayMinutes ||
+					result.notifyOnInitialRecoveryOutreach !==
+						update.notifyOnInitialRecoveryOutreach
 				) {
 					throw new Error('REMOTE_RESPONSE_INVALID');
 				}

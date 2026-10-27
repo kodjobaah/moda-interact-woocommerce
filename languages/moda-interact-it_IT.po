@@ -2419,3 +2419,15 @@ msgstr "Attività di recupero"
 
 msgid "Reply to customer"
 msgstr "Rispondi al cliente"
+
+msgid "Initial recovery notice"
+msgstr "Avviso di avvio del recupero"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Scegli se ricevere una notifica quando inizia il primo messaggio di recupero."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Avvisami quando inizia il primo messaggio di recupero"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Questa notifica non modifica i messaggi ai clienti né l’utilizzo dei crediti di recupero."

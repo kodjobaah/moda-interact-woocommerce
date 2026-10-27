@@ -218,6 +218,44 @@ export function RecoveryBehaviourFields({
 					'moda-interact'
 				)
 			)
+		),
+		createElement(
+			'section',
+			{ className: 'moda-recovery-behaviour__section' },
+			createElement(StepHeading, {
+				number: 4,
+				title: __('Initial recovery notice', 'moda-interact'),
+				description: __(
+					'Choose whether to receive a notice when the first recovery outreach starts.',
+					'moda-interact'
+				),
+			}),
+			createElement(
+				'label',
+				{ className: 'moda-recovery-behaviour__toggle' },
+				createElement('input', {
+					type: 'checkbox',
+					checked: draft.notifyOnInitialRecoveryOutreach,
+					disabled: !ready,
+					onChange: (event) =>
+						onChange(
+							'notifyOnInitialRecoveryOutreach',
+							event.currentTarget.checked
+						),
+				}),
+				__(
+					'Notify me when initial recovery outreach starts',
+					'moda-interact'
+				)
+			),
+			createElement(
+				'p',
+				{ className: 'moda-recovery-behaviour__credit-note' },
+				__(
+					'This notice does not change customer messages or recovery credit use.',
+					'moda-interact'
+				)
+			)
 		)
 	);
 }

@@ -9,8 +9,22 @@ use ModaInteract\WooCommerce\Rest\RecoveryPolicyController;
 use ModaInteract\WooCommerce\Security\Base64Url;
 use PHPUnit\Framework\TestCase;
 
+if ( ! function_exists( 'wc_get_logger' ) ) {
+	function wc_get_logger() {
+		return $GLOBALS['moda_interact_test_logger'];
+	}
+}
+
+final class RecoveryPolicyTestLogger {
+	public array $errors = array();
+	public function error( string $message, array $context = array() ): void {
+		$this->errors[] = array( $message, $context );
+	}
+}
+
 final class RecoveryPolicyControllerTest extends TestCase {
 	protected function setUp(): void {
+		$GLOBALS['moda_interact_test_logger'] = new RecoveryPolicyTestLogger();
 		$GLOBALS['moda_interact_options'] = array();
 		$GLOBALS['moda_interact_home_url'] = 'http://woocommerce-sandbox.local:8080';
 		$GLOBALS['moda_interact_can_manage_woocommerce'] = true;
@@ -84,12 +98,42 @@ final class RecoveryPolicyControllerTest extends TestCase {
 		}
 		self::assertFalse( RecoveryPolicyResponseValidator::isValid( array_merge( self::policy(), array( 'secret' => 'leak' ) ) ) );
 		self::assertFalse( RecoveryPolicyResponseValidator::isUpdate( array_merge( self::update(), array( 'recoveryOfferMode' => 'FIXED' ) ) ) );
+		self::assertFalse( RecoveryPolicyResponseValidator::isValid( array_diff_key( self::policy(), array( 'notifyOnInitialRecoveryOutreach' => true ) ) ) );
+		self::assertFalse( RecoveryPolicyResponseValidator::isValid( array_merge( self::policy(), array( 'notifyOnInitialRecoveryOutreach' => 'true' ) ) ) );
+		self::assertFalse( RecoveryPolicyResponseValidator::isUpdate( array_diff_key( self::update(), array( 'notifyOnInitialRecoveryOutreach' => true ) ) ) );
+		self::assertFalse( RecoveryPolicyResponseValidator::isUpdate( array_merge( self::update(), array( 'notifyOnInitialRecoveryOutreach' => 'true' ) ) ) );
+		self::assertTrue( RecoveryPolicyResponseValidator::isValid( self::policy( false ) ) );
+		self::assertTrue( RecoveryPolicyResponseValidator::isUpdate( array_merge( self::update(), array( 'notifyOnInitialRecoveryOutreach' => false ) ) ) );
 	}
 
 	public function test_missing_installation_fails_without_network(): void {
 		$controller = $this->controller( static function () { throw new LogicException( 'Must not call API' ); } );
 		delete_option( InstallationStore::OPTION_NAME );
 		self::assertSame( 401, $controller->handle( self::put( self::update() ) )->get_status() );
+	}
+
+	public function test_unexpected_persistence_failure_is_logged_without_exception_text(): void {
+		$store = new InstallationStore();
+		self::assertTrue( $store->save( self::record() ) );
+		$api = new class( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), static fn() => array() ) extends ModaApiClient {
+			public function merchantRecoveryPolicy( array $connection, ?array $update = null ): array {
+				throw new RuntimeException( 'private persistence detail' );
+			}
+		};
+		$controller = new RecoveryPolicyController(
+			$api,
+			new SiteIdentity( ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT, static fn() => array( '127.0.0.1' ) ),
+			$store
+		);
+		$reply = $controller->handle( self::put( self::update() ) );
+		self::assertSame( 503, $reply->get_status() );
+		self::assertSame( array( 'status' => 'REMOTE_UNAVAILABLE' ), $reply->get_data() );
+		self::assertCount( 1, $GLOBALS['moda_interact_test_logger']->errors );
+		[ $message, $context ] = $GLOBALS['moda_interact_test_logger']->errors[0];
+		self::assertSame( 'Recovery policy proxy request failed.', $message );
+		self::assertSame( 'RuntimeException', $context['error_class'] );
+		self::assertSame( '0', $context['error_code'] );
+		self::assertArrayNotHasKey( 'private persistence detail', $context );
 	}
 
 	private function controller( callable $transport ): RecoveryPolicyController {
@@ -114,12 +158,13 @@ final class RecoveryPolicyControllerTest extends TestCase {
 			'recoveryDelayMinutes' => 45,
 			'followUpEnabled' => true,
 			'followUpDelayMinutes' => 120,
+			'notifyOnInitialRecoveryOutreach' => true,
 		);
 	}
 
-	private static function policy(): array {
+	private static function policy( bool $notify = true ): array {
 		return array(
-			'schemaVersion' => 1,
+			'schemaVersion' => 2,
 			'revision' => '2026-10-12T10:00:00.000Z',
 			'merchant' => array(
 				'recoveryDelayMinutes' => 45, 'recoveryOfferMode' => 'NONE',
@@ -132,6 +177,7 @@ final class RecoveryPolicyControllerTest extends TestCase {
 			'source' => 'ADMIN_OVERRIDE',
 			'overrideActive' => true,
 			'offerSelectionAvailable' => false,
+			'notifyOnInitialRecoveryOutreach' => $notify,
 		);
 	}
 

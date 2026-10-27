@@ -2394,3 +2394,15 @@ msgstr "Palautuksen tapahtumat"
 
 msgid "Reply to customer"
 msgstr "Vastaa asiakkaalle"
+
+msgid "Initial recovery notice"
+msgstr "Ilmoitus palautuksen aloituksesta"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Valitse, haluatko ilmoituksen, kun ensimmäinen palautusviesti alkaa."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Ilmoita, kun ensimmäinen palautusviesti alkaa"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Tämä ilmoitus ei muuta asiakasviestejä eikä palautuskrediittien käyttöä."

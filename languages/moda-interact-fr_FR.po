@@ -2428,3 +2428,15 @@ msgstr "Activité de récupération"
 
 msgid "Reply to customer"
 msgstr "Répondre au client"
+
+msgid "Initial recovery notice"
+msgstr "Initial recovery notice"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Choose whether to receive a notice when the first recovery outreach starts."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Notify me when initial recovery outreach starts"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "This notice does not change customer messages or recovery credit use."

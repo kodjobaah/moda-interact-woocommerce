@@ -26,22 +26,26 @@ export function validateRecoveryBehaviourPreview(draft) {
 }
 
 /**
- * Convert persisted merchant preferences into a local, unsaved draft.
+ * Convert the v2 policy into a local draft. The notification preference is
+ * top-level merchant data and remains separate from the effective projection.
  *
- * @param {Object|null} effective
- * @return {{recoveryDelayMinutes: string, followUpEnabled: boolean, followUpDelayMinutes: string}} The local preview state.
+ * @param {Object|null} policy
+ * @return {{recoveryDelayMinutes: string, followUpEnabled: boolean, followUpDelayMinutes: string, notifyOnInitialRecoveryOutreach: boolean}} The local preview state.
  */
-export function recoveryBehaviourPreview(effective) {
+export function recoveryBehaviourPreview(policy) {
+	const merchant = policy?.merchant;
 	return {
-		recoveryDelayMinutes: effective
-			? String(effective.recoveryDelayMinutes)
+		recoveryDelayMinutes: merchant
+			? String(merchant.recoveryDelayMinutes)
 			: '',
-		followUpEnabled: effective?.followUpEnabled === true,
+		followUpEnabled: merchant?.followUpEnabled === true,
 		followUpDelayMinutes:
-			effective?.followUpDelayMinutes === null ||
-			effective?.followUpDelayMinutes === undefined
+			merchant?.followUpDelayMinutes === null ||
+			merchant?.followUpDelayMinutes === undefined
 				? ''
-				: String(effective.followUpDelayMinutes),
+				: String(merchant.followUpDelayMinutes),
+		notifyOnInitialRecoveryOutreach:
+			policy?.notifyOnInitialRecoveryOutreach === true,
 	};
 }
 
@@ -49,16 +53,19 @@ export function recoveryBehaviourPreview(effective) {
  * Only merchant-owned fields participate in dirty detection; active admin
  * overrides and unsupported provider coupon IDs are never submitted.
  *
- * @param {Object} merchant Persisted merchant preferences.
+ * @param {Object} policy Persisted v2 policy response.
  * @param {Object} draft    Locally edited form values.
  * @return {boolean} Whether the editable fields have changed.
  */
-export function recoveryBehaviourChanged(merchant, draft) {
+export function recoveryBehaviourChanged(policy, draft) {
+	const merchant = policy.merchant;
 	return (
 		String(merchant.recoveryDelayMinutes) !== draft.recoveryDelayMinutes ||
 		merchant.followUpEnabled !== draft.followUpEnabled ||
 		(draft.followUpEnabled &&
 			String(merchant.followUpDelayMinutes ?? '') !==
-				draft.followUpDelayMinutes)
+				draft.followUpDelayMinutes) ||
+		policy.notifyOnInitialRecoveryOutreach !==
+		draft.notifyOnInitialRecoveryOutreach
 	);
 }

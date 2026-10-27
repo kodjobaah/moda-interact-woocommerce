@@ -13,6 +13,11 @@ const effective = {
 	followUpDelayMinutes: null,
 	source: 'MERCHANT',
 };
+const policy = {
+	merchant: { ...effective, recoveryDelayMinutes: 45 },
+	effective,
+	notifyOnInitialRecoveryOutreach: false,
+};
 
 function walk(node, visitor) {
 	if (Array.isArray(node)) {
@@ -41,17 +46,18 @@ function elements(root, type) {
 }
 
 describe('Woo recovery behaviour preview (no settings write)', () => {
-	it('initializes from the effective projection without inventing merchant preferences', () => {
-		expect(recoveryBehaviourPreview(effective)).toEqual({
-			recoveryDelayMinutes: '30',
+	it('initializes merchant settings and the top-level notification preference', () => {
+		expect(recoveryBehaviourPreview(policy)).toEqual({
+			recoveryDelayMinutes: '45',
 			followUpEnabled: false,
 			followUpDelayMinutes: '',
+			notifyOnInitialRecoveryOutreach: false,
 		});
 		expect(recoveryBehaviourPreview(null).recoveryDelayMinutes).toBe('');
 	});
 
 	it('validates whole-minute recovery delays and conditional follow-up delays', () => {
-		const draft = recoveryBehaviourPreview(effective);
+		const draft = recoveryBehaviourPreview(policy);
 		expect(validateRecoveryBehaviourPreview(draft)).toEqual({
 			start: false,
 			followUp: false,
@@ -102,7 +108,7 @@ describe('Woo recovery behaviour preview (no settings write)', () => {
 		const onChange = vi.fn();
 		const view = RecoveryBehaviourFields({
 			effective,
-			draft: recoveryBehaviourPreview(effective),
+			draft: recoveryBehaviourPreview(policy),
 			errors: { start: false, followUp: false },
 			ready: true,
 			onChange,
@@ -118,6 +124,12 @@ describe('Woo recovery behaviour preview (no settings write)', () => {
 		expect(followUp.props.disabled).toBe(true);
 		start.props.onChange({ currentTarget: { value: '45' } });
 		expect(onChange).toHaveBeenCalledWith('recoveryDelayMinutes', '45');
+		const notification = inputs.filter(
+			(input) => input.props.type === 'checkbox'
+		)[1];
+		expect(notification).toBeDefined();
+		notification.props.onChange({ currentTarget: { checked: true } });
+		expect(onChange).toHaveBeenCalledWith('notifyOnInitialRecoveryOutreach', true);
 	});
 
 	it('shows inline invalid state only for the affected field', () => {

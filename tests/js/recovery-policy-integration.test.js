@@ -12,7 +12,7 @@ import {
 } from '../../src/recovery-settings/recovery-behaviour-validation';
 
 const initial = {
-	schemaVersion: 1,
+	schemaVersion: 2,
 	revision: '2026-10-12T10:00:00.000Z',
 	merchant: {
 		recoveryDelayMinutes: 30,
@@ -29,11 +29,13 @@ const initial = {
 	source: 'ADMIN_OVERRIDE',
 	overrideActive: true,
 	offerSelectionAvailable: false,
+	notifyOnInitialRecoveryOutreach: false,
 };
 
 const updated = {
 	...initial,
 	revision: '2026-10-12T10:01:00.000Z',
+	notifyOnInitialRecoveryOutreach: true,
 	merchant: {
 		...initial.merchant,
 		recoveryDelayMinutes: 45,
@@ -53,16 +55,14 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 		expect(
 			parseMerchantRecoveryPolicy(initial).merchant.recoveryDelayMinutes
 		).toBe(30);
-		expect(recoveryBehaviourPreview(initial.merchant)).toEqual({
+		expect(recoveryBehaviourPreview(initial)).toEqual({
 			recoveryDelayMinutes: '30',
 			followUpEnabled: false,
 			followUpDelayMinutes: '',
+			notifyOnInitialRecoveryOutreach: false,
 		});
 		expect(
-			recoveryBehaviourChanged(
-				initial.merchant,
-				recoveryBehaviourPreview(initial.merchant)
-			)
+			recoveryBehaviourChanged(initial, recoveryBehaviourPreview(initial))
 		).toBe(false);
 		for (const invalid of [
 			{ ...initial, credential: 'leak' },
@@ -74,6 +74,8 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 				},
 			},
 			{ ...initial, overrideActive: false },
+			{ ...initial, notifyOnInitialRecoveryOutreach: 'yes' },
+			{ ...initial, schemaVersion: 1 },
 			{
 				...initial,
 				merchant: { ...initial.merchant, followUpDelayMinutes: 100 },
@@ -83,17 +85,19 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 		}
 	});
 
-	it('builds the exact four-field PUT body with no provider or shop identity', () => {
+	it('builds the exact five-field PUT body with no provider or shop identity', () => {
 		const update = makeRecoveryPolicyUpdate(initial, {
 			recoveryDelayMinutes: '45',
 			followUpEnabled: true,
 			followUpDelayMinutes: '100',
+			notifyOnInitialRecoveryOutreach: false,
 		});
 		expect(update).toEqual({
 			expectedRevision: initial.revision,
 			recoveryDelayMinutes: 45,
 			followUpEnabled: true,
 			followUpDelayMinutes: 100,
+			notifyOnInitialRecoveryOutreach: false,
 		});
 		for (const value of ['-1', '1.5', '10081', '']) {
 			expect(() =>
@@ -101,6 +105,7 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 					recoveryDelayMinutes: value,
 					followUpEnabled: false,
 					followUpDelayMinutes: '',
+					notifyOnInitialRecoveryOutreach: true,
 				})
 			).toThrow('INVALID_REQUEST');
 		}
@@ -109,6 +114,7 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 				recoveryDelayMinutes: '45',
 				followUpEnabled: true,
 				followUpDelayMinutes: '50',
+				notifyOnInitialRecoveryOutreach: true,
 			})
 		).toThrow('INVALID_REQUEST');
 		expect(
@@ -116,8 +122,20 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 				recoveryDelayMinutes: '45',
 				followUpEnabled: false,
 				followUpDelayMinutes: '100',
+				notifyOnInitialRecoveryOutreach: true,
 			}).followUpDelayMinutes
 		).toBe(null);
+		expect(() => makeRecoveryPolicyUpdate(initial, {
+			recoveryDelayMinutes: '45', followUpEnabled: false,
+			followUpDelayMinutes: '', notifyOnInitialRecoveryOutreach: 'true',
+		})).toThrow('INVALID_REQUEST');
+	});
+
+	it('tracks notification-only edits as dirty', () => {
+		const draft = recoveryBehaviourPreview(initial);
+		expect(recoveryBehaviourChanged(initial, {
+			...draft, notifyOnInitialRecoveryOutreach: true,
+		})).toBe(true);
 	});
 
 	it('uses the privileged WordPress route and never transmits installation credentials', async () => {
@@ -130,6 +148,7 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 			recoveryDelayMinutes: '45',
 			followUpEnabled: true,
 			followUpDelayMinutes: '100',
+			notifyOnInitialRecoveryOutreach: true,
 		});
 		expect(await client.save(update)).toEqual(updated);
 		expect(request).toHaveBeenCalledWith({
@@ -141,6 +160,44 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 			method: 'PUT',
 			data: update,
 		});
+	});
+
+	it('rejects a save response that does not persist the requested notification value', async () => {
+		const client = createRecoveryPolicyClient(async () => ({
+			...updated,
+			notifyOnInitialRecoveryOutreach: false,
+		}));
+		const update = makeRecoveryPolicyUpdate(initial, {
+			recoveryDelayMinutes: '45',
+			followUpEnabled: true,
+			followUpDelayMinutes: '100',
+			notifyOnInitialRecoveryOutreach: true,
+		});
+		await expect(client.save(update)).rejects.toThrow('REMOTE_RESPONSE_INVALID');
+	});
+
+	it('keeps the last policy visible and reports failed saves without success state', async () => {
+		const client = {
+			read: vi.fn(async () => initial),
+			save: vi.fn(async () => {
+				throw new Error('REMOTE_RESPONSE_INVALID');
+			}),
+		};
+		const controller = new RecoveryPolicyController(client);
+		controller.setConnectionStatus('CONNECTED');
+		controller.setActive(true);
+		await settle();
+		const draft = {
+			recoveryDelayMinutes: '30',
+			followUpEnabled: false,
+			followUpDelayMinutes: '',
+			notifyOnInitialRecoveryOutreach: true,
+		};
+		await controller.save(draft);
+		expect(controller.state.status).toBe('SAVE_FAILED');
+		expect(controller.state.data).toBe(initial);
+		expect(controller.state.status).not.toBe('SAVED');
+		controller.dispose();
 	});
 
 	it('does not persist changes before Save, and refreshes the summary after success', async () => {
@@ -159,6 +216,7 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 			recoveryDelayMinutes: '45',
 			followUpEnabled: true,
 			followUpDelayMinutes: '100',
+			notifyOnInitialRecoveryOutreach: true,
 		};
 		await controller.save(draft);
 		expect(controller.state.status).toBe('SAVED');
@@ -188,6 +246,7 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 			recoveryDelayMinutes: '45',
 			followUpEnabled: true,
 			followUpDelayMinutes: '100',
+			notifyOnInitialRecoveryOutreach: false,
 		};
 		const one = controller.save(draft);
 		const two = controller.save(draft);
