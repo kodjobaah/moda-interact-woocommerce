@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+	assertActivityRequestForEvent,
 	deliverCapturedAction,
 	newCheckoutActions,
+	runScheduledCheckoutAction,
 } from './checkout-wordpress.mjs';
 
 test('finds added actions even when the scheduler reorders its rows', () => {
@@ -62,5 +64,75 @@ test('replays the exact scheduled checkout/order payload through the WordPress h
 	assert.deepEqual(
 		JSON.parse(Buffer.from(encoded, 'base64').toString('utf8')),
 		args
+	);
+});
+
+test('executes only the selected persisted Action Scheduler action by ID', async () => {
+	const commands = [];
+	await runScheduledCheckoutAction(
+		async (...command) => commands.push(command),
+		{ id: '123', args: { event: { eventId: 'woo-test' } } }
+	);
+	assert.deepEqual(commands, [['action-scheduler', 'action', 'run', '123']]);
+});
+
+test('rejects invalid Action Scheduler IDs before invoking WP-CLI', async () => {
+	const commands = [];
+	await assert.rejects(
+		runScheduledCheckoutAction(
+			async (...command) => commands.push(command),
+			{ id: '12 --force' }
+		),
+		/Scheduled action ID is invalid/
+	);
+	assert.deepEqual(commands, []);
+});
+
+test('a 503 response for another event cannot satisfy the checkout retry guard', () => {
+	const requests = [{ eventId: 'woo-other', status: 503 }];
+	assert.throws(
+		() =>
+			assertActivityRequestForEvent(
+				requests,
+				'woo-selected',
+				503,
+				'initial dispatch'
+			),
+		/expected one HTTPS request for event woo-selected, observed 0/
+	);
+	assert.throws(
+		() =>
+			assertActivityRequestForEvent(
+				[{ eventId: 'woo-selected', status: 202 }],
+				'woo-selected',
+				503,
+				'initial dispatch'
+			),
+		/must receive HTTP 503/
+	);
+});
+
+test('checkout retry guard accepts exactly one matching HTTPS response', () => {
+	assertActivityRequestForEvent(
+		[
+			{ eventId: 'woo-other', status: 503 },
+			{ eventId: 'woo-selected', status: 503 },
+		],
+		'woo-selected',
+		503,
+		'initial dispatch'
+	);
+	assert.throws(
+		() =>
+			assertActivityRequestForEvent(
+				[
+					{ eventId: 'woo-selected', status: 503 },
+					{ eventId: 'woo-selected', status: 503 },
+				],
+				'woo-selected',
+				503,
+				'initial dispatch'
+			),
+		/expected one HTTPS request for event woo-selected, observed 2/
 	);
 });

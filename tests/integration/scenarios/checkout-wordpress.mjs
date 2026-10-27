@@ -137,6 +137,35 @@ export async function deliverCapturedAction(wpAsync, action) {
 	);
 }
 
+// Execute only the selected persisted action through Action Scheduler itself.
+// A batch-level `action-scheduler run` can pick other older checkout events.
+export async function runScheduledCheckoutAction(wpAsync, action) {
+	const id = String(action?.id ?? '');
+	assert.match(id, /^[1-9][0-9]*$/, 'Scheduled action ID is invalid');
+	await wpAsync('action-scheduler', 'action', 'run', id);
+}
+
+// A 503 from *another* queued event does not prove that this event was retried.
+// Slice the fixture requests at the dispatch boundary before calling this helper.
+export function assertActivityRequestForEvent(
+	requests,
+	eventId,
+	expectedStatus,
+	context
+) {
+	const matches = requests.filter((request) => request.eventId === eventId);
+	assert.equal(
+		matches.length,
+		1,
+		`${context}: expected one HTTPS request for event ${eventId}, observed ${matches.length}`
+	);
+	assert.equal(
+		matches[0].status,
+		expectedStatus,
+		`${context}: event ${eventId} must receive HTTP ${expectedStatus}`
+	);
+}
+
 // Checkout PATCH observes the current checkout, but WooCommerce Blocks saves
 // billing fields through the separate Store API cart/update-customer endpoint.
 export async function persistBlocksBilling(blocks, billingAddress, kind) {
@@ -516,48 +545,55 @@ export async function assertCheckoutWordPress({
 				outageAdded.length > 0,
 				`${kind}: outage customer update or PATCH must create a new action`
 			);
-			const outageEvent = newestAction(outageAdded).args.event;
+			const outageAction = newestAction(outageAdded);
+			const outageEvent = outageAction.args.event;
 			assertEvent(outageEvent);
+			assert.equal(outageAction.args.attempt, 1);
 			assert.notEqual(
 				outageEvent.eventId,
 				revised.eventId,
 				'changed checkout creates an outage event'
 			);
 			assert.equal(outageEvent.checkoutKey, first.checkoutKey);
-			// Run the real Action Scheduler delivery callback and inspect durable retry args.
-			// HybridStore can have the group in its modern tables without a legacy
-			// taxonomy term, so restrict CLI execution by the checkout hook only.
-			// actionRows still verifies the stored group on pending actions.
-			await wpAsync(
-				'action-scheduler',
-				'run',
-				'--hooks=moda_interact_dispatch_checkout_activity',
-				'--batch-size=20',
-				'--batches=1'
-			);
-			const failedRequests = getActivityRequests().slice(sentBefore);
-			assert.ok(
-				failedRequests.length > 0,
-				'503 must be observed by the HTTPS fixture'
+			// Run this particular persisted action through the real Action Scheduler
+			// runner, not an arbitrary batch of other pending checkout actions.
+			await runScheduledCheckoutAction(wpAsync, outageAction);
+			assertActivityRequestForEvent(
+				getActivityRequests().slice(sentBefore),
+				outageEvent.eventId,
+				503,
+				`${kind}: initial checkout activity during outage`
 			);
 			const pending = checkoutEvents(getPendingCheckoutActions());
-			const retry = pending.find(
-				(row) =>
-					row.args.attempt === 2 &&
-					row.args.event.eventId === outageEvent.eventId
-			);
-			assert.ok(retry, '503 must schedule attempt 2 with original event');
-			assert.deepEqual(retry.args.event, outageEvent);
-			setActivityStatus(202);
-			// WordPress clock remains unchanged: run the retry callback through the real hook
-			// with the scheduled payload, not by modifying production backoff delays.
-			await deliverCapturedAction(wpAsync, retry);
 			assert.ok(
-				getActivityRequests().some(
-					(item) =>
-						item.eventId === outageEvent.eventId &&
-						item.status === 202
-				)
+				!pending.some((row) => String(row.id) === String(outageAction.id)),
+				`${kind}: Action Scheduler must complete the original delivery action`
+			);
+			// Inspect only actions persisted *after* the selected original action ran.
+			const retries = newCheckoutActions(outageRows, pending).filter(
+				(row) =>
+					row.args?.attempt === 2 &&
+					row.args?.event?.eventId === outageEvent.eventId
+			);
+			assert.equal(
+				retries.length,
+				1,
+				`${kind}: 503 must persist exactly one attempt 2 for the original checkout event`
+			);
+			const retry = retries[0];
+			assert.deepEqual(retry.args.event, outageEvent);
+			assert.equal(retry.args.installationId, outageAction.args.installationId);
+			assert.equal(retry.args.shopId, outageAction.args.shopId);
+			setActivityStatus(202);
+			// WordPress clock remains unchanged: run the delayed retry callback with
+			// its persisted payload rather than changing production backoff delays.
+			const retryRequestsBefore = getActivityRequests().length;
+			await deliverCapturedAction(wpAsync, retry);
+			assertActivityRequestForEvent(
+				getActivityRequests().slice(retryRequestsBefore),
+				outageEvent.eventId,
+				202,
+				`${kind}: retry of original checkout event`
 			);
 			await assertStoreApiClearRefill({
 				kind,
