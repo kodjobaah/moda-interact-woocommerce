@@ -120,7 +120,7 @@ describe('Woo recovery behaviour preview (no settings write)', () => {
 		const followUp = inputs.find(
 			(input) => input.props.id === 'woo-recovery-followUpDelayMinutes'
 		);
-		expect(start.props.value).toBe('30');
+		expect(start.props.value).toBe('45');
 		expect(followUp.props.disabled).toBe(true);
 		start.props.onChange({ currentTarget: { value: '45' } });
 		expect(onChange).toHaveBeenCalledWith('recoveryDelayMinutes', '45');
@@ -129,7 +129,10 @@ describe('Woo recovery behaviour preview (no settings write)', () => {
 		)[1];
 		expect(notification).toBeDefined();
 		notification.props.onChange({ currentTarget: { checked: true } });
-		expect(onChange).toHaveBeenCalledWith('notifyOnInitialRecoveryOutreach', true);
+		expect(onChange).toHaveBeenCalledWith(
+			'notifyOnInitialRecoveryOutreach',
+			true
+		);
 	});
 
 	it('shows inline invalid state only for the affected field', () => {

@@ -97,12 +97,23 @@ final class RecoveryPolicyController {
 			$outcome = $mapping[ $error->getMessage() ] ?? array( 'REMOTE_UNAVAILABLE', 503 );
 			return self::error( $outcome[0], $outcome[1] );
 		} catch ( \Throwable $error ) {
-			if ( function_exists( 'wc_get_logger' ) ) {
-				wc_get_logger()->error( 'Recovery policy proxy request failed.', array(
-					'source' => 'moda-interact',
-					'operation' => 'merchant_recovery_policy_proxy',
-					'error_class' => get_class( $error ),
-					'error_code' => (string) $error->getCode(),
+			try {
+				if ( function_exists( 'wc_get_logger' ) ) {
+					wc_get_logger()->error( 'Recovery policy proxy request failed.', array(
+						'source' => 'moda-interact',
+						'operation' => 'merchant_recovery_policy_proxy',
+						'error_class' => get_class( $error ),
+						'error_code' => (string) $error->getCode(),
+					) );
+				}
+			} catch ( \Throwable $logging_error ) {
+				// Keep the sanitized proxy response even when WooCommerce's log sink fails.
+				error_log( sprintf(
+					'Moda Interact recovery policy logging failed (operation=merchant_recovery_policy_proxy; error_class=%s; error_code=%s; sink_error_class=%s; sink_error_code=%s).',
+					get_class( $error ),
+					(string) $error->getCode(),
+					get_class( $logging_error ),
+					(string) $logging_error->getCode()
 				) );
 			}
 			return self::error( 'REMOTE_UNAVAILABLE', 503 );

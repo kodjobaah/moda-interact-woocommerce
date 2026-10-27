@@ -124,8 +124,7 @@ export function makeRecoveryPolicyUpdate(current, draft) {
 		recoveryDelayMinutes: start,
 		followUpEnabled: draft.followUpEnabled,
 		followUpDelayMinutes: followUp,
-		notifyOnInitialRecoveryOutreach:
-			draft.notifyOnInitialRecoveryOutreach,
+		notifyOnInitialRecoveryOutreach: draft.notifyOnInitialRecoveryOutreach,
 	};
 }
 

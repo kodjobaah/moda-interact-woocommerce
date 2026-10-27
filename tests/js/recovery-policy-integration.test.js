@@ -125,17 +125,24 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 				notifyOnInitialRecoveryOutreach: true,
 			}).followUpDelayMinutes
 		).toBe(null);
-		expect(() => makeRecoveryPolicyUpdate(initial, {
-			recoveryDelayMinutes: '45', followUpEnabled: false,
-			followUpDelayMinutes: '', notifyOnInitialRecoveryOutreach: 'true',
-		})).toThrow('INVALID_REQUEST');
+		expect(() =>
+			makeRecoveryPolicyUpdate(initial, {
+				recoveryDelayMinutes: '45',
+				followUpEnabled: false,
+				followUpDelayMinutes: '',
+				notifyOnInitialRecoveryOutreach: 'true',
+			})
+		).toThrow('INVALID_REQUEST');
 	});
 
 	it('tracks notification-only edits as dirty', () => {
 		const draft = recoveryBehaviourPreview(initial);
-		expect(recoveryBehaviourChanged(initial, {
-			...draft, notifyOnInitialRecoveryOutreach: true,
-		})).toBe(true);
+		expect(
+			recoveryBehaviourChanged(initial, {
+				...draft,
+				notifyOnInitialRecoveryOutreach: true,
+			})
+		).toBe(true);
 	});
 
 	it('uses the privileged WordPress route and never transmits installation credentials', async () => {
@@ -173,7 +180,9 @@ describe('ARCH-035 Recovery Behaviour manual-save integration', () => {
 			followUpDelayMinutes: '100',
 			notifyOnInitialRecoveryOutreach: true,
 		});
-		await expect(client.save(update)).rejects.toThrow('REMOTE_RESPONSE_INVALID');
+		await expect(client.save(update)).rejects.toThrow(
+			'REMOTE_RESPONSE_INVALID'
+		);
 	});
 
 	it('keeps the last policy visible and reports failed saves without success state', async () => {

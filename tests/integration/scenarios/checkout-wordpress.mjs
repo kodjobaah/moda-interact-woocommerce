@@ -365,10 +365,7 @@ export async function assertCheckoutWordPress({
 				`${kind} classic checkout AJAX`
 			);
 			const classicAfter = checkoutEvents(getCheckoutActionHistory());
-			const classicAdded = newForKey(
-				classicBefore,
-				classicAfter
-			);
+			const classicAdded = newForKey(classicBefore, classicAfter);
 			assert.ok(
 				classicAdded.length > 0,
 				`${kind}: Classic AJAX must create a new action ID`
@@ -566,7 +563,9 @@ export async function assertCheckoutWordPress({
 			);
 			const pending = checkoutEvents(getPendingCheckoutActions());
 			assert.ok(
-				!pending.some((row) => String(row.id) === String(outageAction.id)),
+				!pending.some(
+					(row) => String(row.id) === String(outageAction.id)
+				),
 				`${kind}: Action Scheduler must complete the original delivery action`
 			);
 			// Inspect only actions persisted *after* the selected original action ran.
@@ -582,7 +581,10 @@ export async function assertCheckoutWordPress({
 			);
 			const retry = retries[0];
 			assert.deepEqual(retry.args.event, outageEvent);
-			assert.equal(retry.args.installationId, outageAction.args.installationId);
+			assert.equal(
+				retry.args.installationId,
+				outageAction.args.installationId
+			);
 			assert.equal(retry.args.shopId, outageAction.args.shopId);
 			setActivityStatus(202);
 			// WordPress clock remains unchanged: run the delayed retry callback with

@@ -17,7 +17,11 @@ if ( ! function_exists( 'wc_get_logger' ) ) {
 
 final class RecoveryPolicyTestLogger {
 	public array $errors = array();
+	public bool $throws = false;
 	public function error( string $message, array $context = array() ): void {
+		if ( $this->throws ) {
+			throw new RuntimeException( 'private log sink detail' );
+		}
 		$this->errors[] = array( $message, $context );
 	}
 }
@@ -113,18 +117,9 @@ final class RecoveryPolicyControllerTest extends TestCase {
 	}
 
 	public function test_unexpected_persistence_failure_is_logged_without_exception_text(): void {
-		$store = new InstallationStore();
-		self::assertTrue( $store->save( self::record() ) );
-		$api = new class( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), static fn() => array() ) extends ModaApiClient {
-			public function merchantRecoveryPolicy( array $connection, ?array $update = null ): array {
-				throw new RuntimeException( 'private persistence detail' );
-			}
-		};
-		$controller = new RecoveryPolicyController(
-			$api,
-			new SiteIdentity( ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT, static fn() => array( '127.0.0.1' ) ),
-			$store
-		);
+		$controller = $this->controller( static function () {
+			throw new RuntimeException( 'private persistence detail' );
+		} );
 		$reply = $controller->handle( self::put( self::update() ) );
 		self::assertSame( 503, $reply->get_status() );
 		self::assertSame( array( 'status' => 'REMOTE_UNAVAILABLE' ), $reply->get_data() );
@@ -134,6 +129,19 @@ final class RecoveryPolicyControllerTest extends TestCase {
 		self::assertSame( 'RuntimeException', $context['error_class'] );
 		self::assertSame( '0', $context['error_code'] );
 		self::assertArrayNotHasKey( 'private persistence detail', $context );
+	}
+
+	public function test_log_sink_failure_preserves_sanitized_remote_unavailable_response(): void {
+		$controller = $this->controller( static function () {
+			throw new RuntimeException( 'private persistence detail' );
+		} );
+		$GLOBALS['moda_interact_test_logger']->throws = true;
+
+		$reply = $controller->handle( self::put( self::update() ) );
+
+		self::assertSame( 503, $reply->get_status() );
+		self::assertSame( array( 'status' => 'REMOTE_UNAVAILABLE' ), $reply->get_data() );
+		self::assertCount( 0, $GLOBALS['moda_interact_test_logger']->errors );
 	}
 
 	private function controller( callable $transport ): RecoveryPolicyController {

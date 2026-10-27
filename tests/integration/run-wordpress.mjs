@@ -17,7 +17,10 @@ import { assertReleaseLocales } from './scenarios/release-locales.mjs';
 import { assertCheckoutWordPress } from './scenarios/checkout-wordpress.mjs';
 import { assertBillingWordPress } from './scenarios/billing-wordpress.mjs';
 import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
-import { readPendingCheckoutActions, readCheckoutActionHistory } from './action-scheduler-sql.mjs';
+import {
+	readPendingCheckoutActions,
+	readCheckoutActionHistory,
+} from './action-scheduler-sql.mjs';
 import { createWordPressApiFixture } from './wordpress-api-fixture.mjs';
 import {
 	assertConnectionEnvironmentWordPress,

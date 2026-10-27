@@ -103,8 +103,7 @@ export function RecoveryBehaviourPanel({
 	const errors = ready
 		? validateRecoveryBehaviourPreview(draft)
 		: { start: false, followUp: false };
-	const dirty =
-		Boolean(policy) && recoveryBehaviourChanged(policy, draft);
+	const dirty = Boolean(policy) && recoveryBehaviourChanged(policy, draft);
 	const canSave =
 		ready &&
 		dirty &&

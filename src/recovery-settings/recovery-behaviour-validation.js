@@ -54,7 +54,7 @@ export function recoveryBehaviourPreview(policy) {
  * overrides and unsupported provider coupon IDs are never submitted.
  *
  * @param {Object} policy Persisted v2 policy response.
- * @param {Object} draft    Locally edited form values.
+ * @param {Object} draft  Locally edited form values.
  * @return {boolean} Whether the editable fields have changed.
  */
 export function recoveryBehaviourChanged(policy, draft) {
@@ -66,6 +66,6 @@ export function recoveryBehaviourChanged(policy, draft) {
 			String(merchant.followUpDelayMinutes ?? '') !==
 				draft.followUpDelayMinutes) ||
 		policy.notifyOnInitialRecoveryOutreach !==
-		draft.notifyOnInitialRecoveryOutreach
+			draft.notifyOnInitialRecoveryOutreach
 	);
 }
