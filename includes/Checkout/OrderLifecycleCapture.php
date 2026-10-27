@@ -14,18 +14,45 @@ final class OrderLifecycleCapture {
 		// Both checkout hooks run before gateway payment. They mean placed, never paid.
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'onPlaced' ), 20, 3 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'onPlaced' ), 20, 1 );
-		// The payment signal is authoritative; never infer payment from order status.
-		add_action( 'woocommerce_payment_complete', array( $this, 'onPaid' ), 10, 1 );
+		// A payment_complete() callback is explicit payment evidence. Status-only
+		// gateways must additionally have a transaction reference to confirm payment.
+		add_action( 'woocommerce_payment_complete', array( $this, 'onPaymentComplete' ), 10, 1 );
+		add_action( 'woocommerce_order_payment_status_changed', array( $this, 'onPaid' ), 10, 1 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'onStatusChanged' ), 10, 4 );
 	}
 
 	/** Classic supplies an ID; Store API supplies a WC_Order object. */
 	public function onPlaced( mixed $order_id_or_order ): void {
 		$this->capture( $order_id_or_order, 'ORDER_PLACED' );
+		// If a gateway already advanced the order before this hook acquired the
+		// checkout key, reconcile only corroborated payment or cancellation.
+		// Placement itself cannot confirm that COD/offline payment was collected.
+		try {
+			$order = $this->resolve( $order_id_or_order );
+			if ( self::confirmedPaid( $order ) ) $this->capture( $order, 'ORDER_PAID' );
+			elseif ( null !== $order && 'cancelled' === $order->get_status() ) $this->capture( $order, 'ORDER_CANCELLED' );
+		} catch ( \Throwable $error ) {
+			self::log( 'placement_reconciliation_failed' );
+		}
 	}
 
+	/** Woo payment_complete() is a distinct signal from a paid-labelled status. */
+	public function onPaymentComplete( mixed $order_id ): void {
+		$this->observePaid( $order_id, true );
+	}
+
+	/** A status transition alone is not confirmation of a collected payment. */
 	public function onPaid( mixed $order_id ): void {
-		$this->capture( $order_id, 'ORDER_PAID' );
+		$this->observePaid( $order_id, false );
+	}
+
+	private function observePaid( mixed $order_id, bool $payment_complete ): void {
+		try {
+			$order = $this->resolve( $order_id );
+			if ( self::confirmedPaid( $order, $payment_complete ) ) $this->capture( $order, 'ORDER_PAID' );
+		} catch ( \Throwable $error ) {
+			self::log( 'paid_observation_failed' );
+		}
 	}
 
 	public function onStatusChanged( mixed $order_id, mixed $from, mixed $to, mixed $order = null ): void {
@@ -33,13 +60,22 @@ final class OrderLifecycleCapture {
 			if ( ! is_string( $from ) || ! is_string( $to ) || $from === $to ) return;
 			$resolved = $this->resolve( $order ?? $order_id );
 			if ( null === $resolved ) return;
+			// Ignore stale callbacks: only the *current* order state is evidence.
+			if ( $resolved->get_status() !== $to ) return;
 			if ( 'cancelled' === $from && 'cancelled' !== $to ) {
-				// A subsequent genuine cancellation is a new occurrence, with a new ID.
-				$resolved->delete_meta_data( self::META_PREFIX . 'ORDER_CANCELLED' );
-				$resolved->save_meta_data();
+				$record = $resolved->get_meta( self::META_PREFIX . 'ORDER_CANCELLED', true );
+				// Never discard an occurrence that Action Scheduler failed to enqueue.
+				// A new cancellation after an enqueued one receives its own eventId.
+				if ( is_array( $record ) && ( $record['enqueued'] ?? false ) === true ) {
+					$resolved->delete_meta_data( self::META_PREFIX . 'ORDER_CANCELLED' );
+					$resolved->save_meta_data();
+				}
 			} elseif ( 'cancelled' === $to ) {
 				$this->capture( $resolved, 'ORDER_CANCELLED' );
 			}
+			// Woo may set date_paid on a status change without receiving money,
+			// including for COD orders. Require independent payment evidence.
+			if ( self::confirmedPaid( $resolved ) ) $this->capture( $resolved, 'ORDER_PAID' );
 		} catch ( \Throwable $error ) {
 			// A third-party store failure must not break the order state change.
 			self::log( 'state_save_failed' );
@@ -79,7 +115,10 @@ final class OrderLifecycleCapture {
 				$order->save_meta_data();
 			}
 			if ( $record['enqueued'] ) return;
-			if ( ! $this->publisher->enqueueOrder( $record['event'] ) ) return;
+			if ( ! $this->publisher->enqueueOrder( $record['event'] ) ) {
+				self::log( 'enqueue_failed', $record['event']['eventId'] );
+				return;
+			}
 			$record['enqueued'] = true;
 			$order->update_meta_data( $meta_key, $record );
 			$order->save_meta_data();
@@ -98,6 +137,24 @@ final class OrderLifecycleCapture {
 		return $order;
 	}
 
+	/**
+	 * Woo's is_paid() and date_paid are status-derived, not proof of settlement.
+	 * COD can enter processing at placement before payment is collected. Trust
+	 * either Woo's explicit payment-complete callback or a gateway transaction ID,
+	 * in addition to the current paid status. No payment-method allowlist is used.
+	 */
+	private static function confirmedPaid( ?object $order, bool $payment_complete = false ): bool {
+		if ( null === $order || ! method_exists( $order, 'is_paid' ) ||
+			! method_exists( $order, 'get_transaction_id' ) || ! function_exists( 'wc_get_is_paid_statuses' ) ) return false;
+		$status = $order->get_status();
+		if ( ! is_string( $status ) || in_array( $status,
+			array( 'pending', 'on-hold', 'failed', 'cancelled', 'refunded', 'trash', 'checkout-draft', 'draft', 'auto-draft' ), true ) ) return false;
+		$paid_statuses = wc_get_is_paid_statuses();
+		if ( ! is_array( $paid_statuses ) || ! in_array( $status, $paid_statuses, true ) || true !== $order->is_paid() ) return false;
+		$transaction_id = $order->get_transaction_id();
+		return $payment_complete || ( is_string( $transaction_id ) && '' !== trim( $transaction_id ) );
+	}
+
 	private static function sameEvent( mixed $record, string $type, string $order_id, string $checkout_key ): bool {
 		$event = is_array( $record ) ? ( $record['event'] ?? null ) : null;
 		return is_array( $event ) && is_bool( $record['enqueued'] ?? null ) &&
@@ -112,8 +169,9 @@ final class OrderLifecycleCapture {
 			is_string( $event['order']['status'] ?? null );
 	}
 
-	private static function log( string $reason ): void {
+	private static function log( string $reason, ?string $event_id = null ): void {
 		// Never log order payloads, customer information or installation secrets.
-		error_log( 'moda.woocommerce.order_activity.' . $reason );
+		$safe_id = is_string( $event_id ) && preg_match( '/^woo-[0-9a-f]{32}$/D', $event_id ) ? ' eventId=' . $event_id : '';
+		error_log( 'moda.woocommerce.order_activity.' . $reason . $safe_id );
 	}
 }
