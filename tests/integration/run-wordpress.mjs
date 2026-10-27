@@ -17,7 +17,7 @@ import { assertReleaseLocales } from './scenarios/release-locales.mjs';
 import { assertCheckoutWordPress } from './scenarios/checkout-wordpress.mjs';
 import { assertBillingWordPress } from './scenarios/billing-wordpress.mjs';
 import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
-import { readPendingCheckoutActions } from './action-scheduler-sql.mjs';
+import { readPendingCheckoutActions, readCheckoutActionHistory } from './action-scheduler-sql.mjs';
 import { createWordPressApiFixture } from './wordpress-api-fixture.mjs';
 import {
 	assertConnectionEnvironmentWordPress,
@@ -290,6 +290,8 @@ try {
 				parseJsonOutput,
 				getPendingCheckoutActions: () =>
 					readPendingCheckoutActions(wpEnvComposeFile),
+				getCheckoutActionHistory: () =>
+					readCheckoutActionHistory(wpEnvComposeFile),
 				getActivityRequests: apiFixture.getActivityRequests,
 				setActivityStatus: apiFixture.setActivityStatus,
 			});
@@ -566,6 +568,8 @@ try {
 			parseJsonOutput,
 			getPendingCheckoutActions: () =>
 				readPendingCheckoutActions(wpEnvComposeFile),
+			getCheckoutActionHistory: () =>
+				readCheckoutActionHistory(wpEnvComposeFile),
 			getActivityRequests: apiFixture.getActivityRequests,
 			setActivityStatus: apiFixture.setActivityStatus,
 		});

@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 // Bundled Composer autoload is class-map authoritative; Runtime normally loads these.
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutKey.php';
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutSnapshot.php';
+require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentPhone.php';
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutActivityPublisher.php';
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutCapture.php';
 
@@ -230,5 +231,159 @@ final class CheckoutCaptureTest extends TestCase {
 		$cart->lines = array_fill( 0, 51, array( 'quantity' => 1, 'product_id' => 1 ) );
 		$snapshot = CheckoutSnapshot::fromCart( $cart, $customer );
 		self::assertArrayNotHasKey( 'items', $snapshot );
+	}
+
+	public function test_cleared_classic_basket_is_published_once_and_refill_retains_checkout_key(): void {
+		$this->capture->register();
+		self::assertArrayHasKey( 'woocommerce_cart_item_removed', $GLOBALS['moda_interact_test_hooks'] );
+		self::assertArrayHasKey( 'woocommerce_cart_emptied', $GLOBALS['moda_interact_test_hooks'] );
+		self::assertArrayHasKey( 'woocommerce_store_api_checkout_update_order_from_request', $GLOBALS['moda_interact_test_hooks'] );
+		self::assertArrayHasKey( 'woocommerce_store_api_cart_update_customer_from_request', $GLOBALS['moda_interact_test_hooks'] );
+
+		$this->capture->capture(); // classic checkout page
+		$first = $GLOBALS['arch035_queued'][0]['args']['event'];
+		$GLOBALS['arch035_wc']->cart->lines = array();
+		// WC may not recalculate totals after removing the final item.
+		$GLOBALS['arch035_wc']->cart->total = '29.99';
+		$this->capture->afterCartRemoval();
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		$empty = $GLOBALS['arch035_queued'][1]['args']['event'];
+		self::assertSame( $first['checkoutKey'], $empty['checkoutKey'] );
+		self::assertNotSame( $first['eventId'], $empty['eventId'] );
+		self::assertSame( array( 'currency' => 'GBP', 'total' => '0.00', 'items' => array() ), $empty['checkout'] );
+		self::assertSame( 'woo.activity.v1', $empty['schemaVersion'] );
+		self::assertSame( 'CHECKOUT_UPDATED', $empty['eventType'] );
+		self::assertSame( 'woo.activity.v1', $GLOBALS['arch035_queued'][1]['args']['event']['schemaVersion'] );
+		self::assertMatchesRegularExpression( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/D', $empty['occurredAt'] );
+		self::assertSame( $empty['occurredAt'], ( new \DateTimeImmutable( $empty['occurredAt'] ) )->setTimezone( new \DateTimeZone( 'UTC' ) )->format( 'Y-m-d\TH:i:s.v\Z' ) );
+
+		// Duplicate hooks, repeated reviews and changed form contact are not
+		// new basket-empty transitions and cannot shift the abandonment clock.
+		$this->capture->afterCartRemoval();
+		$this->capture->onClassicReview( 'billing_email=new%40example.com' );
+		$this->capture->capture();
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+
+		$GLOBALS['arch035_wc']->cart->lines = array(
+			array( 'quantity' => 2, 'product_id' => 101, 'data' => new Arch035Product(), 'line_total' => '59.98' ),
+		);
+		$GLOBALS['arch035_wc']->cart->total = '59.98';
+		// On the cart/Store API path this hook runs after current totals exist.
+		$this->capture->afterTotals();
+		self::assertCount( 3, $GLOBALS['arch035_queued'] );
+		$refill = $GLOBALS['arch035_queued'][2]['args']['event'];
+		self::assertSame( $first['checkoutKey'], $refill['checkoutKey'] );
+		self::assertNotSame( $empty['eventId'], $refill['eventId'] );
+		self::assertCount( 1, $refill['checkout']['items'] );
+		self::assertSame( 2, $refill['checkout']['items'][0]['quantity'] );
+		self::assertSame( '59.98', $refill['checkout']['total'] );
+		self::assertSame( 'new@example.com', $refill['checkout']['contact']['email'] );
+		$this->capture->afterTotals();
+		self::assertCount( 3, $GLOBALS['arch035_queued'] );
+	}
+
+	public function test_blocks_clear_refill_and_cart_updates_use_the_same_started_checkout(): void {
+		$this->capture->register();
+		$this->capture->capture(); // Blocks draft update
+		$key = $GLOBALS['arch035_queued'][0]['args']['event']['checkoutKey'];
+		$GLOBALS['arch035_wc']->cart->lines = array();
+		$this->capture->afterCartRemoval(); // Store API remove-item hook
+		self::assertSame( array(), $GLOBALS['arch035_queued'][1]['args']['event']['checkout']['items'] );
+		$GLOBALS['arch035_wc']->cart->lines = array(
+			array( 'quantity' => 1, 'product_id' => 305, 'line_total' => '15.00' ),
+		);
+		$GLOBALS['arch035_wc']->cart->total = '15.00';
+		$this->capture->captureExisting(); // Store API cart-update customer hook
+		self::assertCount( 3, $GLOBALS['arch035_queued'] );
+		self::assertSame( $key, $GLOBALS['arch035_queued'][2]['args']['event']['checkoutKey'] );
+		self::assertSame( '305', $GLOBALS['arch035_queued'][2]['args']['event']['checkout']['items'][0]['productId'] );
+		$this->capture->capture(); // Blocks existing-draft PUT, no duplicate
+		self::assertCount( 3, $GLOBALS['arch035_queued'] );
+	}
+
+	public function test_never_observed_empty_cart_and_cart_before_checkout_emit_no_activity(): void {
+		$GLOBALS['arch035_wc']->cart->lines = array();
+		$this->capture->afterCartRemoval();
+		$this->capture->capture(); // initial empty checkout page
+		self::assertNull( $GLOBALS['arch035_wc']->session->get( CheckoutKey::SESSION_FIELD ) );
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+		self::assertSame( array( 'currency' => 'GBP', 'total' => '0.00', 'items' => array() ),
+			CheckoutSnapshot::fromCart( $GLOBALS['arch035_wc']->cart, $GLOBALS['arch035_wc']->customer ) );
+
+		// Even a session key created by another checkout extension is not proof
+		// that Moda has seen a basket to cancel.
+		CheckoutKey::current();
+		$this->capture->capture();
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+		$GLOBALS['arch035_wc']->cart->lines = array( array( 'quantity' => 1, 'line_total' => '12.00' ) );
+		$GLOBALS['arch035_wc']->cart->total = '12.00';
+		$this->capture->afterTotals();
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		$GLOBALS['arch035_wc']->session->set( CheckoutKey::SESSION_FIELD, 'woo-another-checkout' );
+		$GLOBALS['arch035_wc']->cart->lines = array();
+		$this->capture->afterCartRemoval();
+		self::assertCount( 1, $GLOBALS['arch035_queued'], 'Last observed basket belongs to the previous key' );
+	}
+
+	public function test_oversized_and_invalid_snapshots_do_not_become_empty_baskets(): void {
+		$cart = $GLOBALS['arch035_wc']->cart;
+		$this->capture->capture();
+		$first = $GLOBALS['arch035_queued'][0]['args']['event'];
+		$cart->lines = array_fill( 0, 51, array( 'quantity' => 1, 'product_id' => 1 ) );
+		$cart->total = '51.00';
+		$this->capture->afterTotals();
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		$oversized = $GLOBALS['arch035_queued'][1]['args']['event'];
+		self::assertArrayNotHasKey( 'items', $oversized['checkout'], 'Unknown item list must not claim a verified empty basket' );
+		self::assertSame( $first['checkoutKey'], $oversized['checkoutKey'] );
+		$this->capture->afterTotals();
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		$cart->lines = array( array( 'quantity' => 0, 'product_id' => 1 ) );
+		self::assertNull( CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer ) );
+		$this->capture->afterTotals();
+		self::assertCount( 2, $GLOBALS['arch035_queued'], 'Malformed item quantity must fail closed' );
+		$cart->lines = array();
+		$this->capture->afterCartRemoval();
+		self::assertCount( 3, $GLOBALS['arch035_queued'] );
+		self::assertSame( array(), $GLOBALS['arch035_queued'][2]['args']['event']['checkout']['items'] );
+	}
+
+	public function test_removing_one_of_multiple_items_defers_until_totals_are_current(): void {
+		$cart = $GLOBALS['arch035_wc']->cart;
+		$cart->lines[] = array( 'quantity' => 1, 'product_id' => 202, 'line_total' => '10.00' );
+		$cart->total = '39.99';
+		$this->capture->capture();
+		array_pop( $cart->lines );
+		$this->capture->afterCartRemoval();
+		self::assertCount( 1, $GLOBALS['arch035_queued'], 'Do not publish a pre-recalculation total' );
+		$cart->total = '29.99';
+		$this->capture->afterTotals();
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		self::assertSame( '29.99', $GLOBALS['arch035_queued'][1]['args']['event']['checkout']['total'] );
+	}
+
+	public function test_empty_transition_enqueue_failures_can_retry_and_replay_identical_payload(): void {
+		$this->capture->capture();
+		$GLOBALS['arch035_wc']->cart->lines = array();
+		$GLOBALS['arch035_async_fail'] = true;
+		$this->capture->afterCartRemoval();
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		$GLOBALS['arch035_async_fail'] = false;
+		$this->capture->afterCartRemoval();
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		$args = $GLOBALS['arch035_queued'][1]['args'];
+		$this->publisher->deliver( ...array_values( $args ) );
+		self::assertSame( $args['event'], json_decode( $this->sent[0][1]['body'], true ) );
+		$failed = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ),
+			static fn() => array( 'response' => array( 'code' => 503 ), 'headers' => array( 'content-type' => 'application/json' ),
+				'body' => '{"error":"queue_unavailable"}' ) );
+		$retry = new CheckoutActivityPublisher( $failed, new InstallationStore(),
+			new SiteIdentity( ModaApiConfiguration::MODE_PUBLIC, static fn() => array( '8.8.8.8' ) ) );
+		$retry->deliver( ...array_values( $args ) );
+		self::assertCount( 1, $GLOBALS['arch035_delayed'] );
+		self::assertSame( $args['event'], $GLOBALS['arch035_delayed'][0]['args']['event'] );
+		self::assertSame( 2, $GLOBALS['arch035_delayed'][0]['args']['attempt'] );
+		$this->capture->afterCartRemoval();
+		self::assertCount( 2, $GLOBALS['arch035_queued'], 'Transport retry must not create a new checkout activity event' );
 	}
 }

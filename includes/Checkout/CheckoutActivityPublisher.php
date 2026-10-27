@@ -32,7 +32,7 @@ final class CheckoutActivityPublisher {
 			'eventId' => 'woo-' . bin2hex( random_bytes( 16 ) ),
 			'eventType' => 'CHECKOUT_UPDATED',
 			'checkoutKey' => $checkout_key,
-			'occurredAt' => gmdate( 'Y-m-d\TH:i:s' ) . '.000Z',
+			'occurredAt' => ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) ) )->format( 'Y-m-d\TH:i:s.v\Z' ),
 			'checkout' => $snapshot,
 		);
 		// API-001's authenticated HTTP v2 envelope binds the activity to the

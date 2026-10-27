@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 /** Supported Classic and Store API / Checkout Blocks checkout hooks. */
 final class CheckoutCapture {
-	private const LAST_SNAPSHOT = 'moda_interact_checkout_snapshot_sha256';
+	private const LAST_CAPTURE = 'moda_interact_checkout_last_capture_v1';
 	private array $classicContact = array();
 
 	public function __construct( private readonly CheckoutActivityPublisher $publisher ) {}
@@ -16,9 +16,15 @@ final class CheckoutCapture {
 		// Classic checkout: initial page and the recalculated AJAX checkout review.
 		add_action( 'woocommerce_before_checkout_form', array( $this, 'capture' ), 10, 0 );
 		add_action( 'woocommerce_checkout_update_order_review', array( $this, 'onClassicReview' ), 10, 1 );
+		// WC skips after_calculate_totals when the basket becomes empty, so
+		// explicit post-removal hooks are needed to cancel an observed checkout.
 		add_action( 'woocommerce_after_calculate_totals', array( $this, 'afterTotals' ), 10, 0 );
+		add_action( 'woocommerce_cart_item_removed', array( $this, 'afterCartRemoval' ), 10, 0 );
+		add_action( 'woocommerce_cart_emptied', array( $this, 'afterCartRemoval' ), 10, 0 );
 		// Checkout Blocks: the supported PATCH draft hook has current cart/customer state.
 		add_action( 'woocommerce_store_api_checkout_update_draft', array( $this, 'capture' ), 10, 1 );
+		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( $this, 'capture' ), 10, 2 );
+		add_action( 'woocommerce_store_api_cart_update_customer_from_request', array( $this, 'captureExisting' ), 10, 2 );
 		add_action( 'woocommerce_store_api_checkout_update_customer_from_request', array( $this, 'capture' ), 10, 2 );
 		// Order object APIs work in HPOS; no post_meta or direct SQL writes.
 		add_action( 'woocommerce_checkout_create_order', array( CheckoutKey::class, 'attachToOrder' ), 10, 1 );
@@ -47,8 +53,35 @@ final class CheckoutCapture {
 	}
 
 	public function afterTotals(): void {
-		// Classic AJAX update_order_review defines WOOCOMMERCE_CHECKOUT before recalc.
-		if ( defined( 'WOOCOMMERCE_CHECKOUT' ) && constant( 'WOOCOMMERCE_CHECKOUT' ) ) $this->capture();
+		// Classic review may establish a new key. Other cart/Store API totals
+		// changes are observed only if the checkout already has a session key.
+		if ( defined( 'WOOCOMMERCE_CHECKOUT' ) && constant( 'WOOCOMMERCE_CHECKOUT' ) ) {
+			$this->capture();
+		} else {
+			$this->captureExisting();
+		}
+	}
+
+	/** Woo's cart-item removal and empty-cart hooks run after lines are cleared. */
+	public function afterCartRemoval(): void {
+		try {
+			$cart = WC()->cart ?? null;
+			if ( is_object( $cart ) && method_exists( $cart, 'get_cart' ) && array() === $cart->get_cart() ) {
+				$this->captureExisting();
+			}
+		} catch ( \Throwable $error ) {
+			// Never interrupt Woo's cart mutations.
+		}
+	}
+
+	/** A cart route is not itself evidence that checkout has begun. */
+	public function captureExisting(): void {
+		try {
+			$session = WC()->session ?? null;
+			if ( $session && CheckoutKey::valid( $session->get( CheckoutKey::SESSION_FIELD ) ) ) $this->capture();
+		} catch ( \Throwable $error ) {
+			// Extension capture is advisory.
+		}
 	}
 
 	/** One checkout/order generation ends; the next cart must receive a fresh key. */
@@ -62,7 +95,7 @@ final class CheckoutCapture {
 			$key = $session->get( CheckoutKey::SESSION_FIELD );
 			if ( CheckoutKey::valid( $key ) && $key === $order->get_meta( CheckoutKey::ORDER_META, true ) ) {
 				$session->set( CheckoutKey::SESSION_FIELD, null );
-				$session->set( self::LAST_SNAPSHOT, null );
+				$session->set( self::LAST_CAPTURE, null );
 			}
 		} catch ( \Throwable $error ) {
 			// No extension exception may interrupt order placement.
@@ -74,14 +107,31 @@ final class CheckoutCapture {
 			$commerce = WC();
 			$session = $commerce->session ?? null;
 			if ( ! $session ) return;
-			$key = CheckoutKey::current();
-			if ( null === $key ) return;
 			$snapshot = CheckoutSnapshot::fromCart( $commerce->cart ?? null, $commerce->customer ?? null );
 			if ( null === $snapshot ) return;
-			if ( $this->classicContact ) $snapshot['contact'] = array_merge( $snapshot['contact'] ?? array(), $this->classicContact );
-			$fingerprint = hash( 'sha256', (string) wp_json_encode( $snapshot ) );
-			if ( $fingerprint === $session->get( self::LAST_SNAPSHOT ) ) return;
-			if ( $this->publisher->enqueue( $snapshot, $key ) ) $session->set( self::LAST_SNAPSHOT, $fingerprint );
+			$previous = $session->get( self::LAST_CAPTURE );
+			$is_empty = isset( $snapshot['items'] ) && array() === $snapshot['items'];
+			if ( $is_empty ) {
+				// No key generation and no empty event for a never-observed checkout.
+				// Bind the observation to this exact checkout, not just its WC session.
+				$key = $session->get( CheckoutKey::SESSION_FIELD );
+				if ( ! CheckoutKey::valid( $key ) || ! is_array( $previous ) ||
+					( $previous['checkoutKey'] ?? null ) !== $key || ( $previous['empty'] ?? false ) ) return;
+			} else {
+				$key = CheckoutKey::current();
+				if ( null === $key ) return;
+				if ( $this->classicContact ) $snapshot['contact'] = array_merge( $snapshot['contact'] ?? array(), $this->classicContact );
+			}
+			$encoded = wp_json_encode( $snapshot );
+			if ( ! is_string( $encoded ) ) return;
+			$fingerprint = hash( 'sha256', $encoded );
+			if ( is_array( $previous ) && ( $previous['checkoutKey'] ?? null ) === $key &&
+				( $previous['fingerprint'] ?? null ) === $fingerprint ) return;
+			if ( $this->publisher->enqueue( $snapshot, $key ) ) {
+				$session->set( self::LAST_CAPTURE, array(
+					'checkoutKey' => $key, 'fingerprint' => $fingerprint, 'empty' => $is_empty,
+				) );
+			}
 		} catch ( \Throwable $error ) {
 			// Extension capture is advisory: never interrupt a shopper's checkout.
 		}
