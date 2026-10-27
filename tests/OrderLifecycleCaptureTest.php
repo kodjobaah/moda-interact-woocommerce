@@ -57,6 +57,9 @@ final class Arch035LifecycleOrder {
 	private array $meta = array();
 	public string $status = 'pending';
 	public ?bool $paid_override = null;
+	public string $transaction_id = '';
+	public string $payment_method = 'cod';
+	public bool $has_date_paid = false;
 	public int $meta_saves = 0;
 
 	public function __construct( private readonly int $id, ?string $checkout_key = 'woo-session-fixture' ) {
@@ -65,6 +68,9 @@ final class Arch035LifecycleOrder {
 	public function get_id(): int { return $this->id; }
 	public function get_status(): string { return $this->status; }
 	public function is_paid(): bool { return $this->paid_override ?? in_array( $this->status, wc_get_is_paid_statuses(), true ); }
+	public function get_transaction_id(): string { return $this->transaction_id; }
+	public function get_payment_method(): string { return $this->payment_method; }
+	public function get_date_paid(): ?\DateTimeImmutable { return $this->has_date_paid ? new \DateTimeImmutable() : null; }
 	public function get_meta( string $key, bool $single = false ): mixed { return $this->meta[ $key ] ?? ''; }
 	public function update_meta_data( string $key, mixed $value ): void { $this->meta[ $key ] = $value; }
 	public function delete_meta_data( string $key ): void { unset( $this->meta[ $key ] ); }
@@ -124,6 +130,8 @@ final class OrderLifecycleCaptureTest extends TestCase {
 		self::assertArrayHasKey( 'woocommerce_checkout_order_processed', $GLOBALS['moda_interact_test_hooks'] );
 		self::assertArrayHasKey( 'woocommerce_store_api_checkout_order_processed', $GLOBALS['moda_interact_test_hooks'] );
 		self::assertArrayHasKey( 'woocommerce_payment_complete', $GLOBALS['moda_interact_test_hooks'] );
+		self::assertSame( 'onPaymentComplete', $GLOBALS['moda_interact_test_hooks']['woocommerce_payment_complete'][0][1] );
+		self::assertSame( 'onPaid', $GLOBALS['moda_interact_test_hooks']['woocommerce_order_payment_status_changed'][0][1] );
 		self::assertArrayHasKey( 'woocommerce_order_payment_status_changed', $GLOBALS['moda_interact_test_hooks'] );
 		self::assertArrayHasKey( 'woocommerce_order_status_changed', $GLOBALS['moda_interact_test_hooks'] );
 		$order = new Arch035LifecycleOrder( 702 );
@@ -145,6 +153,7 @@ final class OrderLifecycleCaptureTest extends TestCase {
 		$GLOBALS['arch035_order_lookup'][703] = $order;
 		$this->capture->onPlaced( $order );
 		$order->status = 'processing';
+		$order->transaction_id = 'gateway-703';
 		$this->capture->onPaid( 703 );
 		$this->capture->onPaid( 703 );
 		self::assertCount( 2, $GLOBALS['arch035_queued'] );
@@ -176,6 +185,7 @@ final class OrderLifecycleCaptureTest extends TestCase {
 		}
 		self::assertCount( 1, $GLOBALS['arch035_queued'] );
 		$order->status = 'processing';
+		$order->transaction_id = 'gateway-712';
 		$this->capture->onStatusChanged( 712, 'pending', 'processing', $order );
 		$this->capture->onPaid( 712 ); // Woo payment-status-changed and payment-complete.
 		$this->capture->onPaid( 712 );
@@ -191,9 +201,75 @@ final class OrderLifecycleCaptureTest extends TestCase {
 		self::assertSame( $this->event( 1 )['eventId'], $order->get_meta( '_moda_order_activity_v1_ORDER_PAID', true )['event']['eventId'] );
 	}
 
+	public function test_cod_paid_status_and_automatic_date_paid_never_confirm_collection(): void {
+		$order = new Arch035LifecycleOrder( 719 );
+		$order->payment_method = 'cod';
+		$order->status = 'processing'; // Woo COD sets processing at placement, without receiving money.
+		$order->has_date_paid = true; // Woo may automatically set date_paid during this status change.
+		$GLOBALS['arch035_order_lookup'][719] = $order;
+		$this->capture->onPlaced( $order );
+		$this->capture->onPaid( 719 ); // The status-based payment hook isn't proof either.
+		$this->capture->onStatusChanged( 719, 'pending', 'processing', $order );
+		self::assertCount( 1, $GLOBALS['arch035_queued'], 'COD placement cannot produce ORDER_PAID' );
+		self::assertSame( 'ORDER_PLACED', $this->event( 0 )['eventType'] );
+		self::assertSame( '', $order->get_meta( '_moda_order_activity_v1_ORDER_PAID', true ) );
+
+		// Even a status-only completed transition still requires independent evidence.
+		$order->status = 'completed';
+		$this->capture->onStatusChanged( 719, 'processing', 'completed', $order );
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		// Woo's actual payment-complete callback, without a transaction ID, is explicit confirmation.
+		$this->capture->onPaymentComplete( 719 );
+		$this->capture->onPaymentComplete( 719 );
+		$this->capture->onPaid( 719 );
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		self::assertSame( 'ORDER_PAID', $this->event( 1 )['eventType'] );
+		self::assertSame( $this->event( 0 )['checkoutKey'], $this->event( 1 )['checkoutKey'] );
+	}
+
+	public function test_status_only_gateway_requires_nonempty_transaction_reference_and_paid_state(): void {
+		$order = new Arch035LifecycleOrder( 720 );
+		$order->payment_method = 'gateway-no-payment-complete';
+		$GLOBALS['arch035_order_lookup'][720] = $order;
+		$this->capture->onPlaced( $order );
+		$order->status = 'processing';
+		$order->transaction_id = '  ';
+		$this->capture->onStatusChanged( 720, 'pending', 'processing', $order );
+		$this->capture->onPaid( 720 );
+		self::assertCount( 1, $GLOBALS['arch035_queued'], 'Whitespace is not a payment reference' );
+		$order->status = 'on-hold';
+		$order->transaction_id = 'gateway-confirmation-720';
+		$this->capture->onPaid( 720 ); // Not paid even with a transaction reference.
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		$order->status = 'processing';
+		$this->capture->onStatusChanged( 720, 'on-hold', 'processing', $order );
+		$this->capture->onPaid( 720 );
+		self::assertCount( 2, $GLOBALS['arch035_queued'], 'A gateway can confirm without payment_complete()' );
+		self::assertSame( 'ORDER_PAID', $this->event( 1 )['eventType'] );
+		self::assertSame( 'gateway-confirmation-720', $order->get_transaction_id() );
+		self::assertSame( $this->event( 0 )['checkoutKey'], $this->event( 1 )['checkoutKey'] );
+	}
+
+	public function test_payment_complete_callback_does_not_forge_paid_or_unlinked_orders(): void {
+		$order = new Arch035LifecycleOrder( 721 );
+		$this->capture->onPaymentComplete( $order ); // Woo still has an unpaid status.
+		$order->status = 'processing';
+		$order->paid_override = false;
+		$this->capture->onPaymentComplete( $order );
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+		$order->paid_override = true;
+		$this->capture->onPaymentComplete( $order );
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		$unlinked = new Arch035LifecycleOrder( 722, null );
+		$unlinked->status = 'processing';
+		$this->capture->onPaymentComplete( $unlinked );
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+	}
+
 	public function test_late_classic_or_blocks_placement_reconciles_an_already_terminal_woo_order(): void {
 		$paid = new Arch035LifecycleOrder( 717 );
 		$paid->status = 'completed';
+		$paid->transaction_id = 'gateway-717';
 		$this->capture->onPlaced( $paid );
 		self::assertCount( 2, $GLOBALS['arch035_queued'] );
 		self::assertSame( 'ORDER_PLACED', $this->event( 0 )['eventType'] );
@@ -221,6 +297,7 @@ final class OrderLifecycleCaptureTest extends TestCase {
 		$this->capture->onStatusChanged( 713, 'on-hold', 'fulfilled', $order );
 		self::assertCount( 0, $GLOBALS['arch035_queued'], 'Woo is_paid() must also confirm paid' );
 		$order->paid_override = true;
+		$order->transaction_id = 'gateway-713';
 		$this->capture->onPaid( $order );
 		self::assertCount( 1, $GLOBALS['arch035_queued'] );
 		self::assertSame( 'fulfilled', $this->event( 0 )['order']['status'] );
@@ -233,6 +310,7 @@ final class OrderLifecycleCaptureTest extends TestCase {
 	public function test_unscheduled_cancellation_is_not_lost_on_reopen_and_never_turns_failed_into_paid(): void {
 		$order = new Arch035LifecycleOrder( 714 );
 		$order->status = 'processing';
+		$order->transaction_id = 'gateway-714';
 		$this->capture->onPaid( $order );
 		$GLOBALS['arch035_async_fail'] = true;
 		$order->status = 'cancelled';

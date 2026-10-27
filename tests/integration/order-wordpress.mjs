@@ -60,8 +60,8 @@ export async function assertOrderWordPress({
 			`${kind}: activity API must accept either source order`
 		);
 	}
-	// Gateway variation: Woo sets its paid status directly without calling
-	// payment_complete(). That transition is still paid evidence in HPOS.
+	// In real WooCommerce, COD moves an unpaid order into processing. Woo may
+	// also set date_paid automatically: neither state confirms money was taken.
 	await wpAsync(
 		'eval',
 		`
@@ -72,13 +72,29 @@ export async function assertOrderWordPress({
 	assert.equal(
 		orderEvents(getActions(), orderId, 'ORDER_PAID').length,
 		0,
-		`${kind}: on-hold status must not imply paid`
+		`${kind}: on-hold is not proof of collection`
 	);
 	await wpAsync(
 		'eval',
 		`
 		$order = wc_get_order(${Number(orderId)});
-		$order->update_status('processing'); // Simulates a gateway status update.
+		$order->update_status('processing');
+	`
+	);
+	assert.equal(
+		orderEvents(getActions(), orderId, 'ORDER_PAID').length,
+		0,
+		`${kind}: COD processing without payment evidence remains unpaid`
+	);
+	// Actual payment_complete() is a Woo-authoritative confirmation even when
+	// the gateway supplies no transaction reference. COD's payment-complete
+	// status filter normally moves the order to completed.
+	await wpAsync(
+		'eval',
+		`
+		$order = wc_get_order(${Number(orderId)});
+		$order->update_status('pending');
+		if (!$order->payment_complete()) throw new Exception('COD payment_complete failed');
 	`
 	);
 	const afterPaid = getActions();
@@ -87,15 +103,62 @@ export async function assertOrderWordPress({
 		orderId,
 		'ORDER_PAID'
 	);
-	assert.equal(paid.length, 1, `${kind}: Woo confirmed paid status must emit once`);
+	assert.equal(paid.length, 1, `${kind}: confirmed COD payment must emit once`);
 	assert.equal(paid[0].args.event.checkoutKey, checkoutKey);
+
+	// A gateway that does not call payment_complete() can still prove payment
+	// by saving a transaction reference before its paid-status transition.
+	// Use a linked, HPOS-backed order to test the actual WordPress hook path.
+	const statusGatewayId = Number(
+		(
+			await wpAsync(
+				'eval',
+				`
+				$order = wc_create_order();
+				$order->set_payment_method('arch048-confirmed-gateway');
+				$order->update_meta_data('_moda_checkout_key', ${JSON.stringify(checkoutKey)});
+				$order->save();
+				do_action('woocommerce_checkout_order_processed', $order->get_id(), array(), $order);
+				$order->set_transaction_id('arch048-confirmed-gateway-transaction');
+				$order->save();
+				$order->update_status('processing');
+				echo $order->get_id();
+			`
+			)
+		).trim()
+	);
+	assert.ok(Number.isSafeInteger(statusGatewayId) && statusGatewayId > 0);
+	try {
+		const statusGatewayPaid = orderEvents(
+			getActions(),
+			statusGatewayId,
+			'ORDER_PAID'
+		);
+		assert.equal(
+			statusGatewayPaid.length,
+			1,
+			`${kind}: transaction-backed status-only gateway emits paid`
+		);
+		assert.equal(statusGatewayPaid[0].args.event.checkoutKey, checkoutKey);
+		await wpAsync(
+			'eval',
+			`do_action('woocommerce_payment_complete', ${statusGatewayId});`
+		);
+		assert.equal(
+			orderEvents(getActions(), statusGatewayId, 'ORDER_PAID').length,
+			1,
+			`${kind}: later payment callback deduplicates gateway status evidence`
+		);
+	} finally {
+		await wpAsync('eval', `wc_get_order(${statusGatewayId})->delete(true);`);
+	}
 	// Woo's payment-complete and payment-status callbacks must reuse this event.
 	await wpAsync(
 		'eval',
 		`
 		$order = wc_get_order(${Number(orderId)});
 		$order->update_status('pending');
-		if (!$order->payment_complete('arch048-fixture')) throw new Exception('payment_complete failed');
+		if (!$order->payment_complete()) throw new Exception('repeat payment_complete failed');
 	`
 	);
 	assert.equal(
@@ -218,6 +281,6 @@ export async function assertOrderWordPress({
 		`${kind}: failed/refunded and a stray payment callback cannot reverse confirmed prior state`
 	);
 	process.stdout.write(
-		`ARCH-048 Order ${kind}: placed, status-paid, payment, cancellation, replay, 503, HPOS PASS\n`
+		`ARCH-048 Order ${kind}: COD unpaid guard, confirmed payment, status-only gateway, cancellation, replay, 503, HPOS PASS\n`
 	);
 }

@@ -14,9 +14,9 @@ final class OrderLifecycleCapture {
 		// Both checkout hooks run before gateway payment. They mean placed, never paid.
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'onPlaced' ), 20, 3 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'onPlaced' ), 20, 1 );
-		// Some gateways set an authoritative Woo paid status without calling
-		// payment_complete(). All three hooks converge on one validated paid event.
-		add_action( 'woocommerce_payment_complete', array( $this, 'onPaid' ), 10, 1 );
+		// A payment_complete() callback is explicit payment evidence. Status-only
+		// gateways must additionally have a transaction reference to confirm payment.
+		add_action( 'woocommerce_payment_complete', array( $this, 'onPaymentComplete' ), 10, 1 );
 		add_action( 'woocommerce_order_payment_status_changed', array( $this, 'onPaid' ), 10, 1 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'onStatusChanged' ), 10, 4 );
 	}
@@ -25,8 +25,8 @@ final class OrderLifecycleCapture {
 	public function onPlaced( mixed $order_id_or_order ): void {
 		$this->capture( $order_id_or_order, 'ORDER_PLACED' );
 		// If a gateway already advanced the order before this hook acquired the
-		// checkout key, recover the observed terminal state. Placement alone is
-		// still never treated as evidence of payment.
+		// checkout key, reconcile only corroborated payment or cancellation.
+		// Placement itself cannot confirm that COD/offline payment was collected.
 		try {
 			$order = $this->resolve( $order_id_or_order );
 			if ( self::confirmedPaid( $order ) ) $this->capture( $order, 'ORDER_PAID' );
@@ -36,10 +36,20 @@ final class OrderLifecycleCapture {
 		}
 	}
 
+	/** Woo payment_complete() is a distinct signal from a paid-labelled status. */
+	public function onPaymentComplete( mixed $order_id ): void {
+		$this->observePaid( $order_id, true );
+	}
+
+	/** A status transition alone is not confirmation of a collected payment. */
 	public function onPaid( mixed $order_id ): void {
+		$this->observePaid( $order_id, false );
+	}
+
+	private function observePaid( mixed $order_id, bool $payment_complete ): void {
 		try {
 			$order = $this->resolve( $order_id );
-			if ( self::confirmedPaid( $order ) ) $this->capture( $order, 'ORDER_PAID' );
+			if ( self::confirmedPaid( $order, $payment_complete ) ) $this->capture( $order, 'ORDER_PAID' );
 		} catch ( \Throwable $error ) {
 			self::log( 'paid_observation_failed' );
 		}
@@ -63,9 +73,8 @@ final class OrderLifecycleCapture {
 			} elseif ( 'cancelled' === $to ) {
 				$this->capture( $resolved, 'ORDER_CANCELLED' );
 			}
-			// Woo sets date_paid when entering its paid statuses even when a
-			// gateway never fires woocommerce_payment_complete. A failed, on-hold,
-			// refunded, or merely placed order is never a payment signal.
+			// Woo may set date_paid on a status change without receiving money,
+			// including for COD orders. Require independent payment evidence.
 			if ( self::confirmedPaid( $resolved ) ) $this->capture( $resolved, 'ORDER_PAID' );
 		} catch ( \Throwable $error ) {
 			// A third-party store failure must not break the order state change.
@@ -128,14 +137,22 @@ final class OrderLifecycleCapture {
 		return $order;
 	}
 
-	/** Use Woo's paid-status semantics, with explicit unpaid/terminal exclusions. */
-	private static function confirmedPaid( ?object $order ): bool {
-		if ( null === $order || ! method_exists( $order, 'is_paid' ) || ! function_exists( 'wc_get_is_paid_statuses' ) ) return false;
+	/**
+	 * Woo's is_paid() and date_paid are status-derived, not proof of settlement.
+	 * COD can enter processing at placement before payment is collected. Trust
+	 * either Woo's explicit payment-complete callback or a gateway transaction ID,
+	 * in addition to the current paid status. No payment-method allowlist is used.
+	 */
+	private static function confirmedPaid( ?object $order, bool $payment_complete = false ): bool {
+		if ( null === $order || ! method_exists( $order, 'is_paid' ) ||
+			! method_exists( $order, 'get_transaction_id' ) || ! function_exists( 'wc_get_is_paid_statuses' ) ) return false;
 		$status = $order->get_status();
 		if ( ! is_string( $status ) || in_array( $status,
 			array( 'pending', 'on-hold', 'failed', 'cancelled', 'refunded', 'trash', 'checkout-draft', 'draft', 'auto-draft' ), true ) ) return false;
 		$paid_statuses = wc_get_is_paid_statuses();
-		return is_array( $paid_statuses ) && in_array( $status, $paid_statuses, true ) && true === $order->is_paid();
+		if ( ! is_array( $paid_statuses ) || ! in_array( $status, $paid_statuses, true ) || true !== $order->is_paid() ) return false;
+		$transaction_id = $order->get_transaction_id();
+		return $payment_complete || ( is_string( $transaction_id ) && '' !== trim( $transaction_id ) );
 	}
 
 	private static function sameEvent( mixed $record, string $type, string $order_id, string $checkout_key ): bool {
