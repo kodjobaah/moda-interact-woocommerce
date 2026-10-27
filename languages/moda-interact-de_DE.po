@@ -1625,6 +1625,9 @@ msgstr "Übersetzung anzeigen"
 msgid "View original"
 msgstr "Original anzeigen"
 
+msgid "View conversation"
+msgstr "Unterhaltung ansehen"
+
 msgid "View billing"
 msgstr "Abrechnung anzeigen"
 

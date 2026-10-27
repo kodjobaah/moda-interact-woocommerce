@@ -1616,6 +1616,9 @@ msgstr "Vertaling bekijken"
 msgid "View original"
 msgstr "Origineel bekijken"
 
+msgid "View conversation"
+msgstr "Gesprek bekijken"
+
 msgid "View billing"
 msgstr "Facturering bekijken"
 

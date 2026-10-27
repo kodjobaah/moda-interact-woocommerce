@@ -1610,6 +1610,9 @@ msgstr "Ver tradução"
 msgid "View original"
 msgstr "Ver original"
 
+msgid "View conversation"
+msgstr "Ver conversa"
+
 msgid "View billing"
 msgstr "Ver faturação"
 

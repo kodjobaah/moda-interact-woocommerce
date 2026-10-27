@@ -1581,6 +1581,9 @@ msgstr "Zobrazit překlad"
 msgid "View original"
 msgstr "Zobrazit originál"
 
+msgid "View conversation"
+msgstr "Zobrazit konverzaci"
+
 msgid "View billing"
 msgstr "Zobrazit fakturaci"
 

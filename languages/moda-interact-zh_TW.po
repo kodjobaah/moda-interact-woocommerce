@@ -1523,6 +1523,9 @@ msgstr "檢視翻譯"
 msgid "View original"
 msgstr "檢視原文"
 
+msgid "View conversation"
+msgstr "查看對話"
+
 msgid "View billing"
 msgstr "檢視帳單"
 

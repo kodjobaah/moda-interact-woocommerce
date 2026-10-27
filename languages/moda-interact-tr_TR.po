@@ -1583,6 +1583,9 @@ msgstr "Çeviriyi görüntüle"
 msgid "View original"
 msgstr "Orijinali görüntüle"
 
+msgid "View conversation"
+msgstr "Konuşmayı görüntüle"
+
 msgid "View billing"
 msgstr "Faturalandırmayı görüntüle"
 

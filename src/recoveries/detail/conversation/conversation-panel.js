@@ -63,6 +63,7 @@ export function ConversationPanel({
 	return createElement(
 		'section',
 		{
+			id: 'recovery-conversation',
 			className:
 				'moda-recovery-detail__card moda-recovery-detail__conversation',
 			'aria-labelledby': 'moda-recovery-conversation-title',
