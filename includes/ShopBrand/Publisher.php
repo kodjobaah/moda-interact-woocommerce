@@ -18,7 +18,6 @@ use ModaInteract\WooCommerce\Connection\SiteIdentity;
 final class Publisher {
 	public const CAPTURE_ACTION = 'moda_interact_capture_woo_shop_brand';
 	public const DELIVERY_ACTION = 'moda_interact_publish_woo_shop_brand';
-	private const LEGACY_RECONCILE_ACTION = 'moda_interact_reconcile_woo_shop_brand';
 	private const GROUP = 'moda-interact-shop-brand';
 	private const BOOTSTRAP_OPTION = 'moda_interact_shop_brand_bootstrapped_installation';
 	private const MAX_ATTEMPTS = 5;
@@ -45,13 +44,13 @@ final class Publisher {
 
 	/**
 	 * Capture branding once for an already-connected installation on upgrade.
-	 * No recurring reconciliation or automatic WordPress-setting change listeners.
+	 * No recurring reconciliation, automatic WordPress-setting change listeners,
+	 * or legacy scheduler migration (this feature has never been deployed).
 	 */
 	public function ensureInitialSync(): void {
 		if ( ! self::schedulerReady() ) {
 			return;
 		}
-		$this->removeLegacyReconciliation();
 		$local = ( $this->installations ?? new InstallationStore() )->read();
 		if ( 'valid' !== $local['state'] ) {
 			return; // Plugin may be activated before the store is connected to Moda.
@@ -91,25 +90,6 @@ final class Publisher {
 		if ( ! update_option( self::BOOTSTRAP_OPTION, $installation_id, false ) &&
 			get_option( self::BOOTSTRAP_OPTION, '' ) !== $installation_id ) {
 			self::log( 'bootstrap_marker_write_failed' );
-		}
-	}
-
-	/** Remove schedules created by the previous automatic daily reconciliation design. */
-	private function removeLegacyReconciliation(): void {
-		if ( ! self::hasScheduled( self::LEGACY_RECONCILE_ACTION, array() ) ) {
-			return;
-		}
-		if ( ! function_exists( 'as_unschedule_all_actions' ) ) {
-			self::log( 'legacy_reconcile_cleanup_unavailable' );
-			return;
-		}
-		try {
-			as_unschedule_all_actions( self::LEGACY_RECONCILE_ACTION, array(), self::GROUP );
-			if ( self::hasScheduled( self::LEGACY_RECONCILE_ACTION, array() ) ) {
-				self::log( 'legacy_reconcile_cleanup_failed' );
-			}
-		} catch ( \Throwable $error ) {
-			self::log( 'legacy_reconcile_cleanup_failed' );
 		}
 	}
 

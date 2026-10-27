@@ -62,19 +62,9 @@ if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
 		return count( $GLOBALS['arch049_recurring'] );
 	}
 }
-if ( ! function_exists( 'as_unschedule_all_actions' ) ) {
-	function as_unschedule_all_actions( $hook, $args = array(), $group = '' ) {
-		$GLOBALS['arch049_unscheduled'][] = compact( 'hook', 'args', 'group' );
-		foreach ( array( 'arch049_recurring', 'arch035_queued', 'arch035_delayed' ) as $key ) {
-			$GLOBALS[ $key ] = array_values( array_filter(
-				$GLOBALS[ $key ] ?? array(),
-				static fn( $action ) => $action['hook'] !== $hook || $action['args'] !== $args || $action['group'] !== $group
-			) );
-		}
-	}
-}
 if ( ! function_exists( 'as_has_scheduled_action' ) ) {
 	function as_has_scheduled_action( $hook, $args, $group ) {
+		$GLOBALS['arch049_scheduler_store_lookups'] = (int) ( $GLOBALS['arch049_scheduler_store_lookups'] ?? 0 ) + 1;
 		foreach ( array_merge( $GLOBALS['arch035_queued'] ?? array(), $GLOBALS['arch035_delayed'] ?? array(), $GLOBALS['arch049_recurring'] ?? array() ) as $item ) {
 			if ( $item['hook'] === $hook && $item['args'] === $args && $item['group'] === $group ) return true;
 		}
@@ -83,6 +73,9 @@ if ( ! function_exists( 'as_has_scheduled_action' ) ) {
 }
 final class Arch049TestLogger {
 	public function warning( string $message, array $context = array() ): void {
+		if ( ! empty( $GLOBALS['arch049_logger_fails'] ) ) {
+			throw new \RuntimeException( 'simulated logging failure' );
+		}
 		$GLOBALS['arch049_logs'][] = array( 'message' => $message, 'context' => $context );
 	}
 }
@@ -110,9 +103,10 @@ final class ShopBrandPublicationTest extends TestCase {
 		);
 		$GLOBALS['arch049_icon_url'] = 'https://merchant.example/uploads/icon-512.png';
 		$GLOBALS['arch049_recurring'] = array();
-		$GLOBALS['arch049_unscheduled'] = array();
+		$GLOBALS['arch049_scheduler_store_lookups'] = 0;
 		$GLOBALS['moda_interact_test_hooks'] = array();
 		$GLOBALS['arch049_logs'] = array();
+		$GLOBALS['arch049_logger_fails'] = false;
 		$GLOBALS['arch035_queued'] = array();
 		$GLOBALS['arch035_delayed'] = array();
 		$GLOBALS['arch046_scheduled'] = array();
@@ -269,6 +263,20 @@ final class ShopBrandPublicationTest extends TestCase {
 		self::assertStringNotContainsString( $this->record['credential'], json_encode( $GLOBALS['arch049_logs'] ) );
 	}
 
+	public function test_woocommerce_logger_failure_does_not_interrupt_delivery_retries(): void {
+		$GLOBALS['arch049_logger_fails'] = true;
+		$calls = 0;
+		$client = $this->client( static function () use ( &$calls ): array {
+			++$calls;
+			return self::http( 503, array( 'error' => 'provider_unavailable' ) );
+		} );
+		$publisher = new Publisher( $client, $this->store, $this->identity );
+		$publisher->capture( $this->record['installationId'], $this->record['shopId'] );
+		self::assertSame( 1, $calls );
+		self::assertCount( 1, $GLOBALS['arch035_delayed'] );
+		self::assertSame( 2, $GLOBALS['arch035_delayed'][0]['args'][3] );
+	}
+
 	public function test_initial_connection_bootstrap_is_once_only_and_registers_no_change_or_daily_hooks(): void {
 		$publisher = new Publisher( null, $this->store, $this->identity );
 		$publisher->register();
@@ -352,21 +360,22 @@ final class ShopBrandPublicationTest extends TestCase {
 		self::assertCount( 0, $GLOBALS['arch049_recurring'] );
 	}
 
-	public function test_existing_daily_reconciliation_is_cancelled_during_upgrade(): void {
-		$GLOBALS['arch049_recurring'][] = array(
-			'hook' => 'moda_interact_reconcile_woo_shop_brand',
-			'args' => array(), 'group' => 'moda-interact-shop-brand',
-			'interval' => 86400, 'timestamp' => time() + 86400, 'unique' => true,
-		);
+	public function test_already_bootstrapped_requests_do_not_query_action_scheduler_store(): void {
 		$publisher = new Publisher( null, $this->store, $this->identity );
-		$publisher->ensureInitialSync();
+		$publisher->connected( $this->record );
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		self::assertGreaterThan( 0, $GLOBALS['arch049_scheduler_store_lookups'] );
+
+		// Model a processed initial capture followed by repeated ordinary WP loads.
+		$GLOBALS['arch035_queued'] = array();
+		$GLOBALS['arch049_scheduler_store_lookups'] = 0;
+		$publisher->register(); // Scheduler may already be initialized.
+		for ( $request = 0; $request < 3; ++$request ) {
+			$publisher->ensureInitialSync();
+		}
+		self::assertSame( 0, $GLOBALS['arch049_scheduler_store_lookups'] );
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
 		self::assertCount( 0, $GLOBALS['arch049_recurring'] );
-		self::assertSame( array(
-			'hook' => 'moda_interact_reconcile_woo_shop_brand',
-			'args' => array(), 'group' => 'moda-interact-shop-brand',
-		), $GLOBALS['arch049_unscheduled'][0] );
-		$publisher->ensureInitialSync();
-		self::assertCount( 1, $GLOBALS['arch049_unscheduled'] );
 	}
 
 	public function test_explicit_manual_request_reuses_current_capture_without_auto_change_tracking(): void {

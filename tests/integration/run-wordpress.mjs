@@ -19,7 +19,10 @@ import { assertBillingWordPress } from './scenarios/billing-wordpress.mjs';
 import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
 import { readPendingCheckoutActions, readCheckoutActionHistory } from './action-scheduler-sql.mjs';
 import { createWordPressApiFixture } from './wordpress-api-fixture.mjs';
-import { assertShopBrandWordPress } from './scenarios/shop-brand-wordpress.mjs';
+import {
+	assertInitialShopBrandWordPress,
+	assertShopBrandWordPress,
+} from './scenarios/shop-brand-wordpress.mjs';
 import {
 	assertConnectionEnvironmentWordPress,
 	assertConnectionWordPress,
@@ -489,12 +492,61 @@ try {
 				}
 			);
 
+		// wp-env persists its WordPress database across runs. A previous successful
+		// ShopBrand scenario retains the one-time bootstrap marker for the fixed
+		// fixture installation ID, and reconnecting that same installation must
+		// NOT enqueue another initial capture. Reset only owned fixture state
+		// before the connection scenario so reruns still exercise first connect.
+		const brandFixtureReset = parseJsonOutput(await wpAsync('eval', `
+			$record = get_option('moda_interact_woocommerce_connection', null);
+			if (null !== $record && (!is_array($record) ||
+				($record['installationId'] ?? null) !== 'install_wp_fixture' ||
+				($record['shopId'] ?? null) !== 'shop_wp_fixture')) {
+				throw new RuntimeException('Refusing to reset a non-fixture Moda connection');
+			}
+			$marker = get_option('moda_interact_shop_brand_bootstrapped_installation', '');
+			if ($marker !== '' && $marker !== 'install_wp_fixture') {
+				throw new RuntimeException('Refusing to reset a non-fixture ShopBrand marker');
+			}
+			$cleared = 0;
+			foreach (array('moda_interact_capture_woo_shop_brand', 'moda_interact_publish_woo_shop_brand') as $hook) {
+				$actions = as_get_scheduled_actions(array(
+					'hook' => $hook, 'group' => 'moda-interact-shop-brand',
+					'status' => 'pending', 'per_page' => 100,
+				));
+				foreach ($actions as $action) {
+					$args = array_values($action->get_args());
+					$is_capture = $hook === 'moda_interact_capture_woo_shop_brand';
+					$installation = $args[$is_capture ? 0 : 1] ?? null;
+					$shop = $args[$is_capture ? 1 : 2] ?? null;
+					if ($installation !== 'install_wp_fixture' || $shop !== 'shop_wp_fixture') {
+						throw new RuntimeException('Refusing to cancel a non-fixture ShopBrand action');
+					}
+					as_unschedule_all_actions($hook, $args, 'moda-interact-shop-brand');
+					++$cleared;
+				}
+			}
+			delete_option('moda_interact_woocommerce_connection');
+			delete_option('moda_interact_shop_brand_bootstrapped_installation');
+			echo wp_json_encode(array(
+				'connectionCleared' => get_option('moda_interact_woocommerce_connection', null) === null,
+				'markerCleared' => get_option('moda_interact_shop_brand_bootstrapped_installation', '') === '',
+				'pendingActionsCleared' => $cleared,
+			));
+		`));
+		assert.equal(brandFixtureReset.connectionCleared, true);
+		assert.equal(brandFixtureReset.markerCleared, true);
 		await assertConnectionWordPress({
 			siteUrl,
 			auth,
 			fetchWordPress,
 			request,
 			merchantBootstrapRequest,
+			onInitialConnection: () => assertInitialShopBrandWordPress({
+				wpAsync,
+				parseJsonOutput,
+				fixture: apiFixture,
+			}),
 		});
 		await assertShopBrandWordPress({
 			wpAsync,

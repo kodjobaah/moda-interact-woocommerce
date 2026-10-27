@@ -4,6 +4,51 @@ const CAPTURE = 'moda_interact_capture_woo_shop_brand';
 const DELIVERY = 'moda_interact_publish_woo_shop_brand';
 const GROUP = 'moda-interact-shop-brand';
 
+/**
+ * Verify and drain the initial capture before the connection test rotates its
+ * credentials. Otherwise the async worker can race with the reconnect and the
+ * fixture cannot distinguish an old-credential attempt from a missing capture.
+ */
+export async function assertInitialShopBrandWordPress({ wpAsync, parseJsonOutput, fixture }) {
+	const wpJson = async (php) => parseJsonOutput(await wpAsync('eval', php));
+	const queued = await wpJson(`
+		$actions = as_get_scheduled_actions(array(
+			'hook' => '${CAPTURE}', 'group' => '${GROUP}',
+			'status' => 'pending', 'per_page' => 25,
+		));
+		echo wp_json_encode(array_values(array_map('intval', array_keys($actions))));
+	`);
+	if (queued.length > 0) {
+		await wpAsync('action-scheduler', 'run', `--hooks=${CAPTURE}`, '--batch-size=20', '--batches=1');
+	}
+	const published = fixture.getShopBrandRequests();
+	if (published.length === 0) {
+		// Diagnostics contain action IDs/statuses only, never credentials or payloads.
+		const state = await wpJson(`
+			$record = get_option('moda_interact_woocommerce_connection', null);
+			$statuses = array();
+			foreach (array('pending', 'in-progress', 'complete', 'failed', 'canceled') as $status) {
+				$actions = as_get_scheduled_actions(array(
+					'hook' => '${CAPTURE}', 'group' => '${GROUP}',
+					'status' => $status, 'per_page' => 10,
+				));
+				$statuses[$status] = array_values(array_map('intval', array_keys($actions)));
+			}
+			echo wp_json_encode(array(
+				'connectionInstallationId' => is_array($record) ? ($record['installationId'] ?? null) : null,
+				'credentialVersion' => is_array($record) ? ($record['credentialVersion'] ?? null) : null,
+				'bootstrapMarker' => get_option('moda_interact_shop_brand_bootstrapped_installation', ''),
+				'schedulerInitialized' => did_action('action_scheduler_init') > 0,
+				'captureActions' => $statuses,
+			));
+		`);
+		assert.fail(`first connection did not deliver a ShopBrand snapshot; state=${JSON.stringify(state)}`);
+	}
+	assert.equal(published.at(-1).httpStatus, 200, 'initial connection publishes asynchronously');
+	assert.equal(await wpJson(`echo wp_json_encode(get_option(
+		'moda_interact_shop_brand_bootstrapped_installation', ''));`), 'install_wp_fixture');
+}
+
 /** Real WP-CLI -> WordPress hooks -> Action Scheduler -> HTTPS fixture test. */
 export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixture }) {
 	const wpJson = async (php) => parseJsonOutput(await wpAsync('eval', php));
@@ -59,17 +104,10 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 	};
 	let installed = false;
 	try {
-		const beforeConnect = await pending(CAPTURE);
-		assert.ok(
-			beforeConnect.length > 0 || requests().length > 0,
-			'successful connection must enqueue an initial brand snapshot'
-		);
-		// The background runner can drain this initial job before assertions run.
-		// Validate it separately from the subsequent explicit branding sync.
-		if (beforeConnect.length > 0) await drain(CAPTURE);
+		// The initial capture was verified and drained *before* credential rotation
+		// in assertConnectionWordPress. Reconnect must not start another capture.
 		assert.equal(latest().httpStatus, 200, 'initial connection publishes asynchronously');
-		assert.equal(await wpJson(`echo wp_json_encode(get_option(
-			'moda_interact_shop_brand_bootstrapped_installation', ''));`), 'install_wp_fixture');
+		assert.deepEqual(await pending(CAPTURE), [], 'credential reconnect must not recapture branding');
 
 		// Use native attachment posts and native Site Identity APIs; WordPress
 		// itself derives the public HTTPS attachment URLs (no PHP source mocks).
@@ -188,25 +226,28 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 		assert.equal(repeat.disposition, 'unchanged');
 		assert.equal(repeat.event.eventId, changed.event.eventId);
 
-		// The retired reconciliation hook must have no listener or recurring jobs.
-		const legacy = await wpJson(`
-			$id = as_schedule_recurring_action(time() + DAY_IN_SECONDS, DAY_IN_SECONDS,
-				'moda_interact_reconcile_woo_shop_brand', array(), '${GROUP}', true);
+		// A bootstrapped request must neither recapture nor register recurring work.
+		// No legacy migration is required: this feature has not been deployed.
+		const idle = await wpJson(`
 			$publisher = new \\ModaInteract\\WooCommerce\\ShopBrand\\Publisher();
 			$publisher->ensureInitialSync();
 			$publisher->ensureInitialSync();
-			do_action('moda_interact_reconcile_woo_shop_brand');
+			$actions = as_get_scheduled_actions(array(
+				'group' => '${GROUP}', 'status' => 'pending', 'per_page' => 100,
+			));
+			$recurring = 0;
+			foreach ($actions as $action) {
+				$schedule = $action->get_schedule();
+				if ($schedule && $schedule->is_recurring()) ++$recurring;
+			}
 			echo wp_json_encode(array(
-				'scheduled' => $id > 0,
-				'legacyPending' => (bool) as_has_scheduled_action(
-					'moda_interact_reconcile_woo_shop_brand', array(), '${GROUP}'),
 				'capturePending' => (bool) as_has_scheduled_action('${CAPTURE}',
 					array('install_wp_fixture', 'shop_wp_fixture'), '${GROUP}'),
+				'recurring' => $recurring,
 			));
 		`);
-		assert.equal(legacy.scheduled, true);
-		assert.equal(legacy.legacyPending, false, 'old recurring action must be removed');
-		assert.equal(legacy.capturePending, false, 'retired reconciliation does not capture');
+		assert.equal(idle.capturePending, false, 'bootstrapped requests do not recapture');
+		assert.equal(idle.recurring, 0, 'branding never schedules recurring actions');
 		assert.deepEqual(await pending(CAPTURE), []);
 
 		// Upgrade of an already-connected store with no bootstrap marker queues once.

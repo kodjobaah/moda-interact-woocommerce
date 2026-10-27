@@ -7,6 +7,7 @@ export async function assertConnectionWordPress({
 	fetchWordPress,
 	request,
 	merchantBootstrapRequest,
+	onInitialConnection,
 }) {
 	const noAuth = await fetchWordPress(
 		`${siteUrl}/wp-json/moda-interact/v1/connection`,
@@ -78,6 +79,9 @@ export async function assertConnectionWordPress({
 		false
 	);
 	assert.equal(JSON.stringify(connected).includes('bootstrapSecret'), false);
+	// Drain the first brand capture before tests intentionally rotate credentials.
+	// This prevents async capture/credential rotation from racing in the fixture.
+	if (onInitialConnection) await onInitialConnection();
 	assert.deepEqual(await (await request('')).json(), {
 		status: 'CONNECTED',
 		installationId: 'install_wp_fixture',

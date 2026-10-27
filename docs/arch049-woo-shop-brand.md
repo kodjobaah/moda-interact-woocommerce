@@ -31,10 +31,10 @@ and `ModaApiClient` bearer/installation headers as other hosted Woo commands;
   The bootstrap marker records only the installation ID (with WordPress autoload
   disabled) after **enqueue acceptance**, not after delivery success.
 - No daily reconciliation job and no hooks watching Site Identity, theme or
-  attachment changes. Existing recurring reconciliation actions from the earlier
-  implementation are unscheduled **after `action_scheduler_init`**, never before
-  its data store is initialized. Bootstrap also runs if the scheduler initialized
-  before the Woo runtime registered its callback.
+  attachment changes. ShopBrand reconciliation has **never been deployed**, so
+  no legacy Action Scheduler cleanup, migration marker or recurring-job lookup
+  is required. Bootstrap waits for `action_scheduler_init` and also runs if the
+  scheduler initialized before the Woo runtime registered its callback.
 - A future authorised merchant **Sync branding** action can invoke
   `ShopBrand\Publisher::requestSync()`. It uses the same coalesced async capture,
   without a second HTTP or image-processing implementation. The merchant UI,
@@ -92,12 +92,12 @@ WordPress Site Identity settings rather than calling the PHP source reader
 with mocked globals. Its assertions cover:
 
 - initial connection capture, first upgrade bootstrap, one-time enqueue markers,
-  cleanup of legacy recurring actions and no capture on branding changes;
+  no recurring brand actions and no capture on branding changes;
 - actual authenticated `POST /v1/woocommerce/shop-brand` request headers,
   exact payload, stable digest, positive attachment dimensions, and no `shopId`;
 - successful `updated`/`unchanged` responses after explicit `requestSync()` calls;
-- no automatic publication on title/logo/icon/attachment changes or the retired
-  reconciliation hook;
+- no automatic publication on title/logo/icon/attachment changes and no
+  recurring brand actions;
 - explicit `null` for deleted/removed icon/logo and non-HTTPS sources;
 - 503/429 backoff with durable retry payload and unchanged `observedAt`;
 - permanent 400 rejection and suppression of stale-installation retries;
