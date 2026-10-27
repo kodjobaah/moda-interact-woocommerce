@@ -1,12 +1,17 @@
 import assert from 'node:assert/strict';
 
 // Real WooCommerce HTTP mutations, not direct do_action() calls. The caller
-// supplies snapshots of Action Scheduler's durable pending checkout actions.
-function newForKey(before, after, checkoutKey) {
+// supplies snapshots of Action Scheduler's durable all-status action history.
+// Action Scheduler may create a new action ID for a retry of the *same*
+// checkout event. Only attempt 1 proves a fresh publication by CheckoutCapture.
+// The input is the all-status action history, so pending->complete transitions
+// do not make old actions disappear and then look new on a subsequent read.
+export function newForKey(before, after, checkoutKey) {
 	const ids = new Set(before.map((row) => String(row.id)));
 	return after.filter(
 		(row) =>
 			!ids.has(String(row.id)) &&
+			row.args?.attempt === 1 &&
 			row.args?.event?.eventType === 'CHECKOUT_UPDATED' &&
 			(!checkoutKey || row.args.event.checkoutKey === checkoutKey)
 	);

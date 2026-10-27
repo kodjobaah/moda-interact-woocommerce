@@ -1,14 +1,25 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 
-const actionQuery = `SELECT a.action_id, a.extended_args
+const actionSelection = `SELECT a.action_id, a.extended_args
 FROM wp_actionscheduler_actions AS a
 JOIN wp_actionscheduler_groups AS g ON g.group_id = a.group_id
 WHERE a.hook = 'moda_interact_dispatch_checkout_activity'
+	AND g.slug = 'moda-interact-activity'`;
+
+// ARCH-035's delivery/retry checks must continue observing only pending work.
+const pendingActionQuery = `${actionSelection}
 	AND a.status = 'pending'
-	AND g.slug = 'moda-interact-activity'
 ORDER BY a.action_id DESC
 LIMIT 100`;
+
+// ARCH-048's publication checks must observe durable action creation, not
+// just the pending subset: a WP-Cron runner can complete an action between
+// two HTTP requests, or make a retry pending with a different action ID.
+// Include every status and retain a bounded recent history.
+const actionHistoryQuery = `${actionSelection}
+ORDER BY a.action_id DESC
+LIMIT 250`;
 
 export function parsePendingCheckoutActions(output) {
 	if (output.trim() === '') {
@@ -39,7 +50,7 @@ export function parsePendingCheckoutActions(output) {
 		});
 }
 
-export function readPendingCheckoutActions(composeFile) {
+function readCheckoutActions(composeFile, query) {
 	const shellCommand =
 		'mariadb -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -N -e "$1"';
 	const output = execFileSync(
@@ -55,9 +66,18 @@ export function readPendingCheckoutActions(composeFile) {
 			'-c',
 			shellCommand,
 			'sh',
-			actionQuery,
+			query,
 		],
 		{ encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }
 	);
 	return parsePendingCheckoutActions(output);
+}
+
+export function readPendingCheckoutActions(composeFile) {
+	return readCheckoutActions(composeFile, pendingActionQuery);
+}
+
+/** Historical checkout actions, across pending/running/completed/failed states. */
+export function readCheckoutActionHistory(composeFile) {
+	return readCheckoutActions(composeFile, actionHistoryQuery);
 }
