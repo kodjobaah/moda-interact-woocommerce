@@ -4,6 +4,8 @@ import {
 	supportTransportError,
 } from '../../src/support/support-client';
 import {
+	parseComposeReceipt,
+	parseReadReceipt,
 	parseSupportPage,
 	SUPPORT_PATH,
 } from '../../src/support/support-contract';
@@ -20,13 +22,14 @@ const message = (kind = 'ADMINISTRATIVE') => ({
 	displayLanguageTag: 'fr',
 	systemCode: kind === 'SYSTEM' ? 'BILLING_PLAN_UPGRADED' : null,
 	systemVersion: kind === 'SYSTEM' ? '1' : null,
+	checkoutRecoveryId: null,
 	createdAt: '2026-10-21T10:00:00Z',
 	readAt: null,
 });
 const page = (
 	items = [message('MERCHANT'), message('ADMINISTRATIVE'), message('SYSTEM')]
 ) => ({
-	schemaVersion: 1,
+	schemaVersion: 2,
 	page: 1,
 	pageSize: 25,
 	total: items.length,
@@ -115,7 +118,20 @@ describe('ARCH-035-WOOCOMMERCE-016 privileged Support client', () => {
 			},
 			{ ...page(), items: [{ ...message(), kind: 'UNKNOWN' }] },
 			{ ...page(), items: [{ ...message(), readAt: 'yesterday' }] },
-			{ ...page(), schemaVersion: 2 },
+			{ ...page(), schemaVersion: 1 },
+			{ ...page(), schemaVersion: 3 },
+			{
+				...page(),
+				items: [{ ...message(), checkoutRecoveryId: 'bad/id' }],
+			},
+			{
+				...page(),
+				items: [{ ...message(), checkoutRecoveryId: 'msg-1\n' }],
+			},
+			{
+				...page(),
+				items: [{ ...message(), checkoutRecoveryId: undefined }],
+			},
 		]) {
 			expect(() => parseSupportPage(invalid, 1, 25)).toThrow(
 				'remote_response_invalid'
@@ -136,6 +152,27 @@ describe('ARCH-035-WOOCOMMERCE-016 privileged Support client', () => {
 				}))
 			).markRead('msg-1')
 		).rejects.toThrow('remote_response_invalid');
+	});
+
+	it('requires v2 for history while preserving v1 compose and read receipts', () => {
+		expect(parseSupportPage(page(), 1, 25).schemaVersion).toBe(2);
+		expect(
+			parseComposeReceipt({
+				schemaVersion: 1,
+				messageId: 'new-message',
+				translationId: null,
+			}).schemaVersion
+		).toBe(1);
+		expect(
+			parseReadReceipt(
+				{
+					schemaVersion: 1,
+					messageId: 'msg-1',
+					readAt: '2026-10-21T12:00:00Z',
+				},
+				'msg-1'
+			).schemaVersion
+		).toBe(1);
 	});
 
 	it('maps only safe permission, connection, conflict and transport error codes', () => {

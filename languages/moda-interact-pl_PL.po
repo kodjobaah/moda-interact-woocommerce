@@ -1598,6 +1598,9 @@ msgstr "Pokaż tłumaczenie"
 msgid "View original"
 msgstr "Pokaż oryginał"
 
+msgid "View conversation"
+msgstr "Zobacz rozmowę"
+
 msgid "View billing"
 msgstr "Zobacz rozliczenia"
 

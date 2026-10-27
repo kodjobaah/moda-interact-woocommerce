@@ -1537,6 +1537,9 @@ msgstr "ดูคำแปล"
 msgid "View original"
 msgstr "ดูต้นฉบับ"
 
+msgid "View conversation"
+msgstr "ดูการสนทนา"
+
 msgid "View billing"
 msgstr "ดูการเรียกเก็บเงิน"
 

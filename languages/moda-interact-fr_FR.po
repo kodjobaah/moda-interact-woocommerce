@@ -1622,6 +1622,9 @@ msgstr "Voir la traduction"
 msgid "View original"
 msgstr "Voir l’original"
 
+msgid "View conversation"
+msgstr "Voir la conversation"
+
 msgid "View billing"
 msgstr "Voir la facturation"
 

@@ -15,11 +15,14 @@ const MESSAGE_FIELDS = [
 	'displayLanguageTag',
 	'systemCode',
 	'systemVersion',
+	'checkoutRecoveryId',
 	'createdAt',
 	'readAt',
 ];
 const record = (value) =>
 	value !== null && typeof value === 'object' && !Array.isArray(value);
+const identifier = (value, pattern) =>
+	typeof value === 'string' && pattern.exec(value)?.[0] === value;
 const exact = (value, keys) =>
 	record(value) &&
 	Object.keys(value).length === keys.length &&
@@ -35,7 +38,7 @@ const date = (value) =>
 	!Number.isNaN(Date.parse(value));
 const validMessage = (message) =>
 	exact(message, MESSAGE_FIELDS) &&
-	MESSAGE_ID.test(message.id) &&
+	identifier(message.id, MESSAGE_ID) &&
 	['MERCHANT', 'ADMINISTRATIVE', 'SYSTEM'].includes(message.kind) &&
 	['PROCESSING', 'AVAILABLE', 'FAILED'].includes(message.state) &&
 	bounded(message.originalBody, 32768) &&
@@ -45,6 +48,9 @@ const validMessage = (message) =>
 	nullable(message.displayLanguageTag, (value) => bounded(value, 64)) &&
 	nullable(message.systemCode, (value) => bounded(value, 128)) &&
 	nullable(message.systemVersion, (value) => bounded(value, 64)) &&
+	nullable(message.checkoutRecoveryId, (value) =>
+		identifier(value, MESSAGE_ID)
+	) &&
 	date(message.createdAt) &&
 	nullable(message.readAt, date);
 
@@ -59,7 +65,7 @@ export function parseSupportPage(value, requestedPage, requestedSize) {
 			'unread',
 			'items',
 		]) ||
-		value.schemaVersion !== 1 ||
+		value.schemaVersion !== 2 ||
 		value.page !== requestedPage ||
 		value.pageSize !== requestedSize ||
 		!Number.isSafeInteger(value.total) ||
@@ -81,8 +87,8 @@ export function parseComposeReceipt(value) {
 	if (
 		!exact(value, ['schemaVersion', 'messageId', 'translationId']) ||
 		value.schemaVersion !== 1 ||
-		!MESSAGE_ID.test(value.messageId) ||
-		!nullable(value.translationId, (id) => MESSAGE_ID.test(id))
+		!identifier(value.messageId, MESSAGE_ID) ||
+		!nullable(value.translationId, (id) => identifier(id, MESSAGE_ID))
 	) {
 		throw new Error('remote_response_invalid');
 	}
@@ -101,10 +107,8 @@ export function parseReadReceipt(value, messageId) {
 	return value;
 }
 
-export const validMessageId = (id) =>
-	typeof id === 'string' && MESSAGE_ID.test(id);
-export const validActionId = (id) =>
-	typeof id === 'string' && ACTION_ID.test(id);
+export const validMessageId = (id) => identifier(id, MESSAGE_ID);
+export const validActionId = (id) => identifier(id, ACTION_ID);
 export const validSupportPageRequest = (page, pageSize) =>
 	Number.isSafeInteger(page) &&
 	page >= 1 &&

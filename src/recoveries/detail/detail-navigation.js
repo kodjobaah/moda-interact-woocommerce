@@ -101,10 +101,19 @@ export function recoveriesListHref(query = {}) {
  * @param {Object} query
  */
 export function recoveryDetailHref(recoveryId, query) {
-	if (typeof recoveryId !== 'string' || !RECOVERY_ID.test(recoveryId)) {
+	if (
+		typeof recoveryId !== 'string' ||
+		RECOVERY_ID.exec(recoveryId)?.[0] !== recoveryId
+	) {
 		return null;
 	}
 	return `${recoveriesListHref(query)}&recoveryId=${encodeURIComponent(recoveryId)}`;
+}
+
+/** Link directly to the stable conversation section on a validated detail route. */
+export function recoveryConversationHref(recoveryId) {
+	const base = recoveryDetailHref(recoveryId);
+	return base ? `${base}#recovery-conversation` : null;
 }
 
 /**
@@ -119,7 +128,8 @@ export function readRecoveryDetailRoute(search = '') {
 	const candidate = params.get('recoveryId');
 	return {
 		recoveryId:
-			typeof candidate === 'string' && RECOVERY_ID.test(candidate)
+			typeof candidate === 'string' &&
+			RECOVERY_ID.exec(candidate)?.[0] === candidate
 				? candidate
 				: null,
 		listHref: recoveriesListHref(readRecoveryListQuery(search)),

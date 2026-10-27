@@ -1615,6 +1615,9 @@ msgstr "Ver traducción"
 msgid "View original"
 msgstr "Ver original"
 
+msgid "View conversation"
+msgstr "Ver conversación"
+
 msgid "View billing"
 msgstr "Ver facturación"
 

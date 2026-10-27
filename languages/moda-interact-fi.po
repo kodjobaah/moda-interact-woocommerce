@@ -1590,6 +1590,9 @@ msgstr "Näytä käännös"
 msgid "View original"
 msgstr "Näytä alkuperäinen"
 
+msgid "View conversation"
+msgstr "Näytä keskustelu"
+
 msgid "View billing"
 msgstr "Näytä laskutus"
 

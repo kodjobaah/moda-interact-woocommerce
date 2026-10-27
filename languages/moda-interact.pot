@@ -1571,6 +1571,10 @@ msgid "View original"
 msgstr ""
 
 #: src/support/support-message-card.js:43
+#: src/support/support-message-card.js
+msgid "View conversation"
+msgstr ""
+
 msgid "View billing"
 msgstr ""
 

@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRecoveryDetailClient } from '../../src/recoveries/detail/api/recovery-detail-client';
 import { parseRecoveryDetailResponse } from '../../src/recoveries/detail/api/recovery-detail-contract';
 import { RecoveryDetailController } from '../../src/recoveries/detail/recovery-detail-controller';
+import { recoveryConversationHref } from '../../src/recoveries/detail/detail-navigation';
+import { ConversationPanel } from '../../src/recoveries/detail/conversation/conversation-panel';
 import {
 	detailSummaryDisplay,
 	detailMessagesDisplay,
@@ -98,6 +100,19 @@ async function settle() {
 }
 
 describe('ARCH-035 API-013 WordPress detail integration', () => {
+	it('keeps a stable conversation anchor available while its data loads', () => {
+		const panel = ConversationPanel({ state: 'LOADING' });
+		expect(panel.type).toBe('section');
+		expect(panel.props.id).toBe('recovery-conversation');
+		expect(panel.props['aria-labelledby']).toBe(
+			'moda-recovery-conversation-title'
+		);
+		expect(recoveryConversationHref('checkout_123')).toBe(
+			'admin.php?page=moda-interact-recoveries&recoveryId=checkout_123#recovery-conversation'
+		);
+		expect(recoveryConversationHref('../other')).toBeNull();
+	});
+
 	it('performs privileged WordPress REST reads with section-scoped cursor pagination', async () => {
 		const request = vi.fn(async ({ path }) => {
 			if (path.endsWith('/messages?cursor=next_m1')) {

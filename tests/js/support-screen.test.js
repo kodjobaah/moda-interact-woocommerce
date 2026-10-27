@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { SupportThread } from '../../src/support/support-thread';
 import {
 	SupportMessageCard,
+	supportSystemActionLabel,
 	supportSystemHref,
 } from '../../src/support/support-message-card';
 import { SupportComposer } from '../../src/support/support-composer';
@@ -153,6 +154,53 @@ describe('Support native merchant presentation', () => {
 				systemCode: 'BILLING_PLAN_UPGRADED',
 			})
 		).toBeNull();
+	});
+
+	it('links only eligible recovery notices to the local conversation anchor', () => {
+		const message = {
+			kind: 'SYSTEM',
+			state: 'AVAILABLE',
+			systemCode: 'RECOVERY_INITIAL_OUTREACH_SENT',
+			systemVersion: '1',
+			checkoutRecoveryId: 'checkout_123',
+		};
+		expect(supportSystemHref(message)).toBe(
+			'admin.php?page=moda-interact-recoveries&recoveryId=checkout_123#recovery-conversation'
+		);
+		expect(supportSystemActionLabel(message)).toBe('View conversation');
+		for (const invalid of [
+			{ ...message, state: 'PROCESSING' },
+			{ ...message, systemVersion: '2' },
+			{ ...message, checkoutRecoveryId: null },
+			{ ...message, checkoutRecoveryId: 'bad/id' },
+			{ ...message, checkoutRecoveryId: 'checkout_123\n' },
+			{ ...message, systemCode: 'BILLING_PLAN_UPGRADED' },
+		]) {
+			const href = supportSystemHref(invalid);
+			if (invalid.systemCode === 'BILLING_PLAN_UPGRADED') {
+				expect(href).toBe('admin.php?page=moda-interact-billing');
+			} else {
+				expect(href).toBeNull();
+			}
+		}
+		expect(
+			supportSystemHref({
+				kind: 'SYSTEM',
+				state: 'AVAILABLE',
+				systemCode: 'BILLING_PLAN_UPGRADED',
+				systemVersion: '1',
+				checkoutRecoveryId: 'checkout_123',
+			})
+		).toBe('admin.php?page=moda-interact-billing');
+		expect(
+			supportSystemActionLabel({
+				kind: 'SYSTEM',
+				state: 'AVAILABLE',
+				systemCode: 'BILLING_PLAN_UPGRADED',
+				systemVersion: '1',
+				checkoutRecoveryId: null,
+			})
+		).toBe('View billing');
 	});
 
 	it('enables the hosted-backed composer while preserving mobile/keyboard styles', () => {

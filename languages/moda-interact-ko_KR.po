@@ -1572,6 +1572,9 @@ msgstr "번역 보기"
 msgid "View original"
 msgstr "원문 보기"
 
+msgid "View conversation"
+msgstr "대화 보기"
+
 msgid "View billing"
 msgstr "결제 정보 보기"
 

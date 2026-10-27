@@ -1597,6 +1597,9 @@ msgstr "Visa översättning"
 msgid "View original"
 msgstr "Visa original"
 
+msgid "View conversation"
+msgstr "Visa konversation"
+
 msgid "View billing"
 msgstr "Visa fakturering"
 

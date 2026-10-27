@@ -55,7 +55,7 @@ function deferred() {
 describe('Support controller and Woo transport boundary', () => {
 	it('enables the approved authenticated WordPress REST facade without synthetic messages', async () => {
 		const request = vi.fn(async () => ({
-			schemaVersion: 1,
+			schemaVersion: 2,
 			page: 1,
 			pageSize: 25,
 			total: 0,
@@ -130,6 +130,27 @@ describe('Support controller and Woo transport boundary', () => {
 		await settle();
 		expect(denied.state.status).toBe('DENIED');
 		denied.setActive(false);
+		controller.setActive(false);
+	});
+
+	it('shows a strict-v2 contract failure instead of an empty successful inbox', async () => {
+		const controller = new SupportController(
+			createSupportClient(
+				vi.fn(async () => ({
+					schemaVersion: 1,
+					page: 1,
+					pageSize: 25,
+					total: 0,
+					totalPages: 1,
+					unread: 0,
+					items: [],
+				}))
+			)
+		);
+		controller.setActive(true);
+		await settle();
+		expect(controller.state.status).toBe('ERROR');
+		expect(controller.state.items).toEqual([]);
 		controller.setActive(false);
 	});
 

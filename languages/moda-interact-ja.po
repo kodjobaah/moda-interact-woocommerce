@@ -1575,6 +1575,9 @@ msgstr "翻訳を表示"
 msgid "View original"
 msgstr "原文を表示"
 
+msgid "View conversation"
+msgstr "会話を表示"
+
 msgid "View billing"
 msgstr "請求情報を見る"
 
