@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 use ModaInteract\WooCommerce\Connection\InstallationStore;
 use ModaInteract\WooCommerce\Security\Base64Url;
+use ModaInteract\WooCommerce\ShopBrand\SnapshotBuilder;
 
 final class ModaApiClient {
 	private const CONNECT_TIMEOUT_SECONDS = 30;
@@ -120,6 +121,36 @@ final class ModaApiClient {
 			! is_string( $result['decisionSequence'] ) ||
 			! preg_match( '/^(0|[1-9][0-9]*)$/D', $result['decisionSequence'] ) ) {
 			throw new ModaApiClientException( 'remote_response_invalid', 200 );
+		}
+		return $result;
+	}
+
+	/** ARCH-049: publish a complete Site Identity snapshot with installation-only auth. */
+	public function publishShopBrand( array $connection, array $event ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) || ! SnapshotBuilder::valid( $event ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = wp_json_encode( $event );
+		if ( ! is_string( $body ) || strlen( $body ) > 16384 ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$response = $this->request( '/v1/woocommerce/shop-brand', 'POST', array_merge(
+			self::installationHeaders( $connection ), array( 'Content-Type' => 'application/json' )
+		), $body, self::DEFAULT_TIMEOUT_SECONDS, 4096 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status ) {
+			throw new ModaApiClientException(
+				$status >= 400 && $status < 500 ? 'remote_rejected' : 'remote_unavailable', $status
+			);
+		}
+		try {
+			$result = $this->jsonBody( $response, 4096 );
+		} catch ( ModaApiClientException $error ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		if ( ! self::hasExactKeys( $result, array( 'status' ) ) ||
+			! in_array( $result['status'], array( 'updated', 'unchanged' ), true ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
 		}
 		return $result;
 	}

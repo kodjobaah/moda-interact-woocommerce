@@ -39,7 +39,16 @@ export async function assertConnectionWordPress({
 	const unknownChallenge = await fetchWordPress(
 		`${siteUrl}/wp-json/moda-interact/v1/connection/challenge?attempt_id=550e8400-e29b-41d4-a716-446655440000&nonce=${randomBytes(32).toString('base64url')}`
 	);
-	assert.equal(unknownChallenge.status, 404);
+	if (unknownChallenge.status !== 404) {
+		const responseBody = await unknownChallenge.text();
+		assert.equal(
+			unknownChallenge.status,
+			404,
+			`unknown challenge must return 404; received ${unknownChallenge.status}, ` +
+				`content-type=${unknownChallenge.headers.get('content-type') ?? 'missing'}, ` +
+				`earlyActionSchedulerNotice=${responseBody.includes('as_has_scheduled_action')}`
+		);
+	}
 	const browserIdentity = await request('', {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },

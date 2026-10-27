@@ -19,6 +19,7 @@ import { assertBillingWordPress } from './scenarios/billing-wordpress.mjs';
 import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
 import { readPendingCheckoutActions, readCheckoutActionHistory } from './action-scheduler-sql.mjs';
 import { createWordPressApiFixture } from './wordpress-api-fixture.mjs';
+import { assertShopBrandWordPress } from './scenarios/shop-brand-wordpress.mjs';
 import {
 	assertConnectionEnvironmentWordPress,
 	assertConnectionWordPress,
@@ -26,6 +27,8 @@ import {
 
 const execFileAsync = promisify(execFile);
 const checkoutOnly = process.argv.includes('--checkout-only');
+const shopBrandOnly = process.argv.includes('--shop-brand-only');
+assert.ok(!(checkoutOnly && shopBrandOnly), 'Choose one focused WordPress integration mode');
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
 let siteUrl;
@@ -493,126 +496,133 @@ try {
 			request,
 			merchantBootstrapRequest,
 		});
-		command(
-			'npm',
-			[
-				'exec',
-				'--',
-				'wp-env',
-				'run',
-				'cli',
-				'wp',
-				'eval',
-				'update_user_meta(1, "locale", "en_GB");',
-			],
-			{ env: process.env }
-		);
-		await assertBillingWordPress({
-			siteUrl,
-			auth,
-			fetchWordPress,
+		await assertShopBrandWordPress({
+			wpAsync,
+			parseJsonOutput,
 			fixture: apiFixture,
 		});
-		for (let index = 0; index < 3; index += 1) {
+		if (!shopBrandOnly) {
+			command(
+				'npm',
+				[
+					'exec',
+					'--',
+					'wp-env',
+					'run',
+					'cli',
+					'wp',
+					'eval',
+					'update_user_meta(1, "locale", "en_GB");',
+				],
+				{ env: process.env }
+			);
+			await assertBillingWordPress({
+				siteUrl,
+				auth,
+				fetchWordPress,
+				fixture: apiFixture,
+			});
+			for (let index = 0; index < 3; index += 1) {
+				assert.deepEqual(await (await request('')).json(), {
+					status: 'REMOTE_UNAVAILABLE',
+				});
+			}
 			assert.deepEqual(await (await request('')).json(), {
 				status: 'REMOTE_UNAVAILABLE',
 			});
-		}
-		assert.deepEqual(await (await request('')).json(), {
-			status: 'REMOTE_UNAVAILABLE',
-		});
 
-		await assertConnectionEnvironmentWordPress({
-			request,
-			apiOrigin,
-			tlsFailureUrl: `https://${hostBridgeIp}:${apiPort}`,
-			setApiBaseUrl: (url) =>
-				wp(
-					'config',
-					'set',
-					'MODA_INTERACT_API_BASE_URL',
-					url,
-					'--type=constant'
-				),
-			setWpHomeOverride: () => {
-				wpHomeOverrideApplied = true;
-				wp(
-					'config',
-					'set',
-					'WP_HOME',
-					'http://new-site.local',
-					'--type=constant'
-				);
-			},
-			restoreWpHomeAndSiteUrl: () => {
-				restoreWpHome();
-				wpHomeOverrideApplied = false;
-				wp('eval', `update_option("home", "${siteUrl}");`);
-			},
-			restartPlugin: () => {
-				wp('plugin', 'deactivate', plugin.name);
-				wp('plugin', 'activate', plugin.name);
-			},
-			readStoredConnection: () =>
-				parseJsonOutput(
+			await assertConnectionEnvironmentWordPress({
+				request,
+				apiOrigin,
+				tlsFailureUrl: `https://${hostBridgeIp}:${apiPort}`,
+				setApiBaseUrl: (url) =>
 					wp(
-						'eval',
-						'echo wp_json_encode(array(get_option("moda_interact_woocommerce_connection")["installationId"], get_option("moda_interact_woocommerce_connection")["credentialVersion"]));'
-					)
-				),
-		});
-		await assertCheckoutWordPress({
-			siteUrl,
-			wp,
-			wpAsync,
-			parseJsonOutput,
-			getPendingCheckoutActions: () =>
-				readPendingCheckoutActions(wpEnvComposeFile),
-			getCheckoutActionHistory: () =>
-				readCheckoutActionHistory(wpEnvComposeFile),
-			getActivityRequests: apiFixture.getActivityRequests,
-			setActivityStatus: apiFixture.setActivityStatus,
-		});
-		await assertStoreContextWordPress({
-			siteUrl,
-			auth,
-			wp,
-			parseJsonOutput,
-			getFixtureState: () => ({
-				attempts: apiFixture.getState().contextSyncAttempts,
-				saved: apiFixture.getState().savedContext,
-			}),
-		});
-		await assertStoreCategoryWordPress({
-			siteUrl,
-			auth,
-			wp,
-			parseJsonOutput,
-			getCategoryState: () => {
-				const state = apiFixture.getState();
-				return {
-					selections: state.categorySelections,
-					generation: state.categoryGeneration,
-				};
-			},
-		});
-		assertReleaseLocales({
-			wpEval: (source) => wp('eval', source),
-			parseJsonOutput,
-			getRemoteState: apiFixture.getState,
-		});
-		process.stdout.write(
-			'WOO-014 installed plugin 20-language PHP/JS and Shop-state checks passed.\n'
-		);
-		process.stdout.write(
-			'WOO-008 WordPress category selection + active readback integration passed.\n'
-		);
-		process.stdout.write(
-			'WOO-007 WordPress store-context sync + readback integration passed.\n'
-		);
-		process.stdout.write(
-			'WOO-003 WordPress REST + HTTPS fixture integration passed.\n'
-		);
+						'config',
+						'set',
+						'MODA_INTERACT_API_BASE_URL',
+						url,
+						'--type=constant'
+					),
+				setWpHomeOverride: () => {
+					wpHomeOverrideApplied = true;
+					wp(
+						'config',
+						'set',
+						'WP_HOME',
+						'http://new-site.local',
+						'--type=constant'
+					);
+				},
+				restoreWpHomeAndSiteUrl: () => {
+					restoreWpHome();
+					wpHomeOverrideApplied = false;
+					wp('eval', `update_option("home", "${siteUrl}");`);
+				},
+				restartPlugin: () => {
+					wp('plugin', 'deactivate', plugin.name);
+					wp('plugin', 'activate', plugin.name);
+				},
+				readStoredConnection: () =>
+					parseJsonOutput(
+						wp(
+							'eval',
+							'echo wp_json_encode(array(get_option("moda_interact_woocommerce_connection")["installationId"], get_option("moda_interact_woocommerce_connection")["credentialVersion"]));'
+						)
+					),
+			});
+			await assertCheckoutWordPress({
+				siteUrl,
+				wp,
+				wpAsync,
+				parseJsonOutput,
+				getPendingCheckoutActions: () =>
+					readPendingCheckoutActions(wpEnvComposeFile),
+				getCheckoutActionHistory: () =>
+					readCheckoutActionHistory(wpEnvComposeFile),
+				getActivityRequests: apiFixture.getActivityRequests,
+				setActivityStatus: apiFixture.setActivityStatus,
+			});
+			await assertStoreContextWordPress({
+				siteUrl,
+				auth,
+				wp,
+				parseJsonOutput,
+				getFixtureState: () => ({
+					attempts: apiFixture.getState().contextSyncAttempts,
+					saved: apiFixture.getState().savedContext,
+				}),
+			});
+			await assertStoreCategoryWordPress({
+				siteUrl,
+				auth,
+				wp,
+				parseJsonOutput,
+				getCategoryState: () => {
+					const state = apiFixture.getState();
+					return {
+						selections: state.categorySelections,
+						generation: state.categoryGeneration,
+					};
+				},
+			});
+			assertReleaseLocales({
+				wpEval: (source) => wp('eval', source),
+				parseJsonOutput,
+				getRemoteState: apiFixture.getState,
+			});
+			process.stdout.write(
+				'WOO-014 installed plugin 20-language PHP/JS and Shop-state checks passed.\n'
+			);
+			process.stdout.write(
+				'WOO-008 WordPress category selection + active readback integration passed.\n'
+			);
+			process.stdout.write(
+				'WOO-007 WordPress store-context sync + readback integration passed.\n'
+			);
+			process.stdout.write(
+				'WOO-003 WordPress REST + HTTPS fixture integration passed.\n'
+			);
+		}
 		if (process.env.KEEP_WP_ENV === '1') {
 			process.stdout.write(
 				'KEEP_WP_ENV=1: integration fixture is ready for browser smoke; send SIGTERM to clean up.\n'

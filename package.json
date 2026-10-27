@@ -35,6 +35,7 @@
 		"test:js": "npm run test:js:unit && npm run test:js:node",
 		"test:php": "composer test",
 		"test:integration:wordpress": "node tests/integration/run-wordpress.mjs",
+		"test:integration:shop-brand": "node tests/integration/run-wordpress.mjs --shop-brand-only",
 		"test:integration:package-lifecycle": "node tests/integration/run-package-lifecycle.mjs",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",

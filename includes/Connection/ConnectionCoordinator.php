@@ -4,8 +4,11 @@ namespace ModaInteract\WooCommerce\Connection;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/../ShopBrand/Publisher.php';
+
 use ModaInteract\WooCommerce\Api\ModaApiClient;
 use ModaInteract\WooCommerce\Security\Base64Url;
+use ModaInteract\WooCommerce\ShopBrand\Publisher as ShopBrandPublisher;
 
 final class ConnectionCoordinator {
 	public function __construct(
@@ -39,6 +42,8 @@ final class ConnectionCoordinator {
 			if ( ! $this->installation_store->save( $record ) ) {
 				throw new ConnectionCoordinatorException( 'local_persistence_failed' );
 			}
+			// Schedule only. Never delay connection success on the hosted brand API.
+			( new ShopBrandPublisher() )->connected( $record );
 			return array(
 				'status'           => 'CONNECTED',
 				'installationId'   => $record['installationId'],
