@@ -30,6 +30,9 @@ require_once __DIR__ . '/Checkout/CheckoutConsentPhone.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentPublisher.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCapture.php';
 require_once __DIR__ . '/Checkout/OrderLifecycleCapture.php';
+require_once __DIR__ . '/ShopBrand/SourceReader.php';
+require_once __DIR__ . '/ShopBrand/SnapshotBuilder.php';
+require_once __DIR__ . '/ShopBrand/Publisher.php';
 
 use ModaInteract\WooCommerce\Admin\Setup;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
@@ -58,6 +61,7 @@ use ModaInteract\WooCommerce\Checkout\CheckoutConsentCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentPublisher;
 use ModaInteract\WooCommerce\Checkout\CheckoutActivityPublisher;
 use ModaInteract\WooCommerce\Checkout\OrderLifecycleCapture;
+use ModaInteract\WooCommerce\ShopBrand\Publisher as ShopBrandPublisher;
 
 final class Runtime {
 	private const MINIMUM_WOOCOMMERCE_VERSION = '11.0';
@@ -134,6 +138,8 @@ final class Runtime {
 		( new CheckoutConsentCheckbox() )->register();
 		( new CheckoutConsentCapture( new CheckoutConsentPublisher() ) )->register();
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();
+		$brand_publisher = new ShopBrandPublisher();
+		$brand_publisher->register();
 		if ( is_admin() ) {
 			new Setup();
 		}
