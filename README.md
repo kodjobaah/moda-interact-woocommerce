@@ -70,9 +70,14 @@ npm run start
 npm run lint:js
 npm run lint:css
 npm run lint:php
+npm run test:js:unit
+npm run test:js:node
 npm run test:js
 npm run test:php
 ```
+
+Use the phase-specific JavaScript commands for focused feedback; `npm run
+test:js` runs both phases for the complete JavaScript regression check.
 
 ## Local WordPress And WooCommerce
 
@@ -129,6 +134,19 @@ WordPress REST route, and removes its CA fixture and WordPress environment on co
 responses are limited to status and non-secret installation metadata. Bootstrap
 secrets, the long-lived installation credential, and Authorization headers stay
 inside PHP and the server-side WordPress option.
+
+### Integration Runner Convention
+
+Keep `tests/integration/run-wordpress.mjs` focused on environment lifecycle,
+shared fixture startup and teardown, and ordered scenario invocation. Put
+scenario-specific requests, behavioral assertions, focused tests, and
+scenario-owned fixture behavior under `tests/integration/scenarios/`. Keep
+shared fixture and transport modules at the integration root. Extend the
+existing module when the behavior belongs to its scenario, or add a new module
+for a distinct scenario. Keep module boundaries cohesive rather than splitting
+helpers only to reduce line count. Add focused Node tests for extracted
+scenario behavior when it can be tested without starting the live WordPress
+environment.
 
 ## Plugin Package
 

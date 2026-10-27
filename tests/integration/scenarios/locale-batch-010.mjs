@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { compileCatalogues } from '../../scripts/i18n/compile.mjs';
+import { compileCatalogues } from '../../../scripts/i18n/compile.mjs';
 
 const fixtureAssets = 'tests/integration/.woo010-localization-assets';
 const localeExpectations = {

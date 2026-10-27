@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { join, resolve } from 'node:path';
-import { SUPPORTED_LOCALES } from '../../scripts/i18n/locales.mjs';
-import { poFromFile } from '../../scripts/i18n/gettext.mjs';
+import { SUPPORTED_LOCALES } from '../../../scripts/i18n/locales.mjs';
+import { poFromFile } from '../../../scripts/i18n/gettext.mjs';
 
-const sourceDirectory = resolve(import.meta.dirname, '../../languages');
+const sourceDirectory = resolve(import.meta.dirname, '../../../languages');
 
 function connectLabel(locale) {
 	if (locale === 'en_US' || locale === 'en_GB' || locale === 'zz_ZZ') {
