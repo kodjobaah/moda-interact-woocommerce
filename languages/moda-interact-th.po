@@ -2353,3 +2353,27 @@ msgstr "แจ้งเตือนเมื่อเริ่มการติ
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "การแจ้งเตือนนี้ไม่เปลี่ยนข้อความถึงลูกค้าหรือการใช้เครดิตการกู้คืน"
+
+msgid "Approved follow-up template"
+msgstr "เทมเพลตติดตามผลที่อนุมัติแล้ว"
+
+msgid "Loading approved templates…"
+msgstr "กำลังโหลดเทมเพลตที่อนุมัติแล้ว…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "โหลดเทมเพลตติดตามผลที่อนุมัติแล้วไม่สำเร็จ"
+
+msgid "Try again"
+msgstr "ลองอีกครั้ง"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "ไม่มีเทมเพลตติดตามผลที่อนุมัติแล้วสำหรับการกู้คืนนี้"
+
+msgid "Template and language"
+msgstr "เทมเพลตและภาษา"
+
+msgid "Select a template"
+msgstr "เลือกเทมเพลต"
+
+msgid "Queue follow-up"
+msgstr "เข้าคิวติดตามผล"

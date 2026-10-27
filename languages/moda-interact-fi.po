@@ -2406,3 +2406,27 @@ msgstr "Ilmoita, kun ensimmäinen palautusviesti alkaa"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Tämä ilmoitus ei muuta asiakasviestejä eikä palautuskrediittien käyttöä."
+
+msgid "Approved follow-up template"
+msgstr "Hyväksytty seurantamalli"
+
+msgid "Loading approved templates…"
+msgstr "Ladataan hyväksyttyjä malleja…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Hyväksyttyjä seurantamalleja ei voitu ladata."
+
+msgid "Try again"
+msgstr "Yritä uudelleen"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Tälle palautukselle ei ole saatavilla hyväksyttyjä seurantamalleja."
+
+msgid "Template and language"
+msgstr "Malli ja kieli"
+
+msgid "Select a template"
+msgstr "Valitse malli"
+
+msgid "Queue follow-up"
+msgstr "Lisää seuranta jonoon"

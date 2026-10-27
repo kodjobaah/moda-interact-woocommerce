@@ -2414,3 +2414,27 @@ msgstr "Varsle meg når den første gjenopprettingsmeldingen starter"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Dette varselet endrer ikke kundemeldinger eller bruken av gjenopprettingskreditter."
+
+msgid "Approved follow-up template"
+msgstr "Godkjent oppfølgingsmal"
+
+msgid "Loading approved templates…"
+msgstr "Laster godkjente maler…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Kunne ikke laste godkjente oppfølgingsmaler."
+
+msgid "Try again"
+msgstr "Prøv igjen"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Ingen godkjente oppfølgingsmaler er tilgjengelige for denne gjenopprettingen."
+
+msgid "Template and language"
+msgstr "Mal og språk"
+
+msgid "Select a template"
+msgstr "Velg en mal"
+
+msgid "Queue follow-up"
+msgstr "Legg oppfølging i kø"

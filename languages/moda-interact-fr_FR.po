@@ -2440,3 +2440,27 @@ msgstr "Notify me when initial recovery outreach starts"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "This notice does not change customer messages or recovery credit use."
+
+msgid "Approved follow-up template"
+msgstr "Modèle de suivi approuvé"
+
+msgid "Loading approved templates…"
+msgstr "Chargement des modèles approuvés…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Impossible de charger les modèles de suivi approuvés."
+
+msgid "Try again"
+msgstr "Réessayer"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Aucun modèle de suivi approuvé n’est disponible pour cette récupération."
+
+msgid "Template and language"
+msgstr "Modèle et langue"
+
+msgid "Select a template"
+msgstr "Sélectionner un modèle"
+
+msgid "Queue follow-up"
+msgstr "Mettre le suivi en file d’attente"

@@ -3,6 +3,7 @@ import { validRecoveryId } from '../api/recovery-detail-contract';
 import {
 	commandInput,
 	parseCommandResponse,
+	parseFollowUpTemplates,
 } from './conversation-command-contract';
 
 const BASE = '/moda-interact/v1/merchant/recoveries';
@@ -69,6 +70,21 @@ export function createConversationCommandClient(request = apiFetch) {
 		}
 	}
 	return {
+		async followUpTemplates(recoveryId, signal) {
+			if (!validRecoveryId(recoveryId)) {
+				throw new Error('INVALID_REQUEST');
+			}
+			try {
+				const response = await request({
+					path: `${BASE}/${encodeURIComponent(recoveryId)}/conversation/follow-up-templates`,
+					method: 'GET',
+					signal,
+				});
+				return parseFollowUpTemplates(response);
+			} catch (error) {
+				throw safeError(error);
+			}
+		},
 		async control(recoveryId, conversation, mode, revision, signal) {
 			if (
 				!conversation?.id ||

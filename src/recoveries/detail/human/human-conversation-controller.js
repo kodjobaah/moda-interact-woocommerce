@@ -54,7 +54,11 @@ export class HumanConversationController {
 			retryable: false,
 			checking: false,
 			checkedAt: null,
+			templates: [],
+			templatesStatus: 'IDLE',
+			templatesError: null,
 		};
+		this.templateRequest = null;
 	}
 
 	subscribe(listener) {
@@ -73,6 +77,8 @@ export class HumanConversationController {
 		if (!active) {
 			this.pending?.abort();
 			this.pending = null;
+			this.templateRequest?.abort();
+			this.templateRequest = null;
 			this.intent = null;
 			this.summary = null;
 			this.publish({
@@ -85,6 +91,9 @@ export class HumanConversationController {
 				retryable: false,
 				checking: false,
 				checkedAt: null,
+				templates: [],
+				templatesStatus: 'IDLE',
+				templatesError: null,
 			});
 		}
 	}
@@ -104,6 +113,77 @@ export class HumanConversationController {
 			});
 		}
 		this.summary = summary;
+		if (!this.templateEligible()) {
+			this.templateRequest?.abort();
+			this.templateRequest = null;
+			if (
+				this.state.templates.length ||
+				this.state.templatesStatus !== 'IDLE'
+			) {
+				this.publish({
+					templates: [],
+					templatesStatus: 'IDLE',
+					templatesError: null,
+				});
+			}
+		} else if (
+			this.state.templatesStatus === 'IDLE' &&
+			!this.templateRequest
+		) {
+			void this.loadTemplates();
+		}
+	}
+
+	templateEligible() {
+		const availability = humanActionAvailability(
+			this.summary,
+			Date.now(),
+			this.state.templates
+		);
+		return (
+			availability.mode === 'HUMAN' &&
+			availability.windowClosed &&
+			!availability.suspended &&
+			!availability.followUpUsed
+		);
+	}
+
+	async loadTemplates() {
+		if (!this.active || !this.templateEligible() || this.templateRequest) {
+			return;
+		}
+		const abort = new AbortController();
+		this.templateRequest = abort;
+		this.publish({ templatesStatus: 'LOADING', templatesError: null });
+		try {
+			const templates = await this.client.followUpTemplates(
+				this.id,
+				abort.signal
+			);
+			if (this.active && this.templateRequest === abort) {
+				this.publish({
+					templates,
+					templatesStatus: 'READY',
+					templatesError: null,
+				});
+			}
+		} catch (error) {
+			if (
+				this.active &&
+				this.templateRequest === abort &&
+				!abort.signal.aborted
+			) {
+				this.publish({
+					templates: [],
+					templatesStatus: 'ERROR',
+					templatesError: cleanError(error),
+				});
+			}
+		} finally {
+			if (this.templateRequest === abort) {
+				this.templateRequest = null;
+			}
+		}
 	}
 
 	async control(target) {
@@ -111,7 +191,11 @@ export class HumanConversationController {
 			return false;
 		}
 		const conversation = this.summary?.conversation;
-		const availability = humanActionAvailability(this.summary);
+		const availability = humanActionAvailability(
+			this.summary,
+			Date.now(),
+			this.state.templates
+		);
 		if (
 			!(target === 'HUMAN'
 				? availability.canTakeOver
@@ -143,6 +227,22 @@ export class HumanConversationController {
 	async sendText(value) {
 		return this.sendIntent('HUMAN_TEXT', value.trim());
 	}
+	async sendTemplate(template) {
+		if (
+			!this.state.templates.some(
+				(item) =>
+					item.name === template?.templateName &&
+					item.language === template?.templateLanguage
+			)
+		) {
+			return false;
+		}
+		return this.sendIntent('RECOVERY_FOLLOW_UP_TEMPLATE', {
+			templateName: template.templateName,
+			templateLanguage: template.templateLanguage,
+			templateParameters: [],
+		});
+	}
 	async sendIntent(kind, content) {
 		if (
 			!this.active ||
@@ -152,7 +252,11 @@ export class HumanConversationController {
 		) {
 			return false;
 		}
-		const availability = humanActionAvailability(this.summary);
+		const availability = humanActionAvailability(
+			this.summary,
+			Date.now(),
+			this.state.templates
+		);
 		if (!(
 			(kind === 'HUMAN_TEXT' && availability.canText) ||
 			(kind === 'RECOVERY_FOLLOW_UP_TEMPLATE' && availability.canTemplate)

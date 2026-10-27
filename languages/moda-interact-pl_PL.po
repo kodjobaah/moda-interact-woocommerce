@@ -2416,3 +2416,27 @@ msgstr "Powiadom mnie o rozpoczęciu pierwszej wiadomości odzyskiwania"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "To powiadomienie nie zmienia wiadomości do klientów ani wykorzystania kredytów odzyskiwania."
+
+msgid "Approved follow-up template"
+msgstr "Zatwierdzony szablon dalszej wiadomości"
+
+msgid "Loading approved templates…"
+msgstr "Ładowanie zatwierdzonych szablonów…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Nie można załadować zatwierdzonych szablonów dalszej wiadomości."
+
+msgid "Try again"
+msgstr "Spróbuj ponownie"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Brak zatwierdzonych szablonów dalszej wiadomości dla tego odzyskiwania."
+
+msgid "Template and language"
+msgstr "Szablon i język"
+
+msgid "Select a template"
+msgstr "Wybierz szablon"
+
+msgid "Queue follow-up"
+msgstr "Dodaj dalszą wiadomość do kolejki"

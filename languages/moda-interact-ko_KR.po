@@ -2388,3 +2388,27 @@ msgstr "첫 번째 복구 메시지가 시작되면 알림"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "이 알림은 고객 메시지나 복구 크레딧 사용에 영향을 주지 않습니다."
+
+msgid "Approved follow-up template"
+msgstr "승인된 후속 템플릿"
+
+msgid "Loading approved templates…"
+msgstr "승인된 템플릿을 불러오는 중…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "승인된 후속 템플릿을 불러올 수 없습니다."
+
+msgid "Try again"
+msgstr "다시 시도"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "이 복구에 사용할 수 있는 승인된 후속 템플릿이 없습니다."
+
+msgid "Template and language"
+msgstr "템플릿 및 언어"
+
+msgid "Select a template"
+msgstr "템플릿 선택"
+
+msgid "Queue follow-up"
+msgstr "후속 메시지 대기열에 추가"

@@ -2433,3 +2433,27 @@ msgstr "Meld mij wanneer het eerste herstelbericht begint"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Deze melding verandert niets aan klantberichten of het gebruik van herstelcredits."
+
+msgid "Approved follow-up template"
+msgstr "Goedgekeurde opvolgsjabloon"
+
+msgid "Loading approved templates…"
+msgstr "Goedgekeurde sjablonen laden…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Goedgekeurde opvolgsjablonen kunnen niet worden geladen."
+
+msgid "Try again"
+msgstr "Opnieuw proberen"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Er zijn geen goedgekeurde opvolgsjablonen beschikbaar voor dit herstel."
+
+msgid "Template and language"
+msgstr "Sjabloon en taal"
+
+msgid "Select a template"
+msgstr "Selecteer een sjabloon"
+
+msgid "Queue follow-up"
+msgstr "Opvolging in wachtrij plaatsen"

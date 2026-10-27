@@ -50,10 +50,7 @@ final class ConversationCommandContracts {
 			! self::keys( $payload, array( 'kind', 'expectedControlRevision', 'idempotencyKey', 'templateName', 'templateLanguage', 'templateParameters' ) ) ||
 			! is_string( $payload['templateName'] ) || ! preg_match( '/^[a-z][a-z0-9_]{0,254}$/D', $payload['templateName'] ) ||
 			! is_string( $payload['templateLanguage'] ) || ! preg_match( '/^[a-z]{2,3}(?:_[A-Z]{2})?$/D', $payload['templateLanguage'] ) ) return false;
-		$params = $payload['templateParameters'];
-		return $params === array() || ( is_array( $params ) && array_is_list( $params ) && count( $params ) <= 16 &&
-			! array_filter( $params, static fn( $item ) => ! is_string( $item ) || strlen( $item ) > 1024 ||
-				! self::clean( $item ) || ( function_exists( 'mb_strlen' ) ? mb_strlen( $item, 'UTF-8' ) : preg_match_all( '/./us', $item ) ) > 256 ) );
+		return array() === $payload['templateParameters'];
 	}
 
 	public static function response( mixed $value, string $operation, string $conversation_id ): bool {
@@ -72,6 +69,18 @@ final class ConversationCommandContracts {
 			( null === $value['failureCode'] || ( is_string( $value['failureCode'] ) && strlen( $value['failureCode'] ) <= 128 ) ) &&
 			in_array( $value['moderationStatus'], self::MODERATION, true ) &&
 			in_array( $value['moderationReasonCode'], array_merge( array( null ), self::REASONS ), true );
+	}
+
+	/** API-001 returns only authenticated, currently eligible sequence-two choices. */
+	public static function followUpTemplates( mixed $value ): bool {
+		if ( ! self::keys( $value, array( 'schemaVersion', 'templates' ) ) || 1 !== $value['schemaVersion'] ||
+			! is_array( $value['templates'] ) || ! array_is_list( $value['templates'] ) || count( $value['templates'] ) > 30 ) return false;
+		foreach ( $value['templates'] as $template ) {
+			if ( ! self::keys( $template, array( 'name', 'language' ) ) ||
+				! is_string( $template['name'] ) || ! preg_match( '/^[a-z][a-z0-9_]{0,254}$/D', $template['name'] ) ||
+				! is_string( $template['language'] ) || ! preg_match( '/^[a-z]{2,3}(?:_[A-Z]{2})?$/D', $template['language'] ) ) return false;
+		}
+		return true;
 	}
 
 	private static function date( mixed $value ): bool {

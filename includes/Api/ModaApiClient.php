@@ -400,6 +400,24 @@ final class ModaApiClient {
 		return array( 'status' => $status, 'data' => $data );
 	}
 
+	/** Authenticated API-001 catalogue; the recovery identifier is resolved locally first. */
+	public function merchantRecoveryFollowUpTemplates( array $connection, string $conversation_id ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) || ! ConversationCommandContracts::identifier( $conversation_id ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$response = $this->request( '/v1/merchant/conversations/' . rawurlencode( $conversation_id ) . '/follow-up-templates',
+			'GET', self::installationHeaders( $connection ), null, self::DEFAULT_TIMEOUT_SECONDS, 16384 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 404 === $status ) throw new ModaApiClientException( 'not_found', $status );
+		if ( 409 === $status ) throw new ModaApiClientException( 'follow_up_unavailable', $status );
+		if ( 200 !== $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		try { $data = $this->jsonBody( $response, 16384 ); }
+		catch ( ModaApiClientException $error ) { throw new ModaApiClientException( 'remote_response_invalid', $status ); }
+		if ( ! ConversationCommandContracts::followUpTemplates( $data ) ) throw new ModaApiClientException( 'remote_response_invalid', $status );
+		return $data;
+	}
+
 	/** API-021 promotions. Paths, filters and body are constructed server-side only. */
 	public function merchantPromotions( array $connection, int $offer_page, int $history_page, ?string $locale = null ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );

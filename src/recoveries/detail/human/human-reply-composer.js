@@ -1,6 +1,7 @@
 import { createElement, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { humanActionAvailability } from './conversation-command-contract';
+import { FollowUpTemplatePicker } from './follow-up-template-picker';
 
 function errorLabel(error) {
 	switch (error) {
@@ -40,7 +41,11 @@ function errorLabel(error) {
 // Composer stays below the transcript; it never starts a second send while a command exists.
 export function HumanReplyComposer({ summary, human }) {
 	const [draft, setDraft] = useState('');
-	const actions = humanActionAvailability(summary);
+	const actions = humanActionAvailability(
+		summary,
+		Date.now(),
+		human?.templates
+	);
 	const pending = human?.busy || human?.checking || !!human?.command;
 	const submit = async (event) => {
 		event.preventDefault();
@@ -104,6 +109,7 @@ export function HumanReplyComposer({ summary, human }) {
 					)
 				)
 			: null,
+		createElement(FollowUpTemplatePicker, { summary, human }),
 		human?.error
 			? createElement('p', { role: 'alert' }, errorLabel(human.error))
 			: null,

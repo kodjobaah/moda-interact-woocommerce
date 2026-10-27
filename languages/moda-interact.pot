@@ -2406,3 +2406,35 @@ msgstr ""
 #: src/recovery-settings/recovery-behaviour-fields.js
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:46
+msgid "Approved follow-up template"
+msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:52
+msgid "Loading approved templates…"
+msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:59
+msgid "Unable to load approved follow-up templates."
+msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:73
+msgid "Try again"
+msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:80
+msgid "No approved follow-up templates are available for this recovery."
+msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:90
+msgid "Template and language"
+msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:106
+msgid "Select a template"
+msgstr ""
+
+#: src/recoveries/detail/human/follow-up-template-picker.js:133
+msgid "Queue follow-up"
+msgstr ""

@@ -2339,3 +2339,27 @@ msgstr "第一則復原訊息開始時通知我"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "此通知不會變更傳送給客戶的訊息，也不會影響復原點數的使用。"
+
+msgid "Approved follow-up template"
+msgstr "已核准的後續範本"
+
+msgid "Loading approved templates…"
+msgstr "正在載入已核准的範本…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "無法載入已核准的後續範本。"
+
+msgid "Try again"
+msgstr "重試"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "此復原記錄沒有可用的已核准後續範本。"
+
+msgid "Template and language"
+msgstr "範本和語言"
+
+msgid "Select a template"
+msgstr "選擇範本"
+
+msgid "Queue follow-up"
+msgstr "將後續訊息加入佇列"

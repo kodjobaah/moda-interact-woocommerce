@@ -2,6 +2,7 @@ import { afterEach, describe, it, expect, vi } from 'vitest';
 import { createConversationCommandClient } from '../../src/recoveries/detail/human/conversation-command-client';
 import {
 	parseCommandResponse,
+	parseFollowUpTemplates,
 	commandInput,
 	humanActionAvailability,
 } from '../../src/recoveries/detail/human/conversation-command-contract';
@@ -69,6 +70,14 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 					controlChangedAt: null,
 				};
 			}
+			if (path.endsWith('/follow-up-templates')) {
+				return {
+					schemaVersion: 1,
+					templates: [
+						{ name: 'recovery_follow_up', language: 'en_GB' },
+					],
+				};
+			}
 			if (path.endsWith('/messages')) {
 				return {
 					schemaVersion: 1,
@@ -82,6 +91,7 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 			return status;
 		});
 		const client = createConversationCommandClient(request);
+		await client.followUpTemplates('rec_1');
 		await client.control('rec_1', conversation, 'HUMAN', 7);
 		await client.send(
 			'rec_1',
@@ -92,6 +102,7 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 		);
 		await client.status('rec_1', 'conv_1', 'cmd_1');
 		expect(request.mock.calls.map(([args]) => args.path)).toEqual([
+			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/follow-up-templates',
 			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/control',
 			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/messages',
 			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/send-commands/cmd_1',
@@ -129,6 +140,92 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 				},
 			}).canTemplate
 		).toBe(false);
+	});
+
+	it('only offers authenticated choices outside window and sends empty parameters', async () => {
+		const templates = [{ name: 'recovery_follow_up', language: 'en_GB' }];
+		expect(() =>
+			commandInput('RECOVERY_FOLLOW_UP_TEMPLATE', 7, 'key_1', {
+				templateName: 'recovery_follow_up',
+				templateLanguage: 'en_GB',
+				templateParameters: ['Injected'],
+			})
+		).toThrow();
+		expect(
+			humanActionAvailability(
+				summary,
+				Date.parse('2026-10-24T12:00:00Z'),
+				templates
+			).canTemplate
+		).toBe(true);
+		expect(
+			humanActionAvailability(
+				summary,
+				Date.parse('2026-10-23T12:00:00Z'),
+				templates
+			).canTemplate
+		).toBe(false);
+		expect(() =>
+			parseFollowUpTemplates({
+				schemaVersion: 1,
+				templates: [{ name: 'x', language: 'en', parameters: [] }],
+			})
+		).toThrow();
+	});
+
+	it('sends only the selected authorised template with no parameters', async () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date('2026-10-25T12:00:00.000Z'));
+		const client = {
+			followUpTemplates: vi
+				.fn()
+				.mockResolvedValue([
+					{ name: 'recovery_follow_up', language: 'en_GB' },
+				]),
+			send: vi.fn().mockResolvedValue({
+				schemaVersion: 1,
+				commandId: 'cmd_1',
+				conversationId: 'conv_1',
+				kind: 'RECOVERY_FOLLOW_UP_TEMPLATE',
+				state: 'ACCEPTED',
+				controlRevision: 7,
+			}),
+			status: vi.fn(),
+		};
+		const c = new HumanConversationController(
+			'rec_1',
+			client,
+			() => 'stable-template-key'
+		);
+		c.setActive(true);
+		c.syncSummary(summary);
+		c.syncSummary({
+			...summary,
+			conversation: {
+				...conversation,
+				windowExpiresAt: '2026-10-24T11:00:00.000Z',
+			},
+		});
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(
+			await c.sendTemplate({
+				templateName: 'recovery_follow_up',
+				templateLanguage: 'en_GB',
+			})
+		).toBe(true);
+		expect(client.send).toHaveBeenCalledWith(
+			'rec_1',
+			expect.objectContaining({ id: 'conv_1' }),
+			'RECOVERY_FOLLOW_UP_TEMPLATE',
+			'stable-template-key',
+			{
+				templateName: 'recovery_follow_up',
+				templateLanguage: 'en_GB',
+				templateParameters: [],
+			}
+		);
+		c.setActive(false);
 	});
 
 	it('never sends twice on pending click; ambiguous retry reuses the same key', async () => {

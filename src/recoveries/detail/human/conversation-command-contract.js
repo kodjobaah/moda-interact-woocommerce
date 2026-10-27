@@ -110,6 +110,26 @@ export function parseCommandResponse(
 	return response;
 }
 
+export function parseFollowUpTemplates(response) {
+	if (
+		!keys(response, ['schemaVersion', 'templates']) ||
+		response.schemaVersion !== 1 ||
+		!Array.isArray(response.templates) ||
+		response.templates.length > 30 ||
+		!response.templates.every(
+			(template) =>
+				keys(template, ['name', 'language']) &&
+				typeof template.name === 'string' &&
+				/^[a-z][a-z0-9_]{0,254}$/.test(template.name) &&
+				typeof template.language === 'string' &&
+				/^[a-z]{2,3}(?:_[A-Z]{2})?$/.test(template.language)
+		)
+	) {
+		throw new Error('REMOTE_RESPONSE_INVALID');
+	}
+	return response.templates;
+}
+
 export function commandInput(kind, revisionNumber, key, input) {
 	if (
 		!revision(revisionNumber) ||
@@ -140,10 +160,7 @@ export function commandInput(kind, revisionNumber, key, input) {
 		!/^[a-z][a-z0-9_]{0,254}$/.test(input.templateName) ||
 		!/^[a-z]{2,3}(?:_[A-Z]{2})?$/.test(input.templateLanguage) ||
 		!Array.isArray(input.templateParameters) ||
-		input.templateParameters.length > 16 ||
-		!input.templateParameters.every(
-			(p) => typeof p === 'string' && [...p].length <= 256
-		)
+		input.templateParameters.length !== 0
 	) {
 		throw new Error('INVALID_REQUEST');
 	}
@@ -157,16 +174,22 @@ export function commandInput(kind, revisionNumber, key, input) {
 	};
 }
 
-export function humanActionAvailability(summary, now = Date.now()) {
+export function humanActionAvailability(
+	summary,
+	now = Date.now(),
+	templates = []
+) {
 	const conversation = summary?.conversation;
 	const blocked =
 		!summary?.humanMessagingAllowed ||
 		summary?.humanMessagingStatus !== 'ACTIVE';
-	const open =
-		conversation?.windowExpiresAt !== null &&
-		typeof conversation?.windowExpiresAt === 'string' &&
-		Number.isFinite(Date.parse(conversation.windowExpiresAt)) &&
-		now < Date.parse(conversation.windowExpiresAt);
+	const expiresAt =
+		typeof conversation?.windowExpiresAt === 'string'
+			? Date.parse(conversation.windowExpiresAt)
+			: Number.NaN;
+	const hasWindowExpiry = Number.isFinite(expiresAt);
+	const open = hasWindowExpiry && now < expiresAt;
+	const windowClosed = hasWindowExpiry && now >= expiresAt;
 	return {
 		mode: conversation?.controlMode ?? null,
 		canTakeOver:
@@ -178,10 +201,22 @@ export function humanActionAvailability(summary, now = Date.now()) {
 			!blocked &&
 			open,
 		windowOpen: open,
+		windowClosed,
 		suspended: blocked,
 		followUpUsed: conversation?.followUp?.sequence2Used === true,
-		// API-002 does not project due time or an approved template list; never
-		// infer eligibility or render an invented selectable provider variant.
-		canTemplate: false,
+		canOfferTemplatePicker:
+			!!conversation &&
+			conversation.controlMode === 'HUMAN' &&
+			!blocked &&
+			windowClosed &&
+			conversation?.followUp?.sequence2Used !== true,
+		canTemplate:
+			!!conversation &&
+			conversation.controlMode === 'HUMAN' &&
+			!blocked &&
+			windowClosed &&
+			conversation?.followUp?.sequence2Used !== true &&
+			Array.isArray(templates) &&
+			templates.length > 0,
 	};
 }

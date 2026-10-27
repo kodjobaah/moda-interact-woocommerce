@@ -2397,3 +2397,27 @@ msgstr "Upozornit při zahájení první zprávy obnovy"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Toto upozornění nemění zprávy zákazníkům ani využití kreditů na obnovu."
+
+msgid "Approved follow-up template"
+msgstr "Schválená šablona následné zprávy"
+
+msgid "Loading approved templates…"
+msgstr "Načítání schválených šablon…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Schválené šablony následných zpráv se nepodařilo načíst."
+
+msgid "Try again"
+msgstr "Zkusit znovu"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Pro toto obnovení nejsou k dispozici žádné schválené šablony následných zpráv."
+
+msgid "Template and language"
+msgstr "Šablona a jazyk"
+
+msgid "Select a template"
+msgstr "Vyberte šablonu"
+
+msgid "Queue follow-up"
+msgstr "Zařadit následnou zprávu do fronty"

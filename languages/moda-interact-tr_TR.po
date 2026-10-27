@@ -2400,3 +2400,27 @@ msgstr "İlk kurtarma mesajı başladığında bana bildir"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Bu bildirim müşteri mesajlarını veya kurtarma kredisi kullanımını değiştirmez."
+
+msgid "Approved follow-up template"
+msgstr "Onaylı takip şablonu"
+
+msgid "Loading approved templates…"
+msgstr "Onaylı şablonlar yükleniyor…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Onaylı takip şablonları yüklenemedi."
+
+msgid "Try again"
+msgstr "Tekrar dene"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Bu kurtarma için kullanılabilir onaylı takip şablonu yok."
+
+msgid "Template and language"
+msgstr "Şablon ve dil"
+
+msgid "Select a template"
+msgstr "Bir şablon seçin"
+
+msgid "Queue follow-up"
+msgstr "Takibi sıraya al"

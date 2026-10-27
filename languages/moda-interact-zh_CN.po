@@ -2336,3 +2336,27 @@ msgstr "首次恢复消息开始时通知我"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "此通知不会改变发送给客户的消息，也不会影响恢复额度的使用。"
+
+msgid "Approved follow-up template"
+msgstr "已批准的后续模板"
+
+msgid "Loading approved templates…"
+msgstr "正在加载已批准的模板…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "无法加载已批准的后续模板。"
+
+msgid "Try again"
+msgstr "重试"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "此恢复记录没有可用的已批准后续模板。"
+
+msgid "Template and language"
+msgstr "模板和语言"
+
+msgid "Select a template"
+msgstr "选择模板"
+
+msgid "Queue follow-up"
+msgstr "将后续消息加入队列"

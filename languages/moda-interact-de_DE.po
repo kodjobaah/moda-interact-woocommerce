@@ -2442,3 +2442,27 @@ msgstr "Benachrichtigen, wenn die erste Wiederherstellungsnachricht beginnt"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Dieser Hinweis ändert weder Kundennachrichten noch die Nutzung von Wiederherstellungsguthaben."
+
+msgid "Approved follow-up template"
+msgstr "Genehmigte Nachfassvorlage"
+
+msgid "Loading approved templates…"
+msgstr "Genehmigte Vorlagen werden geladen…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Genehmigte Nachfassvorlagen konnten nicht geladen werden."
+
+msgid "Try again"
+msgstr "Erneut versuchen"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Für diese Wiederherstellung sind keine genehmigten Nachfassvorlagen verfügbar."
+
+msgid "Template and language"
+msgstr "Vorlage und Sprache"
+
+msgid "Select a template"
+msgstr "Vorlage auswählen"
+
+msgid "Queue follow-up"
+msgstr "Nachricht zur Nachverfolgung einreihen"

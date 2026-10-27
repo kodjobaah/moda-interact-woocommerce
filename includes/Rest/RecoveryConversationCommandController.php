@@ -34,9 +34,10 @@ final class RecoveryConversationCommandController {
 	public function registerRoutes(): void {
 		$base = '/merchant/recoveries/(?P<recoveryId>[A-Za-z0-9_-]{1,191})/conversation';
 		foreach ( array( 'control' => '/control', 'messages' => '/messages',
-			'status' => '/send-commands/(?P<commandId>[A-Za-z0-9_-]{1,191})' ) as $kind => $suffix ) {
+			'status' => '/send-commands/(?P<commandId>[A-Za-z0-9_-]{1,191})',
+			'templates' => '/follow-up-templates' ) as $kind => $suffix ) {
 			register_rest_route( 'moda-interact/v1', $base . $suffix, array(
-				'methods' => 'status' === $kind ? 'GET' : 'POST',
+				'methods' => in_array( $kind, array( 'status', 'templates' ), true ) ? 'GET' : 'POST',
 				'callback' => fn( \WP_REST_Request $request ) => $this->handle( $request, $kind ),
 				'permission_callback' => array( $this, 'authorize' ),
 			) );
@@ -54,7 +55,7 @@ final class RecoveryConversationCommandController {
 		$ids = $request->get_url_params();
 		$recovery_id = $ids['recoveryId'] ?? null;
 		$command_id = $ids['commandId'] ?? null;
-		$method = 'status' === $operation ? 'GET' : 'POST';
+		$method = in_array( $operation, array( 'status', 'templates' ), true ) ? 'GET' : 'POST';
 		$query = $request->get_query_params();
 		if ( isset( $query['_locale'] ) && 'user' === $query['_locale'] ) unset( $query['_locale'] );
 		if ( ! ConversationCommandContracts::identifier( $recovery_id ) || $query ||
@@ -62,10 +63,11 @@ final class RecoveryConversationCommandController {
 			array() !== $request->get_file_params() ||
 			( 'status' === $operation ? ( ! ConversationCommandContracts::identifier( $command_id ) ||
 				null !== $request->get_json_params() || '' !== $request->get_body() ) :
+				( 'templates' === $operation ? ( null !== $command_id || null !== $request->get_json_params() || '' !== $request->get_body() ) :
 				( null !== $command_id || ! preg_match( '#^application/json(?:\s*;\s*charset=utf-8)?$#iD',
 					(string) $request->get_header( 'Content-Type' ) ) ||
 					strlen( $request->get_body() ) > 6144 ||
-					! ConversationCommandContracts::request( $request->get_json_params(), $operation ) ) ) ) {
+					! ConversationCommandContracts::request( $request->get_json_params(), $operation ) ) ) ) ) {
 			return self::error( 'INVALID_REQUEST', 400 );
 		}
 		if ( null === $this->client ) return self::error( 'API_NOT_CONFIGURED', 503 );
@@ -81,8 +83,12 @@ final class RecoveryConversationCommandController {
 			if ( ! ConversationCommandContracts::identifier( $conversation ) || ! $detail['hasConversation'] ) {
 				return self::error( 'CONVERSATION_UNAVAILABLE', 404 );
 			}
-			$result = $this->client->merchantConversationCommand( $connection, $conversation, $operation,
-				'status' === $operation ? null : $request->get_json_params(), $command_id );
+			if ( 'templates' === $operation ) {
+				$result = array( 'data' => $this->client->merchantRecoveryFollowUpTemplates( $connection, $conversation ), 'status' => 200 );
+			} else {
+				$result = $this->client->merchantConversationCommand( $connection, $conversation, $operation,
+					'status' === $operation ? null : $request->get_json_params(), $command_id );
+			}
 			$after = $this->installations->read();
 			if ( 'valid' !== $after['state'] || $after['record'] !== $connection ||
 				$this->identity->currentCanonicalUrl() !== $connection['canonicalSiteUrl'] ) return self::error( 'RECONNECT_REQUIRED', 409 );

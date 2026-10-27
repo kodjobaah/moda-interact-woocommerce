@@ -2414,3 +2414,27 @@ msgstr "Meddela mig när det första återhämtningsmeddelandet börjar"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Aviseringen ändrar inte kundmeddelanden eller användningen av återhämtningskrediter."
+
+msgid "Approved follow-up template"
+msgstr "Godkänd uppföljningsmall"
+
+msgid "Loading approved templates…"
+msgstr "Läser in godkända mallar…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Det gick inte att läsa in godkända uppföljningsmallar."
+
+msgid "Try again"
+msgstr "Försök igen"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Inga godkända uppföljningsmallar är tillgängliga för den här återställningen."
+
+msgid "Template and language"
+msgstr "Mall och språk"
+
+msgid "Select a template"
+msgstr "Välj en mall"
+
+msgid "Queue follow-up"
+msgstr "Köa uppföljning"

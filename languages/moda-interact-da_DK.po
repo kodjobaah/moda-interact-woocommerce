@@ -2415,3 +2415,27 @@ msgstr "Giv mig besked, når den første gendannelseskontakt starter"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Denne meddelelse ændrer ikke kundebeskeder eller brugen af gendannelseskreditter."
+
+msgid "Approved follow-up template"
+msgstr "Godkendt opfølgningsskabelon"
+
+msgid "Loading approved templates…"
+msgstr "Indlæser godkendte skabeloner…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Godkendte opfølgningsskabeloner kunne ikke indlæses."
+
+msgid "Try again"
+msgstr "Prøv igen"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Der er ingen godkendte opfølgningsskabeloner tilgængelige for denne gendannelse."
+
+msgid "Template and language"
+msgstr "Skabelon og sprog"
+
+msgid "Select a template"
+msgstr "Vælg en skabelon"
+
+msgid "Queue follow-up"
+msgstr "Sæt opfølgning i kø"

@@ -66,6 +66,14 @@ export function useHumanConversation(recoveryId, summary, onRefresh) {
 			}
 			return accepted;
 		},
+		onSendTemplate: async (template) => {
+			const accepted = await controller.sendTemplate(template);
+			if (accepted) {
+				void refreshRef.current();
+			}
+			return accepted;
+		},
+		onRefreshTemplates: () => controller.loadTemplates(),
 		onRetry: () => controller.retryUncertain(),
 		onCheckStatus: async () => {
 			const checked = await controller.refreshCommand();

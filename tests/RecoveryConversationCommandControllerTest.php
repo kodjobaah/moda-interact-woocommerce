@@ -44,7 +44,7 @@ final class RecoveryConversationCommandControllerTest extends TestCase {
 	}
 
 	private static function request( string $operation, ?array $body = null ): WP_REST_Request {
-		$request = new WP_REST_Request( 'status' === $operation ? 'GET' : 'POST', array(), $body );
+		$request = new WP_REST_Request( in_array( $operation, array( 'status', 'templates' ), true ) ? 'GET' : 'POST', array(), $body );
 		$request->set_url_params( 'status' === $operation ? array( 'recoveryId' => 'rec_1', 'commandId' => 'cmd_1' ) : array( 'recoveryId' => 'rec_1' ) );
 		if ( 'status' !== $operation ) $request->set_header( 'Content-Type', 'application/json' );
 		return $request;
@@ -67,7 +67,7 @@ final class RecoveryConversationCommandControllerTest extends TestCase {
 
 	public function test_local_routes_guard_capability_nonce_and_derive_conversation_from_recovery(): void {
 		$calls = array(); $controller = $this->controller( $calls, self::control() );
-		$controller->registerRoutes(); self::assertCount( 3, $GLOBALS['moda_interact_registered_rest_routes'] );
+		$controller->registerRoutes(); self::assertCount( 4, $GLOBALS['moda_interact_registered_rest_routes'] );
 		$request = self::request( 'control', array( 'targetMode' => 'HUMAN', 'expectedControlRevision' => 4 ) );
 		$GLOBALS['moda_interact_valid_rest_nonce'] = false;
 		self::assertSame( 403, $controller->handle( $request, 'control' )->get_status() );
@@ -86,6 +86,44 @@ final class RecoveryConversationCommandControllerTest extends TestCase {
 		self::assertSame( 'private, no-store', $result->get_headers()['Cache-Control'] );
 	}
 
+	public function test_follow_up_template_proxy_is_nonce_authenticated_and_recovery_scoped(): void {
+		$catalogue = array( 'schemaVersion' => 1, 'templates' => array(
+			array( 'name' => 'recovery_follow_up', 'language' => 'en_GB' ),
+		) );
+		$calls = array(); $controller = $this->controller( $calls, $catalogue );
+		$controller->registerRoutes();
+		$route = $GLOBALS['moda_interact_registered_rest_routes']['moda-interact/v1/merchant/recoveries/(?P<recoveryId>[A-Za-z0-9_-]{1,191})/conversation/follow-up-templates'];
+		self::assertSame( 'GET', $route['methods'] );
+		$request = self::request( 'templates' );
+		$GLOBALS['moda_interact_valid_rest_nonce'] = false;
+		self::assertSame( 403, $controller->handle( $request, 'templates' )->get_status() );
+		self::assertSame( array(), $calls );
+		$GLOBALS['moda_interact_valid_rest_nonce'] = true;
+		$foreign = new WP_REST_Request( 'GET', array( 'shopId' => 'foreign_shop' ) );
+		$foreign->set_url_params( array( 'recoveryId' => 'rec_1' ) );
+		self::assertSame( 400, $controller->handle( $foreign, 'templates' )->get_status() );
+		self::assertSame( array(), $calls );
+		$result = $controller->handle( $request, 'templates' );
+		self::assertSame( 200, $result->get_status() );
+		self::assertSame( $catalogue, $result->get_data() );
+		self::assertSame( '/v1/merchant/recoveries/rec_1', parse_url( $calls[0][0], PHP_URL_PATH ) );
+		self::assertSame( '/v1/merchant/conversations/conv_1/follow-up-templates', parse_url( $calls[1][0], PHP_URL_PATH ) );
+		self::assertSame( 'Bearer ' . self::installation()['credential'], $calls[1][1]['headers']['Authorization'] );
+		self::assertSame( 'private, no-store', $result->get_headers()['Cache-Control'] );
+	}
+
+	public function test_follow_up_template_response_rejects_unbounded_or_untrusted_data(): void {
+		self::assertTrue( ConversationCommandContracts::followUpTemplates( array(
+			'schemaVersion' => 1, 'templates' => array( array( 'name' => 'hello', 'language' => 'en' ) ),
+		) ) );
+		self::assertFalse( ConversationCommandContracts::followUpTemplates( array(
+			'schemaVersion' => 1, 'templates' => array( array( 'name' => 'hello', 'language' => 'en', 'parameters' => array() ) ),
+		) ) );
+		self::assertFalse( ConversationCommandContracts::followUpTemplates( array(
+			'schemaVersion' => 1, 'templates' => array_fill( 0, 31, array( 'name' => 'hello', 'language' => 'en' ) ),
+		) ) );
+	}
+
 	public function test_request_and_response_contracts_fail_closed(): void {
 		self::assertFalse( ConversationCommandContracts::request( array( 'targetMode' => 'HUMAN', 'expectedControlRevision' => 4, 'shopId' => 'foreign' ), 'control' ) );
 		self::assertFalse( ConversationCommandContracts::request( array( 'targetMode' => 'AI', 'expectedControlRevision' => -1 ), 'control' ) );
@@ -93,6 +131,12 @@ final class RecoveryConversationCommandControllerTest extends TestCase {
 			'idempotencyKey' => 'intent_1', 'textBody' => 'Hello' ), 'messages' ) );
 		self::assertFalse( ConversationCommandContracts::request( array( 'kind' => 'HUMAN_TEXT', 'expectedControlRevision' => 4,
 			'idempotencyKey' => 'intent_1', 'textBody' => 'Hello', 'shopId' => 'foreign' ), 'messages' ) );
+		self::assertTrue( ConversationCommandContracts::request( array( 'kind' => 'RECOVERY_FOLLOW_UP_TEMPLATE',
+			'expectedControlRevision' => 4, 'idempotencyKey' => 'intent_2', 'templateName' => 'follow_up',
+			'templateLanguage' => 'en_GB', 'templateParameters' => array() ), 'messages' ) );
+		self::assertFalse( ConversationCommandContracts::request( array( 'kind' => 'RECOVERY_FOLLOW_UP_TEMPLATE',
+			'expectedControlRevision' => 4, 'idempotencyKey' => 'intent_2', 'templateName' => 'follow_up',
+			'templateLanguage' => 'en_GB', 'templateParameters' => array( 'Injected' ) ), 'messages' ) );
 		self::assertFalse( ConversationCommandContracts::response( array_merge( self::control(), array( 'credential' => 'secret' ) ), 'control', 'conv_1' ) );
 		$calls = array(); $controller = $this->controller( $calls, array_merge( self::control(), array( 'credential' => 'secret' ) ) );
 		self::assertSame( 502, $controller->handle( self::request( 'control', array( 'targetMode' => 'HUMAN', 'expectedControlRevision' => 4 ) ), 'control' )->get_status() );

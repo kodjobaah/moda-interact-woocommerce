@@ -2432,3 +2432,27 @@ msgstr "Avise-me quando a primeira mensagem de recuperação começar"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Este aviso não altera as mensagens aos clientes nem o uso de créditos de recuperação."
+
+msgid "Approved follow-up template"
+msgstr "Modelo de acompanhamento aprovado"
+
+msgid "Loading approved templates…"
+msgstr "Carregando modelos aprovados…"
+
+msgid "Unable to load approved follow-up templates."
+msgstr "Não foi possível carregar os modelos de acompanhamento aprovados."
+
+msgid "Try again"
+msgstr "Tentar novamente"
+
+msgid "No approved follow-up templates are available for this recovery."
+msgstr "Não há modelos de acompanhamento aprovados disponíveis para esta recuperação."
+
+msgid "Template and language"
+msgstr "Modelo e idioma"
+
+msgid "Select a template"
+msgstr "Selecione um modelo"
+
+msgid "Queue follow-up"
+msgstr "Agendar acompanhamento"
