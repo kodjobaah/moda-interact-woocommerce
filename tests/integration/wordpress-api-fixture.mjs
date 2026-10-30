@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHash, createHmac, randomBytes } from 'node:crypto';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
 import { createBillingWordPressFixture } from './scenarios/billing-wordpress.mjs';
 import { createConsentApiFixture } from './consent-api-fixture.mjs';
@@ -50,6 +50,9 @@ async function verifyChallenge(body, fetchWordPress) {
 
 export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 	const activityRequests = [];
+	const shopBrandRequests = [];
+	const acceptedShopBrandIds = new Set();
+	let shopBrandResponseStatus = 200;
 	const billing = createBillingWordPressFixture();
 	const consent = createConsentApiFixture();
 	let activityStatus = 202;
@@ -80,6 +83,75 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 		) {
 			return true;
 		}
+		if (
+			url.pathname === '/v1/woocommerce/shop-brand' &&
+			request.method === 'POST'
+		) {
+			// The fixture enforces the frozen API-001 producer contract over real
+			// HTTPS, including its installation-scoped authentication boundary.
+			assert.equal(url.search, '');
+			assert.equal(request.headers.cookie, undefined);
+			assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
+			assert.equal(
+				request.headers.authorization,
+				`Bearer ${Buffer.alloc(32, connectCount).toString('base64url')}`
+			);
+			assert.match(request.headers['content-type'] ?? '', /^application\/json/i);
+			assert.ok(bodyBytes.length <= 16384);
+			const event = JSON.parse(bodyBytes.toString('utf8'));
+			assert.deepEqual(Object.keys(event).sort(), [
+				'brandName', 'coverImage', 'eventId', 'logo', 'observedAt',
+				'schemaVersion', 'siteIcon',
+			]);
+			assert.equal(event.schemaVersion, 'woo.shop-brand.v1');
+			assert.ok(event.brandName === null ||
+				(typeof event.brandName === 'string' && [...event.brandName].length <= 160));
+			assert.equal(event.coverImage, null);
+			assert.match(event.observedAt,
+				/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/);
+			for (const role of ['logo', 'siteIcon']) {
+				const source = event[role];
+				if (source === null) continue;
+				assert.deepEqual(Object.keys(source).sort(), [
+					'altText', 'attachmentId', 'height', 'url', 'width',
+				]);
+				assert.ok(Number.isSafeInteger(source.attachmentId) && source.attachmentId > 0);
+				assert.ok(source.altText === null ||
+					(typeof source.altText === 'string' && [...source.altText].length <= 256));
+				for (const dimension of ['height', 'width']) {
+					assert.ok(source[dimension] === null ||
+						(Number.isSafeInteger(source[dimension]) && source[dimension] > 0));
+				}
+				const asset = new URL(source.url);
+				assert.equal(asset.protocol, 'https:');
+				assert.equal(asset.username, '');
+				assert.equal(asset.password, '');
+				assert.equal(asset.hash, '');
+			}
+			const canonical = {
+				brandName: event.brandName,
+				logo: event.logo,
+				siteIcon: event.siteIcon,
+				coverImage: event.coverImage,
+			};
+			const digest = createHash('sha256')
+				.update(`install_wp_fixture\0${JSON.stringify(canonical)}`)
+				.digest('hex');
+			assert.equal(event.eventId, `woo-brand-${digest}`);
+			const httpStatus = shopBrandResponseStatus;
+			const disposition = httpStatus === 200
+				? (acceptedShopBrandIds.has(event.eventId) ? 'unchanged' : 'updated')
+				: null;
+			shopBrandRequests.push({ event, httpStatus, disposition });
+			if (httpStatus === 200) {
+				acceptedShopBrandIds.add(event.eventId);
+				sendJson(response, 200, { status: disposition });
+			} else {
+				sendJson(response, httpStatus, { error: 'fixture_failure' });
+			}
+			return true;
+		}
+
 		if (
 			url.pathname === '/v1/woocommerce/activity' &&
 			request.method === 'POST'
@@ -446,6 +518,11 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 	return {
 		handleRequest,
 		getActivityRequests: () => activityRequests,
+		getShopBrandRequests: () => [...shopBrandRequests],
+		setShopBrandStatus: (status) => {
+			assert.ok([200, 400, 408, 429, 503].includes(status));
+			shopBrandResponseStatus = status;
+		},
 		setActivityStatus: (status) => {
 			activityStatus = status;
 		},

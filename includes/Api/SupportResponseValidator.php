@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 /** Exact, bounded API-020 DTOs. Browser input and hosted responses share these contracts. */
 final class SupportResponseValidator {
-	private const MESSAGE_FIELDS = array( 'id', 'kind', 'state', 'originalBody', 'displayBody', 'isTranslated', 'sourceLanguageTag', 'displayLanguageTag', 'systemCode', 'systemVersion', 'createdAt', 'readAt' );
+	private const MESSAGE_FIELDS = array( 'id', 'kind', 'state', 'originalBody', 'displayBody', 'isTranslated', 'sourceLanguageTag', 'displayLanguageTag', 'systemCode', 'systemVersion', 'checkoutRecoveryId', 'createdAt', 'readAt' );
 
 	public static function messageId( mixed $value ): bool {
 		return is_string( $value ) && 1 === preg_match( '/^[A-Za-z0-9_-]{1,191}$/D', $value );
@@ -29,7 +29,7 @@ final class SupportResponseValidator {
 
 	public static function history( mixed $value, int $page, int $page_size ): bool {
 		if ( ! self::exact( $value, array( 'schemaVersion', 'page', 'pageSize', 'total', 'totalPages', 'unread', 'items' ) ) ||
-			1 !== $value['schemaVersion'] || $page !== $value['page'] || $page_size !== $value['pageSize'] ||
+			2 !== $value['schemaVersion'] || $page !== $value['page'] || $page_size !== $value['pageSize'] ||
 			! self::nonnegative( $value['total'] ) || ! self::nonnegative( $value['unread'] ) ||
 			! is_int( $value['totalPages'] ) || $value['totalPages'] < 1 ||
 			! is_array( $value['items'] ) || ! array_is_list( $value['items'] ) || count( $value['items'] ) > $page_size ) {
@@ -64,6 +64,7 @@ final class SupportResponseValidator {
 			( null === $value['displayLanguageTag'] || self::bounded( $value['displayLanguageTag'], 64 ) ) &&
 			( null === $value['systemCode'] || self::bounded( $value['systemCode'], 128 ) ) &&
 			( null === $value['systemVersion'] || self::bounded( $value['systemVersion'], 64 ) ) &&
+			( null === $value['checkoutRecoveryId'] || self::messageId( $value['checkoutRecoveryId'] ) ) &&
 			self::date( $value['createdAt'] ) && ( null === $value['readAt'] || self::date( $value['readAt'] ) );
 	}
 

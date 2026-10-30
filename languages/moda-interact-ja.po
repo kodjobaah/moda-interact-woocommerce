@@ -1575,6 +1575,9 @@ msgstr "翻訳を表示"
 msgid "View original"
 msgstr "原文を表示"
 
+msgid "View conversation"
+msgstr "会話を表示"
+
 msgid "View billing"
 msgstr "請求情報を見る"
 
@@ -2403,3 +2406,14 @@ msgstr "WhatsAppの許可を更新できませんでした。もう一度お試�
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "WhatsAppメッセージの受信への同意は記録されましたが、現在の許可状態を確認できませんでした。"
+msgid "Initial recovery notice"
+msgstr "初回リカバリー通知"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "最初のリカバリーメッセージが開始されたときに通知を受け取るか選択します。"
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "最初のリカバリーメッセージ開始時に通知する"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "この通知によって顧客へのメッセージやリカバリークレジットの使用が変わることはありません。"

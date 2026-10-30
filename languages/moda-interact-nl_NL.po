@@ -1616,6 +1616,9 @@ msgstr "Vertaling bekijken"
 msgid "View original"
 msgstr "Origineel bekijken"
 
+msgid "View conversation"
+msgstr "Gesprek bekijken"
+
 msgid "View billing"
 msgstr "Facturering bekijken"
 
@@ -2445,3 +2448,14 @@ msgstr "De WhatsApp-toestemming kon niet worden bijgewerkt. Probeer het opnieuw.
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Je toestemming voor WhatsApp-berichten is vastgelegd, maar de huidige toestemming kon niet worden bevestigd."
+msgid "Initial recovery notice"
+msgstr "Melding bij eerste herstelbericht"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Kies of je een melding wilt ontvangen wanneer het eerste herstelbericht begint."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Meld mij wanneer het eerste herstelbericht begint"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Deze melding verandert niets aan klantberichten of het gebruik van herstelcredits."

@@ -1,5 +1,6 @@
 import { createElement, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { recoveryConversationHref } from '../recoveries/detail/detail-navigation';
 
 const systemActions = Object.freeze({
 	BILLING_FREE_ALLOWANCE_WARNING: 'moda-interact-billing',
@@ -14,9 +15,26 @@ const systemActions = Object.freeze({
  * @param {Object} message Support message data.
  */
 export function supportSystemHref(message) {
+	if (
+		message.kind === 'SYSTEM' &&
+		message.state === 'AVAILABLE' &&
+		message.systemCode === 'RECOVERY_INITIAL_OUTREACH_SENT' &&
+		message.systemVersion === '1' &&
+		typeof message.checkoutRecoveryId === 'string'
+	) {
+		return recoveryConversationHref(message.checkoutRecoveryId);
+	}
 	const page =
 		message.kind === 'SYSTEM' ? systemActions[message.systemCode] : null;
 	return page ? `admin.php?page=${page}` : null;
+}
+
+/** @param {Object} message Support message data. */
+export function supportSystemActionLabel(message) {
+	return message.systemCode === 'RECOVERY_INITIAL_OUTREACH_SENT' &&
+		supportSystemHref(message)
+		? __('View conversation', 'moda-interact')
+		: __('View billing', 'moda-interact');
 }
 
 export function SupportMessageCard({ message }) {
@@ -35,6 +53,7 @@ export function SupportMessageCard({ message }) {
 		message.kind !== 'MERCHANT' &&
 		(message.displayBody === null || message.displayBody === undefined);
 	const href = supportSystemHref(message);
+	const hrefLabel = supportSystemActionLabel(message);
 	let body;
 	if (notReady) {
 		body =
@@ -93,8 +112,6 @@ export function SupportMessageCard({ message }) {
 						: __('View original', 'moda-interact')
 				)
 			: null,
-		href
-			? createElement('a', { href }, __('View billing', 'moda-interact'))
-			: null
+		href ? createElement('a', { href }, hrefLabel) : null
 	);
 }

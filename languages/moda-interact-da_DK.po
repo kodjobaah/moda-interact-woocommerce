@@ -1597,6 +1597,9 @@ msgstr "Vis oversættelse"
 msgid "View original"
 msgstr "Vis original"
 
+msgid "View conversation"
+msgstr "Vis samtale"
+
 msgid "View billing"
 msgstr "Vis fakturering"
 
@@ -2427,3 +2430,14 @@ msgstr "WhatsApp-tilladelsen kunne ikke opdateres. Prøv igen."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Dit samtykke til WhatsApp-beskeder blev registreret, men den aktuelle tilladelse kunne ikke bekræftes."
+msgid "Initial recovery notice"
+msgstr "Meddelelse om første gendannelseskontakt"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Vælg, om du vil have en meddelelse, når den første gendannelseskontakt starter."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Giv mig besked, når den første gendannelseskontakt starter"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Denne meddelelse ændrer ikke kundebeskeder eller brugen af gendannelseskreditter."

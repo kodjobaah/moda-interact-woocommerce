@@ -1581,6 +1581,9 @@ msgstr "Zobrazit překlad"
 msgid "View original"
 msgstr "Zobrazit originál"
 
+msgid "View conversation"
+msgstr "Zobrazit konverzaci"
+
 msgid "View billing"
 msgstr "Zobrazit fakturaci"
 
@@ -2409,3 +2412,14 @@ msgstr "Nepodařilo se aktualizovat souhlas se zprávami WhatsApp. Zkuste to zno
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Váš souhlas se zasíláním zpráv přes WhatsApp byl zaznamenán, ale aktuální platnost oprávnění se nepodařilo ověřit."
+msgid "Initial recovery notice"
+msgstr "Upozornění na zahájení obnovy"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Zvolte, zda chcete dostat upozornění při zahájení první zprávy obnovy."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Upozornit při zahájení první zprávy obnovy"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Toto upozornění nemění zprávy zákazníkům ani využití kreditů na obnovu."

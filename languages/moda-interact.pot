@@ -1571,6 +1571,10 @@ msgid "View original"
 msgstr ""
 
 #: src/support/support-message-card.js:43
+#: src/support/support-message-card.js
+msgid "View conversation"
+msgstr ""
+
 msgid "View billing"
 msgstr ""
 
@@ -2413,4 +2417,20 @@ msgstr ""
 
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Initial recovery notice"
+msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "Notify me when initial recovery outreach starts"
+msgstr ""
+
+#: src/recovery-settings/recovery-behaviour-fields.js
+msgid "This notice does not change customer messages or recovery credit use."
 msgstr ""

@@ -13,6 +13,19 @@ use PHPUnit\Framework\TestCase;
 require_once dirname( __DIR__ ) . '/includes/Api/SupportResponseValidator.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/SupportController.php';
 
+if ( ! function_exists( 'wc_get_logger' ) ) {
+	function wc_get_logger() { return $GLOBALS['moda_interact_test_logger']; }
+}
+
+final class SupportControllerTestLogger {
+	public array $errors = array();
+	public bool $throws = false;
+	public function error( string $message, array $context = array() ): void {
+		if ( $this->throws ) throw new RuntimeException( 'private log sink detail' );
+		$this->errors[] = array( $message, $context );
+	}
+}
+
 final class SupportControllerTest extends TestCase {
 	protected function setUp(): void {
 		$GLOBALS['moda_interact_options'] = array();
@@ -20,6 +33,7 @@ final class SupportControllerTest extends TestCase {
 		$GLOBALS['moda_interact_can_manage_woocommerce'] = true;
 		$GLOBALS['moda_interact_valid_rest_nonce'] = true;
 		$GLOBALS['moda_interact_registered_rest_routes'] = array();
+		$GLOBALS['moda_interact_test_logger'] = new SupportControllerTestLogger();
 	}
 
 	public function test_routes_require_both_capability_and_nonce(): void {
@@ -142,6 +156,49 @@ final class SupportControllerTest extends TestCase {
 		self::assertSame( 'REMOTE_RESPONSE_INVALID', $controller->compose( self::compose( 'Hello', 'action-1' ) )->get_data()['status'] );
 	}
 
+	public function test_v2_history_requires_safe_nullable_recovery_identity_and_logs_unexpected_failures(): void {
+		$valid = self::page();
+		$valid['items'][2]['systemCode'] = 'RECOVERY_INITIAL_OUTREACH_SENT';
+		$valid['items'][2]['checkoutRecoveryId'] = 'checkout_123';
+		self::assertSame( 200, $this->controller( static fn() => self::response( 200, $valid ) )
+			->history( new WP_REST_Request( 'GET' ) )->get_status() );
+		foreach ( array(
+			array_merge( $valid, array( 'schemaVersion' => 1 ) ),
+			array_merge( $valid, array( 'schemaVersion' => 3 ) ),
+		) as $invalid ) {
+			$invalid['items'][2]['checkoutRecoveryId'] = 'unsafe/id';
+			self::assertSame( 'REMOTE_RESPONSE_INVALID', $this->controller( static fn() => self::response( 200, $invalid ) )
+				->history( new WP_REST_Request( 'GET' ) )->get_data()['status'] );
+		}
+		$unsafe = $valid;
+		$unsafe['items'][2]['checkoutRecoveryId'] = 'unsafe/id';
+		self::assertSame( 'REMOTE_RESPONSE_INVALID', $this->controller( static fn() => self::response( 200, $unsafe ) )
+			->history( new WP_REST_Request( 'GET' ) )->get_data()['status'] );
+		$missing = self::page();
+		unset( $missing['items'][2]['checkoutRecoveryId'] );
+		self::assertSame( 'REMOTE_RESPONSE_INVALID', $this->controller( static fn() => self::response( 200, $missing ) )
+			->history( new WP_REST_Request( 'GET' ) )->get_data()['status'] );
+		self::assertTrue( SupportResponseValidator::history( self::page(), 1, 25 ) );
+		$controller = $this->controller( static function () { throw new RuntimeException( 'private persistence detail' ); } );
+		$reply = $controller->history( new WP_REST_Request( 'GET' ) );
+		self::assertSame( 503, $reply->get_status() );
+		self::assertSame( array( 'status' => 'REMOTE_UNAVAILABLE' ), $reply->get_data() );
+		[ $message, $context ] = $GLOBALS['moda_interact_test_logger']->errors[0];
+		self::assertSame( 'Support proxy request failed.', $message );
+		self::assertSame( 'merchant_support_proxy', $context['operation'] );
+		self::assertSame( 'RuntimeException', $context['error_class'] );
+		self::assertSame( '0', $context['error_code'] );
+		self::assertArrayNotHasKey( 'private persistence detail', $context );
+	}
+
+	public function test_support_log_sink_failure_keeps_sanitized_503(): void {
+		$GLOBALS['moda_interact_test_logger']->throws = true;
+		$controller = $this->controller( static function () { throw new RuntimeException( 'private persistence detail' ); } );
+		$reply = $controller->history( new WP_REST_Request( 'GET' ) );
+		self::assertSame( 503, $reply->get_status() );
+		self::assertSame( array( 'status' => 'REMOTE_UNAVAILABLE' ), $reply->get_data() );
+	}
+
 	private function controller( callable $transport ): SupportController {
 		$store = new InstallationStore();
 		self::assertTrue( $store->save( self::record() ) );
@@ -178,11 +235,12 @@ final class SupportControllerTest extends TestCase {
 			'sourceLanguageTag' => 'en', 'displayLanguageTag' => 'fr',
 			'systemCode' => 'SYSTEM' === $kind ? 'BILLING_FREE_ALLOWANCE_WARNING' : null,
 			'systemVersion' => 'SYSTEM' === $kind ? '1' : null,
+			'checkoutRecoveryId' => null,
 			'createdAt' => '2026-10-21T12:00:00.000Z', 'readAt' => null );
 	}
 
 	private static function page(): array {
-		return array( 'schemaVersion' => 1, 'page' => 1, 'pageSize' => 25,
+		return array( 'schemaVersion' => 2, 'page' => 1, 'pageSize' => 25,
 			'total' => 3, 'totalPages' => 1, 'unread' => 2,
 			'items' => array( self::message( 'MERCHANT' ), self::message( 'ADMINISTRATIVE' ), self::message( 'SYSTEM' ) ) );
 	}

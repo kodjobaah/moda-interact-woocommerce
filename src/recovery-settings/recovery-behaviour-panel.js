@@ -93,7 +93,7 @@ export function RecoveryBehaviourPanel({
 			appliedPolicy.current !== policy
 		) {
 			appliedPolicy.current = policy;
-			setDraft(recoveryBehaviourPreview(policy.merchant));
+			setDraft(recoveryBehaviourPreview(policy));
 		}
 	}, [policy, status]);
 
@@ -103,8 +103,7 @@ export function RecoveryBehaviourPanel({
 	const errors = ready
 		? validateRecoveryBehaviourPreview(draft)
 		: { start: false, followUp: false };
-	const dirty =
-		Boolean(policy) && recoveryBehaviourChanged(policy.merchant, draft);
+	const dirty = Boolean(policy) && recoveryBehaviourChanged(policy, draft);
 	const canSave =
 		ready &&
 		dirty &&

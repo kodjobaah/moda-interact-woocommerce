@@ -84,7 +84,7 @@ function moEntries(buffer) {
 }
 
 test('WOO-010 covers every current gettext key without untranslated English fallbacks', () => {
-	assert.equal(sourceKeys.size, 559);
+	assert.equal(sourceKeys.size, 563);
 	const unchangedNames = new Set(['Moda Interact', 'WooCommerce', 'Free']);
 	const validSharedTerms = new Map([
 		['fr_FR', new Set(['Promotions', 'Conversation'])],

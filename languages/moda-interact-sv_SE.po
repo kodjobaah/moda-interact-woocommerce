@@ -1597,6 +1597,9 @@ msgstr "Visa översättning"
 msgid "View original"
 msgstr "Visa original"
 
+msgid "View conversation"
+msgstr "Visa konversation"
+
 msgid "View billing"
 msgstr "Visa fakturering"
 
@@ -2426,3 +2429,14 @@ msgstr "Det gick inte att uppdatera WhatsApp-samtycket. Försök igen."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Ditt samtycke till WhatsApp-meddelanden har registrerats, men den aktuella behörigheten kunde inte bekräftas."
+msgid "Initial recovery notice"
+msgstr "Avisering om första återhämtningskontakten"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Välj om du vill få en avisering när det första återhämtningsmeddelandet börjar."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "Meddela mig när det första återhämtningsmeddelandet börjar"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Aviseringen ändrar inte kundmeddelanden eller användningen av återhämtningskrediter."

@@ -1523,6 +1523,9 @@ msgstr "檢視翻譯"
 msgid "View original"
 msgstr "檢視原文"
 
+msgid "View conversation"
+msgstr "查看對話"
+
 msgid "View billing"
 msgstr "檢視帳單"
 
@@ -2351,3 +2354,14 @@ msgstr "無法更新 WhatsApp 授權。請再試一次。"
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "已記錄您接收 WhatsApp 訊息的同意，但無法驗證目前的授權狀態。"
+msgid "Initial recovery notice"
+msgstr "首次復原通知"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "選擇是否在第一則復原訊息開始時接收通知。"
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "第一則復原訊息開始時通知我"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "此通知不會變更傳送給客戶的訊息，也不會影響復原點數的使用。"

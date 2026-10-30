@@ -1583,6 +1583,9 @@ msgstr "Çeviriyi görüntüle"
 msgid "View original"
 msgstr "Orijinali görüntüle"
 
+msgid "View conversation"
+msgstr "Konuşmayı görüntüle"
+
 msgid "View billing"
 msgstr "Faturalandırmayı görüntüle"
 
@@ -2412,3 +2415,14 @@ msgstr "WhatsApp izni güncellenemedi. Lütfen tekrar deneyin."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "WhatsApp mesajları için verdiğiniz onay kaydedildi ancak mevcut izin durumu doğrulanamadı."
+msgid "Initial recovery notice"
+msgstr "İlk kurtarma bildirimi"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "İlk kurtarma mesajı başladığında bildirim alıp almak istemediğinizi seçin."
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "İlk kurtarma mesajı başladığında bana bildir"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "Bu bildirim müşteri mesajlarını veya kurtarma kredisi kullanımını değiştirmez."

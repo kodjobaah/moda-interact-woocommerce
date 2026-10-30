@@ -1,4 +1,4 @@
-import { createElement } from '@wordpress/element';
+import { createElement, useEffect } from '@wordpress/element';
 import { RecoveryDetailScreen } from './recovery-detail-screen';
 import { useRecoveryDetail } from './hooks/use-recovery-detail';
 import { useHumanConversation } from './human/use-human-conversation';
@@ -15,6 +15,18 @@ import { recoveryDetailHref, readRecoveryListQuery } from './detail-navigation';
  * @param {Object} root0.route
  */
 export function ConnectedRecoveryDetailScreen({ route }) {
+	useEffect(() => {
+		if (
+			typeof window === 'undefined' ||
+			typeof document === 'undefined' ||
+			window.location.hash !== '#recovery-conversation'
+		) {
+			return;
+		}
+		document
+			.getElementById('recovery-conversation')
+			?.scrollIntoView?.({ block: 'start' });
+	}, [route.recoveryId]);
 	const controller = useRecoveryDetail(route.recoveryId);
 	const { summary, messages, related } = controller.state;
 	const timeZone = summary.status === 'READY' ? summary.data.timeZone : null;

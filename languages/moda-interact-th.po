@@ -1537,6 +1537,9 @@ msgstr "ดูคำแปล"
 msgid "View original"
 msgstr "ดูต้นฉบับ"
 
+msgid "View conversation"
+msgstr "ดูการสนทนา"
+
 msgid "View billing"
 msgstr "ดูการเรียกเก็บเงิน"
 
@@ -2365,3 +2368,14 @@ msgstr "ไม่สามารถอัปเดตการยินยอม
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "บันทึกการยินยอมรับข้อความผ่าน WhatsApp ของคุณแล้ว แต่ไม่สามารถยืนยันสถานะการอนุญาตปัจจุบันได้"
+msgid "Initial recovery notice"
+msgstr "การแจ้งเตือนการกู้คืนครั้งแรก"
+
+msgid "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "เลือกว่าต้องการรับการแจ้งเตือนเมื่อเริ่มการติดต่อเพื่อกู้คืนครั้งแรกหรือไม่"
+
+msgid "Notify me when initial recovery outreach starts"
+msgstr "แจ้งเตือนเมื่อเริ่มการติดต่อเพื่อกู้คืนครั้งแรก"
+
+msgid "This notice does not change customer messages or recovery credit use."
+msgstr "การแจ้งเตือนนี้ไม่เปลี่ยนข้อความถึงลูกค้าหรือการใช้เครดิตการกู้คืน"
