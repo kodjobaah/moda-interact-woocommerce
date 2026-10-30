@@ -28,51 +28,78 @@ final class CheckoutConsentPresentationTest extends TestCase {
 		$GLOBALS['arch046_checkout_page'] = false;
 	}
 
-	private function checkoutFields(): string {
-		return '<div data-block-name="woocommerce/checkout-fields-block" class="wp-block-woocommerce-checkout-fields-block">' .
-			'<div data-block-name="woocommerce/checkout-contact-information-block"></div>' .
-			'<div data-block-name="woocommerce/checkout-actions-block"></div></div>';
+	private function child( string $name ): array {
+		return array( 'blockName' => $name, 'attrs' => array(),
+			'innerBlocks' => array(), 'innerHTML' => '', 'innerContent' => array() );
 	}
 
-	public function test_existing_checkout_renders_consent_inside_fields_before_place_order(): void {
+	private function fields(): array {
+		return array(
+			'blockName' => 'woocommerce/checkout-fields-block',
+			'attrs' => array(),
+			'innerBlocks' => array(
+				$this->child( 'woocommerce/checkout-contact-information-block' ),
+				$this->child( 'woocommerce/checkout-actions-block' ),
+			),
+			'innerHTML' => '<div class="wp-block-woocommerce-checkout-fields-block"></div>',
+			'innerContent' => array( '<div class="wp-block-woocommerce-checkout-fields-block">',
+				null, null, '</div>' ),
+		);
+	}
+
+	public function test_existing_saved_checkout_gets_one_real_parsed_child_before_actions(): void {
 		$reads = 0;
 		$presenter = new CheckoutConsentPresentation( static function () use ( &$reads ): bool {
 			++$reads;
 			return true;
 		} );
-		$rendered = $presenter->renderCheckoutFields( $this->checkoutFields() );
-		self::assertSame( 1, substr_count( $rendered, 'data-block-name="moda-interact/checkout-consent"' ) );
-		self::assertSame( 1, substr_count( $rendered, 'data-moda-woo-runtime-mount="1"' ),
-			'Only the synthetic checkout-fields placeholder is directly mounted' );
-		self::assertLessThan( strpos( $rendered, 'data-block-name="woocommerce/checkout-actions-block"' ),
-			strpos( $rendered, 'data-block-name="moda-interact/checkout-consent"' ) );
-		self::assertSame( $rendered, $presenter->renderCheckoutFields( $rendered ), 'Do not duplicate a pre-existing block' );
-		self::assertSame( 1, $reads, 'Avoid repeat feature-pref API requests while rendering the same page' );
+		$fields = $this->fields();
+		$result = $presenter->insertCheckoutConsentBlock( $fields );
+		self::assertSame( 'moda-interact/checkout-consent', $result['innerBlocks'][1]['blockName'] );
+		self::assertSame( 'woocommerce/checkout-actions-block', $result['innerBlocks'][2]['blockName'] );
+		self::assertSame( array( '<div class="wp-block-woocommerce-checkout-fields-block">',
+			null, null, null, '</div>' ), $result['innerContent'] );
+		self::assertSame( $fields, $this->fields(), 'No saved post or original input mutation' );
+		self::assertSame( $result, $presenter->insertCheckoutConsentBlock( $result ),
+			'One checkout control even if WordPress reprocesses the same parsed tree' );
+		self::assertSame( 1, $reads, 'Eligibility is memoized per page request' );
+		self::assertStringNotContainsString( 'data-moda-woo-runtime-mount', json_encode( $result ) );
 	}
 
-	public function test_only_an_eligible_customer_checkout_receives_a_mount(): void {
-		$fields = $this->checkoutFields();
+	public function test_only_an_eligible_customer_checkout_receives_the_child(): void {
+		$fields = $this->fields();
 		$disabled = new CheckoutConsentPresentation( static fn(): bool => false );
-		self::assertSame( $fields, $disabled->renderCheckoutFields( $fields ) );
+		self::assertSame( $fields, $disabled->insertCheckoutConsentBlock( $fields ) );
 		$enabled = new CheckoutConsentPresentation( static fn(): bool => true );
 		$GLOBALS['moda_interact_is_admin'] = true;
-		self::assertSame( $fields, $enabled->renderCheckoutFields( $fields ) );
+		self::assertSame( $fields, $enabled->insertCheckoutConsentBlock( $fields ) );
 		$GLOBALS['moda_interact_is_admin'] = false;
 		$GLOBALS['arch046_order_received'] = true;
-		self::assertSame( $fields, $enabled->renderCheckoutFields( $fields ) );
+		self::assertSame( $fields, $enabled->insertCheckoutConsentBlock( $fields ) );
 		$GLOBALS['arch046_order_received'] = false;
 		$GLOBALS['arch046_checkout_page'] = false;
-		self::assertSame( $fields, $enabled->renderCheckoutFields( $fields ) );
+		self::assertSame( $fields, $enabled->insertCheckoutConsentBlock( $fields ) );
 	}
 
-	public function test_does_not_insert_consent_inside_checkout_totals_or_unexpected_markup(): void {
+	public function test_never_inserts_in_totals_or_a_malformed_checkout_tree(): void {
 		$presenter = new CheckoutConsentPresentation( static fn(): bool => true );
-		$totals = '<div data-block-name="woocommerce/checkout-totals-block"></div>';
-		self::assertSame( $totals, $presenter->renderCheckoutFields( $totals ) );
-		$unexpected = '<p>Not the checkout fields root</p>';
-		self::assertSame( $unexpected, $presenter->renderCheckoutFields( $unexpected ) );
-		$fieldsNoActions = '<div class="wp-block-woocommerce-checkout-fields-block"><p>Fields</p></div>';
-		self::assertSame( 1, substr_count( $presenter->renderCheckoutFields( $fieldsNoActions ),
-			'data-block-name="moda-interact/checkout-consent"' ) );
+		$totals = $this->fields();
+		$totals['blockName'] = 'woocommerce/checkout-totals-block';
+		self::assertSame( $totals, $presenter->insertCheckoutConsentBlock( $totals ) );
+		$fields = $this->fields();
+		$fields['innerContent'] = array( '<div>', null, '</div>' );
+		self::assertSame( $fields, $presenter->insertCheckoutConsentBlock( $fields ),
+			'Malformed innerContent must not render a duplicate/outside child' );
+	}
+
+	public function test_insert_when_there_are_no_saved_children_keeps_block_inside_wrapper(): void {
+		$presenter = new CheckoutConsentPresentation( static fn(): bool => true );
+		$fields = $this->fields();
+		$fields['innerBlocks'] = array();
+		$fields['innerContent'] = array( '<div class="wp-block-woocommerce-checkout-fields-block"></div>' );
+		$result = $presenter->insertCheckoutConsentBlock( $fields );
+		self::assertCount( 1, $result['innerBlocks'] );
+		self::assertSame( array( '<div class="wp-block-woocommerce-checkout-fields-block">',
+			null, '</div>' ), $result['innerContent'] );
 	}
 }

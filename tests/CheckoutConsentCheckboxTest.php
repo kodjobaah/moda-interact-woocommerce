@@ -151,6 +151,23 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		self::assertSame( $original, $checkbox->classicFields( $original ) );
 	}
 
+	public function test_classic_uses_native_separate_button_container_without_proof_or_checked_state(): void {
+		$GLOBALS['arch046_checkout_page'] = true;
+		$checkbox = new CheckoutConsentCheckbox( static fn(): bool => true );
+		ob_start();
+		$checkbox->renderClassicPermission();
+		$html = ob_get_clean();
+		self::assertStringContainsString( 'id="moda-woo-consent-current-status" hidden', $html );
+		self::assertStringContainsString( 'id="moda-woo-consent-withdraw"', $html );
+		self::assertStringContainsString( 'type="button"', $html );
+		self::assertStringNotContainsString( 'checked', $html );
+		self::assertStringNotContainsString( 'grantEventId', $html );
+		$GLOBALS['arch046_order_received'] = true;
+		ob_start();
+		$checkbox->renderClassicPermission();
+		self::assertSame( '', ob_get_clean() );
+	}
+
 	public function test_blocks_register_once_only_for_eligible_checkout_and_never_prefill_profile(): void {
 		$enabled = false;
 		$checkbox = new CheckoutConsentCheckbox( static function () use ( &$enabled ): bool { return $enabled; } );

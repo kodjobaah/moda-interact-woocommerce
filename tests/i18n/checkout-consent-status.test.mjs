@@ -58,12 +58,9 @@ test('Blocks consent is forced into Checkout Fields, never the order summary', (
 	assert.doesNotMatch(script, /blocks\.ExperimentalOrderMeta\s*[,)]/);
 	assert.doesNotMatch(script, /plugins\.registerPlugin/);
 	assert.match(script, /request\('status'/);
-	assert.match(script, /const action = 'choice'/);
-	assert.doesNotMatch(script, /request\('withdraw'/);
-	assert.doesNotMatch(
-		script,
-		/querySelector|MutationObserver|document\.querySelector/
-	);
+	assert.match(script, /change\('choice'/);
+	assert.match(script, /change\(\s*'withdraw'/);
+	assert.doesNotMatch(script, /createRoot|MutationObserver|querySelector/);
 	assert.doesNotMatch(
 		script,
 		/grantEventId|installationId|canonicalPhone|Bearer /
@@ -178,36 +175,25 @@ test('Blocks uses native Store API cart/extensions, not custom WordPress REST', 
 	);
 });
 
-test('Blocks runtime mount renders once into server-owned Checkout Fields placeholder', () => {
-	const rendered = [];
-	const diagnostics = [];
-	const later = [];
-	let registered = null;
-	const node = {
-		getAttribute: (key) =>
-			key === 'data-moda-woo-runtime-mount' ? '1' : null,
+test('Blocks uses only Woo checkout registration even with old placeholder markup', () => {
+	const registrations = [];
+	const legacy = {
+		getAttribute: () => '1',
 		closest: () => ({}),
 	};
-	const window = {
-		sessionStorage: { getItem: () => '1' },
-		console: { info: (_prefix, event) => diagnostics.push(event) },
+	const win = {
 		document: {
 			readyState: 'complete',
-			getElementsByClassName: () => [node],
+			getElementsByClassName: () => [legacy],
 		},
-		setTimeout: (callback) => later.push(callback),
 		modaWooCheckoutConsentConfig: { endpoint: '/consent/' },
 		wp: {
 			element: {
-				createElement: (component) => component,
-				createRoot: (target) => {
-					assert.equal(target, node);
-					return {
-						render: (component) => {
-							rendered.push(component);
-							component();
-						},
-					};
+				createElement: () => null,
+				createRoot: () => {
+					throw new Error(
+						'A second React root must never be created'
+					);
 				},
 				useState: () => [],
 				useEffect: () => {},
@@ -217,55 +203,14 @@ test('Blocks runtime mount renders once into server-owned Checkout Fields placeh
 		},
 		wc: {
 			blocksCheckout: {
-				registerCheckoutBlock: (block) => (registered = block),
+				registerCheckoutBlock: (block) => registrations.push(block),
 			},
 		},
 	};
-	runInNewContext(script, { window });
-	assert.equal(rendered.length, 1);
-	assert.equal(rendered[0], registered.component);
-	assert.ok(diagnostics.includes('blocks_runtime_mount_requested'));
-	assert.ok(diagnostics.includes('blocks_component_rendered'));
-	for (const callback of later) {
-		callback();
-	}
-	assert.equal(
-		rendered.length,
-		1,
-		'Hydration probe must not duplicate the component'
-	);
-});
-
-test('Blocks never directly mount saved inner blocks or order-summary placeholders', () => {
-	const roots = [];
-	const node = {
-		getAttribute: () => null,
-		closest: () => ({}),
-	};
-	const win = {
-		document: {
-			readyState: 'complete',
-			getElementsByClassName: () => [node],
-		},
-		modaWooCheckoutConsentConfig: { endpoint: '/consent/' },
-		wp: {
-			element: {
-				createElement: () => null,
-				createRoot: (target) => roots.push(target),
-				useState: () => [],
-				useEffect: () => {},
-				useRef: () => ({}),
-			},
-			data: { useSelect: () => '' },
-		},
-		wc: { blocksCheckout: { registerCheckoutBlock: () => {} } },
-	};
-	runInNewContext(script, { window: win });
-	assert.equal(roots.length, 0, 'Woo renderer retains saved inner blocks');
-	node.getAttribute = () => '1';
-	node.closest = () => null;
-	runInNewContext(script, { window: win });
-	assert.equal(roots.length, 0, 'Never mount directly inside order summary');
+	assert.doesNotThrow(() => runInNewContext(script, { window: win }));
+	assert.equal(registrations.length, 1);
+	assert.equal(registrations[0].metadata.name, blockMetadata.name);
+	assert.doesNotMatch(script, /data-moda-woo-runtime-mount/);
 });
 
 test('Blocks Store API failures expose no private error message or credentials', async () => {

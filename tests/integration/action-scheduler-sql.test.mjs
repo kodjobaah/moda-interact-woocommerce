@@ -45,19 +45,28 @@ printf '99\\t{"attempt":1,"event":{"eventId":"woo-fixture"}}\\n'
 		);
 		process.env.PATH = `${directory}:${oldPath}`;
 		process.env.MODA_SQL_CAPTURE = join(directory, 'query.txt');
-		assert.equal(readPendingCheckoutActions('/test/docker-compose.yml')[0].id, '99');
+		assert.equal(
+			readPendingCheckoutActions('/test/docker-compose.yml')[0].id,
+			'99'
+		);
 		const pendingSql = readFileSync(process.env.MODA_SQL_CAPTURE, 'utf8');
 		assert.match(pendingSql, /a\.status = 'pending'/);
 		assert.match(pendingSql, /moda-interact-activity/);
-		assert.equal(readCheckoutActionHistory('/test/docker-compose.yml')[0].id, '99');
+		assert.equal(
+			readCheckoutActionHistory('/test/docker-compose.yml')[0].id,
+			'99'
+		);
 		const historySql = readFileSync(process.env.MODA_SQL_CAPTURE, 'utf8');
 		assert.doesNotMatch(historySql, /a\.status/);
 		assert.match(historySql, /LIMIT 250/);
 		assert.match(historySql, /moda-interact-activity/);
 	} finally {
 		process.env.PATH = oldPath;
-		if (oldCapture === undefined) delete process.env.MODA_SQL_CAPTURE;
-		else process.env.MODA_SQL_CAPTURE = oldCapture;
+		if (oldCapture === undefined) {
+			delete process.env.MODA_SQL_CAPTURE;
+		} else {
+			process.env.MODA_SQL_CAPTURE = oldCapture;
+		}
 		rmSync(directory, { recursive: true, force: true });
 	}
 });

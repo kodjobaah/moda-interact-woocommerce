@@ -1,6 +1,5 @@
 /* global jQuery */
-// Classic WooCommerce owns the checkout form and its authenticated update
-// lifecycle. Moda observes customer actions; it never initializes the cart.
+// Classic checkout owns the form and the authenticated update lifecycle.
 (function ($) {
 	'use strict';
 	let debugEnabled = false;
@@ -8,7 +7,7 @@
 		debugEnabled =
 			window.sessionStorage?.getItem('modaWooConsentDebug') === '1';
 	} catch {
-		// Disabled in browsers with restricted session storage.
+		// Restricted session storage disables diagnostics, not consent.
 	}
 	function debug(event, details = {}) {
 		if (!debugEnabled || typeof window.console?.info !== 'function') {
@@ -17,7 +16,7 @@
 		try {
 			window.console.info('[Moda Woo Consent]', event, details);
 		} catch {
-			// Diagnostics must never affect checkout.
+			// Console failures must not affect checkout.
 		}
 	}
 	debug('classic_script_loaded', { jqueryPresent: !!$ });
@@ -25,72 +24,79 @@
 		return;
 	}
 	const choice = 'input[name="moda_interact_whatsapp_recovery_opt_in"]';
-	const uncheckAction = 'moda_interact_whatsapp_recovery_unchecked_action';
 	const checkAction = 'moda_interact_whatsapp_recovery_checked_action';
 	const config = window.modaWooCheckoutConsentConfig;
 	debug('classic_config', { configPresent: !!config });
-	const notVerified = new Set([
-		'consent_proof_missing',
-		'consent_proof_phone_mismatch',
-		'consent_status_remote_unverified',
-	]);
 	let serial = 0;
 	let timer;
 	let lastContact = null;
 	let pendingChange = false;
+	let withdrawalPending = false;
 
 	function form() {
 		return $('form.checkout').first();
 	}
-
-	function setCheckbox(state) {
+	function contactKey(checkout) {
+		const phone = checkout.find('input[name="billing_phone"]').val() || '';
+		const country = checkout.find('[name="billing_country"]').val() || '';
+		return `${country}|${phone}`;
+	}
+	function setActionError(visible) {
+		const error = $('#moda-woo-consent-action-error');
+		error.text(config?.changeFailed || '');
+		error.prop('hidden', !visible);
+	}
+	function setView(state) {
 		const field = $(choice);
+		const granted = state === 'granted';
 		debug('classic_view', { state });
-		field.prop('disabled', state === 'checking' || state === 'unavailable');
-		if (state === 'checked' || state === 'unchecked') {
-			field.prop('checked', state === 'checked');
+		// A verified grant is a distinct status/button, never a checked checkbox.
+		// On read failure the optional checkbox remains visible and neutral.
+		field.prop('checked', false);
+		field.prop('disabled', state === 'checking');
+		field.closest('p.form-row').toggle(!granted);
+		$('#moda-woo-consent-granted-label').text(config?.granted || '');
+		$('#moda-woo-consent-withdraw').text(config?.withdraw || '');
+		$('#moda-woo-consent-current-status').prop('hidden', !granted);
+		if (!granted) {
+			setActionError(false);
 		}
-		// Hide the optional Moda field while verification is unavailable;
-		// the buyer must not see service errors or retry controls at checkout.
-		field.closest('p.form-row').toggle(
-			state !== 'checking' && state !== 'unavailable'
-		);
 	}
 
-	async function request(body) {
-		debug('classic_http_started', { action: 'status' });
-		const response = await fetch(config.endpoint + 'status', {
+	async function request(path, body) {
+		debug('classic_http_started', { action: path });
+		const endpoint =
+			path === 'status' ? config.statusEndpoint : config.withdrawEndpoint;
+		if (!endpoint || !config.nonce) {
+			throw new Error('consent_endpoint_unavailable');
+		}
+		const response = await fetch(endpoint, {
 			method: 'POST',
 			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': config.nonce,
-			},
-			body: JSON.stringify(body),
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams({
+				security: config.nonce,
+				mode: body.mode,
+				form: body.form,
+				...(path === 'withdraw'
+					? { confirmed: body.confirmed === true ? '1' : '0' }
+					: {}),
+			}).toString(),
 			cache: 'no-store',
 		});
 		debug('classic_http_response', {
-			action: 'status',
+			action: path,
 			ok: response.ok === true,
 			httpStatus: Number.isInteger(response.status)
 				? response.status
 				: null,
 		});
 		if (!response.ok) {
-			let errorCode = 'non_json_response';
-			try {
-				const error = await response.json();
-				if (
-					typeof error?.code === 'string' &&
-					/^[a-z0-9_-]{1,64}$/i.test(error.code)
-				) {
-					errorCode = error.code;
-				}
-			} catch {
-				// Never use arbitrary HTML or response content as a diagnostic.
-			}
-			debug('classic_http_rejected', { action: 'status', errorCode });
-			throw new Error('consent_status_unavailable');
+			debug('classic_http_rejected', {
+				action: path,
+				errorCode: 'http_rejected',
+			});
+			throw new Error('consent_request_unavailable');
 		}
 		return response.json();
 	}
@@ -100,50 +106,37 @@
 			return;
 		}
 		const checkout = form();
-		const phone = checkout.find('input[name="billing_phone"]').val() || '';
-		const country = checkout.find('[name="billing_country"]').val() || '';
-		const contact = `${country}|${phone}`;
+		const contact = contactKey(checkout);
 		if (!force && contact === lastContact) {
 			return;
 		}
 		lastContact = contact;
 		const id = ++serial;
-		if (!phone) {
-			setCheckbox('unchecked');
+		if (!contact.slice(contact.indexOf('|') + 1)) {
+			setView('neutral');
 			return;
 		}
-		setCheckbox('checking');
+		setView('checking');
 		try {
-			const result = await request({
+			const result = await request('status', {
 				mode: 'CLASSIC',
 				form: checkout.serialize(),
 			});
-			if (id !== serial) {
+			if (id !== serial || contact !== contactKey(form())) {
 				return;
 			}
-			const reason = notVerified.has(result.reason)
-				? result.reason
-				: null;
 			debug('classic_status_result', {
 				confirmed: result.confirmed === true,
-				reason,
+				reason:
+					result.reason === 'consent_proof_missing'
+						? 'consent_proof_missing'
+						: null,
 			});
-			if (result.confirmed === true) {
-				checkout.find(`input[name="${checkAction}"]`).remove();
-				setCheckbox('checked');
-			} else if (
-				notVerified.has(result.reason) ||
-				result.reason === null ||
-				result.reason === ''
-			) {
-				setCheckbox('unchecked');
-			} else {
-				setCheckbox('unavailable');
-			}
+			setView(result.confirmed === true ? 'granted' : 'neutral');
 		} catch {
 			if (id === serial) {
 				debug('classic_status_failed');
-				setCheckbox('unavailable');
+				setView('neutral');
 			}
 		}
 	}
@@ -151,11 +144,11 @@
 	function scheduleRefresh(force = false) {
 		serial++;
 		clearTimeout(timer);
-		timer = setTimeout(() => refresh(force), 400);
+		timer = setTimeout(() => refresh(force), 450);
 	}
 
-	// An absent checkbox in a normal Woo refresh means nothing. Only this
-	// explicit user event adds the hidden uncheck marker for Classic capture.
+	// Only a checked user action creates a grant marker. Unchecking merely
+	// clears that pending choice; it NEVER publishes a REVOKE event.
 	$(document.body).on('change', choice, function () {
 		if (this.disabled) {
 			return;
@@ -163,17 +156,74 @@
 		debug('classic_checkbox_changed', { checked: this.checked === true });
 		const checkout = $(this).closest('form.checkout');
 		if (checkout.length) {
-			checkout.find(`input[name="${uncheckAction}"]`).remove();
 			checkout.find(`input[name="${checkAction}"]`).remove();
-			$('<input>', {
-				type: 'hidden',
-				name: this.checked ? checkAction : uncheckAction,
-				value: '1',
-			}).appendTo(checkout);
+			checkout
+				.find(
+					'input[name="moda_interact_whatsapp_recovery_unchecked_action"]'
+				)
+				.remove();
+			if (this.checked) {
+				$('<input>', {
+					type: 'hidden',
+					name: checkAction,
+					value: '1',
+				}).appendTo(checkout);
+			}
 		}
 		pendingChange = true;
 		$(document.body).trigger('update_checkout');
 	});
+
+	$(document.body).on(
+		'click',
+		'#moda-woo-consent-withdraw',
+		async function (event) {
+			event.preventDefault();
+			if (
+				!config ||
+				withdrawalPending ||
+				typeof window.confirm !== 'function'
+			) {
+				return;
+			}
+			// The browser confirmation is intentional: consent withdrawal is explicit.
+			// eslint-disable-next-line no-alert
+			if (!window.confirm(config.confirm)) {
+				return;
+			}
+			const checkout = form();
+			const contact = contactKey(checkout);
+			withdrawalPending = true;
+			$(this).prop('disabled', true);
+			setActionError(false);
+			try {
+				const result = await request('withdraw', {
+					mode: 'CLASSIC',
+					confirmed: true,
+					form: checkout.serialize(),
+				});
+				if (result.status !== 'withdrawn') {
+					throw new Error('consent_ack_unavailable');
+				}
+				// The server has ACKed REVOKE. Ignore a racing status read.
+				serial++;
+				if (contact === contactKey(form())) {
+					lastContact = contact;
+					form().find(`input[name="${checkAction}"]`).remove();
+					setView('neutral');
+				} else {
+					scheduleRefresh(true);
+				}
+				debug('classic_withdraw_ack');
+			} catch {
+				debug('classic_withdraw_failed');
+				setActionError(true);
+			} finally {
+				withdrawalPending = false;
+				$(this).prop('disabled', false);
+			}
+		}
+	);
 
 	if (config) {
 		$(document.body).on('updated_checkout', () => {

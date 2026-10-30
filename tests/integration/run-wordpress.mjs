@@ -15,9 +15,13 @@ import { assertLocaleBatch012 } from './scenarios/locale-batch-012.mjs';
 import { assertLocaleBatch013 } from './scenarios/locale-batch-013.mjs';
 import { assertReleaseLocales } from './scenarios/release-locales.mjs';
 import { assertCheckoutWordPress } from './scenarios/checkout-wordpress.mjs';
+import { assertCheckoutConsentWordPress } from './scenarios/checkout-consent-wordpress.mjs';
 import { assertBillingWordPress } from './scenarios/billing-wordpress.mjs';
 import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
-import { readPendingCheckoutActions, readCheckoutActionHistory } from './action-scheduler-sql.mjs';
+import {
+	readPendingCheckoutActions,
+	readCheckoutActionHistory,
+} from './action-scheduler-sql.mjs';
 import { createWordPressApiFixture } from './wordpress-api-fixture.mjs';
 import {
 	assertConnectionEnvironmentWordPress,
@@ -26,6 +30,8 @@ import {
 
 const execFileAsync = promisify(execFile);
 const checkoutOnly = process.argv.includes('--checkout-only');
+const consentOnly = process.argv.includes('--consent-only');
+const consentBrowser = process.argv.includes('--consent-browser');
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
 let siteUrl;
@@ -200,13 +206,13 @@ const apiPort = server.address().port;
 const apiOrigin = `https://host.docker.internal:${apiPort}`;
 
 try {
-	if (checkoutOnly) {
+	if (checkoutOnly || consentOnly) {
 		// Never start, stop, activate or reset a developer's existing wp-env.
 		// The checkout assertions create test orders/users and alter WooCommerce settings.
 		assert.equal(
 			process.env.MODA_CHECKOUT_TEST_DISPOSABLE,
 			'1',
-			'--checkout-only changes WooCommerce test data. Set MODA_CHECKOUT_TEST_DISPOSABLE=1 only for a disposable wp-env site.'
+			'--checkout-only / --consent-only change WooCommerce test data. Set MODA_CHECKOUT_TEST_DISPOSABLE=1 only for a disposable wp-env site.'
 		);
 		siteUrl = runningWordPressSite();
 		const response = await fetchWordPress(siteUrl);
@@ -283,19 +289,35 @@ try {
 				wp('config', 'set', name, value, '--type=constant');
 				applied.push([name, prior]);
 			}
-			await assertCheckoutWordPress({
-				siteUrl,
-				wp,
-				wpAsync,
-				parseJsonOutput,
-				getPendingCheckoutActions: () =>
-					readPendingCheckoutActions(wpEnvComposeFile),
-				getCheckoutActionHistory: () =>
-					readCheckoutActionHistory(wpEnvComposeFile),
-				getActivityRequests: apiFixture.getActivityRequests,
-				setActivityStatus: apiFixture.setActivityStatus,
-			});
-			process.stdout.write('ARCH-035 checkout-only integration PASS\n');
+			if (consentOnly) {
+				await assertCheckoutConsentWordPress({
+					siteUrl,
+					wp,
+					parseJsonOutput,
+					fixture: apiFixture,
+					getCheckoutActionHistory: () =>
+						readCheckoutActionHistory(wpEnvComposeFile),
+					withBrowser: consentBrowser,
+				});
+			} else {
+				await assertCheckoutWordPress({
+					siteUrl,
+					wp,
+					wpAsync,
+					parseJsonOutput,
+					getPendingCheckoutActions: () =>
+						readPendingCheckoutActions(wpEnvComposeFile),
+					getCheckoutActionHistory: () =>
+						readCheckoutActionHistory(wpEnvComposeFile),
+					getActivityRequests: apiFixture.getActivityRequests,
+					setActivityStatus: apiFixture.setActivityStatus,
+				});
+			}
+			process.stdout.write(
+				consentOnly
+					? 'ARCH-046 consent-only integration PASS\n'
+					: 'ARCH-035 checkout-only integration PASS\n'
+			);
 		} finally {
 			for (const [name, prior] of applied.reverse()) {
 				try {
@@ -572,6 +594,15 @@ try {
 				readCheckoutActionHistory(wpEnvComposeFile),
 			getActivityRequests: apiFixture.getActivityRequests,
 			setActivityStatus: apiFixture.setActivityStatus,
+		});
+		await assertCheckoutConsentWordPress({
+			siteUrl,
+			wp,
+			parseJsonOutput,
+			fixture: apiFixture,
+			getCheckoutActionHistory: () =>
+				readCheckoutActionHistory(wpEnvComposeFile),
+			withBrowser: consentBrowser,
 		});
 		await assertStoreContextWordPress({
 			siteUrl,

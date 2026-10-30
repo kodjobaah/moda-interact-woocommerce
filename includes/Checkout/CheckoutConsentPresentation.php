@@ -30,10 +30,10 @@ final class CheckoutConsentPresentation {
 		add_action( 'init', array( $this, 'registerCheckoutBlock' ), 20 );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueueBlockEditor' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ), 15 );
-		// Existing checkout pages do not automatically acquire a new saved inner
-		// block when the plugin is installed. Insert its runtime-only mount point
-		// into the Checkout Fields column, without updating post_content.
-		add_filter( 'render_block_woocommerce/checkout-fields-block', array( $this, 'renderCheckoutFields' ), 20, 2 );
+		// Existing checkout pages do not contain our block in saved post_content.
+		// Add a real parsed inner block BEFORE WP_Block builds/renders its children;
+		// the Woo registry is the only frontend renderer (no second React root).
+		add_filter( 'render_block_data', array( $this, 'insertCheckoutConsentBlock' ), 20, 1 );
 	}
 
 	/**
@@ -59,37 +59,61 @@ final class CheckoutConsentPresentation {
 	}
 
 	/**
-	 * Supply a transient frontend mount point on already-existing checkout pages.
-	 * A PHP block registration and an editor-only block definition do not write
-	 * the custom block into a merchant's previously saved checkout post content.
-	 * The Woo Blocks registry requires a data-block-name marker in the rendered
-	 * Checkout Fields subtree before it can mount the React consent component.
+	 * Insert a real Checkout Fields child for previously saved checkout pages.
+	 * render_block_data runs before WP_Block builds inner_blocks; modifying the
+	 * rendered HTML later cannot register an actual Woo inner block.
+	 * Never persist or rewrite a merchant's checkout post_content.
 	 *
-	 * Only the LEFT Checkout Fields block is changed, never Checkout Totals.
-	 * Do not inject DOM nodes from JavaScript or persist/overwrite the template.
+	 * @param array $parsed WordPress parsed block data (not rendered HTML).
 	 */
-	public function renderCheckoutFields( string $content, array $block = array() ): string {
-		if ( ! $this->isCheckoutEnabled() ) return $content;
-		if ( false !== strpos( $content, 'data-block-name="moda-interact/checkout-consent"' ) ) return $content;
-		if ( false === strpos( $content, 'data-block-name="woocommerce/checkout-fields-block"' ) &&
-			false === strpos( $content, 'wp-block-woocommerce-checkout-fields-block' ) ) return $content;
-
-		// Distinguish a runtime-inserted placeholder from an actual saved inner
-		// block. The latter is owned by Woo's checkout-block renderer; only
-		// runtime placeholders may receive our WordPress element root.
-		$mount = '<div data-block-name="moda-interact/checkout-consent"' .
-			' data-moda-woo-runtime-mount="1"' .
-			' class="wp-block-moda-interact-checkout-consent"></div>';
-		// Place immediately before the Place Order actions when present.
-		if ( preg_match( '~<div\b[^>]*data-block-name=["\']woocommerce/checkout-actions-block["\'][^>]*>~', $content, $match, PREG_OFFSET_CAPTURE ) ) {
-			return substr_replace( $content, $mount, $match[0][1], 0 );
+	public function insertCheckoutConsentBlock( array $parsed ): array {
+		if ( ( $parsed['blockName'] ?? null ) !== 'woocommerce/checkout-fields-block' ||
+			! $this->isCheckoutEnabled() ) return $parsed;
+		$children = $parsed['innerBlocks'] ?? null;
+		$content = $parsed['innerContent'] ?? null;
+		if ( ! is_array( $children ) || ! is_array( $content ) ) return $parsed;
+		$insert = count( $children );
+		foreach ( $children as $index => $child ) {
+			if ( ! is_array( $child ) ) return $parsed;
+			if ( ( $child['blockName'] ?? null ) === 'moda-interact/checkout-consent' ) return $parsed;
+			if ( ( $child['blockName'] ?? null ) === 'woocommerce/checkout-actions-block' ) {
+				$insert = $index;
+				break;
+			}
 		}
-		// Woo versions/templates without a separate actions child still have
-		// the closing Checkout Fields wrapper. Reject unexpected markup rather
-		// than accidentally mounting in Order Summary or outside checkout.
-		$closing = strripos( $content, '</div>' );
-		if ( false === $closing || '' !== trim( substr( $content, $closing + 6 ) ) ) return $content;
-		return substr_replace( $content, $mount, $closing, 0 );
+
+		// WordPress pairs one null in innerContent with each parsed child.
+		// Refuse malformed/unknown layouts rather than render outside Checkout Fields.
+		$slots = array();
+		foreach ( $content as $position => $fragment ) {
+			if ( null === $fragment ) $slots[] = $position;
+		}
+		if ( count( $slots ) !== count( $children ) ) return $parsed;
+		if ( $insert < count( $children ) ) {
+			$contentPosition = $slots[ $insert ];
+		} elseif ( count( $children ) > 0 ) {
+			$contentPosition = $slots[ count( $slots ) - 1 ] + 1;
+		} else {
+			// No existing children: split the closing wrapper so the injected
+			// block still belongs INSIDE Checkout Fields (not its sibling).
+			if ( 1 !== count( $content ) || ! is_string( $content[0] ) ||
+				! preg_match( '~</div>\s*$~iD', $content[0], $closing, PREG_OFFSET_CAPTURE ) ) return $parsed;
+			$before = substr( $content[0], 0, $closing[0][1] );
+			$after = substr( $content[0], $closing[0][1] );
+			$content = array( $before, $after );
+			$contentPosition = 1;
+		}
+		array_splice( $children, $insert, 0, array( array(
+			'blockName' => 'moda-interact/checkout-consent',
+			'attrs' => array( 'lock' => array( 'remove' => true, 'move' => true ) ),
+			'innerBlocks' => array(),
+			'innerHTML' => '',
+			'innerContent' => array(),
+		) ) );
+		array_splice( $content, $contentPosition, 0, array( null ) );
+		$parsed['innerBlocks'] = $children;
+		$parsed['innerContent'] = $content;
+		return $parsed;
 	}
 
 	/** Register the editor-side type so the forced inner block is not unknown. */
@@ -97,7 +121,7 @@ final class CheckoutConsentPresentation {
 		if ( ! function_exists( 'wp_enqueue_script' ) ) return;
 		wp_enqueue_script( 'moda-woo-consent-editor',
 			plugins_url( 'assets/js/checkout-consent-editor.js', MODA_INTERACT_MAIN_PLUGIN_FILE ),
-			array( 'wp-blocks', 'wp-element' ), '1.0.1', true );
+			array( 'wp-blocks', 'wp-element' ), '1.0.2', true );
 		if ( function_exists( 'wp_add_inline_script' ) ) {
 			wp_add_inline_script( 'moda-woo-consent-editor',
 				'window.modaWooConsentEditorLabel = ' . wp_json_encode(
@@ -108,25 +132,28 @@ final class CheckoutConsentPresentation {
 
 	public function enqueue(): void {
 		if ( ! $this->isCheckoutEnabled() ) return;
+		$blocks = function_exists( 'has_block' ) && has_block( 'woocommerce/checkout' );
+		// Classic uses Woo-native AJAX so its existing, cookie-bound WC session
+		// is present. No standalone REST-session bootstrapping is necessary.
 		$config = array_merge( $this->labels(), array(
-			'endpoint' => function_exists( 'rest_url' ) ? rest_url( 'moda-interact/v1/checkout-consent/' ) : '',
+			'statusEndpoint' => class_exists( '\WC_AJAX' ) ? \WC_AJAX::get_endpoint( 'moda_interact_checkout_consent_status' ) : '',
+			'withdrawEndpoint' => class_exists( '\WC_AJAX' ) ? \WC_AJAX::get_endpoint( 'moda_interact_checkout_consent_withdraw' ) : '',
 			'nonce' => function_exists( 'wp_create_nonce' ) ? wp_create_nonce( 'wp_rest' ) : '',
 			'storeNonce' => function_exists( 'wp_create_nonce' ) ? wp_create_nonce( 'wc_store_api' ) : '',
 			'optIn' => CheckoutConsentCheckbox::disclosure()['text'],
 		) );
-		if ( ! is_string( $config['endpoint'] ) || '' === $config['endpoint'] ||
-			! is_string( $config['nonce'] ) || '' === $config['nonce'] ) return;
-		$blocks = function_exists( 'has_block' ) && has_block( 'woocommerce/checkout' );
+		if ( ! $blocks && ( '' === $config['statusEndpoint'] || '' === $config['withdrawEndpoint'] ||
+			! is_string( $config['nonce'] ) || '' === $config['nonce'] ) ) return;
 		$handle = $blocks ? 'moda-woo-consent-blocks-status' : 'moda-woo-consent-classic';
 		if ( $blocks ) {
 			wp_enqueue_script( $handle,
 				plugins_url( 'assets/js/checkout-consent-blocks-status.js', MODA_INTERACT_MAIN_PLUGIN_FILE ),
-				array( 'wp-element', 'wp-data', 'wc-blocks-checkout' ), '1.0.1', true );
+				array( 'wp-element', 'wp-data', 'wc-blocks-checkout' ), '1.0.2', true );
 		}
 		if ( $blocks && function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'moda-woo-checkout-consent',
 				plugins_url( 'assets/css/checkout-consent.css', MODA_INTERACT_MAIN_PLUGIN_FILE ),
-				array(), '1.0.1' );
+				array(), '1.0.2' );
 		}
 		if ( function_exists( 'wp_add_inline_script' ) ) {
 			wp_add_inline_script( $handle,

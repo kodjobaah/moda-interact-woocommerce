@@ -92,17 +92,16 @@ test('Blocks diagnostics distinguish mount and Store API status acknowledgement'
 		},
 	};
 	runInNewContext(blocks, { window: win });
+	registration.component();
+	effects[0]();
 	for (const callback of later) {
 		callback();
 	}
-	registration.component();
-	effects[0]();
 	await new Promise((resolve) => setImmediate(resolve));
 	for (const expected of [
 		'blocks_script_loaded',
 		'blocks_registration_started',
 		'blocks_registered',
-		'blocks_mount_probe',
 		'blocks_component_rendered',
 		'blocks_contact_changed',
 		'blocks_http_started',

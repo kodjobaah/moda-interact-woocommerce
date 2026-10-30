@@ -11,7 +11,7 @@ const script = readFileSync(
 	'utf8'
 );
 
-test('Classic checkbox marks only explicit uncheck for the authenticated Woo update', () => {
+test('Classic unchecked state never creates a REVOKE; only a checked click marks GRANT', () => {
 	const handlers = new Map();
 	const actions = [];
 	let hidden = null;
@@ -55,11 +55,10 @@ test('Classic checkbox marks only explicit uncheck for the authenticated Woo upd
 	checkbox.checked = false;
 	handler.call(checkbox);
 	assert.equal(
-		hidden.name,
-		'moda_interact_whatsapp_recovery_unchecked_action'
+		hidden,
+		null,
+		'Unchecking clears old GRANT; there is no REVOKE marker'
 	);
-	assert.equal(hidden.value, '1');
-	assert.equal(hidden.type, 'hidden');
 	assert.deepEqual(actions, ['update_checkout', 'update_checkout']);
 
 	checkbox.checked = true;

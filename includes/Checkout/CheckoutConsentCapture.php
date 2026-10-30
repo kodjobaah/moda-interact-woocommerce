@@ -120,27 +120,19 @@ final class CheckoutConsentCapture {
 		// A routine Woo checkout refresh must NEVER turn that display state into
 		// a new GRANT. Only our direct change handler adds these action markers.
 		$grant = $selection && ( $fields['moda_interact_whatsapp_recovery_checked_action'] ?? null ) === '1';
-		$uncheck = ! $selection && ( $fields['moda_interact_whatsapp_recovery_unchecked_action'] ?? null ) === '1';
-		if ( ! $grant && ! $uncheck ) {
-			// A phone/account transition can require a neutral unchecked Woo
-			// observation before a NEW deliberate GRANT. Allow only that local
-			// state transition; it cannot record a consent decision or publish.
+		if ( ! $grant ) {
+			// A missing/unselected checkbox, forged legacy uncheck marker or
+			// ordinary Woo refresh is never a withdrawal command. Only the
+			// separately confirmed checkout-consent/withdraw route may REVOKE.
 			if ( ! $selection && $this->awaitingNeutralClassicSelection() ) {
 				$this->observe( 'CLASSIC', false, $fields['billing_phone'],
 					CheckoutConsentPhone::verifiedCountry( $fields['billing_country'] ?? null ), true );
 			}
 			return;
 		}
-		// The old select/dropdown is intentionally ignored and cannot cause REVOKE.
-		$country = CheckoutConsentPhone::verifiedCountry( $fields['billing_country'] ?? null );
-		if ( $uncheck && ! $this->hasSameCheckoutGrant( $fields['billing_phone'], $country ) ) {
-			// A returning customer's checked checkbox was populated only after a
-			// proof-backed status read. Do not require a local observation from
-			// this new checkout; the explicit uncheck is a withdrawal command.
-			$this->withdrawExplicit( 'CLASSIC', $fields['billing_phone'], $country, true );
-			return;
-		}
-		$this->observe( 'CLASSIC', $selection, $fields['billing_phone'], $country, true, $uncheck );
+		$this->observe( 'CLASSIC', true, $fields['billing_phone'],
+			CheckoutConsentPhone::verifiedCountry( $fields['billing_country'] ?? null ), true );
+
 	}
 
 	public function blocksDraft( mixed $request ): void {
@@ -226,8 +218,15 @@ final class CheckoutConsentCapture {
 		if ( $has_checkbox && ! in_array( $selection, array( true, false, '1', '0', 'true', 'false', 1, 0 ), true ) ) return;
 		if ( ! $has_checkbox ) return;
 		$checked = in_array( $selection, array( true, '1', 'true', 1 ), true );
+		// A stale/legacy additional field cannot revoke without the distinct
+		// confirmed withdrawal operation. It can still cancel a previously
+		// staged grant so a later billing-address update cannot resurrect it.
 		$session = WC()->session ?? null;
 		if ( ! $session ) return;
+		if ( ! $checked ) {
+			$session->set( self::BLOCKS_STAGE, null );
+			return;
+		}
 		if ( $checked && null !== CheckoutKey::current() && null !== $this->currentPrincipal() ) {
 			$session->set( self::BLOCKS_STAGE, array(
 				'checkoutKey' => CheckoutKey::current(), 'principal' => $this->currentPrincipal(),
@@ -236,9 +235,9 @@ final class CheckoutConsentCapture {
 		} else {
 			$session->set( self::BLOCKS_STAGE, null );
 		}
-		// The authenticated Store API explicitly carries this additional field.
-		// Only a true -> false transition in the SAME verified checkout can revoke.
-		$this->observeBlocksCustomer( $checked, WC()->customer ?? null, $has_checkbox && ! $checked );
+		// A legacy authenticated Store API field can still carry a deliberate
+		// grant; withdrawal is ONLY possible via the explicit confirmed action.
+		$this->observeBlocksCustomer( $checked, WC()->customer ?? null );
 	}
 
 	private function verifiedStoreApiRequest( object $request ): bool {

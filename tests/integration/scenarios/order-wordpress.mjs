@@ -103,7 +103,11 @@ export async function assertOrderWordPress({
 		orderId,
 		'ORDER_PAID'
 	);
-	assert.equal(paid.length, 1, `${kind}: confirmed COD payment must emit once`);
+	assert.equal(
+		paid.length,
+		1,
+		`${kind}: confirmed COD payment must emit once`
+	);
 	assert.equal(paid[0].args.event.checkoutKey, checkoutKey);
 
 	// A gateway that does not call payment_complete() can still prove payment
@@ -150,7 +154,10 @@ export async function assertOrderWordPress({
 			`${kind}: later payment callback deduplicates gateway status evidence`
 		);
 	} finally {
-		await wpAsync('eval', `wc_get_order(${statusGatewayId})->delete(true);`);
+		await wpAsync(
+			'eval',
+			`wc_get_order(${statusGatewayId})->delete(true);`
+		);
 	}
 	// Woo's payment-complete and payment-status callbacks must reuse this event.
 	await wpAsync(

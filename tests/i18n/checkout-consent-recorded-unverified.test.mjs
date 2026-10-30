@@ -26,6 +26,7 @@ function simulate({
 	const logs = [];
 	const ids = [];
 	let grantCount = 0;
+	let confirmWithdrawal = false;
 	const cart = {
 		billingAddress: { country: 'GB', phone: '+447400123456' },
 		extensions: {},
@@ -42,8 +43,12 @@ function simulate({
 			checkStatus: 'Retry',
 			changeFailed: 'Try again',
 			waitForPhone: 'Enter phone first',
+			granted: 'Already granted',
+			withdraw: 'Withdraw permission',
+			confirm: 'Really withdraw?',
 		},
 		sessionStorage: { getItem: () => '1' },
+		confirm: () => confirmWithdrawal,
 		console: { info: (...args) => logs.push(args) },
 		wp: {
 			element: {
@@ -163,6 +168,9 @@ function simulate({
 		setFailure(value) {
 			failure = value;
 		},
+		setConfirmation(value) {
+			confirmWithdrawal = value;
+		},
 		getGrants: () => grantCount,
 	};
 }
@@ -177,27 +185,43 @@ function checkbox(nodes) {
 	return inputs[0];
 }
 
-test('current API-006 GRANTED appears checked and one uncheck records REVOKE', async () => {
+function button(nodes) {
+	const buttons = nodes.filter((node) => node.type === 'button');
+	assert.equal(
+		buttons.length,
+		1,
+		'Verified GRANT requires one distinct withdrawal button'
+	);
+	return buttons[0];
+}
+
+test('verified GRANTED shows status and separate confirmed withdrawal, never a checked box', async () => {
 	const app = simulate({ remoteConfirmed: true });
-	const loaded = checkbox(await app.load());
-	assert.equal(loaded.props.checked, true);
-	assert.equal(loaded.props.disabled, false);
-	loaded.props.onChange({ target: { checked: false } });
+	let nodes = await app.load();
+	assert.equal(nodes.filter((node) => node.type === 'input').length, 0);
+	assert.ok(nodes.some((node) => node.props.role === 'status'));
+	button(nodes).props.onClick();
 	await app.settle();
-	const updated = checkbox(app.visit(app.render()));
-	assert.equal(updated.props.checked, false);
-	assert.ok(
-		app.actions.some(
-			(action) => action.action === 'choice' && action.checked === false
-		)
+	assert.deepEqual(
+		app.actions.map((a) => a.action),
+		['status']
+	);
+	app.setConfirmation(true);
+	button(nodes).props.onClick();
+	await app.settle();
+	nodes = app.visit(app.render());
+	assert.equal(checkbox(nodes).props.checked, false);
+	assert.deepEqual(
+		app.actions.map((a) => a.action),
+		['status', 'withdraw']
 	);
 	assert.equal(
-		app.actions.some((action) => action.action === 'withdraw'),
+		app.actions.some((a) => a.action === 'choice' && a.checked === false),
 		false
 	);
 });
 
-test('no proof yields unchecked; acknowledged GRANT leaves only a checked control', async () => {
+test('no proof gives unchecked consent; GRANT ACK switches to withdrawal button', async () => {
 	const app = simulate();
 	const first = checkbox(await app.load());
 	assert.equal(first.props.checked, false);
@@ -205,65 +229,64 @@ test('no proof yields unchecked; acknowledged GRANT leaves only a checked contro
 	first.props.onChange({ target: { checked: true } });
 	await app.settle();
 	const nodes = app.visit(app.render());
-	const selected = checkbox(nodes);
-	assert.equal(selected.props.checked, true);
-	assert.equal(
-		nodes.some((node) => node.type === 'button'),
-		false
-	);
-	assert.equal(
-		nodes.some((node) => node.props.role === 'status' || node.props.role === 'alert'),
-		false,
-		'Checkout must never show an operational status or error panel'
-	);
-	assert.equal(
-		app.actions.filter((action) => action.action === 'status').length,
-		1,
-		'A successful grant ACK must not cause a redundant API-006 read'
-	);
+	assert.equal(nodes.filter((node) => node.type === 'input').length, 0);
+	assert.ok(button(nodes));
+	assert.equal(app.actions.filter((a) => a.action === 'status').length, 1);
 	assert.equal(app.getGrants(), 1);
-	// Same-checkout opt-out never needs an extra withdrawal button.
-	selected.props.onChange({ target: { checked: false } });
-	await app.settle();
-	assert.equal(checkbox(app.visit(app.render())).props.checked, false);
-	assert.equal(
-		app.actions.some((a) => a.action === 'choice' && a.checked === false),
-		true
-	);
 	assert.doesNotMatch(
 		JSON.stringify(app.logs),
 		/447400123456|Bearer |grantEventId/
 	);
 });
 
-test('unavailable remote status quietly hides optional Moda UI', async () => {
+test('remote outage gives a visible neutral unchecked opt-in, never an inferred GRANT', async () => {
 	const app = simulate({ remoteUnavailable: true });
 	const nodes = await app.load();
-	assert.equal(nodes.length, 0, 'No checkbox, retry button or error panel');
+	const input = checkbox(nodes);
+	assert.equal(input.props.checked, false);
+	assert.equal(input.props.disabled, false);
+	assert.equal(
+		nodes.some((node) => node.type === 'button'),
+		false
+	);
 	assert.equal(app.getGrants(), 0);
-	assert.deepEqual(app.actions.map((action) => action.action), ['status']);
+	assert.deepEqual(
+		app.actions.map((a) => a.action),
+		['status']
+	);
 });
 
-test('a failed consent write quietly restores the previous checkbox and can retry', async () => {
+test('failed consent write preserves neutral state and retries with one stable request ID', async () => {
 	const app = simulate({ failure: true });
 	const input = checkbox(await app.load());
 	input.props.onChange({ target: { checked: true } });
 	await app.settle();
 	const nodes = app.visit(app.render());
 	assert.equal(checkbox(nodes).props.checked, false);
-	assert.equal(
-		nodes.some((node) => node.props.role === 'alert' || node.type === 'button'),
-		false,
-		'No large error or retry panel may block merchant checkout'
-	);
+	assert.ok(nodes.some((node) => node.props.role === 'alert'));
 	assert.equal(app.ids.length, 1);
 	app.setFailure(false);
 	checkbox(nodes).props.onChange({ target: { checked: true } });
 	await app.settle();
-	assert.equal(
-		app.ids[1],
-		app.ids[0],
-		'A lost ACK must reuse the same request ID'
+	assert.equal(app.ids[1], app.ids[0], 'Lost ACK retries same request ID');
+	assert.ok(button(app.visit(app.render())));
+});
+
+test('failed withdrawal keeps verified status and retries with same event request ID', async () => {
+	const app = simulate({ remoteConfirmed: true, failure: true });
+	app.setConfirmation(true);
+	let nodes = await app.load();
+	button(nodes).props.onClick();
+	await app.settle();
+	nodes = app.visit(app.render());
+	assert.ok(
+		button(nodes),
+		'A failed hosted write must not clear the GRANT presentation'
 	);
-	assert.equal(checkbox(app.visit(app.render())).props.checked, true);
+	assert.ok(nodes.some((node) => node.props.role === 'alert'));
+	app.setFailure(false);
+	button(nodes).props.onClick();
+	await app.settle();
+	assert.equal(app.ids[1], app.ids[0]);
+	assert.equal(checkbox(app.visit(app.render())).props.checked, false);
 });

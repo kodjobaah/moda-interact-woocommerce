@@ -35,6 +35,8 @@
 		"test:js": "npm run test:js:unit && npm run test:js:node",
 		"test:php": "composer test",
 		"test:integration:wordpress": "node tests/integration/run-wordpress.mjs",
+		"test:integration:consent": "node tests/integration/run-wordpress.mjs --consent-only",
+		"test:integration:consent:browser": "node tests/integration/run-wordpress.mjs --consent-only --consent-browser",
 		"test:integration:package-lifecycle": "node tests/integration/run-package-lifecycle.mjs",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",

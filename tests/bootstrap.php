@@ -91,6 +91,14 @@ function register_rest_route( $namespace, $route, $args ) {
 	return true;
 }
 
+// Record checkout AJAX replies without terminating PHPUnit. Production WordPress
+// wp_send_json() emits the actual HTTP response and exits normally.
+if ( ! function_exists( 'wp_send_json' ) ) {
+	function wp_send_json( $response, $status_code = null ) {
+		$GLOBALS['arch046_last_ajax_json'] = array( 'body' => $response, 'code' => $status_code );
+	}
+}
+
 function __return_true() {
 	return true;
 }

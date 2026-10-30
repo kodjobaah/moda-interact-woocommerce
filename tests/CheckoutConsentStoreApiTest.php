@@ -98,13 +98,16 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		self::assertArrayNotHasKey( 'grantEventId', $this->api->data() );
 	}
 
-	public function test_grant_and_same_checkout_uncheck_record_ordered_distinct_events(): void {
+	public function test_grant_and_confirmed_withdraw_record_ordered_distinct_events(): void {
 		$this->api->update( $this->action( 'choice', 'm-grant', array( 'checked' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
 		self::assertSame( 'GRANT', $this->events[0]['decision'] );
 		$this->api->update( $this->action( 'status', 'm-status' ) );
 		self::assertSame( true, $this->api->data()['confirmed'] );
-		$this->api->update( $this->action( 'choice', 'm-revoke', array( 'checked' => false ) ) );
+		$this->api->update( $this->action( 'choice', 'm-uncheck', array( 'checked' => false ) ) );
+		self::assertSame( 'store_api_choice_value_invalid', $this->api->data()['reason'] );
+		self::assertCount( 1, $this->events, 'A checkbox uncheck cannot withdraw' );
+		$this->api->update( $this->action( 'withdraw', 'm-revoke', array( 'confirmed' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
 		self::assertSame( 'REVOKE', $this->events[1]['decision'] );
 		self::assertNotSame( $this->events[0]['eventId'], $this->events[1]['eventId'] );
@@ -180,30 +183,33 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 
 	public function test_store_choice_replay_cannot_regrant_after_withdrawal_or_change_decision(): void {
 		$this->api->update( $this->action( 'choice', 'first-grant', array( 'checked' => true ) ) );
-		$this->api->update( $this->action( 'choice', 'revoke-action', array( 'checked' => false ) ) );
+		$this->api->update( $this->action( 'withdraw', 'revoke-action', array( 'confirmed' => true ) ) );
 		self::assertCount( 2, $this->events );
 		$this->api->update( $this->action( 'choice', 'first-grant', array( 'checked' => true ) ) );
 		self::assertSame( 'capture_observe_store_choice_stale_replay', $this->api->data()['reason'] );
 		$this->api->update( $this->action( 'choice', 'revoke-action', array( 'checked' => true ) ) );
 		self::assertSame( 'capture_observe_store_choice_id_conflict', $this->api->data()['reason'] );
 		self::assertCount( 2, $this->events );
-		$this->api->update( $this->action( 'choice', 'revoke-action', array( 'checked' => false ) ) );
+		$this->api->update( $this->action( 'withdraw', 'revoke-action', array( 'confirmed' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
 		self::assertCount( 2, $this->events );
 	}
 
 	public function test_action_receipts_fail_closed_when_checkout_history_is_full(): void {
-		for ( $i = 0; $i < 30; $i++ ) {
-			$this->api->update( $this->action( 'choice', 'consent-choice-' . $i,
-				array( 'checked' => 0 === $i % 2 ) ) );
+		for ( $i = 0; $i < 15; $i++ ) {
+			$this->api->update( $this->action( 'choice', 'grant-' . $i,
+				array( 'checked' => true ) ) );
+			self::assertSame( 'recorded', $this->api->data()['status'] );
+			$this->api->update( $this->action( 'withdraw', 'withdraw-' . $i,
+				array( 'confirmed' => true ) ) );
 			self::assertSame( 'recorded', $this->api->data()['status'] );
 		}
 		self::assertCount( 30, $this->events );
-		$this->api->update( $this->action( 'choice', 'consent-choice-30', array( 'checked' => true ) ) );
+		$this->api->update( $this->action( 'choice', 'blocked-grant', array( 'checked' => true ) ) );
 		self::assertSame( 'capture_observe_store_choice_history_full', $this->api->data()['reason'] );
-		$this->api->update( $this->action( 'choice', 'consent-choice-0', array( 'checked' => true ) ) );
+		$this->api->update( $this->action( 'choice', 'grant-0', array( 'checked' => true ) ) );
 		self::assertSame( 'capture_observe_store_choice_stale_replay', $this->api->data()['reason'] );
-		self::assertCount( 30, $this->events, 'A stale GRANT must not be restored after many actions' );
+		self::assertCount( 30, $this->events );
 	}
 
 	public function test_history_limit_never_prevents_customer_withdrawal(): void {
@@ -219,7 +225,7 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		$session->set( 'moda_interact_checkout_consent_observation_v2', $state );
 		$this->api->update( $this->action( 'choice', 'blocked-new-grant', array( 'checked' => true ) ) );
 		self::assertSame( 'capture_observe_store_choice_history_full', $this->api->data()['reason'] );
-		$this->api->update( $this->action( 'choice', 'customer-withdraws', array( 'checked' => false ) ) );
+		$this->api->update( $this->action( 'withdraw', 'customer-withdraws', array( 'confirmed' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
 		self::assertSame( 'REVOKE', $this->events[1]['decision'] );
 		self::assertCount( 2, $this->events );
@@ -232,10 +238,10 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		self::assertSame( 'recorded', $this->api->data()['status'] );
 		self::assertCount( 1, $this->events, 'Identical request ID never creates another consent event' );
 
-		$this->api->update( $this->action( 'choice', 'withdraw-grant', array( 'checked' => false ) ) );
+		$this->api->update( $this->action( 'withdraw', 'withdraw-grant', array( 'confirmed' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
 		$this->api->update( $this->action( 'choice', 'duplicate-uncheck', array( 'checked' => false ) ) );
-		self::assertSame( 'capture_withdraw_proof_unavailable', $this->api->data()['reason'] );
+		self::assertSame( 'store_api_choice_value_invalid', $this->api->data()['reason'] );
 		self::assertCount( 2, $this->events, 'Repeated unchecked state cannot create another REVOKE' );
 
 		$cart = WC()->cart;
@@ -267,25 +273,27 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		self::assertCount( 0, $this->events );
 	}
 
-	public function test_uncheck_requires_a_same_checkout_grant_or_live_proof(): void {
+	public function test_explicit_withdraw_requires_confirmation_and_current_verified_proof(): void {
 		$this->api->update( $this->action( 'choice', 'm-no-grant', array( 'checked' => false ) ) );
-		self::assertSame( 'unverified', $this->api->data()['status'] );
+		self::assertSame( 'store_api_choice_value_invalid', $this->api->data()['reason'] );
+		$this->api->update( $this->action( 'withdraw', 'm-unverified', array( 'confirmed' => true ) ) );
 		self::assertSame( 'capture_withdraw_proof_unavailable', $this->api->data()['reason'] );
 		self::assertCount( 0, $this->events );
 		$this->api->update( $this->action( 'choice', 'm-g', array( 'checked' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
-		// A new checkout may not retain the previous checkbox observation. It
-		// may withdraw only with the server-held proof and API-006 confirmation.
 		WC()->session->set( 'moda_interact_checkout_consent_observation_v2', null );
 		$this->api->update( $this->action( 'status', 'm-confirm-existing' ) );
 		self::assertTrue( $this->api->data()['confirmed'] );
-		$this->api->update( $this->action( 'choice', 'm-w2', array( 'checked' => false ) ) );
+		$this->api->update( $this->action( 'withdraw', 'm-w2' ) );
+		self::assertSame( 'store_api_withdraw_confirmation_missing', $this->api->data()['reason'] );
+		self::assertCount( 1, $this->events );
+		$this->api->update( $this->action( 'withdraw', 'm-w2', array( 'confirmed' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
 		self::assertSame( 'REVOKE', end( $this->events )['decision'] );
-		$this->api->update( $this->action( 'choice', 'm-w2', array( 'checked' => false ) ) );
+		$this->api->update( $this->action( 'withdraw', 'm-w2', array( 'confirmed' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
-		self::assertCount( 2, $this->events, 'Retry of same withdrawal must not create another event' );
+		self::assertCount( 2, $this->events, 'Retry of confirmed withdrawal is idempotent' );
 		$this->api->update( $this->action( 'status', 'm-after-revoke' ) );
-		self::assertFalse( $this->api->data()['confirmed'], 'Withdrawing clears server-held grant proof' );
+		self::assertFalse( $this->api->data()['confirmed'] );
 	}
 }

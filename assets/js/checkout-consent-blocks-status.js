@@ -20,21 +20,6 @@
 			// Console failures must not alter consent behaviour.
 		}
 	}
-	function probeMount(phase) {
-		const doc = window.document;
-		if (
-			!debugEnabled ||
-			typeof doc?.getElementsByClassName !== 'function'
-		) {
-			return;
-		}
-		debug('blocks_mount_probe', {
-			phase,
-			mountCount: doc.getElementsByClassName(
-				'wp-block-moda-interact-checkout-consent'
-			).length,
-		});
-	}
 	const config = window.modaWooCheckoutConsentConfig;
 	const wp = window.wp;
 	const blocks = window.wc && window.wc.blocksCheckout;
@@ -44,10 +29,6 @@
 		wpDataPresent: !!wp?.data?.useSelect,
 		wooRegistryPresent: !!blocks?.registerCheckoutBlock,
 	});
-	if (debugEnabled && typeof window.setTimeout === 'function') {
-		window.setTimeout(() => probeMount('script'), 0);
-		window.setTimeout(() => probeMount('hydration'), 1500);
-	}
 	if (
 		!config ||
 		!wp ||
@@ -148,47 +129,23 @@
 		return safeReasons.has(reason) ? reason : null;
 	}
 
-	// API-006's UNVERIFIED includes revoked, unknown and STOP. A lack of a
-	// shopper-bound grant proof is not a confirmed GRANT either. Distinguish
-	// ordinary unverified results from a failed/unsafe status read.
-	const unavailableReasons = new Set([
-		'consent_proof_scope_unavailable',
-		'consent_proof_digest_unavailable',
-		'consent_proof_installation_mismatch',
-		'consent_proof_shopper_mismatch',
-		'consent_proof_checkout_mismatch',
-		'consent_status_installation_unavailable',
-		'consent_status_site_mismatch',
-		'consent_status_installation_changed',
-		'consent_status_response_unrecognised',
-		'consent_status_remote_unavailable',
-		'consent_status_context_unavailable',
-		'consent_status_contact_unavailable',
-		'store_api_session_unavailable',
-		'store_api_customer_unavailable',
-	]);
-
+	// API-006's UNVERIFIED includes unknown, revoked and STOP. Only an
+	// affirmative server-side proof-backed CONFIRMED_GRANTED may display the
+	// existing-permission action; read failures remain neutral and unchecked.
 	function ConsentControl() {
 		if (!renderSeen) {
 			debug('blocks_component_rendered');
 			renderSeen = true;
 		}
-		// Subscribe only to current Woo contact data. This component never sets
-		// Woo cart/customer properties to force a permission check to work.
 		const contact = wp.data.useSelect((select) => {
 			const store = select('wc/store/cart');
-			const cart =
-				store && store.getCartData ? store.getCartData() : null;
-			const billing = (cart && cart.billingAddress) || {};
+			const cart = store?.getCartData?.();
+			const billing = cart?.billingAddress || {};
 			return `${billing.country || ''}|${billing.phone || ''}`;
 		}, []);
 		const separator = contact.indexOf('|');
 		const phone = contact.slice(separator + 1);
-		// A verified status controls returning-customer presentation; the
-		// current checkout's committed GRANT acknowledgement is also reliable.
-		// A failed remote status read must never become a merchant checkout task.
 		const [status, setStatus] = useState('checking');
-		const [selected, setSelected] = useState(false);
 		const [waitingPhone, setWaitingPhone] = useState(false);
 		const [busy, setBusy] = useState(false);
 		const [actionError, setActionError] = useState(false);
@@ -241,68 +198,19 @@
 			return result;
 		}
 
-		function setCurrent(result, id) {
-			if (id !== generation.current) {
-				return;
-			}
-			debug('blocks_status_result', {
-				confirmed: result.confirmed === true,
-				reason: diagnosticReason(result.reason),
-			});
-			if (result.confirmed === true) {
-				setSelected(true);
-				setStatus('ready');
-			} else if (unavailableReasons.has(result.reason)) {
-				setSelected(false);
-				setStatus('unavailable');
-			} else {
-				// This is not an assertion that a matching phone has never granted.
-				// It means no current GRANT has been verified for this shopper.
-				setSelected(false);
-				setStatus('ready');
-			}
-		}
-
-		async function choose(checked, fromStagedPhone = false) {
-			debug('blocks_checkbox_choice', { checked, hasPhone: !!phone });
-			if (
-				busyRef.current ||
-				(!fromStagedPhone &&
-					(status === 'checking' || status === 'unavailable'))
-			) {
-				return;
-			}
-			if (!checked && waitingPhone) {
-				debug('blocks_pending_grant_cancelled');
-				setWaitingPhone(false);
-				setSelected(false);
-				return;
-			}
-			if (checked && !phone) {
-				debug('blocks_grant_waiting_for_phone');
-				setWaitingPhone(true);
-				setSelected(true);
-				return;
-			}
+		async function change(action, payload, decision) {
 			const id = generation.current;
-			// The server chooses same-checkout reversal versus proof-backed
-			// returning-shopper withdrawal. This remains ONE checkbox action.
-			const action = 'choice';
 			const previous = pendingAction.current;
 			const stableId =
-				previous?.contact === contact && previous?.checked === checked
+				previous?.contact === contact && previous?.decision === decision
 					? previous.requestId
 					: `moda-${Date.now().toString(36)}-${++requestCounter}`;
-			pendingAction.current = { contact, checked, requestId: stableId };
+			pendingAction.current = { contact, decision, requestId: stableId };
 			busyRef.current = true;
 			setBusy(true);
 			setActionError(false);
 			try {
-				const result = await request(
-					action,
-					{ mode: 'BLOCKS', checked },
-					stableId
-				);
+				const result = await request(action, payload, stableId);
 				if (id !== generation.current) {
 					return;
 				}
@@ -317,15 +225,8 @@
 				}
 				pendingAction.current = null;
 				setWaitingPhone(false);
-				setSelected(checked);
-				if (!checked) {
-					setStatus('ready');
-					return;
-				}
-				// The hosted write already acknowledged this explicit GRANT.
-				// Avoid a redundant status request and never convert its failure
-				// into checkout-facing instructions or extra UI.
-				setStatus('ready');
+				// The hosted ACK is required before changing the visible state.
+				setStatus(decision === 'GRANT' ? 'granted' : 'ready');
 			} catch {
 				if (id === generation.current) {
 					setActionError(true);
@@ -339,6 +240,42 @@
 			}
 		}
 
+		async function grant(fromStagedPhone = false) {
+			if (
+				busyRef.current ||
+				(!fromStagedPhone &&
+					(status === 'checking' || status === 'granted'))
+			) {
+				return;
+			}
+			debug('blocks_grant_requested', { hasPhone: !!phone });
+			if (!phone) {
+				setWaitingPhone(true);
+				return;
+			}
+			await change('choice', { mode: 'BLOCKS', checked: true }, 'GRANT');
+		}
+
+		async function withdraw() {
+			if (busyRef.current || status !== 'granted') {
+				return;
+			}
+			// A separate, conscious confirmation; unchecking is never REVOKE.
+			if (typeof window.confirm !== 'function') {
+				return;
+			}
+			// The browser confirmation is intentional: consent withdrawal is explicit.
+			// eslint-disable-next-line no-alert
+			if (!window.confirm(config.confirm)) {
+				return;
+			}
+			await change(
+				'withdraw',
+				{ mode: 'BLOCKS', confirmed: true },
+				'REVOKE'
+			);
+		}
+
 		useEffect(() => {
 			debug('blocks_contact_changed', { hasPhone: !!phone });
 			const id = ++generation.current;
@@ -348,58 +285,103 @@
 			setActionError(false);
 			if (!phone) {
 				setStatus('ready');
-				if (!waitingPhone) {
-					setSelected(false);
-				}
 				return;
 			}
 			if (waitingPhone) {
-				// The customer explicitly selected opt-in before adding a phone.
-				// Continue once the Woo Store API has observed that contact.
+				// This is continuation of an actual click, not a draft-change grant.
 				setWaitingPhone(false);
 				setStatus('ready');
-				const retry = setTimeout(() => choose(true, true), 250);
-				return () => {
-					clearTimeout(retry);
-					generation.current = id + 1;
-				};
+				const retry = window.setTimeout?.(() => grant(true), 300);
+				if (retry !== undefined) {
+					return () => window.clearTimeout?.(retry);
+				}
+				void grant(true);
+				return;
 			}
-			setSelected(false);
 			setStatus('checking');
-			request('status', { mode: 'BLOCKS' })
-				.then((result) => setCurrent(result, id))
-				.catch(() => {
-					if (id === generation.current) {
-						setStatus('unavailable');
-						debug('blocks_status_failed');
-					}
-				});
+			const verify = () => {
+				request('status', { mode: 'BLOCKS' })
+					.then((result) => {
+						if (id !== generation.current) {
+							return;
+						}
+						debug('blocks_status_result', {
+							confirmed: result.confirmed === true,
+							reason: diagnosticReason(result.reason),
+						});
+						setStatus(
+							result.confirmed === true ? 'granted' : 'ready'
+						);
+					})
+					.catch(() => {
+						if (id === generation.current) {
+							setStatus('ready');
+							debug('blocks_status_failed');
+						}
+					});
+			};
+			// Debounce billing edits; Woo's server also avoids remote reads
+			// without a server-held shopper/session/phone grant proof.
+			const timer = window.setTimeout?.(verify, 450);
+			if (timer === undefined) {
+				verify();
+			}
 			return () => {
+				if (timer !== undefined) {
+					window.clearTimeout?.(timer);
+				}
 				generation.current = id + 1;
 			};
-			// Only a billing-contact change starts another status read.
+			// A stable Woo billing contact is the only refresh trigger.
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [contact]);
 
-		// Operational failures must never interrupt a merchant checkout.
-		// Hide only Moda's optional field until a safe status is available.
-		if (status === 'checking' || status === 'unavailable') {
-			return null;
+		const error = actionError
+			? h('p', { role: 'alert' }, config.changeFailed)
+			: null;
+		if (status === 'granted') {
+			return h(
+				'div',
+				{ className: 'moda-woo-checkout-consent', 'aria-busy': busy },
+				h(
+					'p',
+					{ role: 'status', 'aria-live': 'polite' },
+					config.granted
+				),
+				h(
+					'button',
+					{
+						type: 'button',
+						disabled: busy,
+						onClick: withdraw,
+					},
+					config.withdraw
+				),
+				error
+			);
 		}
 		return h(
 			'div',
-			{ className: 'moda-woo-checkout-consent' },
+			{ className: 'moda-woo-checkout-consent', 'aria-busy': busy },
 			h(
 				'label',
 				null,
 				h('input', {
 					type: 'checkbox',
-					checked: selected,
-					disabled: busy,
-					onChange: (event) => choose(event.target.checked),
+					checked: waitingPhone,
+					disabled: busy || status === 'checking',
+					onChange: (event) => {
+						if (event.target.checked) {
+							void grant();
+						} else if (waitingPhone) {
+							setWaitingPhone(false);
+						}
+					},
 				}),
 				config.optIn
-			)
+			),
+			waitingPhone ? h('p', null, config.waitForPhone) : null,
+			error
 		);
 	}
 
@@ -421,73 +403,4 @@
 		component: ConsentControl,
 	});
 	debug('blocks_registered');
-
-	// Woo's registry renders real checkout inner blocks, but existing saved
-	// checkout pages do not contain the synthetic block inserted by the PHP
-	// render filter in Woo's *parsed* inner-block tree. The diagnostic probe
-	// confirms that this element survives hydration yet is never rendered by
-	// registerCheckoutBlock. Mount only that server-owned, explicit placeholder.
-	// Saved merchant blocks remain entirely owned by the Woo registry.
-	let runtimeNode = null;
-	let runtimeRoot = null;
-	function mountRuntimePlaceholder() {
-		const nodes = window.document?.getElementsByClassName?.(
-			'wp-block-moda-interact-checkout-consent'
-		);
-		if (!nodes) {
-			debug('blocks_runtime_mount_absent');
-			return;
-		}
-		for (const node of nodes) {
-			if (node.getAttribute?.('data-moda-woo-runtime-mount') !== '1') {
-				continue;
-			}
-			if (
-				node.closest &&
-				!node.closest(
-					'[data-block-name="woocommerce/checkout-fields-block"], .wp-block-woocommerce-checkout-fields-block'
-				)
-			) {
-				debug('blocks_runtime_mount_wrong_location');
-				return;
-			}
-			if (runtimeNode === node) {
-				return;
-			}
-			if (typeof wp.element.createRoot !== 'function') {
-				debug('blocks_runtime_mount_unavailable');
-				return;
-			}
-			try {
-				if (runtimeRoot) {
-					runtimeRoot.unmount();
-				}
-				const root = wp.element.createRoot(node);
-				root.render(h(ConsentControl));
-				runtimeNode = node;
-				runtimeRoot = root;
-				debug('blocks_runtime_mount_requested');
-			} catch {
-				runtimeNode = null;
-				runtimeRoot = null;
-				debug('blocks_runtime_mount_failed');
-			}
-			return;
-		}
-		debug('blocks_runtime_mount_absent');
-	}
-	if (window.document?.readyState === 'loading') {
-		window.document.addEventListener?.(
-			'DOMContentLoaded',
-			mountRuntimePlaceholder,
-			{ once: true }
-		);
-	} else {
-		mountRuntimePlaceholder();
-	}
-	// Re-check once after Woo's checkout hydration. Remount only if the
-	// placeholder was replaced; never create multiple roots on the same node.
-	if (typeof window.setTimeout === 'function') {
-		window.setTimeout(mountRuntimePlaceholder, 1500);
-	}
 })();

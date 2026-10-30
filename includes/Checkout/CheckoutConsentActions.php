@@ -8,23 +8,52 @@ defined( 'ABSPATH' ) || exit;
 final class CheckoutConsentActions {
 	public function __construct( private readonly CheckoutConsentCapture $capture ) {}
 
+	/**
+	 * Classic checkout actions run inside Woo's native wc-ajax lifecycle.
+	 * A standalone WordPress REST route does not restore WC()->session for
+	 * anonymous shoppers even when their checkout session cookie is present.
+	 * Blocks use the separate authenticated Store API cart/extensions contract.
+	 */
 	public function register(): void {
-		add_action( 'rest_api_init', array( $this, 'registerRoute' ), 10, 0 );
+		add_action( 'wc_ajax_moda_interact_checkout_consent_status', array( $this, 'ajaxStatus' ) );
+		add_action( 'wc_ajax_moda_interact_checkout_consent_withdraw', array( $this, 'ajaxWithdraw' ) );
 	}
 
-	public function registerRoute(): void {
-		// Blocks choices use Woo's authenticated Store API cart/extensions flow.
-		// Do not expose a second consent-choice boundary with separate sessions.
-		register_rest_route( 'moda-interact/v1', '/checkout-consent/status', array(
-			'methods' => 'POST',
-			'permission_callback' => array( $this, 'permitted' ),
-			'callback' => array( $this, 'status' ),
-		) );
-		register_rest_route( 'moda-interact/v1', '/checkout-consent/withdraw', array(
-			'methods' => 'POST',
-			'permission_callback' => array( $this, 'permitted' ),
-			'callback' => array( $this, 'withdraw' ),
-		) );
+	/** The AJAX transport cannot choose a shopper, contact or nonce for itself. */
+	private function classicAjaxRequest(): object {
+		$security = $_POST['security'] ?? null;
+		$payload = array(
+			// These actions are Classic-only: a posted BLOCKS mode must not
+			// reach the Cart Store API's independently protected path.
+			'mode' => ( $_POST['mode'] ?? null ) === 'CLASSIC' ? 'CLASSIC' : null,
+			'form' => $_POST['form'] ?? null,
+			'confirmed' => ( $_POST['confirmed'] ?? null ) === '1',
+		);
+		$method = $_SERVER['REQUEST_METHOD'] ?? '';
+		return new class( $security, $payload, $method ) {
+			public function __construct( private mixed $security, private array $payload,
+				private mixed $method ) {}
+			public function get_header( mixed $name ): ?string {
+				return is_string( $name ) && strtolower( $name ) === 'x-wp-nonce' &&
+					is_string( $this->security ) ? $this->security : null;
+			}
+			public function get_method(): string {
+				return is_string( $this->method ) ? $this->method : '';
+			}
+			public function get_json_params(): array { return $this->payload; }
+		};
+	}
+
+	public function ajaxStatus(): void {
+		$request = $this->classicAjaxRequest();
+		$permitted = $this->permitted( $request );
+		wp_send_json( $this->status( $request ), $permitted ? 200 : 403 );
+	}
+
+	public function ajaxWithdraw(): void {
+		$request = $this->classicAjaxRequest();
+		$permitted = $this->permitted( $request );
+		wp_send_json( $this->withdraw( $request ), $permitted ? 200 : 403 );
 	}
 
 	public function permitted( mixed $request ): bool {
@@ -33,17 +62,16 @@ final class CheckoutConsentActions {
 			! function_exists( 'wp_verify_nonce' ) ) return false;
 		$nonce = $request->get_header( 'X-WP-Nonce' );
 		if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) return false;
-		// A custom REST request may not have Woo's checkout objects loaded.
-		// Do NOT call wc_load_cart() or initialize the session/cart/customer here:
-		// this runs even for read-only consent-status requests on merchant sites.
-		// If Woo has not established the current session, fail closed.
+		// Native wc-ajax has already established Woo's checkout objects. Do NOT
+		// initialise a missing session/cart here or accept an arbitrary phone
+		// as a substitute for the current shopper's signed cookie and proof.
 		$woo = function_exists( 'WC' ) ? WC() : null;
 		$session = $woo->session ?? null;
 		return is_object( $session ) && method_exists( $session, 'get_customer_id' ) &&
 			'' !== (string) $session->get_customer_id();
 	}
 
-	/** Blocks SlotFill's deliberate checkbox action uses the current Woo billing contact. */
+	/** Legacy non-routed Blocks helper: Cart Store API owns live Blocks actions. */
 	public function choice( mixed $request ): array {
 		if ( ! $this->permitted( $request ) || ! is_object( $request ) ||
 			! method_exists( $request, 'get_json_params' ) || ! method_exists( $request, 'get_header' ) ) {
@@ -55,13 +83,13 @@ final class CheckoutConsentActions {
 		}
 		$payload = $request->get_json_params();
 		if ( ! is_array( $payload ) || array_keys( $payload ) !== array( 'mode', 'checked' ) ||
-			( $payload['mode'] ?? null ) !== 'BLOCKS' || ! is_bool( $payload['checked'] ) ) {
+			( $payload['mode'] ?? null ) !== 'BLOCKS' || ( $payload['checked'] ?? null ) !== true ) {
 			return $this->choiceRejected( 'invalid_choice' );
 		}
 		$contact = $this->contact( $payload );
 		if ( null === $contact ) return $this->choiceRejected( 'billing_contact_unavailable' );
 		$changed = $this->capture->observe( 'BLOCKS', $payload['checked'],
-			$contact['phone'], $contact['country'], true, ! $payload['checked'] );
+			$contact['phone'], $contact['country'], true, false );
 		if ( $changed ) return array( 'status' => 'recorded' );
 		return $this->choiceRejected( $this->capture->failureReason() );
 	}
@@ -105,7 +133,7 @@ final class CheckoutConsentActions {
 	}
 
 	public function withdraw( mixed $request ): array {
-		// Never rely solely on REST callback permission dispatch when unit-tested.
+		// Never rely solely on the Woo AJAX dispatcher when unit-tested.
 		if ( ! $this->permitted( $request ) || ! method_exists( $request, 'get_json_params' ) ) {
 			return array( 'status' => 'unverified' );
 		}

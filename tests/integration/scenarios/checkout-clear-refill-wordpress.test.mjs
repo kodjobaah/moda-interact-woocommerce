@@ -32,7 +32,9 @@ test('ignores retries and already published nonempty events when checking repeat
 test('counts exactly one genuinely new keyed empty event and later refill', () => {
 	const initial = action(10, 1, 'woo-initial', 'woo-key', [{ quantity: 1 }]);
 	const cleared = action(11, 1, 'woo-cleared', 'woo-key');
-	assert.deepEqual(newForKey([initial], [initial, cleared], 'woo-key'), [cleared]);
+	assert.deepEqual(newForKey([initial], [initial, cleared], 'woo-key'), [
+		cleared,
+	]);
 	const refill = action(13, 1, 'woo-refill', 'woo-key', [{ quantity: 2 }]);
 	assert.deepEqual(
 		newForKey(
@@ -48,7 +50,10 @@ test('does not hide a second fresh empty publication with a distinct ID', () => 
 	const prior = action(10, 1, 'woo-before', 'woo-key', [{ quantity: 1 }]);
 	const empty1 = action(11, 1, 'woo-empty-1', 'woo-key');
 	const empty2 = action(12, 1, 'woo-empty-2', 'woo-key');
-	assert.deepEqual(newForKey([prior], [prior, empty1, empty2], 'woo-key'), [empty1, empty2]);
+	assert.deepEqual(newForKey([prior], [prior, empty1, empty2], 'woo-key'), [
+		empty1,
+		empty2,
+	]);
 });
 
 test('isolates checkout keys and excludes non-checkout events', () => {

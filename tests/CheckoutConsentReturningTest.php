@@ -176,13 +176,15 @@ final class CheckoutConsentReturningTest extends TestCase {
 		self::assertCount( 2, $this->requests );
 	}
 
-	public function test_independent_wordpress_route_requires_nonce_confirmation_and_server_proof(): void {
+	public function test_native_woo_ajax_action_requires_nonce_confirmation_and_server_proof(): void {
 		$this->classic( true );
 		$this->classic( false );
 		$this->enableConfirmedStatus();
 		$actions = new CheckoutConsentActions( $this->capture );
-		$actions->registerRoute();
-		self::assertArrayHasKey( 'moda-interact/v1/checkout-consent/withdraw', $GLOBALS['moda_interact_registered_rest_routes'] );
+		$actions->register();
+		self::assertNotEmpty( $GLOBALS['moda_interact_test_hooks']['wc_ajax_moda_interact_checkout_consent_status'] ?? array() );
+		self::assertNotEmpty( $GLOBALS['moda_interact_test_hooks']['wc_ajax_moda_interact_checkout_consent_withdraw'] ?? array() );
+		self::assertArrayNotHasKey( 'moda-interact/v1/checkout-consent/withdraw', $GLOBALS['moda_interact_registered_rest_routes'] );
 		unset( $GLOBALS['arch046_nonce_action'] );
 		$make = static function ( string $nonce, bool $confirmed ) {
 			return new class( $nonce, $confirmed ) {
@@ -204,7 +206,69 @@ final class CheckoutConsentReturningTest extends TestCase {
 		self::assertCount( 2, $this->requests );
 	}
 
-	public function test_blocks_accepted_checkbox_transition_can_revoke_in_same_checkout(): void {
+	public function test_native_classic_ajax_enforces_nonce_method_and_existing_session(): void {
+		$this->classic( true );
+		$this->enableConfirmedStatus();
+		$actions = new CheckoutConsentActions( $this->capture );
+		$original_post = $_POST;
+		$original_method = $_SERVER['REQUEST_METHOD'] ?? null;
+		$session = WC()->session;
+		unset( $GLOBALS['arch046_nonce_action'] );
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_POST = array(
+			'security' => 'fixture_rest_nonce',
+			'mode' => 'CLASSIC',
+			'form' => 'billing_phone=%2B447400123456&billing_country=GB',
+			'confirmed' => '0',
+		);
+		try {
+			$actions->ajaxStatus();
+			self::assertSame( 200, $GLOBALS['arch046_last_ajax_json']['code'] );
+			self::assertSame( array( 'confirmed' => true, 'reason' => '' ),
+				$GLOBALS['arch046_last_ajax_json']['body'] );
+			$_POST['security'] = 'invalid';
+			$_POST['confirmed'] = '1';
+			$actions->ajaxWithdraw();
+			self::assertSame( 403, $GLOBALS['arch046_last_ajax_json']['code'] );
+			self::assertSame( 'unverified', $GLOBALS['arch046_last_ajax_json']['body']['status'] );
+			self::assertCount( 1, $this->requests, 'A forged nonce cannot publish REVOKE' );
+			$_POST['security'] = 'fixture_rest_nonce';
+			$_POST['mode'] = 'BLOCKS';
+			$actions->ajaxWithdraw();
+			self::assertSame( 'unverified', $GLOBALS['arch046_last_ajax_json']['body']['status'] );
+			self::assertCount( 1, $this->requests, 'Classic route cannot impersonate the Blocks consent path' );
+			$_POST['mode'] = 'CLASSIC';
+			$_SERVER['REQUEST_METHOD'] = 'GET';
+			$actions->ajaxWithdraw();
+			self::assertSame( 403, $GLOBALS['arch046_last_ajax_json']['code'] );
+			$_SERVER['REQUEST_METHOD'] = 'POST';
+			WC()->session = null;
+			$actions->ajaxWithdraw();
+			self::assertSame( 403, $GLOBALS['arch046_last_ajax_json']['code'] );
+			self::assertCount( 1, $this->requests );
+			WC()->session = $session;
+			$_POST['confirmed'] = '0';
+			$actions->ajaxWithdraw();
+			self::assertSame( 200, $GLOBALS['arch046_last_ajax_json']['code'] );
+			self::assertSame( 'unverified', $GLOBALS['arch046_last_ajax_json']['body']['status'] );
+			$_POST['confirmed'] = '1';
+			$actions->ajaxWithdraw();
+			self::assertSame( 200, $GLOBALS['arch046_last_ajax_json']['code'] );
+			self::assertSame( 'withdrawn', $GLOBALS['arch046_last_ajax_json']['body']['status'] );
+			self::assertCount( 2, $this->requests );
+		} finally {
+			WC()->session = $session;
+			$_POST = $original_post;
+			if ( null === $original_method ) {
+				unset( $_SERVER['REQUEST_METHOD'] );
+			} else {
+				$_SERVER['REQUEST_METHOD'] = $original_method;
+			}
+			unset( $GLOBALS['arch046_last_ajax_json'] );
+		}
+	}
+
+	public function test_legacy_blocks_false_field_is_not_a_withdrawal(): void {
 		$GLOBALS['arch046_nonce_action'] = 'wc_store_api';
 		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
 			CheckoutConsentCheckbox::BLOCK_FIELD => true,
@@ -214,16 +278,14 @@ final class CheckoutConsentReturningTest extends TestCase {
 			CheckoutConsentCheckbox::BLOCK_FIELD => false,
 			'moda-interact/whatsapp-recovery-withdrawal' => 'withdraw',
 		) ) );
-		self::assertCount( 2, $this->requests, 'Verified true-to-false Blocks transition sends REVOKE' );
+		self::assertCount( 1, $this->requests, 'False draft state cannot publish REVOKE' );
 		self::assertSame( 'GRANT', $this->event( 0 )['decision'] );
+		$this->enableConfirmedStatus();
+		self::assertTrue( $this->capture->withdrawExplicit( 'BLOCKS', '+447400123456', 'GB', true ) );
+		self::assertCount( 2, $this->requests, 'Only a distinct confirmed action can REVOKE' );
 		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
-		self::assertNull( $this->event( 1 )['disclosure'] );
-		self::assertSame( 'woo.whatsapp-consent.v2', $this->event( 1 )['schemaVersion'] );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
-			CheckoutConsentCheckbox::BLOCK_FIELD => false,
-		) ) );
-		self::assertCount( 2, $this->requests, 'Repeated false Blocks state cannot duplicate REVOKE' );
 	}
+
 	public function test_account_proof_withdrawal_on_later_checkout_does_not_need_previous_checkbox_observation(): void {
 		$GLOBALS['arch046_current_user_id'] = 42;
 		$this->classic( true );
@@ -305,7 +367,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 		self::assertSame( array( 'confirmed' => false, 'reason' => 'consent_proof_missing' ), $actions->status( $request ) );
 	}
 
-	public function test_custom_rest_permission_never_initializes_or_creates_checkout_state(): void {
+	public function test_native_ajax_permission_never_initializes_or_creates_checkout_state(): void {
 		unset( $GLOBALS['arch046_nonce_action'] );
 		$session = WC()->session;
 		$GLOBALS['arch046_lazy_checkout_session'] = $session;

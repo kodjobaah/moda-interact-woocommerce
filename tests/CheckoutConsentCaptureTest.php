@@ -117,19 +117,12 @@ final class CheckoutConsentCaptureTest extends TestCase {
 		$this->classic( false );
 		self::assertCount( 1, $this->requests, 'Ordinary refresh without the checkbox is neutral' );
 		$this->classic( false, '+447400123456', 'arch046-fixture-nonce', true );
-		self::assertCount( 2, $this->requests, 'An explicit same-checkout uncheck sends REVOKE' );
-		$revoke = json_decode( $this->requests[1][1]['body'], true );
-		self::assertSame( 'REVOKE', $revoke['decision'] );
-		self::assertNull( $revoke['disclosure'] );
-		self::assertGreaterThan( $first['occurredAt'], $revoke['occurredAt'] );
+		self::assertCount( 1, $this->requests, 'Legacy uncheck marker cannot REVOKE' );
 		$this->classic( false, '+447400123456', 'arch046-fixture-nonce', true );
-		self::assertCount( 2, $this->requests, 'Replayed uncheck cannot create a second REVOKE' );
+		self::assertCount( 1, $this->requests, 'A repeated uncheck is still neutral' );
 		$this->classic( true );
-		self::assertCount( 3, $this->requests, 'Rechecking after withdrawal is a fresh GRANT' );
-		$second = json_decode( $this->requests[2][1]['body'], true );
-		self::assertSame( 'GRANT', $second['decision'] );
-		self::assertNotSame( $first['eventId'], $second['eventId'] );
-		self::assertGreaterThan( $revoke['occurredAt'], $second['occurredAt'] );
+		self::assertCount( 1, $this->requests, 'A repeated checked state cannot send a duplicate GRANT' );
+
 	}
 
 	public function test_bad_nonce_disabled_feature_and_cross_checkout_phone_do_not_grant(): void {
@@ -270,7 +263,7 @@ final class CheckoutConsentCaptureTest extends TestCase {
 		self::assertCount( 1, $this->requests );
 	}
 
-	public function test_uncheck_after_lost_grant_ack_cancels_old_retry_and_records_revoke(): void {
+	public function test_uncheck_does_not_revoke_or_cancel_unacknowledged_grant(): void {
 		$this->unavailable = true;
 		$this->classic( true );
 		self::assertCount( 1, $this->requests );
@@ -280,26 +273,20 @@ final class CheckoutConsentCaptureTest extends TestCase {
 		$retry = $GLOBALS['arch035_delayed'][0]['args'];
 		$this->unavailable = false;
 		$this->classic( false, '+447400123456', 'arch046-fixture-nonce', true );
-		self::assertCount( 2, $this->requests );
-		$revoke = json_decode( $this->requests[1][1]['body'], true );
-		self::assertSame( 'REVOKE', $revoke['decision'] );
-		self::assertGreaterThan( $first['occurredAt'], $revoke['occurredAt'] );
+		self::assertCount( 1, $this->requests, 'An uncheck is not a withdrawal instruction' );
 		$this->publisher->deliver( ...array_values( $retry ) );
-		self::assertCount( 2, $this->requests, 'Canceled GRANT retry cannot override REVOKE' );
+		self::assertCount( 2, $this->requests, 'The original grant retry keeps its event identity' );
+		self::assertSame( $this->requests[0][1]['body'], $this->requests[1][1]['body'] );
 	}
 
-	public function test_failed_uncheck_retries_same_revoke_without_unblocking_checkout(): void {
+	public function test_failed_and_repeated_uncheck_cannot_publish_revoke(): void {
 		$this->classic( true );
 		$this->unavailable = true;
 		$this->classic( false, '+447400123456', 'arch046-fixture-nonce', true );
-		self::assertCount( 2, $this->requests );
-		$revoke = $this->requests[1][1]['body'];
+		self::assertCount( 1, $this->requests );
 		$this->unavailable = false;
 		$this->classic( false, '+447400123456', 'arch046-fixture-nonce', true );
-		self::assertCount( 3, $this->requests );
-		self::assertSame( $revoke, $this->requests[2][1]['body'], 'Lost-ACK withdrawal replays exact event ID and body' );
-		$this->classic( false, '+447400123456', 'arch046-fixture-nonce', true );
-		self::assertCount( 3, $this->requests, 'A completed uncheck is idempotent' );
+		self::assertCount( 1, $this->requests );
+		self::assertSame( 'GRANT', json_decode( $this->requests[0][1]['body'], true )['decision'] );
 	}
-
 }

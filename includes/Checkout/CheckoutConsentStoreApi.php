@@ -74,7 +74,7 @@ final class CheckoutConsentStoreApi {
 		$this->result['requestId'] = $data['requestId'];
 		$this->result['reason'] = 'store_api_action_invalid';
 		$action = $data['action'] ?? null;
-		if ( ! in_array( $action, array( 'status', 'choice' ), true ) ) return;
+		if ( ! in_array( $action, array( 'status', 'choice', 'withdraw' ), true ) ) return;
 		$expected = $data['expectedPhone'] ?? null;
 		$country = $data['expectedCountry'] ?? null;
 		$this->result['reason'] = 'store_api_expected_phone_invalid';
@@ -122,28 +122,30 @@ final class CheckoutConsentStoreApi {
 			return;
 		}
 		if ( 'choice' === $action ) {
-			if ( ! isset( $data['checked'] ) || ! is_bool( $data['checked'] ) ) {
+			// The checkbox can create only a deliberate GRANT. Unchecking,
+			// hydration and ordinary checkout refreshes never revoke consent.
+			if ( ( $data['checked'] ?? null ) !== true ) {
 				$this->result['reason'] = 'store_api_choice_value_invalid';
 				return;
 			}
-			// One visible checkbox owns both directions. A newly acknowledged
-			// GRANT can be reversed in this same checkout; a returning customer's
-			// prior grant requires fresh, proof-backed API-006 confirmation.
-			if ( ! $data['checked'] && ! $this->capture->hasSameCheckoutGrant( $phone, $serverCountry, $data['requestId'] ) ) {
-				$recorded = $this->capture->withdrawExplicit( 'BLOCKS', $phone, $serverCountry, true, $data['requestId'] );
-			} else {
-				$recorded = $this->capture->observe( 'BLOCKS', $data['checked'], $phone, $serverCountry,
-					true, ! $data['checked'], $data['requestId'] );
+			$recorded = $this->capture->observe( 'BLOCKS', true, $phone, $serverCountry,
+				true, false, $data['requestId'] );
+		} else {
+			// Distinct user-confirmed button operation, independently proof-backed
+			// and revalidated by capture at the time of withdrawal.
+			if ( ( $data['confirmed'] ?? null ) !== true ) {
+				$this->result['reason'] = 'store_api_withdraw_confirmation_missing';
+				return;
 			}
-			if ( $recorded ) {
-				$this->result['status'] = 'recorded';
-				$this->result['reason'] = '';
-			} else {
-				// The capture layer assigns a unique fixed reason at the exact exit.
-				// Do not re-read cart or customer state just to diagnose it.
-				$this->result['reason'] = $this->capture->failureReason();
-			}
-			return;
+			$recorded = $this->capture->withdrawExplicit( 'BLOCKS', $phone, $serverCountry,
+				true, $data['requestId'] );
 		}
+		if ( $recorded ) {
+			$this->result['status'] = 'recorded';
+			$this->result['reason'] = '';
+		} else {
+			$this->result['reason'] = $this->capture->failureReason();
+		}
+
 	}
 }

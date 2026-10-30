@@ -21,6 +21,7 @@ final class CheckoutConsentCheckbox {
 	public function register(): void {
 		// Classic fields are requested by Woo on the checkout request itself.
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'classicFields' ), 20, 1 );
+		add_action( 'woocommerce_after_checkout_billing_form', array( $this, 'renderClassicPermission' ), 20 );
 		// Blocks owns one controlled checkbox in Checkout Fields using Woo Store
 		// API; do not register a duplicate Additional Checkout Field.
 	}
@@ -71,6 +72,23 @@ final class CheckoutConsentCheckbox {
 		return $fields;
 	}
 
+	/** Native Classic checkout hook: a separate, initially hidden withdrawal UI.
+	 * Labels are filled from server-localised checkout config in the browser.
+	 * Never render proof, recipient phone or a prechecked permission field.
+	 */
+	public function renderClassicPermission(): void {
+		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ||
+			( function_exists( 'is_order_received_page' ) && is_order_received_page() ) ||
+			( function_exists( 'is_checkout_pay_page' ) && is_checkout_pay_page() ) ||
+			( function_exists( 'has_block' ) && has_block( 'woocommerce/checkout' ) ) ||
+			! ( $this->eligible )() ) return;
+		echo '<div id="moda-woo-consent-current-status" hidden aria-live="polite">' .
+			'<p id="moda-woo-consent-granted-label"></p>' .
+			'<button type="button" id="moda-woo-consent-withdraw" class="button"></button>' .
+			'<p id="moda-woo-consent-action-error" role="alert" hidden></p>' .
+			'</div>';
+	}
+
 	public function registerBlocksForCheckoutPage(): void {
 		if ( function_exists( 'is_checkout' ) && is_checkout() &&
 			( ! function_exists( 'is_order_received_page' ) || ! is_order_received_page() ) &&
@@ -97,7 +115,7 @@ final class CheckoutConsentCheckbox {
 	public function registerBlocksField(): void {
 		// This registered Additional Checkout Field would remain visibly unchecked
 		// even after API-006 confirms an existing grant. The Blocks consent control
-		// now belongs to the Woo SlotFill checkout extension, which can render
+		// now belongs to the Woo registered checkout inner block, which renders
 		// either existing permission or a fresh unchecked opt-in as appropriate.
 		// No additional field is registered (and none is persisted on the order).
 		$this->registered = true;
