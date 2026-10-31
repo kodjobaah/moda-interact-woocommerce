@@ -83,6 +83,7 @@ final class CheckoutResumeController {
 				$evidence['issuedAt'] > time() || time() - $evidence['issuedAt'] > self::NONCE_TTL_SECONDS ||
 				! is_string( $nonce ) || ! preg_match( '/^[A-Za-z0-9_-]{43}$/D', $nonce ) ||
 				! hash_equals( $evidence['digest'], hash( 'sha256', $nonce ) ) ) return self::redirect( $headers, self::safeReturnUrl() );
+			$prior_session_state = self::snapshotSessionState( $session );
 			$session->set( self::NONCE_SESSION_FIELD, null );
 			$completed = $session->get( self::COMPLETED_SESSION_FIELD );
 			if ( is_array( $completed ) && ( $completed['recoveryId'] ?? null ) === $post['r'] ) {
@@ -104,18 +105,29 @@ final class CheckoutResumeController {
 				return self::redirect( $headers, self::safeReturnUrl() );
 			}
 			if ( null !== $existing_key && $existing_key !== $response['checkoutKey'] ) return self::redirect( $headers, self::safeReturnUrl() );
-			$restored = $this->restorer->restore( $response['snapshot'], function () use ( $session, $response, $existing_key ): bool {
-				$session->set( CheckoutKey::SESSION_FIELD, $response['checkoutKey'] );
-				if ( ! $this->capture->captureResumption( $response['checkoutKey'] ) ) {
-					$session->set( CheckoutKey::SESSION_FIELD, $existing_key );
+			$restored = $this->restorer->restore( $response['snapshot'], function () use ( $session, $response, $post, $prior_session_state ): bool {
+				try {
+					$session->set( CheckoutKey::SESSION_FIELD, $response['checkoutKey'] );
+					if ( ! $this->capture->captureResumption( $response['checkoutKey'] ) ) throw new \RuntimeException( 'restore_capture_rejected' );
+					$session->set( self::COMPLETED_SESSION_FIELD, array( 'recoveryId' => $post['r'], 'completedAt' => time() ) );
+					if ( method_exists( $session, 'set_customer_session_cookie' ) ) $session->set_customer_session_cookie( true );
+				} catch ( \Throwable $error ) {
+					self::log( 'restore_session_commit_failed', $error );
+					self::rollbackSessionState( $session, $prior_session_state );
 					return false;
+				}
+				if ( method_exists( $session, 'save_data' ) ) {
+					try {
+						$session->save_data();
+					} catch ( \Throwable $error ) {
+						self::log( 'restore_session_persistence_failed', $error );
+						self::rollbackSessionState( $session, $prior_session_state );
+						return false;
+					}
 				}
 				return true;
 			} );
 			if ( ! $restored ) return self::redirect( $headers, self::safeReturnUrl() );
-			$session->set( self::COMPLETED_SESSION_FIELD, array( 'recoveryId' => $post['r'], 'completedAt' => time() ) );
-			if ( method_exists( $session, 'set_customer_session_cookie' ) ) $session->set_customer_session_cookie( true );
-			if ( method_exists( $session, 'save_data' ) ) $session->save_data();
 			return self::redirect( $headers, self::checkoutUrl() );
 		} catch ( \Throwable $error ) {
 			self::log( 'restore_confirmation_failed', $error );
@@ -199,6 +211,23 @@ final class CheckoutResumeController {
 	private static function session(): mixed {
 		$commerce = function_exists( 'WC' ) ? WC() : null;
 		return is_object( $commerce ) ? ( $commerce->session ?? null ) : null;
+	}
+
+	private static function snapshotSessionState( mixed $session ): array {
+		$state = array();
+		foreach ( array( self::NONCE_SESSION_FIELD, CheckoutKey::SESSION_FIELD, self::COMPLETED_SESSION_FIELD, CheckoutCapture::LAST_CAPTURE_SESSION_FIELD ) as $key ) {
+			$state[ $key ] = $session->get( $key );
+		}
+		return $state;
+	}
+
+	private static function rollbackSessionState( mixed $session, array $state ): void {
+		try {
+			foreach ( $state as $key => $value ) $session->set( $key, $value );
+			if ( method_exists( $session, 'save_data' ) ) $session->save_data();
+		} catch ( \Throwable $error ) {
+			self::log( 'restore_session_rollback_failed', $error );
+		}
 	}
 
 	private static function checkoutUrl(): string {

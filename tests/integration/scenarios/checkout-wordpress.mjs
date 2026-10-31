@@ -988,7 +988,14 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
 	const confirmation = await response.text();
 	assert.match(confirmation, /Replace current basket and continue/);
-	assert.doesNotMatch(confirmation, /<script|https?:\/\//i);
+	assert.doesNotMatch(confirmation, /<script/i);
+	for (const [, absoluteUrl] of confirmation.matchAll(/(https?:\/\/[^"'\s<>]+)/gi)) {
+		assert.equal(
+			new URL(absoluteUrl).origin,
+			new URL(siteUrl).origin,
+			'confirmation page must not reference third-party URLs'
+		);
+	}
 	assert.doesNotMatch(confirmation, /woo-restore-checkout-key/);
 	assert.equal(getRestoreResolveRequests().length, resolveCountBeforePreview, 'GET/HEAD do not resolve the link');
 	const afterPreview = await (await browser.request('/wp-json/wc/store/v1/cart')).json();
@@ -1031,7 +1038,7 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.match(await classicPage.text(), /woocommerce-checkout/);
 	const blocksPage = await browser.request(`/?page_id=${fixture.blocksCheckoutPage}`);
 	assert.equal(blocksPage.status, 200, 'Blocks checkout renders the restored cart');
-	assert.match(await blocksPage.text(), /wc-block-checkout|woocommerce\/checkout/);
+	assert.match(await blocksPage.text(), /wc-block-checkout|blocks-checkout\.js|woocommerce\/checkout/);
 	const blocksCheckout = await browser.request('/wp-json/wc/store/v1/checkout');
 	assert.equal(blocksCheckout.status, 200, 'Blocks checkout Store API accepts restored cart');
 

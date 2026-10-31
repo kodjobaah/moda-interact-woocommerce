@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 /** Supported Classic and Store API / Checkout Blocks checkout hooks. */
 final class CheckoutCapture {
-	private const LAST_CAPTURE = 'moda_interact_checkout_last_capture_v1';
+	public const LAST_CAPTURE_SESSION_FIELD = 'moda_interact_checkout_last_capture_v1';
 	private array $classicContact = array();
 	private int $suppressionDepth = 0;
 
@@ -106,7 +106,7 @@ final class CheckoutCapture {
 			$key = $session->get( CheckoutKey::SESSION_FIELD );
 			if ( CheckoutKey::valid( $key ) && $key === $order->get_meta( CheckoutKey::ORDER_META, true ) ) {
 				$session->set( CheckoutKey::SESSION_FIELD, null );
-				$session->set( self::LAST_CAPTURE, null );
+				$session->set( self::LAST_CAPTURE_SESSION_FIELD, null );
 			}
 		} catch ( \Throwable $error ) {
 			self::log( 'order_key_cleanup_unavailable', $error );
@@ -133,7 +133,7 @@ final class CheckoutCapture {
 		$session = WC()->session ?? null;
 		if ( ! $session || ! CheckoutKey::valid( $checkout_key ) ) return false;
 		$session->set( CheckoutKey::SESSION_FIELD, $checkout_key );
-		$session->set( self::LAST_CAPTURE, null );
+		$session->set( self::LAST_CAPTURE_SESSION_FIELD, null );
 		return $this->captureSnapshot();
 	}
 
@@ -147,7 +147,7 @@ final class CheckoutCapture {
 				self::log( 'snapshot_unavailable' );
 				return false;
 			}
-			$previous = $session->get( self::LAST_CAPTURE );
+			$previous = $session->get( self::LAST_CAPTURE_SESSION_FIELD );
 			$is_empty = isset( $snapshot['items'] ) && array() === $snapshot['items'];
 			if ( $is_empty ) {
 				// No key generation and no empty event for a never-observed checkout.
@@ -169,7 +169,7 @@ final class CheckoutCapture {
 			if ( is_array( $previous ) && ( $previous['checkoutKey'] ?? null ) === $key &&
 				( $previous['fingerprint'] ?? null ) === $fingerprint ) return false;
 			if ( $this->publisher->enqueue( $snapshot, $key ) ) {
-				$session->set( self::LAST_CAPTURE, array(
+				$session->set( self::LAST_CAPTURE_SESSION_FIELD, array(
 					'checkoutKey' => $key, 'fingerprint' => $fingerprint, 'empty' => $is_empty,
 				) );
 				return true;
