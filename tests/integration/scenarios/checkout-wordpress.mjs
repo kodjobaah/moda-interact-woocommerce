@@ -116,6 +116,59 @@ function classicReviewNonce(html) {
 	);
 }
 
+function checkoutEngagementConfig(html, context) {
+	const match = html.match(
+		/window\.ModaWooCheckoutEngagement\s*=\s*(\{[^;]+\});/
+	);
+	assert.ok(match, `${context}: cart/checkout page must expose the session engagement nonce`);
+	const config = JSON.parse(match[1]);
+	assert.equal(new URL(config.url).pathname, '/wp-json/moda-interact/v1/checkout-engagement');
+	assert.match(config.nonce, /^[a-f0-9]{64}$/);
+	assert.equal(typeof config.wpNonce, 'string');
+	return config;
+}
+
+async function assertManualReturnSignal(browser, html, context, getActions) {
+	const config = checkoutEngagementConfig(html, context);
+	const before = checkoutEvents(getActions());
+	const prior = newestAction(before);
+	assert.ok(prior, `${context}: fixture needs a previously captured checkout`);
+	const response = await browser.request(new URL(config.url).pathname, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json',
+			'X-WP-Nonce': config.wpNonce,
+			origin: new URL(config.url).origin,
+		},
+		body: JSON.stringify({ nonce: config.nonce }),
+	});
+	assert.equal(
+		response.status,
+		202,
+		`${context}: verified engagement must be accepted; response: ${await response.clone().text()}`
+	);
+	const after = checkoutEvents(getActions());
+	const added = newCheckoutActions(before, after);
+	assert.equal(added.length, 1, `${context}: one page visit publishes exactly one event`);
+	const resumed = added[0].args.event;
+	assert.equal(resumed.eventType, 'CHECKOUT_UPDATED');
+	assert.equal(resumed.checkoutKey, prior.args.event.checkoutKey);
+	assert.deepEqual(resumed.checkout.items, prior.args.event.checkout.items, `${context}: basket lines remain unchanged`);
+	assert.equal(resumed.checkout.total, prior.args.event.checkout.total, `${context}: basket total remains unchanged`);
+	assert.deepEqual(resumed.checkout.restoration, prior.args.event.checkout.restoration, `${context}: restoration remains unchanged`);
+	const replay = await browser.request(new URL(config.url).pathname, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json',
+			'X-WP-Nonce': config.wpNonce,
+			origin: new URL(config.url).origin,
+		},
+		body: JSON.stringify({ nonce: config.nonce }),
+	});
+	assert.equal(replay.status, 403, `${context}: replayed visit nonce must be rejected`);
+	assert.equal(newCheckoutActions(after, checkoutEvents(getActions())).length, 0);
+}
+
 async function assertHttpOk(response, context) {
 	if (response.status !== 200) {
 		const excerpt = (await response.clone().text())
@@ -433,6 +486,12 @@ export async function assertCheckoutWordPress({
 				initialEvent: classicEvent,
 				getActions: getCheckoutActionHistory,
 			});
+			classicResponse = await classic.request(`/?page_id=${fixture.classicCheckoutPage}`);
+			await assertHttpOk(classicResponse, `${kind} first manual-return visit`);
+			await assertManualReturnSignal(classic, await classicResponse.text(), `${kind} Classic first visit`, getCheckoutActionHistory);
+			classicResponse = await classic.request(`/?page_id=${fixture.classicCheckoutPage}`);
+			await assertHttpOk(classicResponse, `${kind} second manual-return visit`);
+			await assertManualReturnSignal(classic, await classicResponse.text(), `${kind} Classic second visit`, getCheckoutActionHistory);
 			process.stdout.write(
 				`ARCH-035 Classic ${kind}: checkout AJAX capture PASS\n`
 			);
@@ -663,6 +722,14 @@ export async function assertCheckoutWordPress({
 				initialEvent: first,
 				getActions: getCheckoutActionHistory,
 			});
+			const blocksCartPage = await blocks.request('/cart/');
+			await assertHttpOk(blocksCartPage, `${kind} Blocks cart manual-return page`);
+			await assertManualReturnSignal(
+				blocks,
+				await blocksCartPage.text(),
+				`${kind} Blocks cart visit`,
+				getCheckoutActionHistory
+			);
 			// Capture order events before placement, so HPOS order creation can be
 			// verified separately from earlier checkout events.
 			const beforeOrder = getPendingCheckoutActions();
