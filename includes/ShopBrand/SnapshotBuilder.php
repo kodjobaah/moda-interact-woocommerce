@@ -27,7 +27,7 @@ final class SnapshotBuilder {
 		$event = array_merge( array(
 			'schemaVersion' => 'woo.shop-brand.v1',
 			'eventId'       => 'woo-brand-' . hash( 'sha256', $installation_id . "\0" . $encoded ),
-			'observedAt'    => $observed_at ?? $now->format( 'Y-m-d\TH:i:s.u\Z' ),
+			'observedAt'    => $observed_at ?? $now->format( 'Y-m-d\TH:i:s.v\Z' ),
 		), $canonical );
 		if ( ! self::valid( $event ) ) {
 			throw new \InvalidArgumentException( 'invalid_shop_brand_snapshot' );
@@ -44,7 +44,7 @@ final class SnapshotBuilder {
 			! is_string( $event['eventId'] ) ||
 			! preg_match( '/^woo-brand-[a-f0-9]{64}$/D', $event['eventId'] ) ||
 			! is_string( $event['observedAt'] ) ||
-			! preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/D', $event['observedAt'] ) ||
+			! preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/D', $event['observedAt'] ) ||
 			( null !== $event['brandName'] && ( ! is_string( $event['brandName'] ) ||
 				! self::boundedText( $event['brandName'], 160 ) ) ) ||
 			null !== $event['coverImage'] ) {

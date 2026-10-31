@@ -95,7 +95,7 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 				(typeof event.brandName === 'string' && [...event.brandName].length <= 160));
 			assert.equal(event.coverImage, null);
 			assert.match(event.observedAt,
-				/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/);
+				/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
 			for (const role of ['logo', 'siteIcon']) {
 				const source = event[role];
 				if (source === null) continue;
