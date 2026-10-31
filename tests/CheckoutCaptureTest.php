@@ -4,6 +4,7 @@ use ModaInteract\WooCommerce\Api\ModaApiClient;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Checkout\CheckoutActivityPublisher;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
+use ModaInteract\WooCommerce\Checkout\CheckoutDiagnosticLogger;
 use ModaInteract\WooCommerce\Checkout\CheckoutKey;
 use ModaInteract\WooCommerce\Checkout\CheckoutSnapshot;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
@@ -13,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 // Bundled Composer autoload is class-map authoritative; Runtime normally loads these.
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutKey.php';
+require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutDiagnosticLogger.php';
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutSnapshot.php';
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentPhone.php';
 require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutActivityPublisher.php';
@@ -88,6 +90,21 @@ final class Arch035Order {
 final class CheckoutCaptureTest extends TestCase {
 	private array $sent = array();
 	private CheckoutCapture $capture;
+
+	public function test_checkout_diagnostic_redacts_sensitive_exception_details_and_keeps_bounded_cause(): void {
+		$diagnostic = CheckoutDiagnosticLogger::redact(
+			'Action Scheduler database unavailable for customer@example.test; Authorization: Bearer abc-secret; checkoutKey=woo-secret; endpoint https://api.example.test/private?token=secret'
+		);
+		self::assertStringContainsString( 'Action Scheduler database unavailable', $diagnostic );
+		self::assertStringContainsString( '[redacted-email]', $diagnostic );
+		self::assertStringContainsString( 'Authorization: [redacted]', $diagnostic );
+		self::assertStringContainsString( 'checkoutKey=[redacted]', $diagnostic );
+		self::assertStringContainsString( '[redacted-url]', $diagnostic );
+		self::assertStringNotContainsString( 'abc-secret', $diagnostic );
+		self::assertStringNotContainsString( 'woo-secret', $diagnostic );
+		self::assertStringNotContainsString( 'customer@example.test', $diagnostic );
+		self::assertLessThanOrEqual( 384, strlen( CheckoutDiagnosticLogger::redact( str_repeat( 'x', 1000 ) ) ) );
+	}
 	private CheckoutActivityPublisher $publisher;
 	private bool $hadHomeUrl;
 	private mixed $previousHomeUrl;

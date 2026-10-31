@@ -99,7 +99,7 @@ final class CheckoutActivityPublisher {
 			}
 			return $this->queue( $args['event'] );
 		} catch ( \Throwable $error ) {
-			self::log( 'replay_unavailable' );
+			self::log( 'replay_unavailable', $error );
 			return false;
 		}
 	}
@@ -131,7 +131,7 @@ final class CheckoutActivityPublisher {
 			self::log( 'enqueue_rejected' );
 			return false;
 		} catch ( \Throwable $error ) {
-			self::log( 'enqueue_failed' );
+			self::log( 'enqueue_failed', $error );
 			return false;
 		}
 	}
@@ -153,6 +153,7 @@ final class CheckoutActivityPublisher {
 			$identity = $this->site_identity ?? new SiteIdentity( ModaApiConfiguration::serverMode() );
 			$site_valid = $identity->currentCanonicalUrl() === $current['record']['canonicalSiteUrl'];
 		} catch ( \Throwable $error ) {
+			self::log( 'site_identity_unavailable', $error );
 			self::terminalFailure( $event, $attempt, 'site_identity_unavailable' );
 			return;
 		}
@@ -168,6 +169,7 @@ final class CheckoutActivityPublisher {
 			return;
 		} catch ( \Throwable $error ) {
 			// 4xx are permanent; 503/transport failures remain eligible for bounded retry.
+			self::log( 'delivery_exception', $error );
 			if ( $error instanceof ModaApiClientException && $error->http_status !== null &&
 				$error->http_status >= 400 && $error->http_status < 500 && ! in_array( $error->http_status, array( 408, 429 ), true ) ) {
 				self::terminalFailure( $event, $attempt, 'rejected' );
@@ -187,7 +189,7 @@ final class CheckoutActivityPublisher {
 				: as_schedule_single_action( time() + $delay, self::ACTION, $args, self::GROUP, true );
 			$scheduled = is_numeric( $id ) && (int) $id > 0;
 		} catch ( \Throwable $error ) {
-			// Action Scheduler failure is reported below without leaking its error.
+			self::log( 'retry_schedule_failed', $error );
 		}
 		if ( ! $scheduled ) self::terminalFailure( $event, $attempt, 'retry_schedule_failed' );
 	}
@@ -228,8 +230,7 @@ final class CheckoutActivityPublisher {
 			1 === preg_match( '/^[a-z][a-z0-9_-]{0,63}$/D', $order['status'] );
 	}
 
-	private static function log( string $reason ): void {
-		// No customer data, payload, credential or checkout URL in error logs.
-		@error_log( 'moda.woocommerce.checkout_activity.' . $reason );
+	private static function log( string $reason, ?\Throwable $error = null ): void {
+		CheckoutDiagnosticLogger::record( 'checkout_activity', $reason, $error );
 	}
 }

@@ -70,7 +70,7 @@ final class CheckoutCapture {
 				$this->captureExisting();
 			}
 		} catch ( \Throwable $error ) {
-			self::log( 'cart_removal_capture_unavailable' );
+			self::log( 'cart_removal_capture_unavailable', $error );
 		}
 	}
 
@@ -80,7 +80,7 @@ final class CheckoutCapture {
 			$session = WC()->session ?? null;
 			if ( $session && CheckoutKey::valid( $session->get( CheckoutKey::SESSION_FIELD ) ) ) $this->capture();
 		} catch ( \Throwable $error ) {
-			self::log( 'existing_capture_unavailable' );
+			self::log( 'existing_capture_unavailable', $error );
 		}
 	}
 
@@ -98,7 +98,7 @@ final class CheckoutCapture {
 				$session->set( self::LAST_CAPTURE, null );
 			}
 		} catch ( \Throwable $error ) {
-			self::log( 'order_key_cleanup_unavailable' );
+			self::log( 'order_key_cleanup_unavailable', $error );
 		}
 	}
 
@@ -141,12 +141,11 @@ final class CheckoutCapture {
 				self::log( 'enqueue_failed' );
 			}
 		} catch ( \Throwable $error ) {
-			self::log( 'capture_unexpected' );
+			self::log( 'capture_unexpected', $error );
 		}
 	}
 
-	private static function log( string $reason ): void {
-		// Bounded outcome only; never include cart, coupon, contact or exception payloads.
-		@error_log( 'moda.woocommerce.checkout_capture.' . $reason );
+	private static function log( string $reason, ?\Throwable $error = null ): void {
+		CheckoutDiagnosticLogger::record( 'checkout_capture', $reason, $error );
 	}
 }

@@ -127,7 +127,7 @@ final class CheckoutSnapshot {
 				$type = $product->get_type();
 				$loaded_id = self::positiveId( $product->get_id() );
 			} catch ( \Throwable $error ) {
-				self::log( 'product_unavailable' );
+				self::log( 'product_unavailable', $error );
 				return self::unsupported( 'ITEMS_UNAVAILABLE', $coupons );
 			}
 			if ( ! in_array( $type, array( 'simple', 'variation' ), true ) ) {
@@ -152,7 +152,7 @@ final class CheckoutSnapshot {
 				try {
 					$parent_id = self::positiveId( $product->get_parent_id() );
 				} catch ( \Throwable $error ) {
-					self::log( 'variation_parent_unavailable' );
+					self::log( 'variation_parent_unavailable', $error );
 					return self::unsupported( 'INVALID_VARIATION', $coupons );
 				}
 				if ( $parent_id !== $product_id ) return self::unsupported( 'INVALID_VARIATION', $coupons );
@@ -196,7 +196,7 @@ final class CheckoutSnapshot {
 		try {
 			$codes = $cart->get_applied_coupons();
 		} catch ( \Throwable $error ) {
-			self::log( 'coupons_unavailable' );
+			self::log( 'coupons_unavailable', $error );
 			return array( 'reason' => 'COUPONS_UNAVAILABLE' );
 		}
 		if ( ! is_array( $codes ) ) {
@@ -249,8 +249,8 @@ final class CheckoutSnapshot {
 		return $code_points + $supplementary;
 	}
 
-	private static function log( string $reason ): void {
-		@error_log( 'moda.woocommerce.checkout_snapshot.' . $reason );
+	private static function log( string $reason, ?\Throwable $error = null ): void {
+		CheckoutDiagnosticLogger::record( 'checkout_snapshot', $reason, $error );
 	}
 
 	private static function money( mixed $amount ): ?string {
