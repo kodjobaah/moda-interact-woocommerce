@@ -70,7 +70,7 @@ final class CheckoutCapture {
 				$this->captureExisting();
 			}
 		} catch ( \Throwable $error ) {
-			// Never interrupt Woo's cart mutations.
+			self::log( 'cart_removal_capture_unavailable', $error );
 		}
 	}
 
@@ -80,7 +80,7 @@ final class CheckoutCapture {
 			$session = WC()->session ?? null;
 			if ( $session && CheckoutKey::valid( $session->get( CheckoutKey::SESSION_FIELD ) ) ) $this->capture();
 		} catch ( \Throwable $error ) {
-			// Extension capture is advisory.
+			self::log( 'existing_capture_unavailable', $error );
 		}
 	}
 
@@ -98,7 +98,7 @@ final class CheckoutCapture {
 				$session->set( self::LAST_CAPTURE, null );
 			}
 		} catch ( \Throwable $error ) {
-			// No extension exception may interrupt order placement.
+			self::log( 'order_key_cleanup_unavailable', $error );
 		}
 	}
 
@@ -108,7 +108,10 @@ final class CheckoutCapture {
 			$session = $commerce->session ?? null;
 			if ( ! $session ) return;
 			$snapshot = CheckoutSnapshot::fromCart( $commerce->cart ?? null, $commerce->customer ?? null );
-			if ( null === $snapshot ) return;
+			if ( null === $snapshot ) {
+				self::log( 'snapshot_unavailable' );
+				return;
+			}
 			$previous = $session->get( self::LAST_CAPTURE );
 			$is_empty = isset( $snapshot['items'] ) && array() === $snapshot['items'];
 			if ( $is_empty ) {
@@ -123,7 +126,10 @@ final class CheckoutCapture {
 				if ( $this->classicContact ) $snapshot['contact'] = array_merge( $snapshot['contact'] ?? array(), $this->classicContact );
 			}
 			$encoded = wp_json_encode( $snapshot );
-			if ( ! is_string( $encoded ) ) return;
+			if ( ! is_string( $encoded ) ) {
+				self::log( 'snapshot_encoding_failed' );
+				return;
+			}
 			$fingerprint = hash( 'sha256', $encoded );
 			if ( is_array( $previous ) && ( $previous['checkoutKey'] ?? null ) === $key &&
 				( $previous['fingerprint'] ?? null ) === $fingerprint ) return;
@@ -131,9 +137,15 @@ final class CheckoutCapture {
 				$session->set( self::LAST_CAPTURE, array(
 					'checkoutKey' => $key, 'fingerprint' => $fingerprint, 'empty' => $is_empty,
 				) );
+			} else {
+				self::log( 'enqueue_failed' );
 			}
 		} catch ( \Throwable $error ) {
-			// Extension capture is advisory: never interrupt a shopper's checkout.
+			self::log( 'capture_unexpected', $error );
 		}
+	}
+
+	private static function log( string $reason, ?\Throwable $error = null ): void {
+		CheckoutDiagnosticLogger::record( 'checkout_capture', $reason, $error );
 	}
 }

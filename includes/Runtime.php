@@ -21,6 +21,7 @@ require_once __DIR__ . '/Rest/RecoveryDiscountOffersController.php';
 require_once __DIR__ . '/Api/MerchantKnowledgeContracts.php';
 require_once __DIR__ . '/Rest/MerchantKnowledgeController.php';
 require_once __DIR__ . '/Checkout/CheckoutKey.php';
+require_once __DIR__ . '/Checkout/CheckoutDiagnosticLogger.php';
 require_once __DIR__ . '/Checkout/CheckoutSnapshot.php';
 require_once __DIR__ . '/Checkout/CheckoutActivityPublisher.php';
 require_once __DIR__ . '/Checkout/CheckoutCapture.php';
