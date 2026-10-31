@@ -36,9 +36,11 @@ final class CheckoutActivityPublisher {
 			'occurredAt' => ( new \DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) ) )->format( 'Y-m-d\TH:i:s.v\Z' ),
 			'checkout' => $snapshot,
 		);
-		// API-001's authenticated HTTP v2 envelope binds the activity to the
-		// *same* exact recipient normaliser as consent. The Background queue stays v1.
+		// API-001 keeps phone proof inside the canonical authenticated v1 envelope.
 		$contact = $event['checkout']['contact'] ?? null;
+		if ( is_array( $contact ) ) {
+			unset( $contact['canonicalPhone'], $contact['verifiedCountryCode'] );
+		}
 		if ( is_array( $contact ) && isset( $contact['phone'] ) ) {
 			$country = null;
 			$customer = function_exists( 'WC' ) ? ( WC()->customer ?? null ) : null;
@@ -47,10 +49,16 @@ final class CheckoutActivityPublisher {
 			}
 			$canonical = CheckoutConsentPhone::normalize( $contact['phone'], $country );
 			if ( null !== $canonical ) {
-				$event['schemaVersion'] = 'woo.activity.v2';
-				$event['checkout']['contact']['canonicalPhone'] = $canonical;
-				if ( null !== $country ) $event['checkout']['contact']['verifiedCountryCode'] = $country;
+				$contact['canonicalPhone'] = $canonical;
+				if ( null !== $country ) $contact['verifiedCountryCode'] = $country;
+			} else {
+				unset( $contact['phone'] );
 			}
+			if ( $contact ) $event['checkout']['contact'] = $contact;
+			else unset( $event['checkout']['contact'] );
+		} elseif ( is_array( $contact ) ) {
+			if ( $contact ) $event['checkout']['contact'] = $contact;
+			else unset( $event['checkout']['contact'] );
 		}
 		return $this->queue( $event );
 	}
@@ -91,24 +99,39 @@ final class CheckoutActivityPublisher {
 			}
 			return $this->queue( $args['event'] );
 		} catch ( \Throwable $error ) {
-			self::log( 'replay_unavailable' );
+			self::log( 'replay_unavailable', $error );
 			return false;
 		}
 	}
 
 	private function queue( array $event ): bool {
-		if ( ! function_exists( 'as_enqueue_async_action' ) ) return false;
+		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
+			self::log( 'scheduler_unavailable' );
+			return false;
+		}
 		$installed = ( $this->installations ?? new InstallationStore() )->read();
-		if ( 'valid' !== $installed['state'] ) return false;
+		if ( 'valid' !== $installed['state'] ) {
+			self::log( 'installation_unavailable' );
+			return false;
+		}
 		$record = $installed['record'];
 		$json = wp_json_encode( $event );
-		if ( ! is_string( $json ) || strlen( $json ) > 65536 ) return false;
+		if ( ! is_string( $json ) ) {
+			self::log( 'event_encoding_failed' );
+			return false;
+		}
+		if ( strlen( $json ) > 65536 ) {
+			self::log( 'event_size_limit_exceeded' );
+			return false;
+		}
 		try {
 			$id = as_enqueue_async_action( self::ACTION,
 				array( 'event' => $event, 'installationId' => $record['installationId'], 'shopId' => $record['shopId'], 'attempt' => 1 ), self::GROUP, true );
-			return is_numeric( $id ) && (int) $id > 0;
+			if ( is_numeric( $id ) && (int) $id > 0 ) return true;
+			self::log( 'enqueue_rejected' );
+			return false;
 		} catch ( \Throwable $error ) {
-			self::log( 'enqueue_failed' );
+			self::log( 'enqueue_failed', $error );
 			return false;
 		}
 	}
@@ -130,6 +153,7 @@ final class CheckoutActivityPublisher {
 			$identity = $this->site_identity ?? new SiteIdentity( ModaApiConfiguration::serverMode() );
 			$site_valid = $identity->currentCanonicalUrl() === $current['record']['canonicalSiteUrl'];
 		} catch ( \Throwable $error ) {
+			self::log( 'site_identity_unavailable', $error );
 			self::terminalFailure( $event, $attempt, 'site_identity_unavailable' );
 			return;
 		}
@@ -145,6 +169,7 @@ final class CheckoutActivityPublisher {
 			return;
 		} catch ( \Throwable $error ) {
 			// 4xx are permanent; 503/transport failures remain eligible for bounded retry.
+			self::log( 'delivery_exception', $error );
 			if ( $error instanceof ModaApiClientException && $error->http_status !== null &&
 				$error->http_status >= 400 && $error->http_status < 500 && ! in_array( $error->http_status, array( 408, 429 ), true ) ) {
 				self::terminalFailure( $event, $attempt, 'rejected' );
@@ -164,7 +189,7 @@ final class CheckoutActivityPublisher {
 				: as_schedule_single_action( time() + $delay, self::ACTION, $args, self::GROUP, true );
 			$scheduled = is_numeric( $id ) && (int) $id > 0;
 		} catch ( \Throwable $error ) {
-			// Action Scheduler failure is reported below without leaking its error.
+			self::log( 'retry_schedule_failed', $error );
 		}
 		if ( ! $scheduled ) self::terminalFailure( $event, $attempt, 'retry_schedule_failed' );
 	}
@@ -185,8 +210,7 @@ final class CheckoutActivityPublisher {
 	}
 
 	private static function validActivityEvent( array $event ): bool {
-		return in_array( $event['schemaVersion'] ?? null, array( 'woo.activity.v1', 'woo.activity.v2' ), true ) &&
-			( $event['schemaVersion'] !== 'woo.activity.v2' || ( $event['eventType'] ?? null ) === 'CHECKOUT_UPDATED' ) &&
+		return ( $event['schemaVersion'] ?? null ) === 'woo.activity.v1' &&
 			CheckoutKey::valid( $event['eventId'] ?? null ) &&
 			CheckoutKey::valid( $event['checkoutKey'] ?? null ) &&
 			( ( ( $event['eventType'] ?? null ) === 'CHECKOUT_UPDATED' && isset( $event['checkout'] ) && ! isset( $event['order'] ) ) ||
@@ -206,8 +230,7 @@ final class CheckoutActivityPublisher {
 			1 === preg_match( '/^[a-z][a-z0-9_-]{0,63}$/D', $order['status'] );
 	}
 
-	private static function log( string $reason ): void {
-		// No customer data, payload, credential or checkout URL in error logs.
-		error_log( 'moda.woocommerce.checkout_activity.' . $reason );
+	private static function log( string $reason, ?\Throwable $error = null ): void {
+		CheckoutDiagnosticLogger::record( 'checkout_activity', $reason, $error );
 	}
 }

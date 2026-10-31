@@ -1,0 +1,66 @@
+{
+  "supportedSnapshot": {
+    "schemaVersion": "woo.cart-restore.v1",
+    "kind": "supported",
+    "appliedCouponCodes": ["save10", "freeship"],
+    "lines": [
+      {"productId": "101", "quantity": 2},
+      {
+        "productId": "202",
+        "variationId": "207",
+        "quantity": 1,
+        "attributes": {
+          "attribute_pa_color": "navy",
+          "attribute_pa_size": "m"
+        }
+      }
+    ]
+  },
+  "unsupportedSnapshot": {
+    "schemaVersion": "woo.cart-restore.v1",
+    "kind": "unsupported",
+    "reason": "CUSTOM_CART_ITEM_DATA",
+    "appliedCouponCodes": ["save10"]
+  },
+  "resolveRequest": {
+    "schemaVersion": "woo.restore.resolve.v1",
+    "recoveryId": "recovery_456",
+    "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "eligibleResolveResponse": {
+    "schemaVersion": "woo.restore.resolve.v1",
+    "status": "eligible",
+    "recoveryId": "recovery_456",
+    "checkoutKey": "woo-example-checkout",
+    "snapshot": {
+      "schemaVersion": "woo.cart-restore.v1",
+      "kind": "supported",
+      "appliedCouponCodes": ["save10", "freeship"],
+      "lines": [
+        {"productId": "101", "quantity": 2},
+        {
+          "productId": "202",
+          "variationId": "207",
+          "quantity": 1,
+          "attributes": {"attribute_pa_color": "navy", "attribute_pa_size": "m"}
+        }
+      ]
+    },
+    "outreachOffer": {
+      "kind": "CHECKOUT_CODE",
+      "code": "EXTRA15",
+      "providerDiscountId": "woo-discount-915"
+    }
+  },
+  "outreachOfferExamples": {
+    "none": {"kind": "NONE", "reason": "NO_CONFIRMED_OFFER"},
+    "unverifiable": {"kind": "NONE", "reason": "UNVERIFIABLE"},
+    "checkoutCode": {
+      "kind": "CHECKOUT_CODE",
+      "code": "EXTRA15",
+      "providerDiscountId": "woo-discount-915"
+    },
+    "checkoutAutomatic": {"kind": "CHECKOUT_AUTOMATIC", "providerDiscountId": "woo-discount-916"},
+    "alternativeProduct": {"kind": "ALTERNATIVE_PRODUCT"}
+  }
+}
