@@ -4,6 +4,37 @@ import { assertNoConsentCheckoutActivity } from '../consent-checkout-isolation.m
 
 const extensionRoute = '/wp-json/wc/store/v1/cart/extensions';
 const extensionName = 'moda-interact-consent';
+const classicCheckoutForm = /<form\b[^>]*class=["'][^"']*\bwoocommerce-checkout\b/;
+
+/** Read only the fixed-shape, non-sensitive signals from the disposable WP probe. */
+export function classicCheckoutProbe(html) {
+	const match = html.match(
+		/<!-- MODA_ARCH046_CONSENT_PROBE (\{[^<>\r\n]{1,512}\}) -->/
+	);
+	let data;
+	try {
+		data = match ? JSON.parse(match[1]) : null;
+	} catch {
+		data = null;
+	}
+	return {
+		probePresent: !!data && typeof data === 'object',
+		phpCartLoaded: data?.phpCartLoaded === true,
+		phpCartCount:
+			Number.isSafeInteger(data?.phpCartCount) &&
+			data.phpCartCount >= 0
+				? Math.min(data.phpCartCount, 10000)
+				: null,
+		hasClassicShortcode: data?.hasClassicShortcode === true,
+		comingSoonEnabled: data?.comingSoonEnabled === true,
+		shortcodeRegistered: data?.shortcodeRegistered === true,
+		postContentFilterReached: data?.postContentFilterReached === true,
+		shortcodeCallbackReached: data?.shortcodeCallbackReached === true,
+		shortcodeOutputProduced: data?.shortcodeOutputProduced === true,
+		shortcodeEntered: data?.shortcodeEntered === true,
+		beforeFormHookEntered: data?.beforeFormHookEntered === true,
+	};
+}
 
 export function consentExtensionResult(body, requestId) {
 	assert.ok(body && typeof body === 'object');
@@ -53,46 +84,109 @@ export async function storeConsentAction(
 	assert.equal(
 		response.status,
 		200,
-		`Woo cart/extensions ${action}: HTTP ${response.status} ${await response.clone().text()}`
+		`Woo cart/extensions ${action}: unexpected HTTP ${response.status}`
 	);
 	return consentExtensionResult(await response.json(), requestId);
 }
 
-function checkPageBody(html, type) {
-	assert.doesNotMatch(
-		html,
+/** Emit bounded, non-sensitive evidence rather than dumping checkout HTML (and its nonces). */
+export function checkPageBody(
+	html,
+	type,
+	featureReads = { total: 0, enabled: 0 }
+) {
+	const signals = {
+		type,
+		isCheckoutPage: /woocommerce-checkout/.test(html),
+		hasCheckoutFields: /wp-block-woocommerce-checkout-fields-block/.test(
+			html
+		),
+		hasClassicCheckoutForm: classicCheckoutForm.test(html),
+		hasCartEmptyNotice: [
+			/your cart is (?:currently )?empty/i,
+			/checkout is not available (?:whilst|while) your cart is empty/i,
+			/no products in (?:your|the) cart/i,
+		].some((pattern) => pattern.test(html)),
+		hasConsentConfig: /window\.modaWooCheckoutConsentConfig\s*=/.test(html),
+		hasClassicConsentScript: /checkout-consent-classic\.js/.test(html),
+		hasBlocksConsentScript: /checkout-consent-blocks-status\.js/.test(html),
+		...(type === 'classic' ? classicCheckoutProbe(html) : {}),
+		featureReads: featureReads.total,
+		enabledFeatureReads: featureReads.enabled,
+	};
+	const context = JSON.stringify(signals);
+	function requirePresence(pattern, description) {
+		assert.ok(pattern.test(html), `${description}; ${context}`);
+	}
+	function requireAbsence(pattern, description) {
+		assert.ok(!pattern.test(html), `${description}; ${context}`);
+	}
+	requireAbsence(
 		/data-moda-woo-runtime-mount/,
 		'Removed React placeholder must never render'
 	);
-	assert.doesNotMatch(
-		html,
+	requireAbsence(
 		/grantEventId|moda_woo_checkout_grant_proof_v1/,
-		'Protected grant evidence must not enter rendered checkout HTML'
+		'Protected grant evidence must not enter checkout HTML'
 	);
 	if (type === 'classic') {
-		assert.match(
-			html,
-			/name=["']moda_interact_whatsapp_recovery_opt_in["']/
+		requirePresence(
+			classicCheckoutForm,
+			'Classic shortcode must render the checkout form (verify cart and guest-checkout settings)'
 		);
-		assert.match(html, /id=["']moda-woo-consent-withdraw["']/);
-		assert.match(html, /checkout-consent-classic\.js/);
+		requirePresence(
+			/name=["']moda_interact_whatsapp_recovery_opt_in["']/,
+			'Actual Classic consent checkbox must be emitted'
+		);
+		requireAbsence(
+			/id=["']moda-woo-consent-withdraw["']/,
+			'Classic must not render a separate withdrawal button'
+		);
+		requirePresence(
+			/checkout-consent-classic\.js/,
+			'Classic consent JavaScript must be enqueued'
+		);
 	} else {
-		assert.match(html, /checkout-consent-blocks-status\.js/);
-		assert.match(
-			html,
+		requirePresence(
+			/checkout-consent-blocks-status\.js/,
+			'Woo consent Blocks JavaScript must be enqueued'
+		);
+		assert.ok(
+			/woocommerce-checkout/.test(html),
+			`Woo Blocks checkout page must exist; ${context}`
+		);
+		requireAbsence(
 			/data-block-name=["']moda-interact\/checkout-consent["']/,
-			'Actual Checkout Fields child must be emitted by WordPress'
+			'Obsolete custom child block must not be emitted'
 		);
-		assert.equal(
-			(
-				html.match(
-					/data-block-name=["']moda-interact\/checkout-consent["']/g
-				) ?? []
-			).length,
-			1,
-			'Single registered Woo Blocks renderer: exactly one parsed child'
-		);
+
 	}
+}
+
+/** Verify the real session cart, not merely an HTTP success response. */
+export function assertCartContainsProduct(cart, product) {
+	assert.ok(
+		Array.isArray(cart?.items) &&
+			cart.items.some(
+				(item) => item.id === product && item.quantity > 0
+			),
+		'Live checkout cart must contain the exact fixture product before consent assertions'
+	);
+}
+
+/**
+ * Start Classic checkout through Woo's frontend handler, which establishes the
+ * cookie-backed WC session seen by the PHP shortcode. A Store API add-item
+ * success only proves its own REST cart, not continuity into Classic checkout.
+ * Verify the resulting product through the Store API using the same cookies.
+ */
+export async function bootstrapClassicCart(client, product) {
+	assert.ok(Number.isSafeInteger(product) && product > 0);
+	const added = await client.request(`/?add-to-cart=${product}`);
+	assert.equal(added.status, 200, 'Classic frontend add-to-cart must succeed');
+	const cart = await client.request('/wp-json/wc/store/v1/cart');
+	assert.equal(cart.status, 200, 'Classic cookie-backed cart verification GET');
+	assertCartContainsProduct(await cart.json(), product);
 }
 
 function classicNonce(html, name) {
@@ -129,12 +223,26 @@ async function assertClassic({
 	getCheckoutActionHistory,
 }) {
 	const classic = session(siteUrl);
-	let response = await classic.request(`/?add-to-cart=${product}`);
-	assert.ok([200, 302].includes(response.status));
-	response = await classic.request(`/?page_id=${page}`);
+	// Native frontend add-to-cart establishes the Classic checkout session.
+	// Then verify the product via the Store API with the SAME cookie jar;
+	// an HTTP 200 from add-to-cart alone never proves that a cart was created.
+	await bootstrapClassicCart(classic, product);
+	const readsBeforePage = consent.getFeatureReadDiagnostics();
+	let response = await classic.request(`/?page_id=${page}`, {
+		headers: { 'x-moda-arch046-test-probe': '1' },
+	});
 	assert.equal(response.status, 200);
 	const html = await response.text();
-	checkPageBody(html, 'classic');
+	const readsAfterPage = consent.getFeatureReadDiagnostics();
+	checkPageBody(html, 'classic', {
+		total: readsAfterPage.total - readsBeforePage.total,
+		enabled: readsAfterPage.enabled - readsBeforePage.enabled,
+	});
+	assert.equal(
+		readsAfterPage.total,
+		readsBeforePage.total,
+		'Classic checkout rendering must not synchronously request hosted feature eligibility'
+	);
 	const reviewNonce = classicNonce(html, 'update_order_review_nonce');
 	const config = html.match(
 		/window\.modaWooCheckoutConsentConfig\s*=\s*(\{[^;]+\});/
@@ -306,9 +414,20 @@ async function assertBlocks({
 }) {
 	const checkout = session(siteUrl);
 	await addBlocksProduct(checkout, product, 'blocks-consent');
+	const readsBeforePage = consent.getFeatureReadDiagnostics();
 	const htmlResponse = await checkout.request(`/?page_id=${page}`);
 	assert.equal(htmlResponse.status, 200);
-	checkPageBody(await htmlResponse.text(), 'blocks');
+	const html = await htmlResponse.text();
+	const readsAfterPage = consent.getFeatureReadDiagnostics();
+	checkPageBody(html, 'blocks', {
+		total: readsAfterPage.total - readsBeforePage.total,
+		enabled: readsAfterPage.enabled - readsBeforePage.enabled,
+	});
+	assert.equal(
+		readsAfterPage.total,
+		readsBeforePage.total,
+		'Blocks checkout rendering must not synchronously request hosted feature eligibility'
+	);
 	const activityBefore = getCheckoutActionHistory();
 	const start = consent.getRequests().length;
 	const readStart = consent.getStatusRequests().length;
@@ -624,6 +743,16 @@ export async function assertCheckoutConsentWordPress({
 		wp(
 			'eval',
 			`
+		// Like the ARCH-035 real checkout suite, make the disposable test
+		// site explicitly allow guest checkout. Capture the previous settings.
+		$previous_guest_checkout = get_option('woocommerce_enable_guest_checkout', null);
+		$previous_checkout_login = get_option('woocommerce_enable_signup_and_login_from_checkout', null);
+		$previous_coming_soon = get_option('woocommerce_coming_soon', null);
+		// Fresh WooCommerce installs can hide checkout behind Coming Soon.
+		// A guest HTTP test must exercise the real checkout, not that template.
+		update_option('woocommerce_coming_soon', 'no');
+		update_option('woocommerce_enable_guest_checkout', 'yes');
+		update_option('woocommerce_enable_signup_and_login_from_checkout', 'yes');
 		$product = new WC_Product_Simple();
 		$product->set_name('ARCH046 consent integration product');
 		$product->set_status('publish');
@@ -635,17 +764,35 @@ export async function assertCheckoutConsentWordPress({
 		$blocks = $current && has_block('woocommerce/checkout', $current)
 			? (int) $current->ID : 0;
 		echo wp_json_encode(array('product' => $product->get_id(),
-			'classic' => $classic, 'blocks' => $blocks));
+			'classic' => $classic, 'blocks' => $blocks,
+			'previousGuestCheckout' => $previous_guest_checkout,
+			'previousCheckoutLogin' => $previous_checkout_login,
+			'previousComingSoon' => $previous_coming_soon));
 	`
 		)
 	);
 	assert.ok(pages.product > 0 && pages.classic > 0);
+	process.stdout.write(
+		`[ARCH046] Disposable storefront: Coming Soon was ${pages.previousComingSoon === 'yes' ? 'enabled' : 'not enabled'}; checkout tests require live visibility\n`
+	);
 	assert.ok(
 		pages.blocks > 0,
 		'Consent test requires a real saved WooCommerce Blocks checkout page; do not invent a placeholder template'
 	);
 	fixture.consent.setFeatureEnabled(true);
+	let probeInstalled = false;
 	try {
+		// The mu-plugin reports only whether the PHP checkout had a cart and
+		// reached Woo's shortcode hooks. Never replace a different MU plugin.
+		wp(
+			'eval',
+			`$source = dirname(MODA_INTERACT_MAIN_PLUGIN_FILE) . '/tests/integration/checkout-consent-test-probe.php';
+			$target = WPMU_PLUGIN_DIR . '/arch046-consent-test-probe.php';
+			if (!is_file($source) || !wp_mkdir_p(WPMU_PLUGIN_DIR)) throw new Exception('ARCH046 diagnostic probe unavailable');
+			if (is_file($target) && hash_file('sha256', $source) !== hash_file('sha256', $target)) throw new Exception('ARCH046 probe destination conflict');
+			if (!copy($source, $target)) throw new Exception('ARCH046 diagnostic probe could not be installed');`
+		);
+		probeInstalled = true;
 		wp(
 			'option',
 			'update',
@@ -659,6 +806,16 @@ export async function assertCheckoutConsentWordPress({
 			consent: fixture.consent,
 			getCheckoutActionHistory,
 		});
+		if (withBrowser) {
+			const { assertClassicConsentBrowser } =
+				await import('./checkout-consent-browser.mjs');
+			await assertClassicConsentBrowser({
+				siteUrl,
+				page: pages.classic,
+				product: pages.product,
+				consent: fixture.consent,
+			});
+		}
 		wp(
 			'option',
 			'update',
@@ -707,6 +864,14 @@ export async function assertCheckoutConsentWordPress({
 			'ARCH-046 consent real WordPress HTTP integration PASS (hosted read simulated)\n'
 		);
 	} finally {
+		// Remove the probe before restoring Woo settings, including on assertion
+		// failure. This must never remain active on the test site after the run.
+		if (probeInstalled) {
+			wp(
+				'eval',
+				"@unlink(WPMU_PLUGIN_DIR . '/arch046-consent-test-probe.php');"
+			);
+		}
 		fixture.consent.setFeatureEnabled(false);
 		fixture.consent.setReadStatus(200);
 		fixture.consent.setWriteStatus(200);
@@ -715,6 +880,24 @@ export async function assertCheckoutConsentWordPress({
 			'update',
 			'woocommerce_checkout_page_id',
 			String(original)
+		);
+		// Restore the store's original guest-checkout settings after the
+		// disposable test, including an option that was previously absent.
+		const originalSettings = Buffer.from(
+			JSON.stringify({
+				woocommerce_enable_guest_checkout: pages.previousGuestCheckout,
+				woocommerce_enable_signup_and_login_from_checkout:
+					pages.previousCheckoutLogin,
+				woocommerce_coming_soon: pages.previousComingSoon,
+			})
+		).toString('base64');
+		wp(
+			'eval',
+			`$settings = json_decode(base64_decode('${originalSettings}'), true);
+			foreach ($settings as $name => $value) {
+				if ($value === null) delete_option($name);
+				else update_option($name, $value);
+			}`
 		);
 	}
 }

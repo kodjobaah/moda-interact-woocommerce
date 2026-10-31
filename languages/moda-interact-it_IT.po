@@ -2446,6 +2446,11 @@ msgstr "Impossibile aggiornare il consenso WhatsApp. Riprova."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Il tuo consenso ai messaggi WhatsApp è stato registrato, ma non è stato possibile verificare l'autorizzazione attuale."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Il tuo consenso ai messaggi WhatsApp è stato registrato, ma non è stato possibile verificare l'autorizzazione attuale."
 msgid "Initial recovery notice"
 msgstr "Avviso di avvio del recupero"
 

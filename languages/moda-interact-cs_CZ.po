@@ -2412,6 +2412,11 @@ msgstr "Nepodařilo se aktualizovat souhlas se zprávami WhatsApp. Zkuste to zno
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Váš souhlas se zasíláním zpráv přes WhatsApp byl zaznamenán, ale aktuální platnost oprávnění se nepodařilo ověřit."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Váš souhlas se zasíláním zpráv přes WhatsApp byl zaznamenán, ale aktuální platnost oprávnění se nepodařilo ověřit."
 msgid "Initial recovery notice"
 msgstr "Upozornění na zahájení obnovy"
 

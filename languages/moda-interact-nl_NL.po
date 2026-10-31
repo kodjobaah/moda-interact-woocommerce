@@ -2448,6 +2448,11 @@ msgstr "De WhatsApp-toestemming kon niet worden bijgewerkt. Probeer het opnieuw.
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Je toestemming voor WhatsApp-berichten is vastgelegd, maar de huidige toestemming kon niet worden bevestigd."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Je toestemming voor WhatsApp-berichten is vastgelegd, maar de huidige toestemming kon niet worden bevestigd."
 msgid "Initial recovery notice"
 msgstr "Melding bij eerste herstelbericht"
 

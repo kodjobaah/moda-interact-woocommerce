@@ -2406,6 +2406,11 @@ msgstr "WhatsAppの許可を更新できませんでした。もう一度お試�
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "WhatsAppメッセージの受信への同意は記録されましたが、現在の許可状態を確認できませんでした。"
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsAppメッセージの受信への同意は記録されましたが、現在の許可状態を確認できませんでした。"
 msgid "Initial recovery notice"
 msgstr "初回リカバリー通知"
 

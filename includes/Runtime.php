@@ -24,6 +24,7 @@ require_once __DIR__ . '/Checkout/CheckoutKey.php';
 require_once __DIR__ . '/Checkout/CheckoutSnapshot.php';
 require_once __DIR__ . '/Checkout/CheckoutActivityPublisher.php';
 require_once __DIR__ . '/Checkout/CheckoutCapture.php';
+require_once __DIR__ . '/Checkout/CheckoutConsentDiagnostics.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentEligibility.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCheckbox.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentPhone.php';
@@ -62,6 +63,7 @@ use ModaInteract\WooCommerce\Rest\PromotionsController;
 use ModaInteract\WooCommerce\Rest\RecoverySelectionController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCheckbox;
+use ModaInteract\WooCommerce\Checkout\CheckoutConsentEligibility;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentActions;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentStoreApi;
@@ -143,12 +145,17 @@ final class Runtime {
 ( new RecoverySelectionController( null, new SiteIdentity( $mode ) ) )->register();
 		$activity_publisher = new CheckoutActivityPublisher();
 		( new CheckoutCapture( $activity_publisher ) )->register();
-		( new CheckoutConsentCheckbox() )->register();
-		$consent_capture = new CheckoutConsentCapture( new CheckoutConsentPublisher() );
+		// Presentation hooks share ONE cheap local installation check per request.
+		// Do not synchronously fetch merchant features during checkout rendering.
+		// Actual GRANT admission always revalidates remotely via eligible().
+		$consent_eligibility = new CheckoutConsentEligibility();
+		$checkout_consent_visible = static fn(): bool => $consent_eligibility->eligibleForPresentation();
+		( new CheckoutConsentCheckbox( $checkout_consent_visible ) )->register();
+		$consent_capture = new CheckoutConsentCapture( new CheckoutConsentPublisher(), $consent_eligibility );
 		$consent_capture->register();
 		( new CheckoutConsentActions( $consent_capture ) )->register();
 		( new CheckoutConsentStoreApi( $consent_capture ) )->register();
-		( new CheckoutConsentPresentation() )->register();
+		( new CheckoutConsentPresentation( $checkout_consent_visible ) )->register();
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();
 		$brand_publisher = new ShopBrandPublisher();
 		$brand_publisher->register();

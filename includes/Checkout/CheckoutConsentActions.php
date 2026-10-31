@@ -45,15 +45,26 @@ final class CheckoutConsentActions {
 	}
 
 	public function ajaxStatus(): void {
-		$request = $this->classicAjaxRequest();
-		$permitted = $this->permitted( $request );
-		wp_send_json( $this->status( $request ), $permitted ? 200 : 403 );
+		try {
+			$request = $this->classicAjaxRequest();
+			$permitted = $this->permitted( $request );
+			wp_send_json( $this->status( $request ), $permitted ? 200 : 403 );
+		} catch ( \Throwable $error ) {
+			CheckoutConsentDiagnostics::warn( 'classic_status_request_failed', $error );
+			wp_send_json( array( 'confirmed' => false,
+				'reason' => 'consent_status_remote_unavailable' ), 200 );
+		}
 	}
 
 	public function ajaxWithdraw(): void {
-		$request = $this->classicAjaxRequest();
-		$permitted = $this->permitted( $request );
-		wp_send_json( $this->withdraw( $request ), $permitted ? 200 : 403 );
+		try {
+			$request = $this->classicAjaxRequest();
+			$permitted = $this->permitted( $request );
+			wp_send_json( $this->withdraw( $request ), $permitted ? 200 : 403 );
+		} catch ( \Throwable $error ) {
+			CheckoutConsentDiagnostics::warn( 'classic_withdraw_request_failed', $error );
+			wp_send_json( array( 'status' => 'unverified' ), 200 );
+		}
 	}
 
 	public function permitted( mixed $request ): bool {

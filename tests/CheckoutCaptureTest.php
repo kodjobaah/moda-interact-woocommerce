@@ -325,6 +325,53 @@ final class CheckoutCaptureTest extends TestCase {
 		self::assertCount( 1, $GLOBALS['arch035_queued'], 'Last observed basket belongs to the previous key' );
 	}
 
+	public function test_consent_only_checkout_key_does_not_start_recovery_until_real_checkout(): void {
+		$key = CheckoutKey::current( true ); // GRANT on Blocks before any draft checkout update.
+		self::assertTrue( CheckoutKey::isConsentOnly() );
+		$this->capture->captureExisting(); // Store API cart/customer hook.
+		$this->capture->afterTotals(); // Woo always recalculates after cart/extensions.
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+		self::assertSame( $key, CheckoutKey::existing() );
+		// A later ordinary cart recalculation without a checkout action is still inert.
+		$this->capture->afterTotals();
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+
+		$this->capture->capture(); // Genuine Blocks PATCH or initial Classic checkout.
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		self::assertSame( $key, $GLOBALS['arch035_queued'][0]['args']['event']['checkoutKey'] );
+		self::assertFalse( CheckoutKey::isConsentOnly() );
+		$this->capture->afterTotals(); // Same state never creates a duplicate.
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		$GLOBALS['arch035_wc']->cart->total = '34.99';
+		$this->capture->afterTotals(); // Post-checkout cart changes remain observable.
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+	}
+
+	public function test_checkout_capture_failure_does_not_promote_consent_only_key(): void {
+		CheckoutKey::current( true );
+		$GLOBALS['arch035_async_fail'] = true;
+		$this->capture->capture(); // Failed Action Scheduler acceptance.
+		self::assertTrue( CheckoutKey::isConsentOnly() );
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+		$GLOBALS['arch035_async_fail'] = false;
+		$this->capture->afterTotals(); // May not silently admit a failed checkout.
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+		$this->capture->capture(); // Retry on a genuine checkout hook.
+		self::assertFalse( CheckoutKey::isConsentOnly() );
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+	}
+
+	public function test_existing_real_checkout_key_cannot_be_reclassified_by_consent(): void {
+		$this->capture->capture();
+		$key = CheckoutKey::existing();
+		self::assertNotNull( $key );
+		self::assertSame( $key, CheckoutKey::current( true ) );
+		self::assertFalse( CheckoutKey::isConsentOnly() );
+		$GLOBALS['arch035_wc']->cart->total = '39.99';
+		$this->capture->afterTotals();
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+	}
+
 	public function test_oversized_and_invalid_snapshots_do_not_become_empty_baskets(): void {
 		$cart = $GLOBALS['arch035_wc']->cart;
 		$this->capture->capture();

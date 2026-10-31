@@ -41,7 +41,7 @@ final class CheckoutConsentProof {
 		} else {
 			// Guest proof is tied to THIS WC session and checkout/cart only.
 			$proof['principal'] = $scope['principal'];
-			$proof['checkoutKey'] = CheckoutKey::current();
+			$proof['checkoutKey'] = CheckoutKey::existing();
 			if ( null !== $proof['checkoutKey'] ) $scope['session']->set( self::SESSION_KEY, $proof );
 		}
 	}

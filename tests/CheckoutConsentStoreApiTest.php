@@ -87,6 +87,20 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 			array_keys( ( $GLOBALS['arch046_store_api_schema']['data_callback'] )() ) );
 	}
 
+	public function test_blocks_grant_mints_consent_only_key_without_starting_checkout_activity(): void {
+		$session = WC()->session;
+		self::assertNull( CheckoutKey::existing() );
+		$this->api->update( $this->action( 'choice', 'consent-only-grant', array( 'checked' => true ) ) );
+		self::assertSame( 'recorded', $this->api->data()['status'] );
+		$key = CheckoutKey::existing();
+		self::assertNotNull( $key );
+		self::assertSame( $key, $session->get( CheckoutKey::CONSENT_ONLY_SESSION_FIELD ) );
+		self::assertTrue( CheckoutKey::isConsentOnly() );
+		$this->api->update( $this->action( 'status', 'consent-only-status' ) );
+		self::assertTrue( $this->api->data()['confirmed'] );
+		self::assertTrue( CheckoutKey::isConsentOnly(), 'Proof reads never start recovery checkout' );
+	}
+
 	public function test_status_is_read_only_and_does_not_reveal_grant_proof(): void {
 		$session = WC()->session;
 		$session->set( CheckoutKey::SESSION_FIELD, null );

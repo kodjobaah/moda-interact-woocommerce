@@ -53,6 +53,9 @@ final class CheckoutCapture {
 	}
 
 	public function afterTotals(): void {
+		// A consent-only cart/extensions request may recalculate totals with an
+		// otherwise checkout-like request context. That is not a checkout action.
+		if ( CheckoutKey::isConsentOnly() ) return;
 		// Classic review may establish a new key. Other cart/Store API totals
 		// changes are observed only if the checkout already has a session key.
 		if ( defined( 'WOOCOMMERCE_CHECKOUT' ) && constant( 'WOOCOMMERCE_CHECKOUT' ) ) {
@@ -78,7 +81,12 @@ final class CheckoutCapture {
 	public function captureExisting(): void {
 		try {
 			$session = WC()->session ?? null;
-			if ( $session && CheckoutKey::valid( $session->get( CheckoutKey::SESSION_FIELD ) ) ) $this->capture();
+			// Consent may need a session-bound key before a shopper has actually
+			// started recovery checkout activity. Do not allow Woo's unrelated
+			// cart/extensions total recalculation (or later cart GETs) to turn
+			// that consent-only key into a CHECKOUT_UPDATED event.
+			if ( $session && ! CheckoutKey::isConsentOnly() &&
+				CheckoutKey::valid( $session->get( CheckoutKey::SESSION_FIELD ) ) ) $this->capture();
 		} catch ( \Throwable $error ) {
 			// Extension capture is advisory.
 		}
@@ -96,6 +104,7 @@ final class CheckoutCapture {
 			if ( CheckoutKey::valid( $key ) && $key === $order->get_meta( CheckoutKey::ORDER_META, true ) ) {
 				$session->set( CheckoutKey::SESSION_FIELD, null );
 				$session->set( self::LAST_CAPTURE, null );
+				CheckoutKey::checkoutObserved();
 			}
 		} catch ( \Throwable $error ) {
 			// No extension exception may interrupt order placement.
@@ -131,6 +140,8 @@ final class CheckoutCapture {
 				$session->set( self::LAST_CAPTURE, array(
 					'checkoutKey' => $key, 'fingerprint' => $fingerprint, 'empty' => $is_empty,
 				) );
+				// An explicit checkout hook, not a consent GRANT, now owns activity.
+				CheckoutKey::checkoutObserved();
 			}
 		} catch ( \Throwable $error ) {
 			// Extension capture is advisory: never interrupt a shopper's checkout.

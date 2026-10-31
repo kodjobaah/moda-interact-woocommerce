@@ -2430,6 +2430,11 @@ msgstr "WhatsApp-tilladelsen kunne ikke opdateres. Prøv igen."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Dit samtykke til WhatsApp-beskeder blev registreret, men den aktuelle tilladelse kunne ikke bekræftes."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Dit samtykke til WhatsApp-beskeder blev registreret, men den aktuelle tilladelse kunne ikke bekræftes."
 msgid "Initial recovery notice"
 msgstr "Meddelelse om første gendannelseskontakt"
 

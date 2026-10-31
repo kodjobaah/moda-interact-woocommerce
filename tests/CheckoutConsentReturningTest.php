@@ -268,21 +268,14 @@ final class CheckoutConsentReturningTest extends TestCase {
 		}
 	}
 
-	public function test_legacy_blocks_false_field_is_not_a_withdrawal(): void {
-		$GLOBALS['arch046_nonce_action'] = 'wc_store_api';
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
-			CheckoutConsentCheckbox::BLOCK_FIELD => true,
-		) ) );
+	public function test_native_field_cannot_authorise_permission_but_explicit_blocks_action_can(): void {
+		self::assertTrue( $this->capture->observe( 'BLOCKS', true,
+			'+447400123456', 'GB', true, false, 'explicit-request-1' ) );
 		self::assertCount( 1, $this->requests );
-		$this->capture->blocksDraft( new Arch046CheckoutRequest( array(
-			CheckoutConsentCheckbox::BLOCK_FIELD => false,
-			'moda-interact/whatsapp-recovery-withdrawal' => 'withdraw',
-		) ) );
-		self::assertCount( 1, $this->requests, 'False draft state cannot publish REVOKE' );
-		self::assertSame( 'GRANT', $this->event( 0 )['decision'] );
 		$this->enableConfirmedStatus();
-		self::assertTrue( $this->capture->withdrawExplicit( 'BLOCKS', '+447400123456', 'GB', true ) );
-		self::assertCount( 2, $this->requests, 'Only a distinct confirmed action can REVOKE' );
+		self::assertTrue( $this->capture->withdrawExplicit( 'BLOCKS', '+447400123456', 'GB', true,
+			'explicit-request-2' ) );
+		self::assertCount( 2, $this->requests );
 		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
 	}
 

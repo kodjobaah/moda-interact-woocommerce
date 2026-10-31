@@ -331,13 +331,21 @@ if ( ! class_exists( 'WP_Error' ) ) {
 	class WP_Error {
 		public function __construct( private string $code = '', private string $message = '', private array $data = array() ) {}
 		public function get_error_code(): string { return $this->code; }
+		public function get_error_message(): string { return $this->message; }
 		public function get_error_data(): array { return $this->data; }
 	}
+}
+
+if ( ! function_exists( 'is_wp_error' ) ) {
+	function is_wp_error( $value ) { return $value instanceof WP_Error; }
 }
 
 class WooCommerce {}
 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+// Vendor's committed Composer autoloader is class-map authoritative. New checkout
+// diagnostics must be loadable by PHPUnit before any runtime boot hook fires.
+require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentDiagnostics.php';
 require_once dirname( __DIR__ ) . '/includes/Api/DiscountOffersContracts.php';
 require_once dirname( __DIR__ ) . '/includes/Api/UsageHistoryResponseValidator.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/UsageHistoryController.php';

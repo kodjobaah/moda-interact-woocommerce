@@ -2447,6 +2447,11 @@ msgstr "Não foi possível atualizar a permissão do WhatsApp. Tente novamente."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Seu consentimento para receber mensagens pelo WhatsApp foi registrado, mas não foi possível confirmar a permissão atual."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Seu consentimento para receber mensagens pelo WhatsApp foi registrado, mas não foi possível confirmar a permissão atual."
 msgid "Initial recovery notice"
 msgstr "Aviso de recuperação inicial"
 

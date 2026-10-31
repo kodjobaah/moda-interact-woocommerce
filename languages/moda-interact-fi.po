@@ -2421,6 +2421,11 @@ msgstr "WhatsApp-suostumusta ei voitu päivittää. Yritä uudelleen."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "WhatsApp-suostumuksesi tallennettiin, mutta voimassa olevaa lupaa ei voitu vahvistaa."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsApp-suostumuksesi tallennettiin, mutta voimassa olevaa lupaa ei voitu vahvistaa."
 msgid "Initial recovery notice"
 msgstr "Ilmoitus palautuksen aloituksesta"
 

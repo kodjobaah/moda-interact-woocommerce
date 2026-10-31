@@ -2415,6 +2415,11 @@ msgstr "WhatsApp izni güncellenemedi. Lütfen tekrar deneyin."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "WhatsApp mesajları için verdiğiniz onay kaydedildi ancak mevcut izin durumu doğrulanamadı."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsApp mesajları için verdiğiniz onay kaydedildi ancak mevcut izin durumu doğrulanamadı."
 msgid "Initial recovery notice"
 msgstr "İlk kurtarma bildirimi"
 

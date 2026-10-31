@@ -2403,6 +2403,11 @@ msgstr "WhatsApp 동의를 업데이트하지 못했습니다. 다시 시도해 
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "WhatsApp 메시지 수신 동의가 기록되었지만 현재 허용 상태를 확인할 수 없습니다."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsApp 메시지 수신 동의가 기록되었지만 현재 허용 상태를 확인할 수 없습니다."
 msgid "Initial recovery notice"
 msgstr "초기 복구 알림"
 

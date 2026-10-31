@@ -9,7 +9,7 @@ const source = readFileSync(
 	'utf8'
 );
 
-test('Classic checkbox submits only an explicit checked action, never an unchecked REVOKE', () => {
+test('unchecked neutral Classic choice is not a REVOKE and only explicit check stages GRANT', () => {
 	const body = {};
 	const checkbox = { checked: true, disabled: false };
 	const listeners = new Map();
@@ -17,7 +17,18 @@ test('Classic checkbox submits only an explicit checked action, never an uncheck
 	let actionMarker = null;
 	const form = {
 		length: 1,
-		find: () => ({ remove: () => (actionMarker = null) }),
+		first() {
+			return this;
+		},
+		find: (selector) => {
+			if (selector.includes('billing_phone')) {
+				return { val: () => '+447400123456' };
+			}
+			if (selector.includes('billing_country')) {
+				return { val: () => 'GB' };
+			}
+			return { remove: () => (actionMarker = null) };
+		},
 	};
 	function jQuery(target, properties) {
 		if (target === body) {
@@ -30,6 +41,9 @@ test('Classic checkbox submits only an explicit checked action, never an uncheck
 		if (target === checkbox) {
 			return { closest: () => form };
 		}
+		if (target === 'form.checkout') {
+			return form;
+		}
 		if (target === '<input>') {
 			return { appendTo: () => (actionMarker = properties) };
 		}
@@ -40,28 +54,27 @@ test('Classic checkbox submits only an explicit checked action, never an uncheck
 		'change:input[name="moda_interact_whatsapp_recovery_opt_in"]'
 	);
 	assert.equal(typeof change, 'function');
-	change.call(checkbox);
+	change.call(checkbox, { originalEvent: { isTrusted: true } });
 	assert.equal(
 		actionMarker.name,
 		'moda_interact_whatsapp_recovery_checked_action'
 	);
 	checkbox.checked = false;
-	change.call(checkbox);
+	change.call(checkbox, { originalEvent: { isTrusted: true } });
 	assert.equal(actionMarker, null, 'Unchecking never sets a revoke marker');
 	assert.equal(updates, 2);
 	assert.doesNotMatch(source, /\/v1\/woocommerce\/whatsapp-consent/);
 	assert.match(source, /request\('withdraw'/);
 });
 
-test('Classic proof-backed status and confirmed withdrawal use the same Woo session', async () => {
+test('Classic verified checkbox uncheck performs proof-backed REVOKE with same Woo session', async () => {
 	const body = {};
 	const doc = { body };
-	const withdrawButton = { disabled: false };
+	const consentCheckbox = { checked: false, disabled: false };
 	const listeners = new Map();
 	const props = new Map();
 	const texts = new Map();
 	const requests = [];
-	const controlRow = { visible: true };
 	const checkout = {
 		length: 1,
 		first() {
@@ -84,15 +97,13 @@ test('Classic proof-backed status and confirmed withdrawal use the same Woo sess
 			prop(name, value) {
 				if (arguments.length > 1) {
 					props.set(`${key}.${name}`, value);
+					return this;
 				}
 				return props.get(`${key}.${name}`);
 			},
 			text(value) {
 				texts.set(key, value);
 				return this;
-			},
-			closest() {
-				return { toggle: (visible) => (controlRow.visible = visible) };
 			},
 		};
 	}
@@ -101,6 +112,7 @@ test('Classic proof-backed status and confirmed withdrawal use the same Woo sess
 			return {
 				on: (name, selector, callback) =>
 					listeners.set(`${name}:${selector}`, callback),
+				trigger() {},
 			};
 		}
 		if (target === doc) {
@@ -109,8 +121,8 @@ test('Classic proof-backed status and confirmed withdrawal use the same Woo sess
 		if (target === 'form.checkout') {
 			return checkout;
 		}
-		if (target === withdrawButton) {
-			return elem('withdrawButton');
+		if (target === consentCheckbox) {
+			return { closest: () => checkout };
 		}
 		return elem(target);
 	}
@@ -121,18 +133,18 @@ test('Classic proof-backed status and confirmed withdrawal use the same Woo sess
 			withdrawEndpoint:
 				'/?wc-ajax=moda_interact_checkout_consent_withdraw',
 			nonce: 'fixture-nonce',
-			granted: 'Already granted',
-			withdraw: 'Withdraw WhatsApp permission',
-			confirm: 'Are you sure?',
-			changeFailed: 'Please try again',
 		},
-		confirm: () => true,
 	};
+	let withdrawalFailed = true;
+	let serverGranted = true;
 	const fetch = async (url, options) => {
+		if (url.endsWith('withdraw') && !withdrawalFailed) {
+			serverGranted = false;
+		}
 		requests.push({ url, options });
 		return {
-			ok: true,
-			status: 200,
+			ok: url.endsWith('status') || !withdrawalFailed,
+			status: withdrawalFailed && url.endsWith('withdraw') ? 503 : 200,
 			json: async () =>
 				url.endsWith('status')
 					? { confirmed: true, reason: '' }
@@ -147,37 +159,165 @@ test('Classic proof-backed status and confirmed withdrawal use the same Woo sess
 		URLSearchParams,
 	});
 	await new Promise((done) => setImmediate(done));
-	assert.equal(controlRow.visible, false, 'Confirmed GRANT hides the opt-in');
-	assert.equal(props.get('#moda-woo-consent-current-status.hidden'), false);
 	assert.equal(
-		texts.get('#moda-woo-consent-granted-label'),
-		'Already granted'
-	);
-	const withdraw = listeners.get('click:#moda-woo-consent-withdraw');
-	assert.equal(typeof withdraw, 'function');
-	await withdraw.call(withdrawButton, { preventDefault() {} });
-	assert.equal(
-		controlRow.visible,
+		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].checked'),
 		true,
-		'Hosted REVOKE ACK restores neutral opt-in'
+		'Confirmed grant checks the existing checkbox'
 	);
 	assert.equal(
-		props.get(
-			'input[name="moda_interact_whatsapp_recovery_opt_in"].checked'
-		),
-		false
+		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].disabled'),
+		false,
+		'Verified consent can be revoked by deliberate uncheck'
 	);
-	assert.equal(props.get('#moda-woo-consent-current-status.hidden'), true);
-	assert.equal(requests.length, 2);
-	assert.equal(requests[1].url.endsWith('_withdraw'), true);
-	const payload = new URLSearchParams(requests[1].options.body);
+	assert.equal(texts.has('#moda-woo-consent-granted-label'), false);
+	assert.equal(texts.has('#moda-woo-consent-action-error'), false);
+	const change = listeners.get(
+		'change:input[name="moda_interact_whatsapp_recovery_opt_in"]'
+	);
+	assert.equal(typeof change, 'function');
+	consentCheckbox.checked = false;
+	change.call(consentCheckbox, { originalEvent: { isTrusted: true } });
+	await new Promise((done) => setImmediate(done));
+	assert.equal(
+		serverGranted,
+		true,
+		'Failed withdrawal retains the stored GRANT'
+	);
+	assert.equal(
+		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].checked'),
+		false,
+		'Failed REVOKE must not override the deliberate uncheck'
+	);
+	assert.equal(texts.has('#moda-woo-consent-action-error'), false);
+	consentCheckbox.checked = true;
+	change.call(consentCheckbox, { originalEvent: { isTrusted: true } });
+	withdrawalFailed = false;
+	consentCheckbox.checked = false;
+	change.call(consentCheckbox, { originalEvent: { isTrusted: true } });
+	await new Promise((done) => setImmediate(done));
+	assert.equal(
+		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].checked'),
+		false,
+		'The checkbox remains unchecked while the backend confirms withdrawal'
+	);
+	assert.equal(texts.has('#moda-woo-consent-action-error'), false);
+	assert.equal(
+		serverGranted,
+		false,
+		'A successful withdrawal changes durable consent'
+	);
+	assert.equal(listeners.has('click:#moda-woo-consent-withdraw'), false);
+	assert.equal(requests.length, 3);
+	assert.equal(requests[2].url.endsWith('_withdraw'), true);
+	const payload = new URLSearchParams(requests[2].options.body);
 	assert.equal(payload.get('mode'), 'CLASSIC');
 	assert.equal(payload.get('confirmed'), '1');
 	assert.equal(payload.get('security'), 'fixture-nonce');
 	assert.equal(
-		requests[1].options.headers['Content-Type'],
+		requests[2].options.headers['Content-Type'],
 		'application/x-www-form-urlencoded'
 	);
-	assert.equal(requests[1].options.credentials, 'same-origin');
+	assert.equal(requests[2].options.credentials, 'same-origin');
 	assert.ok(!source.includes('grantEventId'));
+});
+
+test('Classic consent UI remains interactive during status failures and never stages consent automatically', async () => {
+	const body = {};
+	const document = { body };
+	const listeners = new Map();
+	const values = new Map();
+	const checkbox = { checked: false, disabled: false };
+	let markers = [];
+	let updates = 0;
+	const checkout = {
+		length: 1,
+		first() {
+			return this;
+		},
+		serialize: () => 'billing_phone=%2B447400123456&billing_country=GB',
+		find(selector) {
+			if (selector.includes('billing_phone')) {
+				return { val: () => '+447400123456' };
+			}
+			if (selector.includes('billing_country')) {
+				return { val: () => 'GB' };
+			}
+			return {
+				remove: () => {
+					markers = [];
+				},
+			};
+		},
+	};
+	function jQuery(target, properties) {
+		if (target === body) {
+			return {
+				on: (event, selector, callback) =>
+					listeners.set(`${event}:${selector}`, callback),
+				trigger: () => {
+					updates++;
+				},
+			};
+		}
+		if (target === document) {
+			return { ready: (fn) => fn() };
+		}
+		if (target === 'form.checkout') {
+			return checkout;
+		}
+		if (target === checkbox) {
+			return { closest: () => checkout };
+		}
+		if (target === '<input>') {
+			return { appendTo: () => markers.push(properties) };
+		}
+		return {
+			length: 1,
+			prop(key, value) {
+				values.set(`${target}.${key}`, value);
+				if (target.includes('moda_interact_whatsapp_recovery_opt_in')) {
+					checkbox[key] = value;
+				}
+				return this;
+			},
+		};
+	}
+	const window = {
+		modaWooCheckoutConsentConfig: {
+			statusEndpoint: '/status',
+			withdrawEndpoint: '/withdraw',
+			nonce: 'fixture',
+		},
+	};
+	const fetch = async () => ({ ok: false, status: 503 });
+	vm.runInNewContext(source, {
+		jQuery,
+		window,
+		document,
+		fetch,
+		URLSearchParams,
+		setTimeout,
+		clearTimeout,
+	});
+	await new Promise((done) => setImmediate(done));
+	const change = listeners.get(
+		'change:input[name="moda_interact_whatsapp_recovery_opt_in"]'
+	);
+	checkbox.checked = true;
+	change.call(checkbox, { originalEvent: { isTrusted: true } });
+	assert.equal(
+		values.get('input[name="moda_interact_whatsapp_recovery_opt_in"].disabled'),
+		false
+	);
+	assert.equal(
+		markers.at(-1)?.name,
+		'moda_interact_whatsapp_recovery_checked_action'
+	);
+	assert.equal(updates, 1);
+	await new Promise((done) => setTimeout(done, 10));
+	assert.equal(
+		checkbox.checked,
+		true,
+		'A failed status read cannot undo a deliberate check'
+	);
 });

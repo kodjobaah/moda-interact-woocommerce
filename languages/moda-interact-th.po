@@ -2368,6 +2368,11 @@ msgstr "ไม่สามารถอัปเดตการยินยอม
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "บันทึกการยินยอมรับข้อความผ่าน WhatsApp ของคุณแล้ว แต่ไม่สามารถยืนยันสถานะการอนุญาตปัจจุบันได้"
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "บันทึกการยินยอมรับข้อความผ่าน WhatsApp ของคุณแล้ว แต่ไม่สามารถยืนยันสถานะการอนุญาตปัจจุบันได้"
 msgid "Initial recovery notice"
 msgstr "การแจ้งเตือนการกู้คืนครั้งแรก"
 

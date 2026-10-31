@@ -2351,6 +2351,11 @@ msgstr "无法更新 WhatsApp 授权。请重试。"
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "已记录您接收 WhatsApp 消息的同意，但无法验证当前授权状态。"
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "已记录您接收 WhatsApp 消息的同意，但无法验证当前授权状态。"
 msgid "Initial recovery notice"
 msgstr "首次恢复通知"
 

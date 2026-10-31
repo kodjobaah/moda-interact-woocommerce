@@ -2431,6 +2431,11 @@ msgstr "Nie udało się zaktualizować zgody na WhatsApp. Spróbuj ponownie."
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Zapisano Twoją zgodę na wiadomości WhatsApp, ale nie udało się potwierdzić aktualnego uprawnienia."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Zapisano Twoją zgodę na wiadomości WhatsApp, ale nie udało się potwierdzić aktualnego uprawnienia."
 msgid "Initial recovery notice"
 msgstr "Powiadomienie o rozpoczęciu odzyskiwania"
 

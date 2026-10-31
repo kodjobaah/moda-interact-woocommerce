@@ -9,16 +9,28 @@ sessionStorage.setItem('modaWooConsentDebug', '1');
 location.reload();
 ```
 
-Filter Console for `[Moda Woo Consent]` (Info level). Interpret the events in order:
+Filter Console for `[Moda Woo Consent]` (Info level). These diagnostic events
+are optional; they must not appear as customer-facing checkout errors:
 
-- `blocks_script_loaded` means the frontend file executed; its booleans indicate whether WooCommerce/WordPress APIs and the consent configuration were available.
-- `blocks_registration_blocked` means the file loaded but a required dependency was missing. Otherwise `blocks_registration_started` and `blocks_registered` show registration succeeded.
-- The server inserts a **parsed** `moda-interact/checkout-consent` child of `woocommerce/checkout-fields-block` during `render_block_data`. WooCommerce `registerCheckoutBlock()` is its only frontend mount. There are no direct `createRoot()` calls or PHP HTML placeholders. A missing child requires inspecting the checkout's saved parsed fields tree and the active Woo Blocks integration, not adding a second React mount.
-- `blocks_component_rendered` means the component executed. `blocks_contact_changed` reports **only** whether the billing phone is present, never its value.
-- `blocks_http_started`, `blocks_http_response`, `blocks_status_result`, `blocks_status_failed` show whether the authenticated Woo Store API cart/extensions operation ran and whether a proof-backed grant was confirmed. No result should ever be interpreted as proof of consent without API confirmation.
-- `classic_*` events give the equivalent execution, status and withdrawal details for Classic checkout.
+- `blocks_script_loaded` confirms the native field bridge was loaded.
+- `blocks_native_field_ready` confirms the observer is running; it is **not**
+  proof that the checkbox rendered or that Moda consent was recorded.
+- `blocks_contact_changed` indicates a new billing contact (no contact data is logged).
+- `blocks_http_started`, `blocks_http_response`, `blocks_http_rejected`,
+  `blocks_status_result`, `blocks_status_failed`, `blocks_choice_failed` track
+  consent requests without printing customer information.
+- `classic_*` events cover the analogous Classic checkout operations.
 
-If **no** `[Moda Woo Consent]` messages appear, inspect script/mount presence manually (this prints only booleans):
+Native Blocks rendering is owned by WooCommerce's Additional Checkout Fields API
+(`moda-interact/whatsapp-recovery-opt-in`, `location: contact`). There is no
+custom React block, saved Checkout Fields child or direct React root. The client
+bridge finds `input[data-moda-consent-control="1"]` and listens for **trusted
+change events**. It does not disable the checkbox or cancel the browser click.
+A failed GRANT or REVOKE leaves the visible checkbox in the most recently
+selected position, while the server retains the last verified permission until
+a successful authenticated action changes it.
+
+Inspect only booleans and counts in the browser console:
 
 ```js
 console.table({
@@ -26,16 +38,15 @@ console.table({
     script.src.includes('checkout-consent-blocks-status.js')
   ),
   configPresent: Boolean(window.modaWooCheckoutConsentConfig),
-  registryPresent: Boolean(window.wc?.blocksCheckout?.registerCheckoutBlock),
-  innerBlockCount: document.querySelectorAll(
-    '[data-block-name="moda-interact/checkout-consent"]'
+  nativeCheckboxCount: document.querySelectorAll(
+    'input[data-moda-consent-control="1"]'
   ).length,
 });
 ```
 
 ## Consent rejection codes (Attempt 20)
 
-A Store API call can complete successfully while the consent action is **not recorded**. This is reported as `status: unverified` with one fixed `reason` string, not the former shared `capture_not_recorded` catch-all. Enable the diagnostics above and inspect `blocks_choice_ack.reason` (or `blocks_withdraw_ack.reason`). A failed write displays the translated retry message: internal diagnostic codes must not become user-facing error copy.
+A Store API call can complete successfully while the consent action is **not recorded**. This is reported as `status: unverified` with one fixed `reason` string, not the former shared `capture_not_recorded` catch-all. Enable the diagnostics above and inspect `blocks_choice_ack.reason` (or `blocks_withdraw_ack.reason`). A failed write produces no customer-facing message; server-side diagnostics retain provider errors with redaction.
 
 | Reason | Exact branch | Interpretation |
 | --- | --- | --- |
@@ -103,13 +114,22 @@ the equivalent bounded Store API `extensions` fields (Blocks). It contains
 no proof capability, phone, customer identity, provider STOP reason or audit
 history. These codes are **diagnostics**, never customer-facing consent claims.
 
-After a hosted GRANT ACK:
+Checkbox state contract:
 
-- `CONFIRMED_GRANTED` (or an ACK of the customer's current explicit GRANT) displays the existing-permission view and a **separate** Withdraw button.
-- A returning checkout without confirmed current GRANT displays a **neutral, unchecked** opt-in. An API-006 outage must not hide the control or imply an existing grant. It also must not trigger a consent decision.
-- A withdrawal requires the button, browser confirmation and a fresh server-side proof check; only a hosted REVOKE ACK changes the UI. A lost ACK retries the identical request identity. Unchecking a checkbox or a Woo draft refresh never triggers REVOKE.
-- Blocks uses `woocommerce/checkout-fields-block` parsed-child insertion and Woo's single registry; Classic uses native `woocommerce_checkout_fields` and `woocommerce_after_checkout_billing_form` with a separate authenticated WordPress REST withdraw route.
-- A full LocalWP Blocks checkout smoke test is mandatory before treating the parsed child integration as verified; a JS/PHP mock cannot prove Woo's hydration/rendering against the installed runtime.
+- On a new checkout, only a valid proof-backed status read may initialise a
+  checked box. Missing/invalid status defaults to unchecked; no automatic write.
+- A trusted customer check immediately displays checked and initiates GRANT.
+  If the write is rejected, it stays checked locally, but the hosted grant is
+  **not** created. A later reload must re-read the authoritative status.
+- A trusted customer uncheck immediately displays unchecked and initiates
+  proof-backed REVOKE. If rejected, it stays unchecked locally, but the hosted
+  consent decision **is not** changed. A later reload may therefore show checked.
+- Neither action disables the checkbox or shows a popup/toast/checkout error.
+  Rapid changes are handled in order for Blocks; a changed phone discards stale
+  frontend responses and requires a new deliberate choice.
+- If a client request times out after the server has acted, the actual outcome
+  is unknown until a new authenticated status read. The browser must not claim
+  that a timeout proves no durable write occurred.
 
 The consent-status and proof-inspection paths do not create WooCommerce carts,
 customers or sessions, allocate checkout keys, write new consent evidence, or

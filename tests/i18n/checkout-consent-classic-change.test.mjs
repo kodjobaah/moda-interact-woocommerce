@@ -18,7 +18,10 @@ test('Classic unchecked state never creates a REVOKE; only a checked click marks
 	const checkbox = { checked: false, disabled: false };
 	const form = {
 		length: 1,
-		find() {
+		first() { return this; },
+		find(selector) {
+			if (selector.includes('billing_phone')) return { val: () => '+447400123456' };
+			if (selector.includes('billing_country')) return { val: () => 'GB' };
 			return { remove: () => (hidden = null) };
 		},
 	};
@@ -37,6 +40,7 @@ test('Classic unchecked state never creates a REVOKE; only a checked click marks
 		if (value === checkbox) {
 			return { closest: () => form };
 		}
+		if (value === 'form.checkout') return form;
 		if (value === '<input>') {
 			return { appendTo: () => (hidden = properties) };
 		}
@@ -49,20 +53,24 @@ test('Classic unchecked state never creates a REVOKE; only a checked click marks
 	assert.equal(typeof handler, 'function');
 
 	checkbox.checked = true;
-	handler.call(checkbox);
+	handler.call(checkbox, { originalEvent: { isTrusted: true } });
 	assert.equal(hidden.name, 'moda_interact_whatsapp_recovery_checked_action');
 
 	checkbox.checked = false;
-	handler.call(checkbox);
+	handler.call(checkbox, { originalEvent: { isTrusted: true } });
 	assert.equal(
 		hidden,
 		null,
 		'Unchecking clears old GRANT; there is no REVOKE marker'
 	);
 	assert.deepEqual(actions, ['update_checkout', 'update_checkout']);
+	checkbox.checked = true;
+	handler.call(checkbox, { originalEvent: { isTrusted: false } });
+	assert.deepEqual(actions, ['update_checkout', 'update_checkout'],
+		'Programmatic Woo form updates cannot stage consent');
 
 	checkbox.checked = true;
-	handler.call(checkbox);
+	handler.call(checkbox, { originalEvent: { isTrusted: true } });
 	assert.equal(
 		hidden.name,
 		'moda_interact_whatsapp_recovery_checked_action',

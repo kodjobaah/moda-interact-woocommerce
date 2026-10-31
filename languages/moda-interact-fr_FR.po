@@ -2455,14 +2455,19 @@ msgstr "Impossible de mettre à jour votre autorisation WhatsApp. Veuillez rées
 #: includes/Checkout/CheckoutConsentPresentation.php
 msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
 msgstr "Votre consentement aux messages WhatsApp a été enregistré, mais votre autorisation actuelle n’a pas pu être vérifiée."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Votre consentement aux messages WhatsApp a été enregistré, mais votre autorisation actuelle n’a pas pu être vérifiée."
 msgid "Initial recovery notice"
-msgstr "Initial recovery notice"
+msgstr "Avis de première récupération"
 
 msgid "Choose whether to receive a notice when the first recovery outreach starts."
-msgstr "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Choisissez si vous souhaitez recevoir une notification au début de la première prise de contact de récupération."
 
 msgid "Notify me when initial recovery outreach starts"
-msgstr "Notify me when initial recovery outreach starts"
+msgstr "M’avertir lorsque la première prise de contact de récupération commence"
 
 msgid "This notice does not change customer messages or recovery credit use."
-msgstr "This notice does not change customer messages or recovery credit use."
+msgstr "Cette notification ne modifie ni les messages envoyés aux clients ni l’utilisation des crédits de récupération."

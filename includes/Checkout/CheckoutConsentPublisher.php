@@ -68,7 +68,10 @@ final class CheckoutConsentPublisher {
 		try {
 			$identity = $this->identity ?? new SiteIdentity( ModaApiConfiguration::serverMode() );
 			return $record['canonicalSiteUrl'] === $identity->currentCanonicalUrl();
-		} catch ( \Throwable $error ) { return false; }
+		} catch ( \Throwable $error ) {
+			CheckoutConsentDiagnostics::warn( 'publisher_installation_check_failed', $error );
+			return false;
+		}
 	}
 
 	private function publishFor( array $event, array $record, int $attempt, bool $retry ): bool {
@@ -81,13 +84,16 @@ final class CheckoutConsentPublisher {
 			$this->cancelPending( $event );
 			return true;
 		} catch ( ModaApiClientException $error ) {
+			CheckoutConsentDiagnostics::warn( 'consent_publish_rejected', $error );
 			// An API contract/conflict rejection is definitive; do not replay over a later REVOKE.
 			if ( null !== $error->http_status && $error->http_status >= 400 && $error->http_status < 500 &&
 				! in_array( $error->http_status, array( 408, 429 ), true ) ) {
 				$this->cancelPending( $event );
 				return false;
 			}
-		} catch ( \Throwable $error ) { /* Checkout stays usable, with no claimed ACK. */ }
+		} catch ( \Throwable $error ) {
+			CheckoutConsentDiagnostics::warn( 'consent_publish_failed', $error );
+		}
 		if ( $retry && $attempt < self::MAX_ATTEMPTS && function_exists( 'as_schedule_single_action' ) &&
 			function_exists( 'set_transient' ) ) {
 			try {
@@ -101,7 +107,9 @@ final class CheckoutConsentPublisher {
 				'event' => $event, 'installationId' => $record['installationId'],
 				'shopId' => $record['shopId'], 'attempt' => $attempt + 1,
 				), self::GROUP, true );
-			} catch ( \Throwable $error ) { /* No customer PII in diagnostic logs. */ }
+			} catch ( \Throwable $error ) {
+				CheckoutConsentDiagnostics::warn( 'consent_retry_schedule_failed', $error );
+			}
 		}
 		return false;
 	}

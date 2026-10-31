@@ -42,6 +42,8 @@ export function assertConsentEvent(event) {
 
 export function createConsentApiFixture() {
 	let featureEnabled = false;
+	let featureReadCount = 0;
+	let enabledFeatureReadCount = 0;
 	let writeStatus = 200;
 	let readStatus = 200;
 	let nextRevision = 0;
@@ -69,10 +71,14 @@ export function createConsentApiFixture() {
 	function handleRequest({ url, request, response, bodyBytes, sendJson }) {
 		if (
 			url.pathname === '/v1/merchant/feature-preferences' &&
-			request.method === 'GET' &&
-			featureEnabled
+			request.method === 'GET'
 		) {
+			featureReadCount += 1;
+			if (!featureEnabled) {
+				return false;
+			}
 			checkInstallation(request);
+			enabledFeatureReadCount += 1;
 			sendJson(response, 200, {
 				schemaVersion: 1,
 				revision: 'a'.repeat(64),
@@ -174,6 +180,11 @@ export function createConsentApiFixture() {
 		setReadStatus: (status) => {
 			readStatus = status;
 		},
+		// Counters only: never record installation credentials, checkout HTML or phones.
+		getFeatureReadDiagnostics: () => ({
+			total: featureReadCount,
+			enabled: enabledFeatureReadCount,
+		}),
 		getRequests: () => [...requests],
 		getStatusRequests: () => [...statusRequests],
 	};

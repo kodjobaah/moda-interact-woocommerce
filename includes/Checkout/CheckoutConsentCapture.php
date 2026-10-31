@@ -11,7 +11,6 @@ defined( 'ABSPATH' ) || exit;
  */
 final class CheckoutConsentCapture {
 	private const SESSION_FIELD = 'moda_interact_checkout_consent_observation_v2';
-	private const BLOCKS_STAGE = 'moda_interact_checkout_blocks_waiting_for_phone_v2';
 	private const MAX_STORE_CHOICE_RECEIPTS = 32;
 
 	private readonly CheckoutConsentProof $proof;
@@ -82,11 +81,8 @@ final class CheckoutConsentCapture {
 		// Runs before capture's priority 10. Capture remains independent and
 		// never infers consent from the checkout activity payload.
 		add_action( 'woocommerce_checkout_update_order_review', array( $this, 'classicReview' ), 5, 1 );
-		add_action( 'woocommerce_store_api_checkout_update_draft', array( $this, 'blocksDraft' ), 5, 1 );
-		// An existing Woo draft order takes a different PUT path than a fresh session.
-		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( $this, 'blocksOrderDraft' ), 5, 2 );
-		add_action( 'woocommerce_store_api_checkout_update_customer_from_request', array( $this, 'blocksCustomer' ), 5, 2 );
-		add_action( 'woocommerce_store_api_cart_update_customer_from_request', array( $this, 'blocksBillingUpdated' ), 5, 2 );
+		// Native Woo field PUTs, cart updates and order processing cannot create
+		// WhatsApp consent. Only explicit cart/extensions choice/withdraw do.
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'endCheckout' ), 20, 1 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'endCheckout' ), 20, 1 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueueClassicChange' ) );
@@ -99,13 +95,22 @@ final class CheckoutConsentCapture {
 			( function_exists( 'is_order_received_page' ) && is_order_received_page() ) ) return;
 		// Only a classic checkout uses this script; Blocks uses the official PUT draft hook.
 		if ( function_exists( 'has_block' ) && has_block( 'woocommerce/checkout' ) ) return;
-		if ( ! ( $this->eligibility ?? new CheckoutConsentEligibility() )->eligible() ) return;
+		// Classic script availability must not depend on the hosted feature API.
+		if ( ! ( $this->eligibility ?? new CheckoutConsentEligibility() )->eligibleForPresentation() ) return;
 		wp_enqueue_script( 'moda-woo-consent-classic',
 			plugins_url( 'assets/js/checkout-consent-classic.js', MODA_INTERACT_MAIN_PLUGIN_FILE ),
 			array( 'jquery' ), '1.0.0', true );
 	}
 
 	public function classicReview( mixed $posted ): void {
+		try {
+			$this->classicReviewSafe( $posted );
+		} catch ( \Throwable $error ) {
+			CheckoutConsentDiagnostics::warn( 'classic_review_failed', $error );
+		}
+	}
+
+	private function classicReviewSafe( mixed $posted ): void {
 		// Woo's update_order_review action fires after check_ajax_referer; reject
 		// direct hook calls and forged requests instead of trusting an assertion.
 		$nonce = $_POST['security'] ?? null;
@@ -135,35 +140,6 @@ final class CheckoutConsentCapture {
 
 	}
 
-	public function blocksDraft( mixed $request ): void {
-		$this->blocksFromRequest( $request );
-	}
-
-	/** Woo's PUT path with an existing (e.g. failed-payment) draft order. */
-	public function blocksOrderDraft( mixed $order, mixed $request ): void {
-		$this->blocksFromRequest( $request );
-	}
-
-	/** Some Store API versions observe the billing-contact update separately. */
-	public function blocksCustomer( mixed $customer, mixed $request ): void {
-		$this->blocksFromRequest( $request );
-	}
-
-	/** Woo's authenticated Store API billing-address update may follow field PUT. */
-	public function blocksBillingUpdated( mixed $customer, mixed $request ): void {
-		if ( ! is_object( $request ) || ! method_exists( $request, 'get_header' ) ||
-			! method_exists( $request, 'get_method' ) || strtoupper( (string ) $request->get_method() ) !== 'POST' ||
-			! $this->verifiedStoreApiRequest( $request ) ) return;
-		$session = WC()->session ?? null;
-		if ( ! $session ) return;
-		$stage = $session->get( self::BLOCKS_STAGE );
-		if ( ! is_array( $stage ) || ( $stage['checkoutKey'] ?? null ) !== CheckoutKey::current() ||
-			( $stage['principal'] ?? null ) !== $this->currentPrincipal() ||
-			! is_int( $stage['observedAt'] ?? null ) || time() - $stage['observedAt'] > 240 ) return;
-		if ( 'GRANT' !== ( $stage['choice'] ?? null ) ) return;
-		$this->observeBlocksCustomer( true, $customer );
-	}
-
 	/** A logout/login must not leave a pending consent job attributed to the old identity. */
 	public function invalidatePendingSession(): void {
 		$session = function_exists( 'WC' ) ? ( WC()->session ?? null ) : null;
@@ -173,7 +149,6 @@ final class CheckoutConsentCapture {
 			$this->publisher->cancelPending( $state['pending'] );
 		}
 		$session->set( self::SESSION_FIELD, null );
-		$session->set( self::BLOCKS_STAGE, null );
 		$this->proof->clearSession();
 	}
 
@@ -191,71 +166,6 @@ final class CheckoutConsentCapture {
 		$id = (string) $session->get_customer_id();
 		return '' === $id ? null : hash( 'sha256', $id . '|' .
 			( function_exists( 'get_current_user_id' ) ? (int) get_current_user_id() : 0 ) );
-	}
-
-	private function observeBlocksCustomer( bool $checked, mixed $customer, bool $uncheck = false ): void {
-		if ( ! is_object( $customer ) || ! method_exists( $customer, 'get_billing_phone' ) ) return;
-		$phone = $customer->get_billing_phone();
-		$country = method_exists( $customer, 'get_billing_country' ) ? $customer->get_billing_country() : null;
-		$verified = CheckoutConsentPhone::verifiedCountry( $country );
-		if ( ! is_string( $phone ) || null === CheckoutConsentPhone::normalize( $phone, $verified ) ) return;
-		$this->observe( 'BLOCKS', $checked, $phone, $verified, true, $uncheck );
-		$session = WC()->session ?? null;
-		if ( $session ) $session->set( self::BLOCKS_STAGE, null );
-	}
-
-	private function blocksFromRequest( mixed $request ): void {
-		if ( ! is_object( $request ) || ! method_exists( $request, 'get_header' ) ||
-			! method_exists( $request, 'get_json_params' ) || ! method_exists( $request, 'get_method' ) ||
-			! in_array( strtoupper( (string) $request->get_method() ), array( 'PUT', 'PATCH' ), true ) ||
-			! $this->verifiedStoreApiRequest( $request ) ) return;
-		$payload = $request->get_json_params();
-		if ( ! is_array( $payload ) || ! isset( $payload['additional_fields'] ) ||
-			! is_array( $payload['additional_fields'] ) ) return;
-		$fields = $payload['additional_fields'];
-		$has_checkbox = array_key_exists( CheckoutConsentCheckbox::BLOCK_FIELD, $fields );
-		$selection = $has_checkbox ? $fields[ CheckoutConsentCheckbox::BLOCK_FIELD ] : null;
-		if ( $has_checkbox && ! in_array( $selection, array( true, false, '1', '0', 'true', 'false', 1, 0 ), true ) ) return;
-		if ( ! $has_checkbox ) return;
-		$checked = in_array( $selection, array( true, '1', 'true', 1 ), true );
-		// A stale/legacy additional field cannot revoke without the distinct
-		// confirmed withdrawal operation. It can still cancel a previously
-		// staged grant so a later billing-address update cannot resurrect it.
-		$session = WC()->session ?? null;
-		if ( ! $session ) return;
-		if ( ! $checked ) {
-			$session->set( self::BLOCKS_STAGE, null );
-			return;
-		}
-		if ( $checked && null !== CheckoutKey::current() && null !== $this->currentPrincipal() ) {
-			$session->set( self::BLOCKS_STAGE, array(
-				'checkoutKey' => CheckoutKey::current(), 'principal' => $this->currentPrincipal(),
-				'choice' => 'GRANT', 'observedAt' => time(),
-			) );
-		} else {
-			$session->set( self::BLOCKS_STAGE, null );
-		}
-		// A legacy authenticated Store API field can still carry a deliberate
-		// grant; withdrawal is ONLY possible via the explicit confirmed action.
-		$this->observeBlocksCustomer( $checked, WC()->customer ?? null );
-	}
-
-	private function verifiedStoreApiRequest( object $request ): bool {
-		$nonce = $request->get_header( 'Nonce' );
-		if ( is_string( $nonce ) && '' !== $nonce && function_exists( 'wp_verify_nonce' ) &&
-			wp_verify_nonce( $nonce, 'wc_store_api' ) ) return true;
-		// Woo Store API supports Cart-Token without a Nonce. Only accept a token
-		// that Woo has resolved to the CURRENT WC session (never an arbitrary JWT).
-		$token = $request->get_header( 'Cart-Token' );
-		$class = '\\Automattic\\WooCommerce\\StoreApi\\Utilities\\CartTokenUtils';
-		$session = WC()->session ?? null;
-		if ( ! is_string( $token ) || '' === $token || ! $session || ! method_exists( $session, 'get_customer_id' ) ||
-			! class_exists( $class ) || ! method_exists( $class, 'validate_cart_token' ) ||
-			! method_exists( $class, 'get_cart_token' ) ) return false;
-		try {
-			$expected = $class::get_cart_token( (string) $session->get_customer_id() );
-			return is_string( $expected ) && hash_equals( $expected, $token ) && $class::validate_cart_token( $token );
-		} catch ( \Throwable $error ) { return false; }
 	}
 
 	/** Session observation, transition deduplication and monotonic event identity. */
@@ -277,7 +187,7 @@ final class CheckoutConsentCapture {
 		$items = $cart->get_cart();
 		if ( ! is_array( $items ) ) return $this->rejected( 'capture_observe_cart_invalid' );
 		if ( count( $items ) === 0 ) return $this->rejected( 'capture_observe_cart_empty' );
-		$key = CheckoutKey::current();
+		$key = CheckoutKey::current( true );
 		if ( null === $key ) return $this->rejected( 'capture_observe_checkout_key_unavailable' );
 		if ( ! is_string( $phone ) ) return $this->rejected( 'capture_observe_phone_missing' );
 		$canonical = CheckoutConsentPhone::normalize( $phone, $country );
@@ -480,7 +390,7 @@ final class CheckoutConsentCapture {
 		$canonical = CheckoutConsentPhone::normalize( $phone, $country );
 		if ( null === $canonical ) return $this->rejected( 'capture_withdraw_phone_invalid' );
 		$session = function_exists( 'WC' ) ? ( WC()->session ?? null ) : null;
-		$key = CheckoutKey::current();
+		$key = CheckoutKey::current( true );
 		$principal = $this->currentPrincipal();
 		// A customer's withdrawal must remain possible even if this merchant
 		// later disables Checkout Recovery. This is not a new GRANT.
@@ -613,8 +523,7 @@ final class CheckoutConsentCapture {
 		$session = function_exists( 'WC' ) ? ( WC()->session ?? null ) : null;
 		if ( $session ) {
 			$session->set( self::SESSION_FIELD, null );
-			$session->set( self::BLOCKS_STAGE, null );
-			// A guest proof cannot survive checkout/cart completion.
+				// A guest proof cannot survive checkout/cart completion.
 			$this->proof->clearSession();
 		}
 	}

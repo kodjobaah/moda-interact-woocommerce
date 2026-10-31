@@ -66,6 +66,16 @@ final class CheckoutConsentStoreApi {
 	 * state; the only phone used for consent comes from WC()->customer.
 	 */
 	public function update( mixed $data ): void {
+		try {
+			$this->updateSafe( $data );
+		} catch ( \Throwable $error ) {
+			CheckoutConsentDiagnostics::warn( 'blocks_consent_request_failed', $error );
+			$this->result = array( 'requestId' => '', 'status' => 'unverified',
+				'confirmed' => false, 'reason' => 'capture_observe_unclassified' );
+		}
+	}
+
+	private function updateSafe( mixed $data ): void {
 		$this->result = array( 'requestId' => '', 'status' => 'unverified',
 			'confirmed' => false, 'reason' => 'store_api_request_id_invalid' );
 		if ( ! is_array( $data ) || ! isset( $data['requestId'] ) ||
@@ -131,7 +141,7 @@ final class CheckoutConsentStoreApi {
 			$recorded = $this->capture->observe( 'BLOCKS', true, $phone, $serverCountry,
 				true, false, $data['requestId'] );
 		} else {
-			// Distinct user-confirmed button operation, independently proof-backed
+			// Deliberate checkbox uncheck, independently proof-backed
 			// and revalidated by capture at the time of withdrawal.
 			if ( ( $data['confirmed'] ?? null ) !== true ) {
 				$this->result['reason'] = 'store_api_withdraw_confirmation_missing';

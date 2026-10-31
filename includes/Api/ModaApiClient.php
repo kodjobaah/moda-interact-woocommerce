@@ -1027,7 +1027,7 @@ final class ModaApiClient {
 	}
 
 	/** API-014..017 hosted operations; installation auth is never supplied by browser input. */
-	public function merchantKnowledgeExchange( array $connection, string $path, string $method, ?array $data = null ): array {
+	public function merchantKnowledgeExchange( array $connection, string $path, string $method, ?array $data = null, ?int $checkout_timeout = null ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
 		$paths = array(
 			'/v1/merchant/feature-preferences' => array( 'GET', 'PUT' ),
@@ -1060,6 +1060,10 @@ final class ModaApiClient {
 		// alter Prisma transaction deadlines or unrelated merchant API requests.
 		$timeout = str_starts_with( $path, '/v1/merchant/merchant-knowledge' )
 			? self::KNOWLEDGE_TIMEOUT_SECONDS : self::DEFAULT_TIMEOUT_SECONDS;
+		if ( '/v1/merchant/feature-preferences' === $path && 'GET' === $method &&
+			null !== $checkout_timeout ) {
+			$timeout = max( 1, min( self::DEFAULT_TIMEOUT_SECONDS, $checkout_timeout ) );
+		}
 		$response = $this->request( $path, $method, $headers, $body, $timeout, 262145 );
 		$status = wp_remote_retrieve_response_code( $response );
 		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
@@ -1100,7 +1104,15 @@ final class ModaApiClient {
 			$args['body'] = $body;
 		}
 		$response = ( $this->transport )( $url, $args );
-		if ( ( function_exists( 'is_wp_error' ) && is_wp_error( $response ) ) || ! is_array( $response ) ) {
+		if ( function_exists( 'is_wp_error' ) && is_wp_error( $response ) ) {
+			// Retain the real WordPress transport error. The consent diagnostic sink
+			// redacts and bounds these fields before writing to WooCommerce logs.
+			$code = method_exists( $response, 'get_error_code' ) ? $response->get_error_code() : null;
+			$message = method_exists( $response, 'get_error_message' ) ? $response->get_error_message() : null;
+			throw new ModaApiClientException( 'remote_unavailable', null, null,
+				is_string( $code ) ? $code : null, is_string( $message ) ? $message : null );
+		}
+		if ( ! is_array( $response ) ) {
 			throw new ModaApiClientException( 'remote_unavailable' );
 		}
 		return $response;
@@ -1224,7 +1236,13 @@ final class ModaApiClient {
 }
 
 final class ModaApiClientException extends \RuntimeException {
-	public function __construct( string $reason, public readonly ?int $http_status = null, public readonly ?string $remote_error = null ) {
+	public function __construct(
+		string $reason,
+		public readonly ?int $http_status = null,
+		public readonly ?string $remote_error = null,
+		public readonly ?string $transport_error_code = null,
+		public readonly ?string $transport_error_message = null
+	) {
 		parent::__construct( $reason );
 	}
 }

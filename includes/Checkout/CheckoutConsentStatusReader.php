@@ -5,7 +5,6 @@ namespace ModaInteract\WooCommerce\Checkout;
 defined( 'ABSPATH' ) || exit;
 
 use ModaInteract\WooCommerce\Api\ModaApiClient;
-use ModaInteract\WooCommerce\Api\ModaApiClientException;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
 use ModaInteract\WooCommerce\Connection\SiteIdentity;
@@ -41,32 +40,9 @@ final class CheckoutConsentStatusReader {
 			return array( 'confirmed' => false,
 				'reason' => $reasons[ $state ] ?? 'consent_status_response_unrecognised' );
 		} catch ( \Throwable $error ) {
-			// Only this fixed reason reaches the browser. Server-side debug logging
-			// distinguishes 404/auth/timeout without exposing the proof or recipient.
-			$this->logFailure( $error );
+			// Browser receives a neutral result; internal logs retain a safe event.
+			CheckoutConsentDiagnostics::warn( 'status_lookup_failed', $error );
 			return array( 'confirmed' => false, 'reason' => 'consent_status_remote_unavailable' );
-		}
-	}
-
-	private function logFailure( \Throwable $error ): void {
-		if ( ! defined( 'WP_DEBUG' ) || true !== WP_DEBUG || ! function_exists( 'wc_get_logger' ) ) return;
-		$reason = 'unexpected_failure';
-		$status = 0;
-		if ( $error instanceof ModaApiClientException ) {
-			$allowed = array( 'remote_unavailable', 'remote_rejected',
-				'remote_response_invalid', 'invalid_request', 'local_state_invalid' );
-			if ( in_array( $error->getMessage(), $allowed, true ) ) $reason = $error->getMessage();
-			$status = is_int( $error->http_status ) && $error->http_status >= 100 &&
-				$error->http_status <= 599 ? $error->http_status : 0;
-		}
-		try {
-			wc_get_logger()->warning( 'Woo consent status lookup failed', array(
-				'source' => 'moda-interact-consent',
-				'reason' => $reason,
-				'http_status' => $status,
-			) );
-		} catch ( \Throwable $ignored ) {
-			// A failing diagnostic sink must not affect the merchant's checkout.
 		}
 	}
 
