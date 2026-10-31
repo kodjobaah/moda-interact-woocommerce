@@ -1664,11 +1664,11 @@ msgstr "Valgfri"
 msgid "Always enabled"
 msgstr "Altid aktiveret"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "Aktiveret nu"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "Deaktiveret nu"
 
@@ -2075,20 +2075,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "Du kan først vælge en anden kampagne, når den aktuelle udløber (%s)."
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "Jeg accepterer at modtage WhatsApp-markedsføringspåmindelser fra %s om varer, jeg efterlader i en uafsluttet betaling i denne butik, på mit faktureringstelefonnummer. Det er frivilligt; jeg kan trække mit samtykke tilbage ved at kontakte butikken. Et ikke-markeret felt ophæver ikke et tidligere samtykke."
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "Send mig shoppingopdateringer, påmindelser og tilbud via WhatsApp."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "Samtykke til WhatsApp-påmindelser om uafsluttet betaling"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda viser et WhatsApp-markedsføringsfelt, der som udgangspunkt ikke er markeret, ved relevante betalinger. Det gælder påmindelser fra denne butik om uafsluttede køb, ikke ordreopdateringer. Et felt eller et telefonnummer er ikke samtykke; Moda skal kontrollere et aktivt valg."
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "Moda tilføjer automatisk et valgfrit, ikke-forhåndsmarkeret felt til WhatsApp-markedsføringspåmindelser om uafsluttede køb, når Checkout Recovery er tilgængelig. Ingen manuel installation er nødvendig. Klassisk checkout: efter faktureringstelefonen. Blocks: under Ordreoplysninger."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "Uden bekræftet tilladelse kan gendannelse af checkout ikke starte. Kunder kan kontakte butikken for at trække samtykket tilbage. Et ikke-markeret felt ved et senere besøg ophæver ikke tidligere samtykke; den aktuelle præference skal kontrolleres først."
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery kræver et verificeret valg fra kunden, ikke kun et telefonnummer. At lade feltet være umarkeret ved et senere besøg trækker ikke et tidligere samtykke tilbage; kunder kan kontakte butikken for at trække det tilbage."
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2407,6 +2407,34 @@ msgstr "Gendannelsesaktivitet"
 msgid "Reply to customer"
 msgstr "Svar kunden"
 
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "WhatsApp-tilladelse er allerede givet"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "Træk WhatsApp-tilladelse tilbage"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "Vil du trække din WhatsApp-tilladelse tilbage?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "Indtast et faktureringstelefonnummer for at gemme WhatsApp-tilladelsen."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "WhatsApp-tilladelsen kunne ikke opdateres. Prøv igen."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Dit samtykke til WhatsApp-beskeder blev registreret, men den aktuelle tilladelse kunne ikke bekræftes."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Dit samtykke til WhatsApp-beskeder blev registreret, men den aktuelle tilladelse kunne ikke bekræftes."
 msgid "Initial recovery notice"
 msgstr "Meddelelse om første gendannelseskontakt"
 

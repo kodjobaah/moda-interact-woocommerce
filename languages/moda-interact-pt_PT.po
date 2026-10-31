@@ -1677,11 +1677,11 @@ msgstr "Opcional"
 msgid "Always enabled"
 msgstr "Sempre ativo"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "Atualmente ativado"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "Atualmente desativado"
 
@@ -2088,20 +2088,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "Não pode selecionar outra promoção até que a atual expire (%s)."
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "Concordo em receber de %s lembretes de marketing por WhatsApp sobre artigos deixados num checkout inacabado nesta loja, para o meu número de telefone de faturação. É opcional; posso retirar o consentimento contactando a loja. Deixar esta caixa por selecionar não revoga o consentimento que dei anteriormente."
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "Enviem-me pelo WhatsApp novidades sobre compras, lembretes e ofertas."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "Consentimento para lembretes de checkout inacabado por WhatsApp"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "A Moda apresenta uma caixa de marketing por WhatsApp inicialmente desmarcada nos checkouts elegíveis. Abrange lembretes desta loja sobre compras inacabadas, não atualizações de encomendas. Apresentar uma caixa ou recolher um telefone não é consentimento; a Moda tem de verificar uma escolha expressa."
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "A Moda adiciona automaticamente uma caixa de seleção opcional, inicialmente desmarcada, para lembretes de marketing por WhatsApp sobre compras não concluídas quando o Checkout Recovery está disponível. Não é necessária instalação manual. Checkout clássico: após o telefone de faturação. Blocks: em Informações da encomenda."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "Sem autorização verificada, a recuperação do checkout não pode começar. Os clientes podem contactar a loja para retirar o consentimento. Uma caixa desmarcada numa visita posterior não revoga um consentimento anterior; a preferência atual deve ser verificada antes da recuperação."
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "O Checkout Recovery exige uma escolha verificada do cliente, não apenas um número de telefone. Deixar a caixa desmarcada numa visita posterior não revoga um consentimento anterior; o cliente pode contactar a loja para o retirar."
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2420,6 +2420,34 @@ msgstr "Atividade de recuperação"
 msgid "Reply to customer"
 msgstr "Responder ao cliente"
 
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "Autorização para WhatsApp já concedida"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "Retirar autorização para WhatsApp"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "Pretende retirar a sua autorização para WhatsApp?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "Introduza um número de telefone de faturação para guardar a autorização do WhatsApp."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "Não foi possível atualizar a autorização do WhatsApp. Tente novamente."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "O seu consentimento para receber mensagens pelo WhatsApp foi registado, mas não foi possível confirmar a permissão atual."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "O seu consentimento para receber mensagens pelo WhatsApp foi registado, mas não foi possível confirmar a permissão atual."
 msgid "Initial recovery notice"
 msgstr "Aviso de recuperação inicial"
 

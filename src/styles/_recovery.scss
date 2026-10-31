@@ -105,6 +105,69 @@
 	overflow: hidden;
 }
 
+// WhatsApp consent is a full settings card, not unpadded text in a rounded border.
+.moda-interact-recovery .moda-interact-woo-consent {
+	min-width: 0;
+}
+
+.moda-interact-woo-consent .moda-interact-recovery__body {
+	min-width: 0;
+}
+
+.moda-interact-woo-consent h2 {
+	margin: 0;
+	color: var(--moda-forest-900);
+	font-size: 20px;
+	font-weight: 650;
+	line-height: 1.3;
+}
+
+.moda-interact-woo-consent__intro {
+	margin: 12px 0 0;
+	color: var(--moda-muted);
+	font-size: 14px;
+	line-height: 1.6;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-woo-consent__feature {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	min-width: 0;
+	margin-top: 16px;
+	padding: 12px 14px;
+	border: 1px solid var(--moda-border);
+	border-radius: 12px;
+	color: var(--moda-forest-900);
+}
+
+.moda-interact-woo-consent__feature strong,
+.moda-interact-woo-consent__feature span {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.moda-interact-woo-consent__feature span {
+	color: var(--moda-forest-700);
+	font-size: 13px;
+	font-weight: 650;
+}
+
+.moda-interact-woo-consent__note {
+	margin: 16px 0 0;
+	padding: 12px 14px;
+	border: 1px solid var(--moda-forest-200);
+	border-radius: 12px;
+	background: var(--moda-forest-50);
+	color: var(--moda-forest-800);
+	font-size: 13px;
+	line-height: 1.6;
+	overflow-wrap: anywhere;
+}
+
 .moda-interact-recovery__panel summary {
 	padding: 18px 24px;
 	border-bottom: 1px solid transparent;

@@ -62,6 +62,7 @@ function current_user_can( $capability ) {
 }
 
 function wp_verify_nonce( $nonce, $action ) {
+	if ( 'wc_store_api' === $action && 'fixture_store_nonce' === $nonce ) return 1;
 	if ( isset( $GLOBALS['arch046_nonce_action'] ) ) {
 		return $action === $GLOBALS['arch046_nonce_action'] && $nonce === 'arch046-fixture-nonce' ? 1 : false;
 	}
@@ -92,6 +93,14 @@ function rest_url( $path = '' ) {
 function register_rest_route( $namespace, $route, $args ) {
 	$GLOBALS['moda_interact_registered_rest_routes'][ $namespace . $route ] = $args;
 	return true;
+}
+
+// Record checkout AJAX replies without terminating PHPUnit. Production WordPress
+// wp_send_json() emits the actual HTTP response and exits normally.
+if ( ! function_exists( 'wp_send_json' ) ) {
+	function wp_send_json( $response, $status_code = null ) {
+		$GLOBALS['arch046_last_ajax_json'] = array( 'body' => $response, 'code' => $status_code );
+	}
 }
 
 function __return_true() {
@@ -326,13 +335,21 @@ if ( ! class_exists( 'WP_Error' ) ) {
 	class WP_Error {
 		public function __construct( private string $code = '', private string $message = '', private array $data = array() ) {}
 		public function get_error_code(): string { return $this->code; }
+		public function get_error_message(): string { return $this->message; }
 		public function get_error_data(): array { return $this->data; }
 	}
+}
+
+if ( ! function_exists( 'is_wp_error' ) ) {
+	function is_wp_error( $value ) { return $value instanceof WP_Error; }
 }
 
 class WooCommerce {}
 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+// Vendor's committed Composer autoloader is class-map authoritative. New checkout
+// diagnostics must be loadable by PHPUnit before any runtime boot hook fires.
+require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentDiagnostics.php';
 require_once dirname( __DIR__ ) . '/includes/Api/DiscountOffersContracts.php';
 require_once dirname( __DIR__ ) . '/includes/Api/UsageHistoryResponseValidator.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/UsageHistoryController.php';

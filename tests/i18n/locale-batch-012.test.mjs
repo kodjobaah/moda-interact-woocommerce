@@ -92,8 +92,8 @@ function getMoTranslation(buffer, key) {
 	return undefined;
 }
 
-test('WOO-012 covers exactly 557 keys and locale plural rules', () => {
-	assert.equal(sourceKeys.size, 557);
+test('WOO-012 covers exactly 564 keys and locale plural rules', () => {
+	assert.equal(sourceKeys.size, 564);
 	const unchangedNames = new Set([
 		'Moda Interact',
 		'WooCommerce',
