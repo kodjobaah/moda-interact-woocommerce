@@ -69,6 +69,10 @@ function wp_verify_nonce( $nonce, $action ) {
 	return 'wp_rest' === $action && 'fixture_rest_nonce' === $nonce && $GLOBALS['moda_interact_valid_rest_nonce'] ? 1 : false;
 }
 
+function wp_create_nonce( $action ) {
+	return 'wp_rest' === $action ? 'fixture_rest_nonce' : false;
+}
+
 function get_current_user_id() { return $GLOBALS['arch046_current_user_id'] ?? 0; }
 
 function get_user_locale() {
