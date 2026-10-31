@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 // Bundled production Composer loaders are class-map authoritative.
 // This bounded feature is explicitly loaded without requiring a vendor rebuild.
 require_once __DIR__ . '/Api/DiscountOffersContracts.php';
+require_once __DIR__ . '/Api/WooRestoreResolveResponseValidator.php';
 require_once __DIR__ . '/Api/UsageHistoryResponseValidator.php';
 require_once __DIR__ . '/Rest/UsageHistoryController.php';
 require_once __DIR__ . '/Api/SupportResponseValidator.php';
@@ -25,6 +26,8 @@ require_once __DIR__ . '/Checkout/CheckoutDiagnosticLogger.php';
 require_once __DIR__ . '/Checkout/CheckoutSnapshot.php';
 require_once __DIR__ . '/Checkout/CheckoutActivityPublisher.php';
 require_once __DIR__ . '/Checkout/CheckoutCapture.php';
+require_once __DIR__ . '/Checkout/CheckoutCartRestorer.php';
+require_once __DIR__ . '/Checkout/CheckoutResumeController.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentEligibility.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCheckbox.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentPhone.php';
@@ -57,6 +60,8 @@ use ModaInteract\WooCommerce\Rest\SupportController;
 use ModaInteract\WooCommerce\Rest\PromotionsController;
 use ModaInteract\WooCommerce\Rest\RecoverySelectionController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
+use ModaInteract\WooCommerce\Checkout\CheckoutCartRestorer;
+use ModaInteract\WooCommerce\Checkout\CheckoutResumeController;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCheckbox;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentPublisher;
@@ -135,7 +140,9 @@ final class Runtime {
 		( new PromotionsController( null, new SiteIdentity( $mode ) ) )->register();
 ( new RecoverySelectionController( null, new SiteIdentity( $mode ) ) )->register();
 		$activity_publisher = new CheckoutActivityPublisher();
-		( new CheckoutCapture( $activity_publisher ) )->register();
+		$checkout_capture = new CheckoutCapture( $activity_publisher );
+		$checkout_capture->register();
+		( new CheckoutResumeController( $checkout_capture, new CheckoutCartRestorer( $checkout_capture ) ) )->register();
 		( new CheckoutConsentCheckbox() )->register();
 		( new CheckoutConsentCapture( new CheckoutConsentPublisher() ) )->register();
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();

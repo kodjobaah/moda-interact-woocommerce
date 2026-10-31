@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 final class CheckoutCapture {
 	private const LAST_CAPTURE = 'moda_interact_checkout_last_capture_v1';
 	private array $classicContact = array();
+	private int $suppressionDepth = 0;
 
 	public function __construct( private readonly CheckoutActivityPublisher $publisher ) {}
 
@@ -103,14 +104,38 @@ final class CheckoutCapture {
 	}
 
 	public function capture(): void {
+		if ( $this->suppressionDepth > 0 ) return;
+		$this->captureSnapshot();
+	}
+
+	/** Run cart mutations without observing their intermediate Woo hooks. */
+	public function withoutCapture( callable $operation ): mixed {
+		++$this->suppressionDepth;
+		try {
+			return $operation();
+		} finally {
+			--$this->suppressionDepth;
+		}
+	}
+
+	/** Bind the original key and bypass fingerprint dedupe for confirmed resumption. */
+	public function captureResumption( string $checkout_key ): bool {
+		$session = WC()->session ?? null;
+		if ( ! $session || ! CheckoutKey::valid( $checkout_key ) ) return false;
+		$session->set( CheckoutKey::SESSION_FIELD, $checkout_key );
+		$session->set( self::LAST_CAPTURE, null );
+		return $this->captureSnapshot();
+	}
+
+	private function captureSnapshot(): bool {
 		try {
 			$commerce = WC();
 			$session = $commerce->session ?? null;
-			if ( ! $session ) return;
+			if ( ! $session ) return false;
 			$snapshot = CheckoutSnapshot::fromCart( $commerce->cart ?? null, $commerce->customer ?? null );
 			if ( null === $snapshot ) {
 				self::log( 'snapshot_unavailable' );
-				return;
+				return false;
 			}
 			$previous = $session->get( self::LAST_CAPTURE );
 			$is_empty = isset( $snapshot['items'] ) && array() === $snapshot['items'];
@@ -119,29 +144,32 @@ final class CheckoutCapture {
 				// Bind the observation to this exact checkout, not just its WC session.
 				$key = $session->get( CheckoutKey::SESSION_FIELD );
 				if ( ! CheckoutKey::valid( $key ) || ! is_array( $previous ) ||
-					( $previous['checkoutKey'] ?? null ) !== $key || ( $previous['empty'] ?? false ) ) return;
+					( $previous['checkoutKey'] ?? null ) !== $key || ( $previous['empty'] ?? false ) ) return false;
 			} else {
 				$key = CheckoutKey::current();
-				if ( null === $key ) return;
+				if ( null === $key ) return false;
 				if ( $this->classicContact ) $snapshot['contact'] = array_merge( $snapshot['contact'] ?? array(), $this->classicContact );
 			}
 			$encoded = wp_json_encode( $snapshot );
 			if ( ! is_string( $encoded ) ) {
 				self::log( 'snapshot_encoding_failed' );
-				return;
+				return false;
 			}
 			$fingerprint = hash( 'sha256', $encoded );
 			if ( is_array( $previous ) && ( $previous['checkoutKey'] ?? null ) === $key &&
-				( $previous['fingerprint'] ?? null ) === $fingerprint ) return;
+				( $previous['fingerprint'] ?? null ) === $fingerprint ) return false;
 			if ( $this->publisher->enqueue( $snapshot, $key ) ) {
 				$session->set( self::LAST_CAPTURE, array(
 					'checkoutKey' => $key, 'fingerprint' => $fingerprint, 'empty' => $is_empty,
 				) );
+				return true;
 			} else {
 				self::log( 'enqueue_failed' );
+				return false;
 			}
 		} catch ( \Throwable $error ) {
 			self::log( 'capture_unexpected', $error );
+			return false;
 		}
 	}
 

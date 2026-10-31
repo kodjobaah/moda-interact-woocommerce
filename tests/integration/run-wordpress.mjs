@@ -303,6 +303,8 @@ try {
 					readCheckoutActionHistory(wpEnvComposeFile),
 				getActivityRequests: apiFixture.getActivityRequests,
 				setActivityStatus: apiFixture.setActivityStatus,
+				getRestoreResolveRequests: apiFixture.getRestoreResolveRequests,
+				setRestoreResolveResult: apiFixture.setRestoreResolveResult,
 			});
 			process.stdout.write('ARCH-035 checkout-only integration PASS\n');
 		} finally {
@@ -636,6 +638,8 @@ try {
 					readCheckoutActionHistory(wpEnvComposeFile),
 				getActivityRequests: apiFixture.getActivityRequests,
 				setActivityStatus: apiFixture.setActivityStatus,
+				getRestoreResolveRequests: apiFixture.getRestoreResolveRequests,
+				setRestoreResolveResult: apiFixture.setRestoreResolveResult,
 			});
 			await assertStoreContextWordPress({
 				siteUrl,

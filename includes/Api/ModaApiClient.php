@@ -94,6 +94,41 @@ final class ModaApiClient {
 		}
 	}
 
+	/** Resolve a customer-confirmed Woo recovery link using installation auth only. */
+	public function resolveWooRecoveryLink( array $connection, string $recovery_id, string $token ): array {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			! preg_match( '/^[A-Za-z0-9][A-Za-z0-9._:~-]{0,127}$/D', $recovery_id ) ||
+			! preg_match( '/^[A-Za-z0-9_-]{43}$/D', $token ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = wp_json_encode( array(
+			'schemaVersion' => 'woo.restore.resolve.v1',
+			'recoveryId' => $recovery_id,
+			'token' => $token,
+		) );
+		if ( ! is_string( $body ) || strlen( $body ) > 4096 ) throw new ModaApiClientException( 'invalid_request' );
+		$response = $this->request( '/v1/woocommerce/recovery-restore/resolve', 'POST', array_merge(
+			self::installationHeaders( $connection ), array( 'Content-Type' => 'application/json' )
+		), $body, self::DEFAULT_TIMEOUT_SECONDS, 16385 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
+		if ( 404 === $status ) throw new ModaApiClientException( 'not_found', $status, 'restore_unavailable' );
+		if ( 400 === $status || 413 === $status ) throw new ModaApiClientException( 'invalid_request', $status );
+		if ( 503 === $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		if ( 200 !== $status ) throw new ModaApiClientException( 'remote_unavailable', $status );
+		$content_type = (string) wp_remote_retrieve_header( $response, 'content-type' );
+		$response_body = wp_remote_retrieve_body( $response );
+		if ( ! preg_match( '#^application/json(?:\s*;|$)#i', trim( $content_type ) ) ||
+			! is_string( $response_body ) || strlen( $response_body ) > 16384 ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		$decoded = json_decode( $response_body );
+		if ( ! WooRestoreResolveResponseValidator::isValid( $decoded, $recovery_id ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return WooRestoreResolveResponseValidator::toArray( $decoded );
+	}
+
 
 	/** API-001 synchronous consent command; only a committed PostgreSQL ACK is success. */
 	public function publishWooConsent( array $connection, array $event ): array {

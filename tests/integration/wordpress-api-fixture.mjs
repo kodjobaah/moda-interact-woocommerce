@@ -54,6 +54,9 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 	let shopBrandResponseStatus = 200;
 	const billing = createBillingWordPressFixture();
 	let activityStatus = 202;
+	let restoreResolveStatus = 404;
+	let restoreResolveResponse = null;
+	const restoreResolveRequests = [];
 	let probeCount = 0;
 	let connectCount = 0;
 	let bootstrapCount = 0;
@@ -135,6 +138,30 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 				sendJson(response, 200, { status: disposition });
 			} else {
 				sendJson(response, httpStatus, { error: 'fixture_failure' });
+			}
+			return true;
+		}
+
+		if (
+			url.pathname === '/v1/woocommerce/recovery-restore/resolve' &&
+			request.method === 'POST'
+		) {
+			assert.equal(url.search, '');
+			assert.equal(request.headers.cookie, undefined);
+			assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
+			assert.match(request.headers.authorization ?? '', /^Bearer [A-Za-z0-9_-]{43}$/);
+			assert.match(request.headers['content-type'] ?? '', /^application\/json/i);
+			assert.ok(bodyBytes.length <= 4096);
+			const payload = JSON.parse(bodyBytes.toString('utf8'));
+			assert.deepEqual(Object.keys(payload).sort(), ['recoveryId', 'schemaVersion', 'token']);
+			assert.equal(payload.schemaVersion, 'woo.restore.resolve.v1');
+			assert.match(payload.recoveryId, /^[A-Za-z0-9][A-Za-z0-9._:~-]{0,127}$/);
+			assert.match(payload.token, /^[A-Za-z0-9_-]{43}$/);
+			restoreResolveRequests.push({ recoveryId: payload.recoveryId, status: restoreResolveStatus });
+			if (restoreResolveStatus === 200) {
+				sendJson(response, 200, restoreResolveResponse);
+			} else {
+				sendJson(response, restoreResolveStatus, { error: 'restore_unavailable' });
 			}
 			return true;
 		}
@@ -512,6 +539,13 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 		},
 		setActivityStatus: (status) => {
 			activityStatus = status;
+		},
+		getRestoreResolveRequests: () => [...restoreResolveRequests],
+		setRestoreResolveResult: (status, payload = null) => {
+			assert.ok([200, 404, 503].includes(status));
+			assert.ok(status !== 200 || payload !== null);
+			restoreResolveStatus = status;
+			restoreResolveResponse = payload;
 		},
 		assertExpectedBillingRequestCounts: billing.assertExpectedRequestCounts,
 		getState: () => ({
