@@ -49,7 +49,9 @@ export function RecoverySettingsScreen(props) {
 			onRefreshPolicy,
 			onSavePolicy,
 		}),
-		createElement(WhatsAppConsentGuidance),
+		createElement(WhatsAppConsentGuidance, {
+			featurePreferencesState,
+		}),
 		createElement(FeaturePreferencesPanel, {
 			state: featurePreferencesState,
 			onRefresh: onRefreshFeatures,

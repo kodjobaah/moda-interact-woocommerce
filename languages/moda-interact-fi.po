@@ -1656,11 +1656,11 @@ msgstr "Valinnainen"
 msgid "Always enabled"
 msgstr "Aina käytössä"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "Käytössä nyt"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "Pois käytöstä nyt"
 
@@ -2067,20 +2067,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "Voit valita toisen kampanjan vasta nykyisen kampanjan päätyttyä (%s)."
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "Suostun saamaan yritykseltä %s WhatsApp-markkinointimuistutuksia tuotteista, jotka jätän tämän kaupan keskeneräiseen kassaan, laskutuspuhelinnumerooni. Valinta on vapaaehtoinen; voin peruuttaa suostumuksen ottamalla yhteyttä kauppaan. Valitsematta jätetty ruutu ei peruuta aiemmin antamaani suostumusta."
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "Lähettäkää minulle WhatsAppissa ostoksiin liittyviä päivityksiä, muistutuksia ja tarjouksia."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "Suostumus WhatsApp-muistutuksiin keskeneräisestä kassasta"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda näyttää ehdot täyttävillä kassasivuilla WhatsApp-markkinointiruudun, jota ei ole valittu valmiiksi. Se koskee tämän kaupan muistutuksia keskeneräisistä ostoksista, ei tilauspäivityksiä. Ruudun näyttäminen tai puhelinnumeron kerääminen ei ole suostumus; Modan on vahvistettava nimenomainen valinta."
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "Moda lisää automaattisesti valinnaisen, oletusarvoisesti valitsemattoman WhatsApp-markkinointivalintaruudun keskeneräisten ostosten muistutuksia varten, kun Checkout Recovery on käytettävissä. Erillistä asennusta ei tarvita. Perinteinen kassa: laskutuspuhelinnumeron jälkeen. Blocks: Tilaustiedot-osiossa."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "Ilman vahvistettua lupaa keskeneräisen ostoksen palautusta ei aloiteta. Asiakas voi peruuttaa suostumuksensa ottamalla yhteyttä kauppaan. Myöhemmin valitsematta jätetty ruutu ei peruuta aiempaa lupaa; nykyinen valinta on tarkistettava ennen palautusta."
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery edellyttää asiakkaan vahvistettua valintaa, ei pelkkää puhelinnumeroa. Myöhemmin valitsematta jätetty ruutu ei peru aiempaa suostumusta; asiakas voi ottaa yhteyttä kauppaan peruuttaakseen sen."
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2398,6 +2398,34 @@ msgstr "Palautuksen tapahtumat"
 msgid "Reply to customer"
 msgstr "Vastaa asiakkaalle"
 
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "WhatsApp-suostumus on jo annettu"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "Peruuta WhatsApp-suostumus"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "Haluatko peruuttaa WhatsApp-suostumuksesi?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "Anna laskutuspuhelinnumero WhatsApp-suostumuksen tallentamiseksi."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "WhatsApp-suostumusta ei voitu päivittää. Yritä uudelleen."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsApp-suostumuksesi tallennettiin, mutta voimassa olevaa lupaa ei voitu vahvistaa."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsApp-suostumuksesi tallennettiin, mutta voimassa olevaa lupaa ei voitu vahvistaa."
 msgid "Initial recovery notice"
 msgstr "Ilmoitus palautuksen aloituksesta"
 

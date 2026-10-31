@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash, createHmac, randomBytes } from 'node:crypto';
 import { bootstrapInternationalContext } from './bootstrap-international-context.mjs';
 import { createBillingWordPressFixture } from './scenarios/billing-wordpress.mjs';
+import { createConsentApiFixture } from './consent-api-fixture.mjs';
 
 async function verifyChallenge(body, fetchWordPress) {
 	assert.equal(typeof body.siteUrl, 'string');
@@ -53,6 +54,7 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 	const acceptedShopBrandIds = new Set();
 	let shopBrandResponseStatus = 200;
 	const billing = createBillingWordPressFixture();
+	const consent = createConsentApiFixture();
 	let activityStatus = 202;
 	let probeCount = 0;
 	let connectCount = 0;
@@ -70,6 +72,17 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 		bodyBytes,
 		sendJson,
 	}) {
+		if (
+			consent.handleRequest({
+				url,
+				request,
+				response,
+				bodyBytes,
+				sendJson,
+			})
+		) {
+			return true;
+		}
 		if (
 			url.pathname === '/v1/woocommerce/shop-brand' &&
 			request.method === 'POST'
@@ -513,6 +526,7 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 		setActivityStatus: (status) => {
 			activityStatus = status;
 		},
+		consent,
 		assertExpectedBillingRequestCounts: billing.assertExpectedRequestCounts,
 		getState: () => ({
 			contextSyncAttempts,

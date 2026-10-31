@@ -1647,11 +1647,11 @@ msgstr "Volitelné"
 msgid "Always enabled"
 msgstr "Vždy zapnuto"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "Nyní zapnuto"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "Nyní vypnuto"
 
@@ -2058,20 +2058,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "Další akci můžete vybrat až po skončení aktuální akce (%s)."
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "Souhlasím se zasíláním marketingových připomenutí přes WhatsApp od %s o položkách ponechaných v nedokončené objednávce v tomto obchodě na své fakturační telefonní číslo. Je to dobrovolné; souhlas mohu odvolat kontaktováním obchodu. Nezaškrtnuté políčko neodvolává dříve udělený souhlas."
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "Zasílejte mi přes WhatsApp novinky o nákupu, připomenutí a nabídky."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "Souhlas s připomenutím nedokončeného nákupu přes WhatsApp"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda při způsobilém dokončování nákupu zobrazuje nezaškrtnuté políčko pro marketing přes WhatsApp. Týká se připomenutí nedokončených nákupů v tomto obchodě, nikoli aktualizací objednávek. Zobrazení políčka nebo získání telefonního čísla není souhlas; Moda musí ověřit výslovnou volbu."
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "Moda automaticky přidává volitelné, předem nezaškrtnuté políčko pro marketingová připomenutí přes WhatsApp týkající se nedokončené objednávky, pokud je Checkout Recovery dostupné. Ruční instalace není potřeba. Klasická pokladna: za fakturačním telefonem. Blocks: v části Informace o objednávce."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "Bez ověřeného souhlasu nelze zahájit obnovení nedokončeného nákupu. Zákazníci mohou obchod kontaktovat a souhlas odvolat. Nezaškrtnuté políčko při další návštěvě neodvolává předchozí souhlas; aktuální volbu je nutné před obnovením ověřit."
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery vyžaduje ověřenou volbu zákazníka, nikoli pouze telefonní číslo. Ponechání políčka nezaškrtnutého při pozdější návštěvě neruší dřívější souhlas; zákazníci mohou o jeho odvolání požádat obchod."
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2389,6 +2389,34 @@ msgstr "Průběh obnovy"
 msgid "Reply to customer"
 msgstr "Odpovědět zákazníkovi"
 
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "Souhlas se zprávami WhatsApp již byl udělen"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "Odvolat souhlas se zprávami WhatsApp"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "Chcete odvolat svůj souhlas se zprávami WhatsApp?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "Pro uložení souhlasu se zprávami WhatsApp zadejte fakturační telefonní číslo."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "Nepodařilo se aktualizovat souhlas se zprávami WhatsApp. Zkuste to znovu."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Váš souhlas se zasíláním zpráv přes WhatsApp byl zaznamenán, ale aktuální platnost oprávnění se nepodařilo ověřit."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Váš souhlas se zasíláním zpráv přes WhatsApp byl zaznamenán, ale aktuální platnost oprávnění se nepodařilo ověřit."
 msgid "Initial recovery notice"
 msgstr "Upozornění na zahájení obnovy"
 

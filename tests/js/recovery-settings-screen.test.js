@@ -51,13 +51,20 @@ function buttons(node, found = []) {
 
 describe('Woo Recovery Settings category presentation', () => {
 	it('orders cards: summary, recovery controls, WhatsApp consent guidance, features, then store context', () => {
+		const featurePreferencesState = {
+			status: 'UNAVAILABLE',
+			data: null,
+		};
 		const view = RecoverySettingsScreen({
 			state: { status: 'IDLE', data: null },
-			featurePreferencesState: { status: 'UNAVAILABLE', data: null },
+			featurePreferencesState,
 		});
 		const children = view.props.children;
 		expect(children[1].type).toBe(RecoveryBehaviourPanel);
 		expect(children[2].type).toBe(WhatsAppConsentGuidance);
+		expect(children[2].props.featurePreferencesState).toBe(
+			featurePreferencesState
+		);
 		expect(children[3].type).toBe(FeaturePreferencesPanel);
 		expect(children[4].type).toBe(StoreAssistantContext);
 		expect(children[4].props.storeProfile.type).toBe(StoreProfileAccordion);

@@ -1690,11 +1690,11 @@ msgstr "Facultatif"
 msgid "Always enabled"
 msgstr "Toujours activé"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "Actuellement activé"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "Actuellement désactivé"
 
@@ -2101,20 +2101,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "Vous ne pouvez pas sélectionner une autre promotion avant l’expiration de la promotion actuelle (%s)."
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "J’accepte de recevoir de %s des rappels marketing sur WhatsApp concernant les articles laissés dans un paiement inachevé dans cette boutique, sur mon numéro de téléphone de facturation. C’est facultatif ; je peux retirer mon consentement en contactant la boutique. Ne pas cocher cette case ne révoque pas un consentement donné précédemment."
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "Envoyez-moi sur WhatsApp des informations sur mes achats, des rappels et des offres."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "Autorisation des rappels de panier abandonné sur WhatsApp"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda affiche une case de consentement marketing WhatsApp non cochée lors des paiements admissibles. Elle concerne les rappels de cette boutique pour les paiements inachevés, et non les mises à jour de commande. Afficher une case ou recueillir un numéro ne constitue pas un consentement ; Moda doit vérifier un choix explicite."
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "Moda ajoute automatiquement une case facultative, décochée par défaut, pour les rappels marketing WhatsApp concernant les achats non finalisés lorsque Checkout Recovery est disponible. Aucune installation manuelle n’est nécessaire. Paiement classique : après le téléphone de facturation. Blocks : dans Informations sur la commande."
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "Sans autorisation vérifiée, la récupération du panier ne peut pas commencer. Les clients peuvent contacter la boutique pour retirer leur consentement. Une case non cochée lors d’une visite ultérieure ne révoque pas un accord antérieur ; la préférence actuelle du client doit être vérifiée avant toute récupération."
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery exige un choix vérifié du client, pas seulement un numéro de téléphone. Laisser la case décochée lors d’une visite ultérieure ne retire pas un consentement antérieur ; le client peut contacter la boutique pour le retirer."
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2432,14 +2432,42 @@ msgstr "Activité de récupération"
 msgid "Reply to customer"
 msgstr "Répondre au client"
 
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "Autorisation WhatsApp déjà accordée"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "Retirer l’autorisation WhatsApp"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "Voulez-vous retirer votre autorisation WhatsApp ?"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "Saisissez un numéro de téléphone de facturation pour enregistrer l’autorisation WhatsApp."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "Impossible de mettre à jour votre autorisation WhatsApp. Veuillez réessayer."
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Votre consentement aux messages WhatsApp a été enregistré, mais votre autorisation actuelle n’a pas pu être vérifiée."
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "Votre consentement aux messages WhatsApp a été enregistré, mais votre autorisation actuelle n’a pas pu être vérifiée."
 msgid "Initial recovery notice"
-msgstr "Initial recovery notice"
+msgstr "Avis de première récupération"
 
 msgid "Choose whether to receive a notice when the first recovery outreach starts."
-msgstr "Choose whether to receive a notice when the first recovery outreach starts."
+msgstr "Choisissez si vous souhaitez recevoir une notification au début de la première prise de contact de récupération."
 
 msgid "Notify me when initial recovery outreach starts"
-msgstr "Notify me when initial recovery outreach starts"
+msgstr "M’avertir lorsque la première prise de contact de récupération commence"
 
 msgid "This notice does not change customer messages or recovery credit use."
-msgstr "This notice does not change customer messages or recovery credit use."
+msgstr "Cette notification ne modifie ni les messages envoyés aux clients ni l’utilisation des crédits de récupération."

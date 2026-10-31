@@ -1641,11 +1641,11 @@ msgstr "任意"
 msgid "Always enabled"
 msgstr "常に有効"
 
-#: src/recovery-settings/feature-preferences-panel.js:44
+#: src/recovery-settings/feature-preferences-panel.js:44 src/recovery-settings/whatsapp-consent-guidance.js:51
 msgid "Currently enabled"
 msgstr "現在有効"
 
-#: src/recovery-settings/feature-preferences-panel.js:45
+#: src/recovery-settings/feature-preferences-panel.js:45 src/recovery-settings/whatsapp-consent-guidance.js:52
 msgid "Currently disabled"
 msgstr "現在無効"
 
@@ -2052,20 +2052,20 @@ msgid "You cannot select another promotion until your current promotion expires 
 msgstr "現在のプロモーションの有効期限（%s）が切れるまで、別のプロモーションは選択できません。"
 
 #: includes/Checkout/CheckoutConsentCheckbox.php:37
-msgid "I agree to receive WhatsApp marketing reminders from %s about items left in an unfinished checkout at this store, sent to my billing phone number. Optional; I can withdraw by contacting the store. An unchecked box does not revoke any consent I gave previously."
-msgstr "この店舗で決済を完了せずに残した商品について、請求先電話番号に %s から WhatsApp のマーケティングリマインダーが送信されることに同意します。これは任意で、店舗に連絡して同意を撤回できます。チェックを入れないことは、以前の同意の撤回にはなりません。"
+msgid "Send me WhatsApp shopping updates, reminders and offers."
+msgstr "WhatsAppでお買い物に関するお知らせ、リマインダー、お得な情報を送信してください。"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:14
+#: src/recovery-settings/whatsapp-consent-guidance.js:32
 msgid "WhatsApp checkout-recovery permission"
 msgstr "WhatsApp での未完了チェックアウト通知への同意"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:19
-msgid "Moda shows an unchecked WhatsApp marketing checkbox on eligible checkouts. It covers reminders from this store about unfinished checkouts, not order updates. Showing a checkbox or collecting a phone number is not consent; an explicit choice must be verified by Moda."
-msgstr "Moda は対象となるチェックアウトで、初期状態ではオフの WhatsApp マーケティング同意欄を表示します。対象はこの店舗での未完了の購入に関するリマインダーで、注文状況の通知ではありません。同意欄の表示や電話番号の取得だけでは同意にならず、Moda が明示的な選択を確認する必要があります。"
+#: src/recovery-settings/whatsapp-consent-guidance.js:37
+msgid "Moda automatically adds an optional, unchecked WhatsApp marketing checkbox for unfinished-checkout reminders when Checkout Recovery is eligible. No manual installation is needed. Classic: after billing phone. Blocks: under Order Information."
+msgstr "Checkout Recovery が利用可能な場合、Moda は未完了の購入手続きに関する WhatsApp マーケティング通知用の任意チェックボックスを未選択の状態で自動追加します。手動インストールは不要です。従来のチェックアウト：請求先電話番号の後。Blocks：注文情報のセクション。"
 
-#: src/recovery-settings/whatsapp-consent-guidance.js:27
-msgid "Without verified permission, checkout recovery cannot start. Customers may contact the store to withdraw consent. An unchecked box on a later visit does not revoke an earlier grant; the customer's current preference must be checked before recovery."
-msgstr "確認済みの同意がなければ、未完了チェックアウトの回復は開始できません。お客様は店舗に連絡して同意を撤回できます。次回の訪問でチェックを入れないだけでは以前の同意は撤回されません。回復前に現在の希望を確認する必要があります。"
+#: src/recovery-settings/whatsapp-consent-guidance.js:59
+msgid "Checkout Recovery requires a verified customer choice, not just a phone number. Leaving the checkbox unchecked later does not withdraw an earlier grant; customers can contact the store to withdraw."
+msgstr "Checkout Recovery には、電話番号だけでなく、お客様の意思表示の確認が必要です。後のチェックアウトでチェックを入れないだけでは以前の同意は取り消されません。同意を撤回するには店舗へお問い合わせください。"
 
 #: src/recoveries/customer-selection/selection-messages.js:6
 msgid "Check the phone format or ticket reference."
@@ -2383,6 +2383,34 @@ msgstr "リカバリーの履歴"
 msgid "Reply to customer"
 msgstr "顧客に返信"
 
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "WhatsApp permission already granted"
+msgstr "WhatsAppの同意はすでに取得されています"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw WhatsApp permission"
+msgstr "WhatsAppの同意を撤回する"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Withdraw your WhatsApp permission?"
+msgstr "WhatsAppの同意を撤回しますか？"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Enter a billing phone number to save WhatsApp permission."
+msgstr "WhatsAppの同意を保存するには、請求先電話番号を入力してください。"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Could not update WhatsApp permission. Please try again."
+msgstr "WhatsAppの許可を更新できませんでした。もう一度お試しください。"
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsAppメッセージの受信への同意は記録されましたが、現在の許可状態を確認できませんでした。"
+
+
+#: includes/Checkout/CheckoutConsentPresentation.php
+msgid "Your WhatsApp opt-in was recorded, but current permission could not be verified."
+msgstr "WhatsAppメッセージの受信への同意は記録されましたが、現在の許可状態を確認できませんでした。"
 msgid "Initial recovery notice"
 msgstr "初回リカバリー通知"
 

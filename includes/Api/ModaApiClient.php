@@ -98,7 +98,7 @@ final class ModaApiClient {
 	/** API-001 synchronous consent command; only a committed PostgreSQL ACK is success. */
 	public function publishWooConsent( array $connection, array $event ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ||
-			( $event['schemaVersion'] ?? null ) !== 'woo.whatsapp-consent.v1' ||
+			( $event['schemaVersion'] ?? null ) !== 'woo.whatsapp-consent.v2' ||
 			! in_array( $event['decision'] ?? null, array( 'GRANT', 'REVOKE' ), true ) ||
 			isset( $event['shopId'] ) || isset( $event['customerId'] ) || isset( $event['credential'] ) ) {
 			throw new ModaApiClientException( 'invalid_request' );
@@ -113,7 +113,7 @@ final class ModaApiClient {
 			$status >= 400 && $status < 500 ? 'remote_rejected' : 'remote_unavailable', $status );
 		$result = $this->jsonBody( $response, 8192 );
 		if ( ! self::hasExactKeys( $result, array( 'schemaVersion', 'status', 'decision', 'consentRevision', 'decisionSequence' ) ) ||
-			$result['schemaVersion'] !== 'woo.whatsapp-consent.v1' ||
+			$result['schemaVersion'] !== 'woo.whatsapp-consent.v2' ||
 			! in_array( $result['status'], array( 'recorded', 'duplicate' ), true ) ||
 			$result['decision'] !== $event['decision'] ||
 			! is_string( $result['consentRevision'] ) ||
@@ -123,6 +123,39 @@ final class ModaApiClient {
 			throw new ModaApiClientException( 'remote_response_invalid', 200 );
 		}
 		return $result;
+	}
+
+	/** API-006: proof-backed current consent read. Never return shopper PII. */
+	public function wooConsentStatus( array $connection, array $proof ): string {
+		if ( ! InstallationStore::isValidRecord( $connection ) ||
+			array_keys( $proof ) !== array( 'grantEventId', 'canonicalPhone' ) ||
+			! is_string( $proof['grantEventId'] ) ||
+			1 !== preg_match( '/^[A-Za-z0-9][A-Za-z0-9._:~-]{0,127}$/D', $proof['grantEventId'] ) ||
+			! is_string( $proof['canonicalPhone'] ) ||
+			1 !== preg_match( '/^[1-9][0-9]{1,14}$/D', $proof['canonicalPhone'] ) ) {
+			throw new ModaApiClientException( 'invalid_request' );
+		}
+		$body = wp_json_encode( array(
+			'schemaVersion' => 'woo.whatsapp-consent-status.v1',
+			'canonicalPhone' => $proof['canonicalPhone'],
+			'grantEventId' => $proof['grantEventId'],
+		) );
+		if ( ! is_string( $body ) || strlen( $body ) > 512 ) throw new ModaApiClientException( 'invalid_request' );
+		// Keep the checkout responsive. Request body (never URL) holds the proof.
+		$response = $this->request( '/v1/woocommerce/whatsapp-consent/status', 'POST', array_merge(
+			self::installationHeaders( $connection ),
+			array( 'Content-Type' => 'application/json', 'Cache-Control' => 'no-store' )
+		), $body, 3, 4096 );
+		$status = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status ) throw new ModaApiClientException(
+			$status >= 400 && $status < 500 ? 'remote_rejected' : 'remote_unavailable', $status );
+		$result = $this->jsonBody( $response, 4096 );
+		if ( ! self::hasExactKeys( $result, array( 'schemaVersion', 'state' ) ) ||
+			'woo.whatsapp-consent-status.v1' !== $result['schemaVersion'] ||
+			! in_array( $result['state'], array( 'CONFIRMED_GRANTED', 'UNVERIFIED' ), true ) ) {
+			throw new ModaApiClientException( 'remote_response_invalid', $status );
+		}
+		return $result['state'];
 	}
 
 	/** ARCH-049: publish a complete Site Identity snapshot with installation-only auth. */
@@ -994,7 +1027,7 @@ final class ModaApiClient {
 	}
 
 	/** API-014..017 hosted operations; installation auth is never supplied by browser input. */
-	public function merchantKnowledgeExchange( array $connection, string $path, string $method, ?array $data = null ): array {
+	public function merchantKnowledgeExchange( array $connection, string $path, string $method, ?array $data = null, ?int $checkout_timeout = null ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) ) throw new ModaApiClientException( 'local_state_invalid' );
 		$paths = array(
 			'/v1/merchant/feature-preferences' => array( 'GET', 'PUT' ),
@@ -1027,6 +1060,10 @@ final class ModaApiClient {
 		// alter Prisma transaction deadlines or unrelated merchant API requests.
 		$timeout = str_starts_with( $path, '/v1/merchant/merchant-knowledge' )
 			? self::KNOWLEDGE_TIMEOUT_SECONDS : self::DEFAULT_TIMEOUT_SECONDS;
+		if ( '/v1/merchant/feature-preferences' === $path && 'GET' === $method &&
+			null !== $checkout_timeout ) {
+			$timeout = max( 1, min( self::DEFAULT_TIMEOUT_SECONDS, $checkout_timeout ) );
+		}
 		$response = $this->request( $path, $method, $headers, $body, $timeout, 262145 );
 		$status = wp_remote_retrieve_response_code( $response );
 		if ( 401 === $status ) throw new ModaApiClientException( 'unauthorized', $status );
@@ -1067,7 +1104,15 @@ final class ModaApiClient {
 			$args['body'] = $body;
 		}
 		$response = ( $this->transport )( $url, $args );
-		if ( ( function_exists( 'is_wp_error' ) && is_wp_error( $response ) ) || ! is_array( $response ) ) {
+		if ( function_exists( 'is_wp_error' ) && is_wp_error( $response ) ) {
+			// Retain the real WordPress transport error. The consent diagnostic sink
+			// redacts and bounds these fields before writing to WooCommerce logs.
+			$code = method_exists( $response, 'get_error_code' ) ? $response->get_error_code() : null;
+			$message = method_exists( $response, 'get_error_message' ) ? $response->get_error_message() : null;
+			throw new ModaApiClientException( 'remote_unavailable', null, null,
+				is_string( $code ) ? $code : null, is_string( $message ) ? $message : null );
+		}
+		if ( ! is_array( $response ) ) {
 			throw new ModaApiClientException( 'remote_unavailable' );
 		}
 		return $response;
@@ -1191,7 +1236,13 @@ final class ModaApiClient {
 }
 
 final class ModaApiClientException extends \RuntimeException {
-	public function __construct( string $reason, public readonly ?int $http_status = null, public readonly ?string $remote_error = null ) {
+	public function __construct(
+		string $reason,
+		public readonly ?int $http_status = null,
+		public readonly ?string $remote_error = null,
+		public readonly ?string $transport_error_code = null,
+		public readonly ?string $transport_error_message = null
+	) {
 		parent::__construct( $reason );
 	}
 }
