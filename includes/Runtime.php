@@ -28,6 +28,7 @@ require_once __DIR__ . '/Checkout/CheckoutActivityPublisher.php';
 require_once __DIR__ . '/Checkout/CheckoutCapture.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentDiagnostics.php';
 require_once __DIR__ . '/Checkout/CheckoutCartRestorer.php';
+require_once __DIR__ . '/Checkout/CheckoutCouponRestorer.php';
 require_once __DIR__ . '/Checkout/CheckoutResumeController.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentEligibility.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCheckbox.php';

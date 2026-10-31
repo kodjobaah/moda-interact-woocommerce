@@ -1026,7 +1026,7 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	const snapshot = {
 		schemaVersion: 'woo.cart-restore.v1',
 		kind: 'supported',
-		appliedCouponCodes: [],
+		appliedCouponCodes: [fixture.couponCode, 'arch053-deleted-code'],
 		lines: [{ ...capturedVariationLine, quantity: 1 }],
 	};
 	const eligible = {
@@ -1094,15 +1094,21 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.equal(afterRestore.items.length, 1, 'restoration replaces the existing basket');
 	assert.equal(Number(afterRestore.items[0].quantity), 1);
 	assert.ok([fixture.variableProduct, fixture.variation].includes(Number(afterRestore.items[0].id)), 'restored variation is present');
+	assert.deepEqual(afterRestore.coupons.map((coupon) => coupon.code), [fixture.couponCode],
+		'Woo applies the currently valid original coupon and rejects the deleted coupon');
+	assert.equal(afterRestore.totals.total_price, '1799', 'Woo recalculates the restored variation at its current 10%-discounted price');
 	assert.equal(getRestoreResolveRequests().length, resolveCountBeforePreview + 1);
 	const newCheckoutActions = getCheckoutActionHistory().filter((row) => !actionIdsBefore.has(String(row.id)) && row.args?.event?.eventType === 'CHECKOUT_UPDATED');
 	assert.equal(newCheckoutActions.length, 1, 'one fresh durable resumption event is enqueued');
 	assert.equal(newCheckoutActions[0].args.event.checkoutKey, eligible.checkoutKey);
-	assert.deepEqual(newCheckoutActions[0].args.event.checkout.restoration.appliedCouponCodes, []);
+	assert.deepEqual(newCheckoutActions[0].args.event.checkout.restoration.appliedCouponCodes, [fixture.couponCode],
+		'fresh resumption evidence records the coupon Woo actually applied');
 
 	const classicPage = await browser.request(`/?page_id=${fixture.classicCheckoutPage}`);
 	assert.equal(classicPage.status, 200, 'Classic checkout renders the restored cart');
-	assert.match(await classicPage.text(), /woocommerce-checkout/);
+	const classicCheckoutHtml = await classicPage.text();
+	assert.match(classicCheckoutHtml, /woocommerce-checkout/);
+	assert.doesNotMatch(classicCheckoutHtml, /arch053-deleted-code/i, 'rejected coupon errors are not shown to the shopper');
 	const blocksPage = await browser.request(`/?page_id=${fixture.blocksCheckoutPage}`);
 	assert.equal(blocksPage.status, 200, 'Blocks checkout renders the restored cart');
 	assert.match(await blocksPage.text(), /wc-block-checkout|blocks-checkout\.js|woocommerce\/checkout/);
@@ -1147,7 +1153,6 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.equal(deniedHtml.includes('error'), false, 'confirmation landing contains no failure detail');
 
 	for (const [id, responsePayload] of [
-		['recovery_coupon_fixture', { ...eligible, recoveryId: 'recovery_coupon_fixture', snapshot: { ...snapshot, appliedCouponCodes: ['old-code'] } }],
 		['recovery_offer_fixture', { ...eligible, recoveryId: 'recovery_offer_fixture', outreachOffer: { kind: 'CHECKOUT_CODE', code: 'OFFER10', providerDiscountId: 'woo:coupon:10' } }],
 	]) {
 		const protectedBrowser = createSession(siteUrl);
@@ -1166,7 +1171,7 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 		});
 		assert.equal(response.status, 303);
 		assert.deepEqual((await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, existing.items,
-			'coupon-bearing and confirmed-offer responses are rejected without cart mutation');
+			'confirmed-offer responses are rejected without cart mutation');
 	}
 	setRestoreResolveResult(404);
 	process.stdout.write('ARCH-053 confirmed Woo restore integration PASS\n');

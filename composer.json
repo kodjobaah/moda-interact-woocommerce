@@ -17,6 +17,7 @@
             "@php -l includes/Checkout/CheckoutActivityPublisher.php",
             "@php -l includes/Checkout/CheckoutCapture.php",
 			"@php -l includes/Checkout/CheckoutCartRestorer.php",
+			"@php -l includes/Checkout/CheckoutCouponRestorer.php",
 			"@php -l includes/Checkout/CheckoutResumeController.php",
             "@php -l includes/Checkout/CheckoutConsentEligibility.php",
             "@php -l includes/Checkout/CheckoutConsentDiagnostics.php",
