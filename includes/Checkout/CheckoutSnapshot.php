@@ -134,7 +134,7 @@ final class CheckoutSnapshot {
 				return self::unsupported( 'UNSUPPORTED_PRODUCT_TYPE', $coupons );
 			}
 
-			$restore_line = array( 'productId' => $product_id, 'quantity' => $quantity );
+			$restore_line = array( 'productId' => $product_id );
 			$variation_id = $line['variation_id'] ?? null;
 			$has_variation_id = ! in_array( $variation_id, array( null, '', 0, '0' ), true );
 			$attributes = $line['variation'] ?? array();
@@ -143,6 +143,7 @@ final class CheckoutSnapshot {
 				if ( $has_variation_id || ! in_array( $attributes, array( null, array() ), true ) ) {
 					return self::unsupported( 'INVALID_VARIATION', $coupons );
 				}
+				$restore_line['quantity'] = $quantity;
 			} else {
 				$variation_id = self::positiveId( $variation_id );
 				if ( null === $variation_id || $loaded_id !== $variation_id || ! method_exists( $product, 'get_parent_id' ) || ! is_array( $attributes ) ) {
@@ -156,6 +157,7 @@ final class CheckoutSnapshot {
 				}
 				if ( $parent_id !== $product_id ) return self::unsupported( 'INVALID_VARIATION', $coupons );
 				$restore_line['variationId'] = $variation_id;
+				$restore_line['quantity'] = $quantity;
 				if ( count( $attributes ) > 10 ) return self::unsupported( 'LIMIT_EXCEEDED', $coupons );
 				if ( $attributes ) {
 					$safe_attributes = array();

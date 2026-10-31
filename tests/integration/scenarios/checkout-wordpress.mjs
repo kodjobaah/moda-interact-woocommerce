@@ -252,6 +252,8 @@ function assertEvent(event) {
 }
 
 async function addVariableCartAndCoupon(browser, fixture, kind) {
+	const cartResponse = await browser.request('/wp-json/wc/store/v1/cart');
+	assert.equal(cartResponse.status, 200, `${kind}: initialize Store API cart session`);
 	let response = await browser.request('/wp-json/wc/store/v1/cart/add-item', {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },

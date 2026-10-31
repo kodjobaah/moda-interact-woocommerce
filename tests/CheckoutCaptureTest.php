@@ -203,7 +203,7 @@ final class CheckoutCaptureTest extends TestCase {
 
 	public function test_unverifiable_phone_is_omitted_from_v1_without_losing_basket_or_other_contact(): void {
 		$GLOBALS['arch035_wc']->customer->email = 'guest@example.test';
-		$GLOBALS['arch035_wc']->customer->phone = '+19912345678';
+		$GLOBALS['arch035_wc']->customer->phone = '+447700900001';
 		$this->capture->capture();
 		$event = $GLOBALS['arch035_queued'][0]['args']['event'];
 		self::assertSame( 'woo.activity.v1', $event['schemaVersion'] );
