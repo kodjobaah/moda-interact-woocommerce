@@ -6,10 +6,11 @@ defined( 'ABSPATH' ) || exit;
 
 /** Supported Classic and Store API / Checkout Blocks checkout hooks. */
 final class CheckoutCapture {
-	private const LAST_CAPTURE = 'moda_interact_checkout_last_capture_v1';
+	public const LAST_CAPTURE_SESSION_FIELD = 'moda_interact_checkout_last_capture_v1';
 	private const ENGAGEMENT_VISIT_TTL = 1800;
 	private const ENGAGEMENT_ROUTE = '/checkout-engagement';
 	private array $classicContact = array();
+	private int $suppressionDepth = 0;
 
 	public function __construct( private readonly CheckoutActivityPublisher $publisher ) {}
 
@@ -294,7 +295,7 @@ final class CheckoutCapture {
 			$key = $session->get( CheckoutKey::SESSION_FIELD );
 			if ( CheckoutKey::valid( $key ) && $key === $order->get_meta( CheckoutKey::ORDER_META, true ) ) {
 				$session->set( CheckoutKey::SESSION_FIELD, null );
-				$session->set( self::LAST_CAPTURE, null );
+				$session->set( self::LAST_CAPTURE_SESSION_FIELD, null );
 				CheckoutKey::checkoutObserved();
 			}
 		} catch ( \Throwable $error ) {
@@ -303,11 +304,31 @@ final class CheckoutCapture {
 	}
 
 	public function capture(): void {
-		$this->captureSnapshot( false );
+		if ( $this->suppressionDepth > 0 ) return;
+		$this->captureSnapshot();
 	}
 
-	/** Publish a fresh event only after a nonce-verified real customer interaction. */
-	private function captureSnapshot( bool $force ): bool {
+	/** Run cart mutations without observing their intermediate Woo hooks. */
+	public function withoutCapture( callable $operation ): mixed {
+		++$this->suppressionDepth;
+		try {
+			return $operation();
+		} finally {
+			--$this->suppressionDepth;
+		}
+	}
+
+	/** Bind the original key and bypass fingerprint dedupe for confirmed resumption. */
+	public function captureResumption( string $checkout_key ): bool {
+		$session = WC()->session ?? null;
+		if ( ! $session || ! CheckoutKey::valid( $checkout_key ) ) return false;
+		$session->set( CheckoutKey::SESSION_FIELD, $checkout_key );
+		$session->set( self::LAST_CAPTURE_SESSION_FIELD, null );
+		return $this->captureSnapshot( true );
+	}
+
+	/** Publish a fresh event only after a nonce-verified return or confirmed resumption. */
+	private function captureSnapshot( bool $force = false ): bool {
 		try {
 			$commerce = WC();
 			$session = $commerce->session ?? null;
@@ -317,7 +338,7 @@ final class CheckoutCapture {
 				self::log( 'snapshot_unavailable' );
 				return false;
 			}
-			$previous = $session->get( self::LAST_CAPTURE );
+			$previous = $session->get( self::LAST_CAPTURE_SESSION_FIELD );
 			$is_empty = isset( $snapshot['items'] ) && array() === $snapshot['items'];
 			if ( $force && $is_empty ) return false;
 			if ( $is_empty ) {
@@ -340,7 +361,7 @@ final class CheckoutCapture {
 			if ( ! $force && is_array( $previous ) && ( $previous['checkoutKey'] ?? null ) === $key &&
 				( $previous['fingerprint'] ?? null ) === $fingerprint ) return false;
 			if ( $this->publisher->enqueue( $snapshot, $key ) ) {
-				$session->set( self::LAST_CAPTURE, array(
+				$session->set( self::LAST_CAPTURE_SESSION_FIELD, array(
 					'checkoutKey' => $key, 'fingerprint' => $fingerprint, 'empty' => $is_empty,
 				) );
 				// An explicit checkout hook, not a consent GRANT, now owns activity.
