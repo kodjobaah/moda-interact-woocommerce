@@ -31,7 +31,11 @@ if ( ! function_exists( 'wc_get_product' ) ) {
 if ( ! function_exists( 'get_woocommerce_currency' ) ) { function get_woocommerce_currency() { return 'GBP'; } }
 if ( ! function_exists( 'wc_format_decimal' ) ) { function wc_format_decimal( $amount, $decimals = 2 ) { return number_format( (float) $amount, $decimals, '.', '' ); } }
 if ( ! function_exists( 'as_enqueue_async_action' ) ) {
-	function as_enqueue_async_action( $hook, $args, $group, $unique ) { $GLOBALS['resume_test_actions'][] = compact( 'hook', 'args', 'group', 'unique' ); return count( $GLOBALS['resume_test_actions'] ); }
+	function as_enqueue_async_action( $hook, $args, $group, $unique ) {
+		if ( ! empty( $GLOBALS['arch035_async_fail'] ) ) throw new RuntimeException( 'Action Scheduler unavailable' );
+		$GLOBALS['resume_test_actions'][] = compact( 'hook', 'args', 'group', 'unique' );
+		return count( $GLOBALS['resume_test_actions'] );
+	}
 }
 
 final class ResumeControllerSession {
@@ -177,5 +181,56 @@ final class CheckoutResumeControllerTest extends TestCase {
 		self::assertSame( $prior_completed, $this->session->get( 'moda_interact_restore_completed_v1' ) );
 		self::assertSame( $prior_capture, $this->session->get( 'moda_interact_checkout_last_capture_v1' ) );
 		self::assertSame( 2, $this->session->save_calls, 'The rollback session state is persisted after the failed commit.' );
+		self::assertSame( array(), $GLOBALS['resume_test_actions'], 'Session persistence must succeed before a resumption activity is enqueued.' );
+	}
+
+	public function test_activity_enqueue_failure_rolls_back_cart_and_session_state(): void {
+		$cart = new ResumeControllerCart();
+		$cart->lines = array( array( 'product_id' => 999, 'variation_id' => 0, 'quantity' => 2, 'variation' => array() ) );
+		$post = $this->prepareRestorePost( $cart, str_repeat( 'B', 43 ) );
+		$GLOBALS['arch035_async_fail'] = true;
+		try {
+			$result = $this->controller->handleRequest( 'POST', '/shop/', array(), $post, array(
+				'HTTP_ORIGIN' => 'https://merchant.example', 'CONTENT_LENGTH' => '512',
+			) );
+		} finally {
+			$GLOBALS['arch035_async_fail'] = false;
+		}
+
+		self::assertSame( home_url( '/' ), $result['redirect'] );
+		self::assertSame( array( 999 ), array_column( $cart->lines, 'product_id' ) );
+		self::assertSame( array( 2 ), array_column( $cart->lines, 'quantity' ) );
+		self::assertNull( $this->session->get( CheckoutKey::SESSION_FIELD ) );
+		self::assertSame( array( 'recoveryId' => 'previous-recovery', 'completedAt' => 123 ), $this->session->get( 'moda_interact_restore_completed_v1' ) );
+		self::assertSame( array( 'checkoutKey' => 'woo-existing-checkout', 'fingerprint' => 'prior-fingerprint' ), $this->session->get( 'moda_interact_checkout_last_capture_v1' ) );
+		self::assertSame( 2, $this->session->save_calls, 'The rollback session state is persisted after enqueue failure.' );
+		self::assertSame( array(), $GLOBALS['resume_test_actions'] );
+	}
+
+	private function prepareRestorePost( ResumeControllerCart $cart, string $nonce ): array {
+		$GLOBALS['restore_test_products'] = array( 101 => new WC_Product_Simple( 101 ) );
+		$GLOBALS['arch035_wc']->cart = $cart;
+		$prior_nonce = array( 'digest' => hash( 'sha256', $nonce ), 'issuedAt' => time() );
+		$this->session->values = array(
+			'moda_interact_restore_nonce_v1' => $prior_nonce,
+			'moda_interact_checkout_last_capture_v1' => array( 'checkoutKey' => 'woo-existing-checkout', 'fingerprint' => 'prior-fingerprint' ),
+			'moda_interact_restore_completed_v1' => array( 'recoveryId' => 'previous-recovery', 'completedAt' => 123 ),
+		);
+		$connection = array(
+			'schemaVersion' => 1, 'installationId' => 'install-one', 'shopId' => 'shop-one',
+			'canonicalSiteUrl' => 'https://merchant.example/shop',
+			'credential' => Base64Url::encode( str_repeat( "\x02", 32 ) ), 'credentialVersion' => 1,
+			'connectedAt' => '2026-10-20T12:00:00.000Z',
+		);
+		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $connection;
+		$response = json_decode( file_get_contents( __DIR__ . '/fixtures/woo-restore-v1.json' ), true )['eligibleResolveResponse'];
+		$response['checkoutKey'] = 'woo-restored-checkout';
+		$response['snapshot'] = array( 'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'supported', 'appliedCouponCodes' => array(),
+			'lines' => array( array( 'productId' => '101', 'quantity' => 1 ) ) );
+		$response['outreachOffer'] = array( 'kind' => 'NONE', 'reason' => 'NO_CONFIRMED_OFFER' );
+		$capture = new CheckoutCapture( new CheckoutActivityPublisher() );
+		$this->controller = new CheckoutResumeController( $capture, new CheckoutCartRestorer( $capture ), new InstallationStore(),
+			static fn() => $response, new SiteIdentity( ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT, static fn() => array( '127.0.0.1' ) ) );
+		return array( 'moda_interact_resume' => '1', 'r' => 'recovery_456', 't' => str_repeat( 'A', 43 ), 'nonce' => $nonce, 'confirm' => 'replace' );
 	}
 }

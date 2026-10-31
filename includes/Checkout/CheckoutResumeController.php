@@ -108,7 +108,6 @@ final class CheckoutResumeController {
 			$restored = $this->restorer->restore( $response['snapshot'], function () use ( $session, $response, $post, $prior_session_state ): bool {
 				try {
 					$session->set( CheckoutKey::SESSION_FIELD, $response['checkoutKey'] );
-					if ( ! $this->capture->captureResumption( $response['checkoutKey'] ) ) throw new \RuntimeException( 'restore_capture_rejected' );
 					$session->set( self::COMPLETED_SESSION_FIELD, array( 'recoveryId' => $post['r'], 'completedAt' => time() ) );
 					if ( method_exists( $session, 'set_customer_session_cookie' ) ) $session->set_customer_session_cookie( true );
 				} catch ( \Throwable $error ) {
@@ -124,6 +123,13 @@ final class CheckoutResumeController {
 						self::rollbackSessionState( $session, $prior_session_state );
 						return false;
 					}
+				}
+				try {
+					if ( ! $this->capture->captureResumption( $response['checkoutKey'] ) ) throw new \RuntimeException( 'restore_capture_rejected' );
+				} catch ( \Throwable $error ) {
+					self::log( 'restore_capture_failed', $error );
+					self::rollbackSessionState( $session, $prior_session_state );
+					return false;
 				}
 				return true;
 			} );
