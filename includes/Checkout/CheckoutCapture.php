@@ -22,6 +22,11 @@ final class CheckoutCapture {
 		add_action( 'woocommerce_after_calculate_totals', array( $this, 'afterTotals' ), 10, 0 );
 		add_action( 'woocommerce_cart_item_removed', array( $this, 'afterCartRemoval' ), 10, 0 );
 		add_action( 'woocommerce_cart_emptied', array( $this, 'afterCartRemoval' ), 10, 0 );
+		// Coupon actions run after Woo has updated the cart's applied-code list.
+		// Observe only an existing checkout generation; coupon hooks can also run
+		// from the ordinary cart where checkout capture has not begun.
+		add_action( 'woocommerce_applied_coupon', array( $this, 'onCouponChange' ), 10, 1 );
+		add_action( 'woocommerce_removed_coupon', array( $this, 'onCouponChange' ), 10, 1 );
 		// Checkout Blocks: the supported PATCH draft hook has current cart/customer state.
 		add_action( 'woocommerce_store_api_checkout_update_draft', array( $this, 'capture' ), 10, 1 );
 		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( $this, 'capture' ), 10, 2 );
@@ -73,6 +78,11 @@ final class CheckoutCapture {
 		} catch ( \Throwable $error ) {
 			self::log( 'cart_removal_capture_unavailable', $error );
 		}
+	}
+
+	/** Coupon hooks provide a code, but the canonical complete list comes from the cart. */
+	public function onCouponChange( mixed $_coupon_code ): void {
+		$this->captureExisting();
 	}
 
 	/** A cart route is not itself evidence that checkout has begun. */
