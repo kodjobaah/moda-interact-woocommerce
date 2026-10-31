@@ -48,17 +48,23 @@ final class Arch035Session {
 	public function set( string $key, mixed $value ): void { $this->values[ $key ] = $value; }
 }
 final class Arch035Product {
+	public function __construct( private int $id = 101, private string $type = 'simple', private int $parent_id = 0 ) {}
 	public function get_sku(): string { return 'SKU-1'; }
 	public function get_name(): string { return 'Item One'; }
+	public function get_id(): int { return $this->id; }
+	public function get_type(): string { return $this->type; }
+	public function get_parent_id(): int { return $this->parent_id; }
 }
 final class Arch035Cart {
 	public string $total = '29.99';
 	public array $lines = array();
+	public array $coupons = array();
 	public function __construct() {
 		$this->lines = array( array( 'quantity' => 1, 'product_id' => 101, 'data' => new Arch035Product(), 'line_total' => '29.99' ) );
 	}
 	public function get_cart(): array { return $this->lines; }
 	public function get_total( $context = 'view' ): string { return $this->total; }
+	public function get_applied_coupons(): array { return $this->coupons; }
 }
 final class Arch035Customer {
 	public string $email = '';
@@ -68,6 +74,9 @@ final class Arch035Customer {
 	public function get_billing_country(): string { return 'GB'; }
 	public function get_billing_first_name(): string { return ''; }
 	public function get_billing_last_name(): string { return ''; }
+}
+final class Arch035Countries {
+	public function get_allowed_countries(): array { return array( 'GB' => 'United Kingdom' ); }
 }
 final class Arch035Order {
 	private array $meta = array();
@@ -137,6 +146,7 @@ final class CheckoutCaptureTest extends TestCase {
 		self::assertCount( 1, $GLOBALS['arch035_queued'] );
 		self::assertCount( 0, $this->sent, 'shopper hook must only enqueue, never make HTTP requests' );
 		$first = $GLOBALS['arch035_queued'][0]['args']['event'];
+		self::assertSame( array(), $first['checkout']['restoration']['appliedCouponCodes'] );
 		self::assertSame( 'CHECKOUT_UPDATED', $first['eventType'] );
 		self::assertSame( 'woo.activity.v1', $first['schemaVersion'] );
 		self::assertSame( '29.99', $first['checkout']['total'] );
@@ -150,7 +160,9 @@ final class CheckoutCaptureTest extends TestCase {
 		self::assertSame( $first['checkoutKey'], $second['checkoutKey'] );
 		self::assertNotSame( $first['eventId'], $second['eventId'] );
 		self::assertSame( 'guest@example.com', $second['checkout']['contact']['email'] );
-		self::assertSame( '+447700900001', $second['checkout']['contact']['phone'] );
+		self::assertArrayNotHasKey( 'phone', $second['checkout']['contact'], 'Unverifiable phone numbers must not be sent with an HTTP v1 checkout event.' );
+		self::assertArrayNotHasKey( 'canonicalPhone', $second['checkout']['contact'] );
+		self::assertArrayNotHasKey( 'verifiedCountryCode', $second['checkout']['contact'] );
 		$order = new Arch035Order();
 		CheckoutKey::attachToOrder( $order );
 		self::assertSame( $first['checkoutKey'], $order->get_meta( CheckoutKey::ORDER_META ) );
@@ -164,18 +176,109 @@ final class CheckoutCaptureTest extends TestCase {
 		self::assertNotSame( $first['checkoutKey'], $GLOBALS['arch035_queued'][2]['args']['event']['checkoutKey'] );
 	}
 
-	public function test_checkout_activity_v2_projects_verified_recipient_without_new_consent(): void {
+	public function test_checkout_activity_v1_projects_verified_recipient_without_new_consent(): void {
 		$GLOBALS['arch035_wc']->customer->phone = '+447400123456';
 		$this->capture->capture();
 		self::assertCount( 1, $GLOBALS['arch035_queued'] );
 		$event = $GLOBALS['arch035_queued'][0]['args']['event'];
-		self::assertSame( 'woo.activity.v2', $event['schemaVersion'] );
+		self::assertSame( 'woo.activity.v1', $event['schemaVersion'] );
 		self::assertSame( '447400123456', $event['checkout']['contact']['canonicalPhone'] );
 		self::assertArrayNotHasKey( 'verifiedCountryCode', $event['checkout']['contact'], 'Unverified billing country is not asserted' );
+		self::assertSame( 'woo.cart-restore.v1', $event['checkout']['restoration']['schemaVersion'] );
 		self::assertArrayNotHasKey( 'consent', $event );
 		$this->publisher->deliver( ...array_values( $GLOBALS['arch035_queued'][0]['args'] ) );
 		self::assertSame( '/v1/woocommerce/activity', parse_url( $this->sent[0][0], PHP_URL_PATH ) );
 		self::assertSame( $event, json_decode( $this->sent[0][1]['body'], true ) );
+	}
+
+	public function test_v1_phone_proof_includes_only_a_woocommerce_verified_country(): void {
+		$GLOBALS['arch035_wc']->countries = new Arch035Countries();
+		$GLOBALS['arch035_wc']->customer->phone = '+447400123456';
+		$this->capture->capture();
+		$event = $GLOBALS['arch035_queued'][0]['args']['event'];
+		self::assertSame( 'woo.activity.v1', $event['schemaVersion'] );
+		self::assertSame( '447400123456', $event['checkout']['contact']['canonicalPhone'] );
+		self::assertSame( 'GB', $event['checkout']['contact']['verifiedCountryCode'] );
+	}
+
+	public function test_unverifiable_phone_is_omitted_from_v1_without_losing_basket_or_other_contact(): void {
+		$GLOBALS['arch035_wc']->customer->email = 'guest@example.test';
+		$GLOBALS['arch035_wc']->customer->phone = '+19912345678';
+		$this->capture->capture();
+		$event = $GLOBALS['arch035_queued'][0]['args']['event'];
+		self::assertSame( 'woo.activity.v1', $event['schemaVersion'] );
+		self::assertArrayNotHasKey( 'phone', $event['checkout']['contact'] );
+		self::assertArrayNotHasKey( 'canonicalPhone', $event['checkout']['contact'] );
+		self::assertArrayNotHasKey( 'verifiedCountryCode', $event['checkout']['contact'] );
+		self::assertSame( 'guest@example.test', $event['checkout']['contact']['email'] );
+		self::assertSame( 'supported', $event['checkout']['restoration']['kind'] );
+	}
+
+	public function test_supported_restoration_matches_shared_fixture_with_complete_coupons_and_variation_attributes(): void {
+		$cart = $GLOBALS['arch035_wc']->cart;
+		$cart->coupons = array( 'save10', 'freeship' );
+		$cart->lines = array(
+			array( 'product_id' => 101, 'quantity' => 2, 'data' => new Arch035Product( 101 ) ),
+			array( 'product_id' => 202, 'variation_id' => 207, 'quantity' => 1,
+				'variation' => array( 'attribute_pa_color' => 'navy', 'attribute_pa_size' => 'm' ),
+				'data' => new Arch035Product( 207, 'variation', 202 ) ),
+		);
+		$fixture_json = file_get_contents( __DIR__ . '/fixtures/woo-restore-v1.json' );
+		self::assertIsString( $fixture_json );
+		$fixture = json_decode( $fixture_json, true );
+		self::assertIsArray( $fixture );
+		self::assertSame( array( 'supportedSnapshot', 'unsupportedSnapshot', 'resolveRequest', 'eligibleResolveResponse', 'outreachOfferExamples' ), array_keys( $fixture ) );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( $fixture['supportedSnapshot'], $snapshot['restoration'] );
+		self::assertSame( $fixture['supportedSnapshot'], json_decode( wp_json_encode( $snapshot['restoration'] ), true ) );
+		$cart->coupons = array( 'save10' );
+		$cart->lines[0]['custom_bundle_parent'] = 'opaque';
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( $fixture['unsupportedSnapshot'], $snapshot['restoration'] );
+	}
+
+	public function test_incomplete_or_unsupported_cart_evidence_never_becomes_a_partial_restore(): void {
+		$cart = $GLOBALS['arch035_wc']->cart;
+		$cart->coupons = array( 'SAVE10', 'FREE-SHIP' );
+		$cart->lines[0]['custom_bundle_parent'] = 'secret-extension-value';
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( array( 'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'unsupported',
+			'reason' => 'CUSTOM_CART_ITEM_DATA', 'appliedCouponCodes' => array( 'SAVE10', 'FREE-SHIP' ) ), $snapshot['restoration'] );
+		self::assertArrayHasKey( 'items', $snapshot, 'Unsupported restoration must preserve the existing display basket.' );
+
+		$cart->lines[0] = array( 'product_id' => 101, 'quantity' => 1, 'data' => new Arch035Product( 101 ) );
+		$cart->coupons = array( 'SAVE10', new stdClass() );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( 'unsupported', $snapshot['restoration']['kind'] );
+		self::assertSame( 'COUPONS_UNAVAILABLE', $snapshot['restoration']['reason'] );
+		self::assertSame( array(), $snapshot['restoration']['appliedCouponCodes'], 'Malformed lists must not be truncated into apparent evidence.' );
+		self::assertArrayNotHasKey( 'lines', $snapshot['restoration'] );
+
+		$cart->coupons = array_fill( 0, 11, 'CODE' );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( 'LIMIT_EXCEEDED', $snapshot['restoration']['reason'] );
+		self::assertSame( array(), $snapshot['restoration']['appliedCouponCodes'] );
+
+		$cart->coupons = array();
+		$cart->lines = array( array( 'quantity' => 1, 'data' => new Arch035Product( 101 ) ) );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( 'ITEMS_UNAVAILABLE', $snapshot['restoration']['reason'] );
+		$cart->lines = array( array( 'product_id' => 303, 'quantity' => 1, 'data' => new Arch035Product( 303, 'bundle' ) ) );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( 'UNSUPPORTED_PRODUCT_TYPE', $snapshot['restoration']['reason'] );
+		$cart->lines = array( array( 'product_id' => 202, 'variation_id' => 208, 'quantity' => 1,
+			'variation' => array( 'attribute_pa_size' => 'm' ), 'data' => new Arch035Product( 208, 'variation', 201 ) ) );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( 'INVALID_VARIATION', $snapshot['restoration']['reason'] );
+		$attributes = array();
+		for ( $index = 0; $index < 11; $index++ ) $attributes[ 'attribute_size_' . $index ] = 'value';
+		$cart->lines = array( array( 'product_id' => 202, 'variation_id' => 207, 'quantity' => 1,
+			'variation' => $attributes, 'data' => new Arch035Product( 207, 'variation', 202 ) ) );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( 'LIMIT_EXCEEDED', $snapshot['restoration']['reason'] );
+		$cart->lines = array_fill( 0, 51, array( 'product_id' => 101, 'quantity' => 1, 'data' => new Arch035Product( 101 ) ) );
+		$snapshot = CheckoutSnapshot::fromCart( $cart, $GLOBALS['arch035_wc']->customer );
+		self::assertSame( 'LIMIT_EXCEEDED', $snapshot['restoration']['reason'] );
 	}
 
 	public function test_retry_preserves_event_and_never_blocks_checkout_on_remote_failure(): void {
@@ -250,7 +353,9 @@ final class CheckoutCaptureTest extends TestCase {
 		$empty = $GLOBALS['arch035_queued'][1]['args']['event'];
 		self::assertSame( $first['checkoutKey'], $empty['checkoutKey'] );
 		self::assertNotSame( $first['eventId'], $empty['eventId'] );
-		self::assertSame( array( 'currency' => 'GBP', 'total' => '0.00', 'items' => array() ), $empty['checkout'] );
+		self::assertSame( array( 'currency' => 'GBP', 'total' => '0.00', 'items' => array(), 'restoration' => array(
+			'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'unsupported', 'reason' => 'ITEMS_UNAVAILABLE', 'appliedCouponCodes' => array(),
+		) ), $empty['checkout'] );
 		self::assertSame( 'woo.activity.v1', $empty['schemaVersion'] );
 		self::assertSame( 'CHECKOUT_UPDATED', $empty['eventType'] );
 		self::assertSame( 'woo.activity.v1', $GLOBALS['arch035_queued'][1]['args']['event']['schemaVersion'] );
@@ -307,7 +412,9 @@ final class CheckoutCaptureTest extends TestCase {
 		$this->capture->capture(); // initial empty checkout page
 		self::assertNull( $GLOBALS['arch035_wc']->session->get( CheckoutKey::SESSION_FIELD ) );
 		self::assertCount( 0, $GLOBALS['arch035_queued'] );
-		self::assertSame( array( 'currency' => 'GBP', 'total' => '0.00', 'items' => array() ),
+		self::assertSame( array( 'currency' => 'GBP', 'total' => '0.00', 'items' => array(), 'restoration' => array(
+			'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'unsupported', 'reason' => 'ITEMS_UNAVAILABLE', 'appliedCouponCodes' => array(),
+		) ),
 			CheckoutSnapshot::fromCart( $GLOBALS['arch035_wc']->cart, $GLOBALS['arch035_wc']->customer ) );
 
 		// Even a session key created by another checkout extension is not proof
