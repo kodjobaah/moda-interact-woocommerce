@@ -317,6 +317,8 @@ try {
 						readCheckoutActionHistory(wpEnvComposeFile),
 					getActivityRequests: apiFixture.getActivityRequests,
 					setActivityStatus: apiFixture.setActivityStatus,
+					getRestoreResolveRequests: apiFixture.getRestoreResolveRequests,
+					setRestoreResolveResult: apiFixture.setRestoreResolveResult,
 				});
 			}
 			process.stdout.write(
@@ -655,6 +657,8 @@ try {
 					readCheckoutActionHistory(wpEnvComposeFile),
 				getActivityRequests: apiFixture.getActivityRequests,
 				setActivityStatus: apiFixture.setActivityStatus,
+				getRestoreResolveRequests: apiFixture.getRestoreResolveRequests,
+				setRestoreResolveResult: apiFixture.setRestoreResolveResult,
 			});
 			await assertCheckoutConsentWordPress({
 				siteUrl,

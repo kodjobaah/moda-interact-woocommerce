@@ -160,11 +160,11 @@ final class ShopBrandPublicationTest extends TestCase {
 
 	public function test_snapshot_has_stable_digest_no_installation_secrets_and_preserves_retry_time(): void {
 		$builder = new SnapshotBuilder();
-		$first = $builder->build( $this->record['installationId'], ( new SourceReader() )->read(), '2026-10-27T09:30:00.123456Z' );
-		$second = $builder->build( $this->record['installationId'], ( new SourceReader() )->read(), '2026-10-27T09:30:02.123456Z' );
+		$first = $builder->build( $this->record['installationId'], ( new SourceReader() )->read(), '2026-10-27T09:30:00.123Z' );
+		$second = $builder->build( $this->record['installationId'], ( new SourceReader() )->read(), '2026-10-27T09:30:02.123Z' );
 		self::assertTrue( SnapshotBuilder::valid( $first ) );
 		self::assertSame( $first['eventId'], $second['eventId'] );
-		self::assertSame( '2026-10-27T09:30:00.123456Z', $first['observedAt'] );
+		self::assertSame( '2026-10-27T09:30:00.123Z', $first['observedAt'] );
 		self::assertArrayNotHasKey( 'shopId', $first );
 		self::assertArrayNotHasKey( 'installationId', $first );
 		self::assertArrayNotHasKey( 'credential', $first );
@@ -172,6 +172,15 @@ final class ShopBrandPublicationTest extends TestCase {
 		self::assertNotSame( $first['eventId'], $builder->capture( $this->record['installationId'] )['eventId'] );
 		$invalid = $first;
 		$invalid['shopId'] = 'cross-tenant';
+		self::assertFalse( SnapshotBuilder::valid( $invalid ) );
+	}
+
+	public function test_capture_emits_millisecond_observation_compatible_with_hosted_api(): void {
+		$event = ( new SnapshotBuilder() )->capture( $this->record['installationId'] );
+		self::assertMatchesRegularExpression( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/D', $event['observedAt'] );
+		self::assertTrue( SnapshotBuilder::valid( $event ) );
+		$invalid = $event;
+		$invalid['observedAt'] = '2026-10-28T09:24:58.123456Z';
 		self::assertFalse( SnapshotBuilder::valid( $invalid ) );
 	}
 
