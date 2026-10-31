@@ -287,6 +287,40 @@ function assertSupportedVariationAndCoupon(event, fixture, kind) {
 	assert.equal(nativeAttribute[1].toLowerCase(), 'large');
 }
 
+async function assertCouponTransitions({
+	kind,
+	fixture,
+	initialEvent,
+	getActions,
+	applyCoupon,
+	duplicateSnapshot,
+	removeCoupon,
+}) {
+	const beforeApply = checkoutEvents(getActions());
+	await applyCoupon();
+	const appliedRows = newForKey(beforeApply, checkoutEvents(getActions()));
+	assert.ok(appliedRows.length, `${kind}: apply must enqueue a coupon snapshot`);
+	const applied = newestAction(appliedRows).args.event;
+	assert.deepEqual(applied.checkout.restoration.appliedCouponCodes, [fixture.observeCouponCode]);
+	assert.equal(applied.checkout.total, initialEvent.checkout.total, `${kind}: coupon-only update preserves total`);
+	assert.deepEqual(applied.checkout.items, initialEvent.checkout.items);
+	assert.equal(applied.checkoutKey, initialEvent.checkoutKey);
+
+	const beforeDuplicate = checkoutEvents(getActions());
+	await duplicateSnapshot();
+	assert.equal(newForKey(beforeDuplicate, checkoutEvents(getActions())).length, 0,
+		`${kind}: unchanged coupon snapshot must deduplicate`);
+
+	const beforeRemove = checkoutEvents(getActions());
+	await removeCoupon();
+	const removedRows = newForKey(beforeRemove, checkoutEvents(getActions()));
+	assert.ok(removedRows.length, `${kind}: remove must enqueue a coupon snapshot`);
+	const removed = newestAction(removedRows).args.event;
+	assert.deepEqual(removed.checkout.restoration.appliedCouponCodes, []);
+	assert.equal(removed.checkout.total, initialEvent.checkout.total, `${kind}: coupon-only removal preserves total`);
+	assert.equal(removed.checkoutKey, initialEvent.checkoutKey);
+}
+
 export async function assertCheckoutWordPress({
 	siteUrl,
 	wp,
@@ -326,11 +360,15 @@ export async function assertCheckoutWordPress({
     $variable->save();
     $coupon = new WC_Coupon(); $coupon->set_code('arch053save10'); $coupon->set_discount_type('percent'); $coupon->set_amount(10);
     $coupon->set_individual_use(true); $coupon->save();
+    // This free-shipping-only coupon does not change carts with no shipping package.
+    $observe_coupon = new WC_Coupon(); $observe_coupon->set_code('arch053observe'); $observe_coupon->set_amount(0);
+    $observe_coupon->set_free_shipping(true); $observe_coupon->set_individual_use(true); $observe_coupon->save();
     $customer_id = wp_create_user('arch035-checkout-customer-' . wp_generate_password(8, false), wp_generate_password(20), 'arch035-' . wp_generate_password(8, false) . '@example.test');
     if (is_wp_error($customer_id)) throw new Exception($customer_id->get_error_message());
     wp_update_user(array('ID' => $customer_id, 'role' => 'customer'));
     echo wp_json_encode(array('product' => $product->get_id(), 'variableProduct' => $variable->get_id(),
-      'variation' => $variation->get_id(), 'coupon' => $coupon->get_id(), 'couponCode' => $coupon->get_code(), 'customer' => $customer_id,
+      'variation' => $variation->get_id(), 'coupon' => $coupon->get_id(), 'couponCode' => $coupon->get_code(),
+      'observeCoupon' => $observe_coupon->get_id(), 'observeCouponCode' => $observe_coupon->get_code(), 'customer' => $customer_id,
       'classicCheckoutPage' => $checkout_page, 'previousCheckoutPage' => $previous_checkout_page,
       'hpos' => \\Automattic\\WooCommerce\\Utilities\\OrderUtil::custom_orders_table_usage_is_enabled()));
   `
@@ -771,11 +809,112 @@ export async function assertCheckoutWordPress({
 		const blocksAdded = newForKey(blocksBefore, checkoutEvents(getCheckoutActionHistory()));
 		assert.ok(blocksAdded.length > 0, 'Blocks variation/coupon checkout must enqueue an action');
 		assertSupportedVariationAndCoupon(newestAction(blocksAdded).args.event, fixture, 'Blocks');
+
+		// Exercise coupon application and removal through genuine Classic and
+		// Store API requests. This coupon is free-shipping-only, and these carts
+		// have no shipping package, so the total must stay unchanged.
+		const classicCoupon = session(siteUrl);
+		let couponResponse = await classicCoupon.request(`/?add-to-cart=${fixture.product}`);
+		assert.ok([200, 302].includes(couponResponse.status), 'coupon Classic add to cart');
+		couponResponse = await classicCoupon.request(`/?page_id=${fixture.classicCheckoutPage}`);
+		assert.equal(couponResponse.status, 200, 'coupon Classic checkout page');
+		const couponPage = await couponResponse.text();
+		const couponReviewNonce = classicReviewNonce(couponPage);
+		assert.ok(couponReviewNonce, 'coupon Classic review nonce');
+		const classicReview = new URLSearchParams({
+			post_data: new URLSearchParams({ billing_email: 'coupon-classic@example.test' }).toString(),
+			security: couponReviewNonce,
+		});
+		const classicCouponBefore = checkoutEvents(getCheckoutActionHistory());
+		couponResponse = await classicCoupon.request('/?wc-ajax=update_order_review', {
+			method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: classicReview.toString(),
+		});
+		await assertHttpOk(couponResponse, 'coupon Classic checkout start');
+		const classicStarted = newForKey(classicCouponBefore, checkoutEvents(getCheckoutActionHistory()));
+		assert.ok(classicStarted.length, 'coupon Classic checkout must be observed');
+		const classicInitial = newestAction(classicStarted).args.event;
+		assert.deepEqual(classicInitial.checkout.restoration.appliedCouponCodes, []);
+		const applyCouponNonce = wp('eval', `echo wp_create_nonce('apply-coupon');`).trim();
+		const removeCouponNonce = wp('eval', `echo wp_create_nonce('woocommerce-remove-coupon');`).trim();
+		await assertCouponTransitions({
+			kind: 'Classic', fixture, initialEvent: classicInitial, getActions: getCheckoutActionHistory,
+			applyCoupon: async () => {
+				const response = await classicCoupon.request('/?wc-ajax=apply_coupon', {
+					method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
+					body: new URLSearchParams({ coupon_code: fixture.observeCouponCode, security: applyCouponNonce }).toString(),
+				});
+				await assertHttpOk(response, 'coupon Classic apply');
+			},
+			duplicateSnapshot: async () => {
+				// Repeating the identical Classic coupon action leaves the existing
+				// snapshot unchanged; a fresh review request may itself update form
+				// contact state and is not a duplicate capture.
+				const response = await classicCoupon.request('/?wc-ajax=apply_coupon', {
+					method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
+					body: new URLSearchParams({ coupon_code: fixture.observeCouponCode, security: applyCouponNonce }).toString(),
+				});
+				await assertHttpOk(response, 'repeated coupon Classic action');
+			},
+			removeCoupon: async () => {
+				const response = await classicCoupon.request(
+					`/?remove_coupon=${encodeURIComponent(fixture.observeCouponCode)}&_wpnonce=${encodeURIComponent(removeCouponNonce)}`
+				);
+				assert.ok([200, 302].includes(response.status), 'coupon Classic remove');
+			},
+		});
+
+		const blocksCoupon = session(siteUrl);
+		let blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/cart');
+		assert.equal(blocksCouponResponse.status, 200, 'coupon Blocks cart session');
+		blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/cart/add-item', {
+			method: 'POST', headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ id: fixture.product, quantity: 1 }),
+		});
+		assert.equal(blocksCouponResponse.status, 201, 'coupon Blocks add item');
+		blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/checkout');
+		assert.equal(blocksCouponResponse.status, 200, 'coupon Blocks checkout GET');
+		const blocksCouponBody = { billing_address: {
+			first_name: 'Coupon', last_name: 'Blocks', email: 'coupon-blocks@example.test',
+			country: 'GB', address_1: '10 Test Street', city: 'London', postcode: 'SE1 1AA',
+		} };
+		const blocksCouponBefore = checkoutEvents(getCheckoutActionHistory());
+		await persistBlocksBilling(blocksCoupon, blocksCouponBody.billing_address, 'coupon Blocks');
+		blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/checkout', {
+			method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(blocksCouponBody),
+		});
+		assert.equal(blocksCouponResponse.status, 200, 'coupon Blocks checkout start');
+		const blocksStarted = newForKey(blocksCouponBefore, checkoutEvents(getCheckoutActionHistory()));
+		assert.ok(blocksStarted.length, 'coupon Blocks checkout must be observed');
+		const blocksInitial = newestAction(blocksStarted).args.event;
+		assert.deepEqual(blocksInitial.checkout.restoration.appliedCouponCodes, []);
+		await assertCouponTransitions({
+			kind: 'Blocks', fixture, initialEvent: blocksInitial, getActions: getCheckoutActionHistory,
+			applyCoupon: async () => {
+				const response = await blocksCoupon.request('/wp-json/wc/store/v1/cart/apply-coupon', {
+					method: 'POST', headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ code: fixture.observeCouponCode }),
+				});
+				assert.equal(response.status, 200, 'coupon Blocks apply');
+			},
+			duplicateSnapshot: async () => {
+				const response = await blocksCoupon.request('/wp-json/wc/store/v1/checkout', {
+					method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(blocksCouponBody),
+				});
+				assert.equal(response.status, 200, 'unchanged coupon Blocks PATCH');
+			},
+			removeCoupon: async () => {
+				const response = await blocksCoupon.request('/wp-json/wc/store/v1/cart/remove-coupon', {
+					method: 'POST', headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ code: fixture.observeCouponCode }),
+				});
+				assert.equal(response.status, 200, 'coupon Blocks remove');
+			},
+		});
 	} finally {
 		setActivityStatus(202);
 		wp(
 			'eval',
-			`update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true);`
+			`update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.observeCoupon}, true);`
 		);
 	}
 }

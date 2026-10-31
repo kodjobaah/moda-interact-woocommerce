@@ -201,6 +201,55 @@ final class CheckoutCaptureTest extends TestCase {
 		self::assertNotSame( $first['checkoutKey'], $GLOBALS['arch035_queued'][2]['args']['event']['checkoutKey'] );
 	}
 
+	public function test_coupon_hooks_capture_complete_changed_list_only_for_existing_checkout_and_deduplicate(): void {
+		$this->capture->register();
+		self::assertArrayHasKey( 'woocommerce_applied_coupon', $GLOBALS['moda_interact_test_hooks'] );
+		self::assertArrayHasKey( 'woocommerce_removed_coupon', $GLOBALS['moda_interact_test_hooks'] );
+		$applied_callbacks = $GLOBALS['moda_interact_test_hooks']['woocommerce_applied_coupon'];
+		$removed_callbacks = $GLOBALS['moda_interact_test_hooks']['woocommerce_removed_coupon'];
+		$applied_callback = end( $applied_callbacks );
+		$removed_callback = end( $removed_callbacks );
+
+		// The coupon hooks also run from cart pages. They must not mint a checkout key.
+		call_user_func( $applied_callback, 'SAVE10' );
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+		self::assertNull( $GLOBALS['arch035_wc']->session->get( CheckoutKey::SESSION_FIELD ) );
+
+		$this->capture->capture();
+		$initial = $GLOBALS['arch035_queued'][0]['args']['event'];
+		$key = $initial['checkoutKey'];
+		$total = $initial['checkout']['total'];
+		$GLOBALS['arch035_wc']->cart->coupons = array( 'SAVE10', 'FREE-SHIP' );
+		call_user_func( $applied_callback, 'FREE-SHIP' );
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		$applied = $GLOBALS['arch035_queued'][1]['args']['event'];
+		self::assertSame( array( 'SAVE10', 'FREE-SHIP' ), $applied['checkout']['restoration']['appliedCouponCodes'] );
+		self::assertSame( $key, $applied['checkoutKey'] );
+		self::assertSame( $total, $applied['checkout']['total'], 'Coupon observation is independent of cart-total recalculation.' );
+		self::assertSame( $initial['checkout']['items'], $applied['checkout']['items'] );
+		self::assertNotSame( $initial['eventId'], $applied['eventId'] );
+
+		// A repeated coupon callback with the same full cart snapshot is suppressed.
+		call_user_func( $applied_callback, 'FREE-SHIP' );
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+
+		$GLOBALS['arch035_wc']->cart->coupons = array( 'SAVE10' );
+		call_user_func( $removed_callback, 'FREE-SHIP' );
+		self::assertCount( 3, $GLOBALS['arch035_queued'] );
+		$removed = $GLOBALS['arch035_queued'][2]['args']['event'];
+		self::assertSame( array( 'SAVE10' ), $removed['checkout']['restoration']['appliedCouponCodes'] );
+		self::assertSame( $key, $removed['checkoutKey'] );
+		self::assertSame( $total, $removed['checkout']['total'] );
+
+		$GLOBALS['arch035_wc']->cart->coupons = array();
+		call_user_func( $removed_callback, 'SAVE10' );
+		self::assertCount( 4, $GLOBALS['arch035_queued'] );
+		$last = $GLOBALS['arch035_queued'][3]['args']['event'];
+		self::assertSame( array(), $last['checkout']['restoration']['appliedCouponCodes'] );
+		self::assertSame( $key, $last['checkoutKey'] );
+		self::assertSame( $total, $last['checkout']['total'] );
+	}
+
 	public function test_checkout_activity_v1_projects_verified_recipient_without_new_consent(): void {
 		$GLOBALS['arch035_wc']->customer->phone = '+447400123456';
 		$this->capture->capture();
