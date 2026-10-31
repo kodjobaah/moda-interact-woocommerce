@@ -142,16 +142,20 @@ final class CheckoutConsentCaptureTest extends TestCase {
 	}
 
 	public function test_native_checkout_field_changes_cannot_create_consent_hooks(): void {
+		// CheckoutCapture legitimately listens for checkout drafts. The consent
+		// registration must not attach any *additional* consent callbacks to
+		// ordinary Woo field or customer update hooks.
+		$before = $GLOBALS['moda_interact_test_hooks'];
 		$this->capture->register();
-		$hooks = $GLOBALS['moda_interact_test_hooks'];
+		$after = $GLOBALS['moda_interact_test_hooks'];
 		foreach ( array(
 			'woocommerce_store_api_checkout_update_draft',
 			'woocommerce_store_api_checkout_update_order_from_request',
 			'woocommerce_store_api_checkout_update_customer_from_request',
 			'woocommerce_store_api_cart_update_customer_from_request',
 		) as $hook ) {
-			self::assertArrayNotHasKey( $hook, $hooks,
-				'Ordinary Woo field writes must never imply GRANT or REVOKE' );
+			self::assertSame( $before[ $hook ] ?? array(), $after[ $hook ] ?? array(),
+				'Consent must not add callbacks to ordinary Woo field writes' );
 		}
 		self::assertCount( 0, $this->requests );
 	}

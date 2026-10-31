@@ -139,9 +139,12 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 				.digest('hex');
 			assert.equal(event.eventId, `woo-brand-${digest}`);
 			const httpStatus = shopBrandResponseStatus;
-			const disposition = httpStatus === 200
-				? (acceptedShopBrandIds.has(event.eventId) ? 'unchanged' : 'updated')
-				: null;
+			let disposition = null;
+			if (httpStatus === 200) {
+				disposition = acceptedShopBrandIds.has(event.eventId)
+					? 'unchanged'
+					: 'updated';
+			}
 			shopBrandRequests.push({ event, httpStatus, disposition });
 			if (httpStatus === 200) {
 				acceptedShopBrandIds.add(event.eventId);

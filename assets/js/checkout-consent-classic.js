@@ -172,6 +172,22 @@
 		timer = setTimeout(() => refresh(force), 450);
 	}
 
+	function stageGrant() {
+		const checkout = form();
+		if (!checkout.length) {
+			return;
+		}
+		checkout.find(`input[name="${checkAction}"]`).remove();
+		$('<input>', {
+			type: 'hidden',
+			name: checkAction,
+			value: '1',
+		}).appendTo(checkout);
+		grantAttemptedForContact = true;
+		pendingChange = true;
+		$(document.body).trigger('update_checkout');
+	}
+
 	// Only an explicit, customer-generated uncheck calls this endpoint. The
 	// server independently requires the current Woo session and a verified proof.
 	// Failed/ambiguous requests leave server consent unchanged as far as the
@@ -226,21 +242,6 @@
 		}
 	}
 
-	function stageGrant() {
-		const checkout = form();
-		if (!checkout.length) {
-			return;
-		}
-		checkout.find(`input[name="${checkAction}"]`).remove();
-		$('<input>', {
-			type: 'hidden',
-			name: checkAction,
-			value: '1',
-		}).appendTo(checkout);
-		grantAttemptedForContact = true;
-		pendingChange = true;
-		$(document.body).trigger('update_checkout');
-	}
 
 	$(document.body).on('change', choice, function (event) {
 		// Never infer consent from Woo's programmatic form hydration.

@@ -56,9 +56,13 @@ function fixture({
 				}
 				if (data.action === 'choice' && !failWrite) granted = true;
 				if (data.action === 'withdraw' && !failWrite) granted = false;
+				let status = 'checked';
+				if (data.action !== 'status') {
+					status = failWrite ? 'unverified' : 'recorded';
+				}
 				cart.extensions['moda-interact-consent'] = {
 					requestId: data.requestId,
-					status: data.action === 'status' ? 'checked' : (failWrite ? 'unverified' : 'recorded'),
+					status,
 					confirmed: data.action === 'status' ? (granted && !failStatus) : false,
 				};
 				for (const callback of subscriptions) callback();
