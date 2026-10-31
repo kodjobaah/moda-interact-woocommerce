@@ -237,7 +237,16 @@ final class CheckoutSnapshot {
 
 	private static function safeText( mixed $value, int $max ): bool {
 		if ( ! is_string( $value ) || '' === $value || preg_match( '/\p{Cc}/u', $value ) ) return false;
-		return false !== preg_match_all( '/./us', $value, $characters ) && count( $characters[0] ) <= $max;
+		$length = self::utf16Length( $value );
+		return null !== $length && $length <= $max;
+	}
+
+	/** Match JavaScript String.length (UTF-16 code units), used by Shared schemas. */
+	private static function utf16Length( string $value ): ?int {
+		$code_points = preg_match_all( '/./us', $value );
+		$supplementary = preg_match_all( '/[\x{10000}-\x{10FFFF}]/u', $value );
+		if ( false === $code_points || false === $supplementary ) return null;
+		return $code_points + $supplementary;
 	}
 
 	private static function log( string $reason ): void {
@@ -253,6 +262,7 @@ final class CheckoutSnapshot {
 
 	private static function putBounded( array &$target, string $key, mixed $value, int $max ): void {
 		if ( ! is_string( $value ) || '' === $value || strlen( $value ) > $max * 4 ) return;
-		if ( preg_match_all( '/./us', $value, $characters ) && count( $characters[0] ) <= $max ) $target[ $key ] = $value;
+		$length = self::utf16Length( $value );
+		if ( null !== $length && $length <= $max ) $target[ $key ] = $value;
 	}
 }

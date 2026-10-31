@@ -69,10 +69,11 @@ final class Arch035Cart {
 final class Arch035Customer {
 	public string $email = '';
 	public string $phone = '';
+	public string $first_name = '';
 	public function get_billing_email(): string { return $this->email; }
 	public function get_billing_phone(): string { return $this->phone; }
 	public function get_billing_country(): string { return 'GB'; }
-	public function get_billing_first_name(): string { return ''; }
+	public function get_billing_first_name(): string { return $this->first_name; }
 	public function get_billing_last_name(): string { return ''; }
 }
 final class Arch035Countries {
@@ -189,6 +190,31 @@ final class CheckoutCaptureTest extends TestCase {
 		$this->publisher->deliver( ...array_values( $GLOBALS['arch035_queued'][0]['args'] ) );
 		self::assertSame( '/v1/woocommerce/activity', parse_url( $this->sent[0][0], PHP_URL_PATH ) );
 		self::assertSame( $event, json_decode( $this->sent[0][1]['body'], true ) );
+	}
+
+	public function test_text_limits_match_shared_utf16_code_units(): void {
+		$customer = $GLOBALS['arch035_wc']->customer;
+		$customer->first_name = str_repeat( '😀', 50 ); // 100 UTF-16 code units.
+		$snapshot = CheckoutSnapshot::fromCart( $GLOBALS['arch035_wc']->cart, $customer );
+		self::assertSame( $customer->first_name, $snapshot['contact']['firstName'] );
+
+		$customer->first_name = str_repeat( '😀', 51 ); // 102 UTF-16 code units, but 51 code points.
+		$snapshot = CheckoutSnapshot::fromCart( $GLOBALS['arch035_wc']->cart, $customer );
+		self::assertArrayNotHasKey( 'firstName', $snapshot['contact'] ?? array() );
+
+		$GLOBALS['arch035_wc']->cart->lines = array( array(
+			'product_id' => 202,
+			'variation_id' => 207,
+			'quantity' => 1,
+			'variation' => array( 'attribute_pa_size' => str_repeat( '😀', 100 ) ), // 200 UTF-16 code units.
+			'data' => new Arch035Product( 207, 'variation', 202 ),
+		) );
+		$snapshot = CheckoutSnapshot::fromCart( $GLOBALS['arch035_wc']->cart, $customer );
+		self::assertSame( 'supported', $snapshot['restoration']['kind'] );
+
+		$GLOBALS['arch035_wc']->cart->lines[0]['variation']['attribute_pa_size'] = str_repeat( '😀', 101 );
+		$snapshot = CheckoutSnapshot::fromCart( $GLOBALS['arch035_wc']->cart, $customer );
+		self::assertSame( 'INVALID_VARIATION', $snapshot['restoration']['reason'] );
 	}
 
 	public function test_v1_phone_proof_includes_only_a_woocommerce_verified_country(): void {

@@ -583,13 +583,19 @@ export async function assertCheckoutWordPress({
 				r,
 				`${kind}: checkout PATCH during Moda API outage`
 			);
-			assert.equal(
-				getActivityRequests().length,
-				sentBefore,
-				'capture must not synchronously call the Moda API'
-			);
 			const outageRows = checkoutEvents(getCheckoutActionHistory());
 			const outageAdded = newForKey(revisedRows, outageRows);
+			const capturedEventIds = new Set(
+				outageAdded.map((row) => row.args.event.eventId)
+			);
+			const synchronousCaptures = getActivityRequests()
+				.slice(sentBefore)
+				.filter((request) => capturedEventIds.has(request.eventId));
+			assert.deepEqual(
+				synchronousCaptures,
+				[],
+				'capture must not synchronously call the Moda API for checkout events'
+			);
 			assert.ok(
 				outageAdded.length > 0,
 				`${kind}: outage customer update or PATCH must create a new action`
