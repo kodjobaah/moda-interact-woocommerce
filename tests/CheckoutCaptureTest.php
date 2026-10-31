@@ -43,11 +43,30 @@ if ( ! function_exists( 'get_woocommerce_currency' ) ) {
 if ( ! function_exists( 'wc_format_decimal' ) ) {
 	function wc_format_decimal( $amount, $decimals = 2 ) { return number_format( (float) $amount, $decimals, '.', '' ); }
 }
+if ( ! function_exists( 'is_cart' ) ) {
+	function is_cart() { return $GLOBALS['arch053_cart_page'] ?? false; }
+}
+if ( ! function_exists( 'is_checkout' ) ) {
+	function is_checkout() { return $GLOBALS['arch053_checkout_page'] ?? false; }
+}
+if ( ! function_exists( 'is_order_received_page' ) ) {
+	function is_order_received_page() { return $GLOBALS['arch053_order_received'] ?? false; }
+}
+if ( ! function_exists( 'is_cart' ) ) {
+	function is_cart() { return $GLOBALS['arch053_cart_page'] ?? false; }
+}
+if ( ! function_exists( 'is_checkout' ) ) {
+	function is_checkout() { return $GLOBALS['arch053_checkout_page'] ?? false; }
+}
+if ( ! function_exists( 'is_order_received_page' ) ) {
+	function is_order_received_page() { return $GLOBALS['arch053_order_received'] ?? false; }
+}
 
 final class Arch035Session {
 	private array $values = array();
 	public function get( string $key ) { return $this->values[ $key ] ?? null; }
 	public function set( string $key, mixed $value ): void { $this->values[ $key ] = $value; }
+	public function get_customer_id(): string { return 'checkout-capture-test-session'; }
 }
 final class Arch035Product {
 	public function __construct( private int $id = 101, private string $type = 'simple', private int $parent_id = 0 ) {}
@@ -127,6 +146,24 @@ final class CheckoutCaptureTest extends TestCase {
 		$GLOBALS['arch035_queued'] = array();
 		$GLOBALS['arch035_async_fail'] = false;
 		$GLOBALS['arch035_delayed'] = array();
+		$GLOBALS['arch053_cart_page'] = false;
+		$GLOBALS['arch053_checkout_page'] = false;
+		$GLOBALS['arch053_order_received'] = false;
+		$GLOBALS['arch046_checkout_page'] = false;
+		$GLOBALS['arch046_order_received'] = false;
+		$GLOBALS['arch046_order_pay'] = false;
+		$GLOBALS['moda_interact_is_admin'] = false;
+		$GLOBALS['moda_interact_registered_rest_routes'] = array();
+		$GLOBALS['moda_interact_enqueued_scripts'] = array();
+		$GLOBALS['moda_interact_inline_scripts'] = array();
+		$GLOBALS['moda_interact_transients'] = array();
+		$GLOBALS['arch053_cart_page'] = false;
+		$GLOBALS['arch053_checkout_page'] = false;
+		$GLOBALS['arch053_order_received'] = false;
+		$GLOBALS['moda_interact_is_admin'] = false;
+		$GLOBALS['moda_interact_registered_rest_routes'] = array();
+		$GLOBALS['moda_interact_enqueued_scripts'] = array();
+		$GLOBALS['moda_interact_inline_scripts'] = array();
 		$GLOBALS['arch035_wc'] = (object) array(
 			'session' => new Arch035Session(), 'cart' => new Arch035Cart(), 'customer' => new Arch035Customer(),
 		);
@@ -156,6 +193,130 @@ final class CheckoutCaptureTest extends TestCase {
 			unset( $GLOBALS['moda_interact_home_url'] );
 		}
 		parent::tearDown();
+	}
+
+	public function test_verified_checkout_engagement_bypasses_unchanged_fingerprint_once_per_visit(): void {
+		$this->capture->register();
+		self::assertContains( array( $this->capture, 'registerEngagementRoute' ), $GLOBALS['moda_interact_test_hooks']['rest_api_init'] );
+		$this->capture->registerEngagementRoute();
+		self::assertArrayHasKey( 'moda-interact/v1/checkout-engagement', $GLOBALS['moda_interact_registered_rest_routes'] );
+		$route = $GLOBALS['moda_interact_registered_rest_routes']['moda-interact/v1/checkout-engagement'];
+		self::assertSame( 'POST', $route['methods'] );
+		self::assertSame( '__return_true', $route['permission_callback'] );
+		$key = CheckoutKey::current();
+		$this->capture->capture();
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+
+		$GLOBALS['arch053_cart_page'] = true;
+		$this->capture->enqueueEngagementScript();
+		self::assertContains( 'moda-woo-checkout-engagement', $GLOBALS['moda_interact_enqueued_scripts'] );
+		$first_nonce = $this->lastEngagementNonce();
+		$first = $this->engagementRequest( $first_nonce );
+		self::assertSame( 202, $this->capture->recordEngagement( $first )->get_status() );
+		self::assertCount( 2, $GLOBALS['arch035_queued'], 'An unchanged human return must publish a fresh event.' );
+		$first_event = $GLOBALS['arch035_queued'][1]['args']['event'];
+		self::assertSame( $key, $first_event['checkoutKey'] );
+		self::assertSame( $GLOBALS['arch035_queued'][0]['args']['event']['checkout'], $first_event['checkout'] );
+		self::assertSame( 403, $this->capture->recordEngagement( $first )->get_status(), 'A visit nonce cannot be replayed.' );
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+
+		$GLOBALS['arch035_wc']->cart->lines[0]['quantity'] = 2;
+		$this->capture->capture();
+		self::assertCount( 3, $GLOBALS['arch035_queued'] );
+		$this->capture->enqueueEngagementScript();
+		$second_nonce = $this->lastEngagementNonce();
+		self::assertNotSame( $first_nonce, $second_nonce );
+		self::assertSame( 202, $this->capture->recordEngagement( $this->engagementRequest( $second_nonce ) )->get_status() );
+		self::assertCount( 4, $GLOBALS['arch035_queued'] );
+		$last = $GLOBALS['arch035_queued'][3]['args']['event'];
+		self::assertSame( 2, $last['checkout']['items'][0]['quantity'] );
+		self::assertSame( $key, $last['checkoutKey'] );
+	}
+
+	public function test_engagement_requires_existing_key_nonempty_cart_and_cart_or_checkout_page(): void {
+		$GLOBALS['arch053_cart_page'] = true;
+		$this->capture->enqueueEngagementScript();
+		self::assertSame( array(), $GLOBALS['moda_interact_enqueued_scripts'], 'A cart visit must not mint a checkout key.' );
+		self::assertNull( $GLOBALS['arch035_wc']->session->get( CheckoutKey::SESSION_FIELD ) );
+
+		$GLOBALS['arch035_wc']->session->set( CheckoutKey::SESSION_FIELD, 'woo-existing-checkout' );
+		$GLOBALS['arch035_wc']->cart->lines = array();
+		$this->capture->enqueueEngagementScript();
+		self::assertSame( array(), $GLOBALS['moda_interact_enqueued_scripts'], 'A productless cart cannot signal resume.' );
+
+		$GLOBALS['arch035_wc']->cart->lines = array( array(
+			'quantity' => 1, 'product_id' => 101, 'data' => new Arch035Product(), 'line_total' => '29.99',
+		) );
+		$GLOBALS['arch053_cart_page'] = false;
+		$GLOBALS['arch053_checkout_page'] = false;
+		$GLOBALS['arch046_checkout_page'] = false;
+		$this->capture->enqueueEngagementScript();
+		self::assertSame( array(), $GLOBALS['moda_interact_enqueued_scripts'], 'Homepage navigation cannot enroll checkout engagement.' );
+		self::assertCount( 0, $GLOBALS['arch035_queued'] );
+	}
+
+	public function test_engagement_rejects_bot_get_and_cross_origin_posts_without_success(): void {
+		CheckoutKey::current();
+		$this->capture->capture();
+		$GLOBALS['arch053_checkout_page'] = true;
+		$this->capture->enqueueEngagementScript();
+		$nonce = $this->lastEngagementNonce();
+		$get = new WP_REST_Request( 'GET', array(), array( 'nonce' => $nonce ), array(), array(
+			'Origin' => 'https://merchant.example', 'Content-Type' => 'application/json',
+		) );
+		self::assertSame( 400, $this->capture->recordEngagement( $get )->get_status() );
+		self::assertSame( 400, $this->capture->recordEngagement( $this->engagementRequest( $nonce, 'https://attacker.example' ) )->get_status() );
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		self::assertSame( 202, $this->capture->recordEngagement( $this->engagementRequest( $nonce ) )->get_status() );
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+	}
+
+	public function test_stale_engagement_nonce_is_rejected_without_publishing(): void {
+		CheckoutKey::current();
+		$this->capture->capture();
+		$GLOBALS['arch053_cart_page'] = true;
+		$this->capture->enqueueEngagementScript();
+		$nonce = $this->lastEngagementNonce();
+		$invalid = $this->capture->recordEngagement( $this->engagementRequest( 'not-a-session-nonce' ) );
+		self::assertSame( 403, $invalid->get_status() );
+		self::assertCount( 1, $GLOBALS['arch035_queued'], 'An invalid nonce cannot publish an event.' );
+		$transient_key = 'moda_woo_engagement_' . hash( 'sha256', $nonce );
+		$GLOBALS['moda_interact_transients'][ $transient_key ]['value']['expiresAt'] = time() - 1;
+
+		$response = $this->capture->recordEngagement( $this->engagementRequest( $nonce ) );
+		self::assertSame( 403, $response->get_status() );
+		self::assertSame( array( 'status' => 'INVALID_NONCE' ), $response->get_data() );
+		self::assertCount( 1, $GLOBALS['arch035_queued'], 'A stale visit nonce cannot publish an event.' );
+	}
+
+	public function test_engagement_propagates_scheduler_failure_as_unavailable(): void {
+		CheckoutKey::current();
+		$this->capture->capture();
+		$GLOBALS['arch053_cart_page'] = true;
+		$this->capture->enqueueEngagementScript();
+		$GLOBALS['arch035_async_fail'] = true;
+		$response = $this->capture->recordEngagement( $this->engagementRequest( $this->lastEngagementNonce() ) );
+		self::assertSame( 503, $response->get_status() );
+		self::assertSame( array( 'status' => 'CAPTURE_UNAVAILABLE' ), $response->get_data() );
+		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+	}
+
+	private function lastEngagementNonce(): string {
+		$inline = end( $GLOBALS['moda_interact_inline_scripts'] );
+		self::assertIsArray( $inline );
+		$prefix = 'window.ModaWooCheckoutEngagement = ';
+		self::assertStringStartsWith( $prefix, $inline[1] );
+		$config = json_decode( substr( $inline[1], strlen( $prefix ), -1 ), true );
+		self::assertIsArray( $config );
+		self::assertSame( 'https://merchant.example/wp-json/moda-interact/v1/checkout-engagement', $config['url'] );
+		self::assertSame( 'fixture_rest_nonce', $config['wpNonce'] );
+		return $config['nonce'];
+	}
+
+	private function engagementRequest( string $nonce, string $origin = 'https://merchant.example' ): WP_REST_Request {
+		return new WP_REST_Request( 'POST', array(), array( 'nonce' => $nonce ), array(), array(
+			'Origin' => $origin, 'Content-Type' => 'application/json',
+		) );
 	}
 
 	public function test_classic_and_blocks_capture_use_one_key_but_new_ids_for_changes(): void {
