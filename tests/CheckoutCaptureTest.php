@@ -107,6 +107,9 @@ final class CheckoutCaptureTest extends TestCase {
 		self::assertSame( 'coupon [redacted-coupon] failed for [redacted-phone]', $unlabelled );
 		self::assertStringNotContainsString( 'SAVE10', $unlabelled );
 		self::assertStringNotContainsString( '555 123 4567', $unlabelled );
+		$quoted_coupon = CheckoutDiagnosticLogger::redact( 'Coupon code "SAVE10" does not exist' );
+		self::assertSame( 'Coupon code [redacted-coupon] does not exist', $quoted_coupon );
+		self::assertStringNotContainsString( 'SAVE10', $quoted_coupon );
 		self::assertLessThanOrEqual( 384, strlen( CheckoutDiagnosticLogger::redact( str_repeat( 'x', 1000 ) ) ) );
 	}
 	private CheckoutActivityPublisher $publisher;
