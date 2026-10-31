@@ -48,6 +48,15 @@ final class CheckoutDiagnosticLogger {
 			static fn( array $match ): string => $match[1] . '[redacted]',
 			$message
 		) ?? $message;
+		$message = preg_replace( '/(\bcoupon(?:\s+code)?\s+)[A-Z0-9][A-Z0-9_-]{2,}\b/i', '$1[redacted-coupon]', $message ) ?? $message;
+		$message = preg_replace_callback(
+			'/(?<![A-Z0-9])\+?\d[0-9(). -]{3,}\d(?![A-Z0-9])/i',
+			static function ( array $match ): string {
+				$digits = preg_replace( '/\D/', '', $match[0] ) ?? '';
+				return strlen( $digits ) >= 7 && strlen( $digits ) <= 15 ? '[redacted-phone]' : $match[0];
+			},
+			$message
+		) ?? $message;
 		$message = preg_replace( '/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i', '[redacted-email]', $message ) ?? $message;
 		$message = trim( $message );
 		if ( strlen( $message ) > self::MAX_MESSAGE_BYTES ) {

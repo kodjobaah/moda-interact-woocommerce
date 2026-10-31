@@ -103,6 +103,10 @@ final class CheckoutCaptureTest extends TestCase {
 		self::assertStringNotContainsString( 'abc-secret', $diagnostic );
 		self::assertStringNotContainsString( 'woo-secret', $diagnostic );
 		self::assertStringNotContainsString( 'customer@example.test', $diagnostic );
+		$unlabelled = CheckoutDiagnosticLogger::redact( 'coupon SAVE10 failed for +1 555 123 4567' );
+		self::assertSame( 'coupon [redacted-coupon] failed for [redacted-phone]', $unlabelled );
+		self::assertStringNotContainsString( 'SAVE10', $unlabelled );
+		self::assertStringNotContainsString( '555 123 4567', $unlabelled );
 		self::assertLessThanOrEqual( 384, strlen( CheckoutDiagnosticLogger::redact( str_repeat( 'x', 1000 ) ) ) );
 	}
 	private CheckoutActivityPublisher $publisher;
