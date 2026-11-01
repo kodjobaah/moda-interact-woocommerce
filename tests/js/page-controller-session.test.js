@@ -49,6 +49,7 @@ function controllers() {
 		aiResponseDelay: fakeController(),
 		featurePreferences: fakeController(),
 		merchantKnowledge: fakeController(),
+		shopBrandSync: fakeController(),
 		readAccess: fakeController(),
 	};
 }
@@ -69,6 +70,7 @@ describe('page controller session', () => {
 			onAiResponseDelay: vi.fn(),
 			onFeaturePreferences: vi.fn(),
 			onMerchantKnowledge: vi.fn(),
+			onShopBrandSync: vi.fn(),
 			onReadAccess: vi.fn(),
 			onConnectionLost,
 		});
@@ -82,6 +84,9 @@ describe('page controller session', () => {
 			status: 'CONNECTED',
 		});
 		expect(items.merchantKnowledge.setConnection).toHaveBeenCalledWith({
+			status: 'CONNECTED',
+		});
+		expect(items.shopBrandSync.setConnection).toHaveBeenCalledWith({
 			status: 'CONNECTED',
 		});
 		// Read access receives the connection object, not a legacy status-only update.
@@ -118,6 +123,7 @@ describe('page controller session', () => {
 			onAiResponseDelay: vi.fn(),
 			onFeaturePreferences: vi.fn(),
 			onMerchantKnowledge: vi.fn(),
+			onShopBrandSync: vi.fn(),
 			onReadAccess: vi.fn(),
 			onConnectionLost,
 		});
@@ -145,6 +151,7 @@ describe('page controller session', () => {
 			onAiResponseDelay: vi.fn(),
 			onFeaturePreferences: vi.fn(),
 			onMerchantKnowledge: vi.fn(),
+			onShopBrandSync: vi.fn(),
 			onReadAccess: vi.fn(),
 			onConnectionLost: vi.fn(),
 		});
@@ -193,6 +200,10 @@ describe('page actions', () => {
 		);
 		actions.refreshFeaturePreferences();
 		actions.toggleFeaturePreference('example', true);
+		actions.refreshShopBrandSync();
+		actions.syncShopBrand();
+		expect(items.shopBrandSync.refresh).toHaveBeenCalledTimes(1);
+		expect(items.shopBrandSync.sync).toHaveBeenCalledTimes(1);
 		expect(items.featurePreferences.refresh).toHaveBeenCalledTimes(1);
 		expect(items.featurePreferences.save).toHaveBeenCalledWith(
 			'example',

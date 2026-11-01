@@ -2453,3 +2453,83 @@ msgstr "Ihmisten vastaukset lähetetään heti."
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "Tallenna tekoälyvastauksen viive"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "Brändin synkronointia ei voitu suorittaa. Päivitä tila tai yritä uudelleen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "Brändin synkronointi epäonnistui. Tarkista yhteys ja yritä uudelleen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "Brändin synkronointi on jonossa. Moda ei ole vielä hyväksynyt sitä."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "Muokkaa sivuston nimeä, logoa ja kuvaketta WordPressin kohdassa Asetukset → Yleinen tai Ulkoasu → Muokkain. Lähetä nykyiset tiedot Moda Interactille valitsemalla Synkronoi brändi."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "Viimeksi synkronoitu:"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "Ladataan synkronoinnin tilaa…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda hyväksyi nämä bränditiedot. Kuvien käsittely taustalla voi olla vielä kesken."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda ei voinut vielä hyväksyä brändiä. Uusi yritys on ajastettu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "Ei vielä synkronoitu"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "Ei vielä synkronoitu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "Yhdistä Moda Interact uudelleen ennen brändin synkronointia."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "Päivitä tila"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "Pyydetään brändin synkronointia…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "Kaupan brändi"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "Synkronoi brändi"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "Synkronoinnin tilaa ei voitu ladata. Yritä uudelleen päivittämällä."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "Paikalliset yhteysasetukset ovat virheelliset. Yhdistä Moda Interact uudelleen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "Sivuston osoite on muuttunut. Jatka yhdistämällä Moda Interact uudelleen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "Synkronointia ei voitu lisätä jonoon. Tarkista, että Action Scheduler on käytettävissä, ja yritä uudelleen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "Tämä aika kertoo, milloin Moda hyväksyi bränditiedot. Kuvien käsittely taustalla voi olla vielä kesken."

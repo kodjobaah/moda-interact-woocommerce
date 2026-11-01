@@ -2435,3 +2435,83 @@ msgstr "사람이 보내는 답장은 즉시 전송됩니다."
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "AI 응답 지연 저장"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "브랜드 동기화를 완료하지 못했습니다. 상태를 새로고침하거나 다시 시도하세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "브랜드 동기화에 실패했습니다. 연결을 확인한 후 다시 시도하세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "브랜드 동기화가 대기열에 추가되었습니다. Moda가 아직 수락하지 않았습니다."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "WordPress 설정 → 일반 또는 외모 → 편집기에서 사이트 이름, 로고, 아이콘을 수정하세요. 준비되면 브랜드 동기화를 선택해 현재 정보를 Moda Interact로 보내세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "마지막 동기화:"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "동기화 상태를 불러오는 중…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda가 이 브랜드 정보를 수락했습니다. 이미지 백그라운드 처리는 아직 진행 중일 수 있습니다."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda가 아직 브랜드 정보를 수락하지 못했습니다. 재시도가 예약되었습니다."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "아직 동기화되지 않음"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "아직 동기화되지 않았습니다."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "브랜드를 동기화하기 전에 Moda Interact를 다시 연결하세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "상태 새로고침"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "브랜드 동기화를 요청하는 중…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "스토어 브랜드"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "브랜드 동기화"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "동기화 상태를 불러오지 못했습니다. 새로고침하여 다시 시도하세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "로컬 연결 설정이 올바르지 않습니다. Moda Interact를 다시 연결하세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "사이트 주소가 변경되었습니다. 계속하려면 Moda Interact를 다시 연결하세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "동기화를 대기열에 추가하지 못했습니다. Action Scheduler를 사용할 수 있는지 확인한 후 다시 시도하세요."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "이 시간은 Moda가 브랜드 정보를 수락한 시점입니다. 이미지 백그라운드 처리는 아직 진행 중일 수 있습니다."

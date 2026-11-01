@@ -2478,3 +2478,83 @@ msgstr "Le risposte umane sono immediate."
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "Salva il ritardo della risposta dell’IA"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "Impossibile completare la sincronizzazione del brand. Aggiorna lo stato o riprova."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "Sincronizzazione del brand non riuscita. Controlla la connessione e riprova."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "La sincronizzazione del brand è in coda. Moda non l’ha ancora accettata."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "Modifica il nome, il logo e l’icona del sito in Impostazioni → Generali o Aspetto → Editor di WordPress. Quando vuoi, scegli Sincronizza brand per inviare i dati attuali a Moda Interact."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "Ultima sincronizzazione:"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "Caricamento stato sincronizzazione…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda ha accettato questi dati del brand. L’elaborazione delle immagini in background potrebbe essere ancora in corso."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda non ha ancora potuto accettare il brand. È programmato un nuovo tentativo."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "Non ancora sincronizzato"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "Non ancora sincronizzato."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "Riconnetti Moda Interact prima di sincronizzare il brand."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "Aggiorna stato"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "Richiesta sincronizzazione brand…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "Brand del negozio"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "Sincronizza brand"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "Impossibile caricare lo stato della sincronizzazione. Aggiorna e riprova."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "Le impostazioni di connessione locali non sono valide. Riconnetti Moda Interact."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "L’indirizzo del sito è cambiato. Riconnetti Moda Interact per continuare."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "Impossibile accodare la sincronizzazione. Verifica che Action Scheduler sia disponibile, quindi riprova."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "Questo orario indica quando Moda ha accettato i dati del brand. L’elaborazione delle immagini in background potrebbe essere ancora in corso."

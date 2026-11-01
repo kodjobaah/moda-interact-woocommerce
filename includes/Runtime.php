@@ -47,6 +47,8 @@ require_once __DIR__ . '/Checkout/OrderLifecycleCapture.php';
 require_once __DIR__ . '/ShopBrand/SourceReader.php';
 require_once __DIR__ . '/ShopBrand/SnapshotBuilder.php';
 require_once __DIR__ . '/ShopBrand/Publisher.php';
+require_once __DIR__ . '/ShopBrand/SyncStatusStore.php';
+require_once __DIR__ . '/Rest/ShopBrandSyncController.php';
 
 use ModaInteract\WooCommerce\Admin\Setup;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
@@ -70,6 +72,7 @@ use ModaInteract\WooCommerce\Rest\UsageHistoryController;
 use ModaInteract\WooCommerce\Rest\SupportController;
 use ModaInteract\WooCommerce\Rest\PromotionsController;
 use ModaInteract\WooCommerce\Rest\RecoverySelectionController;
+use ModaInteract\WooCommerce\Rest\ShopBrandSyncController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutCartRestorer;
 use ModaInteract\WooCommerce\Checkout\CheckoutResumeController;
@@ -173,6 +176,7 @@ final class Runtime {
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();
 		$brand_publisher = new ShopBrandPublisher();
 		$brand_publisher->register();
+		( new ShopBrandSyncController( $brand_publisher, new SiteIdentity( $mode ) ) )->register();
 		if ( is_admin() ) {
 			new Setup();
 		}
