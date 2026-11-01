@@ -97,6 +97,7 @@ function fixture({
 	return {
 		input, writes, messages, settle, click, clickImmediate,
 		setPhone(value) { cart.billingAddress.phone = value; subscriptions.forEach((s) => s()); },
+		rerenderNative() { input.checked = false; subscriptions.forEach((s) => s()); },
 		setFailWrite(value) { failWrite = value; },
 		setFailStatus(value) { failStatus = value; },
 		get granted() { return granted; },
@@ -174,20 +175,42 @@ test('status outage and phone changes never publish consent automatically', asyn
 	assert.equal(app.writes.every((w) => w.action === 'status'), true);
 });
 
-test('no phone cannot stage a future automatic grant', async () => {
+test('a pre-phone click stays visible through first billing entry, but cannot silently grant', async () => {
 	const app = fixture({ phone: '' });
 	await app.settle();
 	await app.click();
-	assert.equal(
-		app.input.checked,
-		true,
-		'Even without a phone the shopper can select'
-	);
+	assert.equal(app.input.checked, true, 'The explicit pre-phone choice is visible');
 	assert.equal(app.writes.length, 0);
 	app.setPhone('+447400123456');
 	await app.settle();
+	assert.equal(app.input.checked, true, 'Typing the initial phone cannot undo the click');
 	assert.equal(app.writes.every((w) => w.action === 'status'), true);
+	assert.equal(app.granted, false, 'A phone appearing cannot publish a new GRANT');
+	app.rerenderNative();
+	await app.settle();
+	assert.equal(app.input.checked, true, 'Native Woo checkout re-render preserves selection');
+	// An unchecked-then-checked deliberate interaction WITH the contact
+	// established is the only way to publish a grant in this checkout.
+	await app.click();
 	assert.equal(app.input.checked, false);
+	assert.equal(app.writes.every((w) => w.action === 'status'), true);
+	await app.click();
+	assert.equal(app.granted, true);
+	assert.equal(app.writes.filter((w) => w.action === 'choice').length, 1);
+});
+
+test('a pre-phone visual choice cannot cross a subsequent phone change', async () => {
+	const app = fixture({ phone: '' });
+	await app.settle();
+	await app.click();
+	app.setPhone('+447400123456');
+	await app.settle();
+	assert.equal(app.input.checked, true);
+	app.setPhone('+447400123457');
+	await app.settle();
+	assert.equal(app.input.checked, false, 'Initial contact is now bound and changed');
+	assert.equal(app.granted, false);
+	assert.equal(app.writes.every((w) => w.action === 'status'), true);
 });
 
 test('missing native Woo runtime never throws or affects checkout', () => {

@@ -321,3 +321,72 @@ test('Classic consent UI remains interactive during status failures and never st
 		'A failed status read cannot undo a deliberate check'
 	);
 });
+
+
+test('Classic pre-phone checkbox choice survives first billing entry without auto-grant', async () => {
+	const body = {};
+	const document = { body };
+	const listeners = new Map();
+	const box = { checked: false, disabled: false };
+	let phone = '';
+	const country = 'GB';
+	const calls = [];
+	const checkout = {
+		length: 1,
+		first() { return this; },
+		serialize() { return `billing_phone=${encodeURIComponent(phone)}&billing_country=${country}`; },
+		find(selector) {
+			if (selector.includes('billing_phone')) return { val: () => phone };
+			if (selector.includes('billing_country')) return { val: () => country };
+			return { remove() {} };
+		},
+	};
+	function jQuery(target) {
+		if (target === body) return {
+			on(name, selector, callback) {
+				listeners.set(`${name}:${typeof selector === 'string' ? selector : '*'}`, callback || selector);
+			},
+			trigger() {},
+		};
+		if (target === document) return { ready(callback) { callback(); } };
+		if (target === 'form.checkout') return checkout;
+		if (target === box) return { closest: () => checkout };
+		if (target === '<input>') return { appendTo() {} };
+		if (target === 'input[name="moda_interact_whatsapp_recovery_opt_in"]') return {
+			length: 1,
+			prop(name, value) {
+				if (arguments.length > 1) box[name] = value;
+				return box[name];
+			},
+		};
+		throw new Error('Unexpected jQuery selection');
+	}
+	const fetch = async (url) => {
+		calls.push(url);
+		return { ok: true, status: 200, json: async () => ({ confirmed: false }) };
+	};
+	vm.runInNewContext(source, {
+		jQuery, document, fetch, URLSearchParams,
+		window: {
+			modaWooCheckoutConsentConfig: { statusEndpoint: '/status', withdrawEndpoint: '/withdraw', nonce: 'test' },
+		},
+		setTimeout: (callback, ms) => setTimeout(callback, ms === 450 ? 0 : ms),
+		clearTimeout,
+	});
+	const changeChoice = listeners.get('change:input[name="moda_interact_whatsapp_recovery_opt_in"]');
+	const changeBilling = listeners.get('change:input[name="billing_phone"], select[name="billing_country"]');
+	assert.equal(typeof changeChoice, 'function');
+	assert.equal(typeof changeBilling, 'function');
+	box.checked = true;
+	changeChoice.call(box, { originalEvent: { isTrusted: true } });
+	assert.equal(box.checked, true);
+	phone = '+447400123456';
+	changeBilling();
+	await new Promise((resolve) => setTimeout(resolve, 30));
+	assert.equal(box.checked, true, 'First phone entry cannot erase deliberate pre-phone choice');
+	assert.equal(calls.every((url) => url === '/status'), true, 'Phone update never writes GRANT');
+	phone = '+447400123457';
+	changeBilling();
+	await new Promise((resolve) => setTimeout(resolve, 30));
+	assert.equal(box.checked, false, 'Subsequent phone change cannot inherit prior choice');
+});

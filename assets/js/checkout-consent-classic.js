@@ -35,6 +35,10 @@
 	let withdrawalRetryRequested = false;
 	let grantedForContact = false;
 	let localChoice = null;
+	// A check before a phone exists is only a local visual choice. It can
+	// survive first billing entry but cannot publish a deferred grant.
+	// Once tied to a contact, changing that phone clears the choice.
+	let choiceContact = null;
 	let grantAttemptedForContact = false;
 
 	function form() {
@@ -130,8 +134,12 @@
 			return;
 		}
 		if (contact !== lastContact) {
-			// A changed phone or country cannot inherit an earlier choice.
-			localChoice = null;
+			// An unbound choice made with an empty phone survives initial
+			// contact entry; a phone-bound choice never crosses recipients.
+			if (choiceContact !== null && choiceContact !== contact) {
+				localChoice = null;
+				choiceContact = null;
+			}
 			grantedForContact = false;
 			grantAttemptedForContact = false;
 		}
@@ -162,6 +170,13 @@
 			if (id === serial) {
 				debug('classic_status_failed');
 				setView('neutral');
+			}
+		} finally {
+			if (id === serial && contact === contactKey(form()) &&
+				localChoice !== null && choiceContact === null) {
+				// Bind only the presentation choice after the first phone
+				// settles, including if status failed. No write is generated.
+				choiceContact = contact;
 			}
 		}
 	}
@@ -260,6 +275,7 @@
 		// before WooCommerce has submitted this deliberate choice.
 		serial++;
 		localChoice = this.checked === true;
+		choiceContact = current.slice(current.indexOf('|') + 1) ? current : null;
 		debug('classic_checkbox_changed', { checked: localChoice });
 		const checkout = $(this).closest('form.checkout');
 		if (checkout.length) {

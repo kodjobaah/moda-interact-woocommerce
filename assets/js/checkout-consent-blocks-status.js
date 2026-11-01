@@ -35,6 +35,11 @@
 	// Last deliberate checkbox choice is presentation-only. Backend consent
 	// remains unchanged unless an authenticated operation is acknowledged.
 	let localChoice = null;
+	// A deliberate choice made before the shopper supplied a phone has no
+	// recipient binding yet. Preserve its presentation through initial billing
+	// entry, but do not turn that UI choice into a deferred GRANT. Once a status
+	// read establishes the contact, a later phone change clears that choice.
+	let choiceContact = null;
 	let checking = false;
 	let pendingIds = { GRANT: null, REVOKE: null };
 	let actions = [];
@@ -190,7 +195,12 @@
 		}
 		// Allow Woo's native checkbox interaction. Woo's stored field is
 		// display-only and is never authoritative consent evidence.
-		localChoice = field.checked === true;
+		const checked = field.checked === true;
+		// The native input may blur the billing field immediately before its
+		// change event. Do not use a stale contact from the last subscription.
+		if (currentContact() !== contact) observeContact();
+		localChoice = checked;
+		choiceContact = contact.split('|')[1] ? contact : null;
 		render();
 		const at = contact;
 		if (!at.split('|')[1]) {
@@ -228,7 +238,13 @@
 		contact = next;
 		const id = ++generation;
 		verified = false;
-		localChoice = null;
+		// Never transfer a choice bound to an existing phone to a different
+		// recipient. An unbound choice made with no phone may remain visible
+		// during first contact entry, but is not itself a consent command.
+		if (choiceContact !== null && choiceContact !== next) {
+			localChoice = null;
+			choiceContact = null;
+		}
 		checking = !!next.split('|')[1];
 		pendingIds = { GRANT: null, REVOKE: null };
 		grantAttempted = false;
@@ -252,7 +268,13 @@
 					debug('blocks_status_failed');
 				}
 			} finally {
-				if (id === generation) {
+				if (id === generation && next === contact) {
+					// Once the first contact has settled, bind the local *visual*
+					// choice so a subsequent phone change clears it, even if the
+					// status service was unavailable. This never publishes consent.
+					if (localChoice !== null && choiceContact === null) {
+						choiceContact = next;
+					}
 					checking = false;
 					render();
 				}

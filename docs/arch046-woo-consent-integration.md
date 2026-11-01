@@ -318,8 +318,15 @@ status read for verified permission; a successful REVOKE updates the server
 state. A rejected GRANT leaves the UI checked but cannot create permission; a
 rejected REVOKE leaves the UI unchecked but cannot remove a prior grant. An
 ambiguous transport outcome is not evidence of either success or failure and
-must be reverified on a subsequent checkout read. A phone change clears the
-old local choice without sending a new action. Neither path displays
+must be reverified on a subsequent checkout read. A change from an established phone to a different phone clears the
+old local choice without sending a new action. A deliberate choice made
+*before any phone is available* stays visually selected during the first
+billing-phone entry and Woo re-renders. That earlier visual choice is not
+silently published as a GRANT when the phone appears: publishing requires a
+fresh deliberate checkbox check with the current phone established. A
+returning guest in a different browser/incognito session has no local
+shopper-bound proof, even if Woo restores their address; only the accepted
+API-006 proof-backed status may check their control. Neither path displays
 an error, popup, confirmation button or operational message on the merchant
 storefront; PHP failures use the internal structured diagnostic boundary.
 
@@ -404,3 +411,35 @@ Validation: both checkout types must render their unchecked control on a
 locally connected store with the feature API offline, and the site must still
 complete checkout. A later verified status can check the box only with valid
 shopper-bound proof; no display-only value may generate a consent event.
+
+
+## Disposable wp-env port changes and the consent fixture
+
+The focused consent tests reuse a previously connected, **synthetic** WordPress
+installation (`install_wp_fixture`, credential version 2). The installation's
+`canonicalSiteUrl` is an authorization boundary, not a display preference. If
+a disposable `wp-env` site originally connected on `localhost:8888` is later
+started on `localhost:8890`, Classic/Blocks consent presentation intentionally
+fails closed until that synthetic connection is re-established for the new
+origin. Changing `WP_ENV_PORT` does not reconnect an installation.
+
+The consent-only runner verifies both effective WordPress `home_url()` and the
+fixture's stored canonical URL against the port reported by `wp-env status`
+**before mutating checkout settings or creating test products**. On mismatch
+it fails with an actionable, redacted diagnostic rather than an indirect
+"checkbox missing" error. The test never rewrites installation credentials,
+relaxes canonical-site comparison or exposes those values in logs.
+
+On a disposable test instance, the supported recovery is to run the main
+WordPress integration setup at the new port (which reconnects the synthetic
+fixture through the normal connection API), then re-run consent-only:
+
+```sh
+WP_ENV_PORT=8890 npm run test:integration:wordpress
+WP_ENV_PORT=8890 MODA_CHECKOUT_TEST_DISPOSABLE=1 npm run test:integration:consent:browser
+```
+
+The first command runs the full integration suite, which may encounter a
+separate workstream's failure after connection setup. It must never run against
+a real merchant store. Alternatively, use the original fixture port if it can
+be freed safely, without deleting or resetting other developers' containers.
