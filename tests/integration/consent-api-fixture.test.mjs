@@ -93,6 +93,16 @@ test('feature read diagnostics contain only bounded counters', async () => {
 	});
 });
 
+test('disabled recovery feature cannot suppress an authenticated passive consent event', async () => {
+	const fixture = createConsentApiFixture();
+	fixture.setFeatureEnabled(false);
+	const response = await dispatch(fixture, '/v1/woocommerce/whatsapp-consent', grant);
+	assert.equal(response.status, 200);
+	assert.equal(response.result.status, 'recorded');
+	assert.equal(response.result.decision, 'GRANT');
+	assert.deepEqual(fixture.getFeatureReadDiagnostics(), { total: 0, enabled: 0 });
+});
+
 test('HTTPS fixture links an authenticated write ACK to a protected proof read and REVOKE', async () => {
 	const fixture = createConsentApiFixture();
 	const writePath = '/v1/woocommerce/whatsapp-consent';

@@ -779,7 +779,9 @@ export async function assertCheckoutConsentWordPress({
 		pages.blocks > 0,
 		'Consent test requires a real saved WooCommerce Blocks checkout page; do not invent a placeholder template'
 	);
-	fixture.consent.setFeatureEnabled(true);
+	// An explicitly disabled recovery feature must not suppress v2 passive
+	// consent evidence. The old Woo capture gate used this endpoint on GRANT.
+	fixture.consent.setFeatureEnabled(false);
 	let probeInstalled = false;
 	try {
 		// The mu-plugin reports only whether the PHP checkout had a cart and
@@ -860,6 +862,11 @@ export async function assertCheckoutConsentWordPress({
 			consent: fixture.consent,
 			getCheckoutActionHistory,
 		});
+		assert.deepEqual(
+			fixture.consent.getFeatureReadDiagnostics(),
+			{ total: 0, enabled: 0 },
+			'No Classic/Blocks render, GRANT, REVOKE, retry or status operation may fetch recovery feature preferences'
+		);
 		process.stdout.write(
 			'ARCH-046 consent real WordPress HTTP integration PASS (hosted read simulated)\n'
 		);

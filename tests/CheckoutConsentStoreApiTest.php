@@ -21,6 +21,7 @@ require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentStoreApi.ph
 final class CheckoutConsentStoreApiTest extends TestCase {
 	private CheckoutConsentStoreApi $api;
 	private array $events = array();
+	private bool $unavailable = false;
 
 	protected function setUp(): void {
 		$GLOBALS['arch046_current_user_id'] = 0;
@@ -39,6 +40,7 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 			'credentialVersion' => 1, 'connectedAt' => '2026-10-23T10:00:00Z',
 		);
 		$GLOBALS['moda_interact_external_requests'] = array();
+		$this->unavailable = false;
 		$transport = function ( string $url, array $request ): array {
 			if ( '/v1/merchant/feature-preferences' === parse_url( $url, PHP_URL_PATH ) ) {
 				return $this->response( 200, array( 'schemaVersion' => 1, 'revision' => str_repeat( 'a', 64 ),
@@ -47,6 +49,7 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 					'editable' => false, 'required' => true, 'planEligible' => true ) ) ) );
 			}
 			$this->events[] = json_decode( $request['body'], true );
+			if ( $this->unavailable ) return $this->response( 503, array( 'error' => 'unavailable' ) );
 			$event = end( $this->events );
 			return $this->response( 200, array( 'schemaVersion' => 'woo.whatsapp-consent.v2',
 				'status' => 'recorded', 'decision' => $event['decision'],
@@ -56,7 +59,7 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), $transport );
 		$site = new SiteIdentity( ModaApiConfiguration::MODE_PUBLIC, static fn( string $host ): array => array( '93.184.216.34' ) );
 		$publisher = new CheckoutConsentPublisher( $client, new InstallationStore(), $site );
-		$eligibility = new CheckoutConsentEligibility( $client, $site, new InstallationStore() );
+		$eligibility = new CheckoutConsentEligibility( new InstallationStore() );
 		$capture = new CheckoutConsentCapture( $publisher, $eligibility, new CheckoutConsentProof(),
 			new CheckoutConsentStatusReader( static fn( array $proof ): string => 'CONFIRMED_GRANTED' ) );
 		$this->api = new CheckoutConsentStoreApi( $capture );
@@ -85,6 +88,26 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		self::assertSame( CheckoutConsentStoreApi::NAMESPACE, $GLOBALS['arch046_store_api_schema']['namespace'] );
 		self::assertSame( array( 'requestId', 'status', 'confirmed', 'reason' ),
 			array_keys( ( $GLOBALS['arch046_store_api_schema']['data_callback'] )() ) );
+	}
+
+	public function test_unexpected_callback_exception_preserves_safe_request_id_for_client_ack(): void {
+		$customer = WC()->customer;
+		try {
+			WC()->customer = new class {
+				public function get_billing_phone(): string {
+					throw new \RuntimeException( 'simulated Woo customer read failure' );
+				}
+				public function get_billing_country(): string { return 'GB'; }
+			};
+			$this->api->update( $this->action( 'choice', 'safe-request-1', array( 'checked' => true ) ) );
+			self::assertSame( array( 'requestId' => 'safe-request-1',
+				'status' => 'unverified', 'confirmed' => false,
+				'reason' => 'capture_observe_unclassified' ), $this->api->data() );
+			$this->api->update( $this->action( 'choice', 'bad request id', array( 'checked' => true ) ) );
+			self::assertSame( '', $this->api->data()['requestId'] );
+		} finally {
+			WC()->customer = $customer;
+		}
 	}
 
 	public function test_blocks_grant_mints_consent_only_key_without_starting_checkout_activity(): void {
@@ -193,6 +216,33 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		$GLOBALS['arch046_nonce_action'] = 'wc_store_api';
 		$this->api->update( $this->action( 'status', 'status-again' ) );
 		self::assertCount( 2, $this->events );
+	}
+
+	public function test_uncheck_cancels_unacknowledged_store_grant_and_cannot_replay_after_new_grant(): void {
+		$this->unavailable = true;
+		$this->api->update( $this->action( 'choice', 'unstable-grant', array( 'checked' => true ) ) );
+		self::assertSame( 'capture_observe_grant_publish_unacknowledged', $this->api->data()['reason'] );
+		self::assertCount( 1, $this->events );
+		$first = $this->events[0];
+		$lease_key = 'moda_woo_consent_retry_' . hash( 'sha256', $first['eventId'] );
+		self::assertIsArray( get_transient( $lease_key ) );
+
+		$this->api->update( $this->action( 'withdraw', 'unstable-uncheck', array( 'confirmed' => true ) ) );
+		self::assertSame( 'capture_withdraw_grant_cancelled_unconfirmed', $this->api->data()['reason'] );
+		self::assertFalse( get_transient( $lease_key ) );
+		self::assertCount( 1, $this->events, 'No REVOKE without proof-backed status' );
+
+		$this->unavailable = false;
+		$this->api->update( $this->action( 'choice', 'unstable-grant', array( 'checked' => true ) ) );
+		self::assertSame( 'capture_observe_store_choice_stale_replay', $this->api->data()['reason'] );
+		$this->api->update( $this->action( 'choice', 'new-deliberate-grant', array( 'checked' => true ) ) );
+		self::assertSame( 'recorded', $this->api->data()['status'] );
+		self::assertCount( 2, $this->events );
+		self::assertNotSame( $first['eventId'], $this->events[1]['eventId'] );
+
+		$this->api->update( $this->action( 'withdraw', 'unstable-uncheck', array( 'confirmed' => true ) ) );
+		self::assertSame( 'capture_observe_store_choice_id_conflict', $this->api->data()['reason'] );
+		self::assertCount( 2, $this->events, 'Old uncheck cannot revoke a newer confirmed GRANT' );
 	}
 
 	public function test_store_choice_replay_cannot_regrant_after_withdrawal_or_change_decision(): void {

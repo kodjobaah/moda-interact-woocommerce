@@ -26,6 +26,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 	private CheckoutConsentProof $proof;
 	private CheckoutConsentEligibility $eligibility;
 	private bool $feature = true;
+	private int $featureReads = 0;
 	private bool $unavailable = false;
 
 	protected function setUp(): void {
@@ -50,10 +51,12 @@ final class CheckoutConsentReturningTest extends TestCase {
 		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $record;
 		$this->requests = array();
 		$this->feature = true;
+		$this->featureReads = 0;
 		$this->unavailable = false;
 		$transport = function ( string $url, array $request ) {
 			$path = parse_url( $url, PHP_URL_PATH );
 			if ( '/v1/merchant/feature-preferences' === $path ) {
+				++$this->featureReads;
 				return $this->response( 200, array( 'schemaVersion' => 1, 'revision' => str_repeat( 'a', 64 ),
 					'features' => array( array( 'id' => 'feature-1', 'key' => 'checkout_recovery',
 					'name' => 'Checkout Recovery', 'description' => null,
@@ -71,7 +74,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 		$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), $transport );
 		$site = new SiteIdentity( ModaApiConfiguration::MODE_PUBLIC, static fn( string $host ) => array( '93.184.216.34' ) );
 		$this->publisher = new CheckoutConsentPublisher( $client, new InstallationStore(), $site );
-		$this->eligibility = new CheckoutConsentEligibility( $client, $site, new InstallationStore() );
+		$this->eligibility = new CheckoutConsentEligibility( new InstallationStore() );
 		$this->proof = new CheckoutConsentProof();
 		$this->capture = new CheckoutConsentCapture( $this->publisher, $this->eligibility, $this->proof );
 	}
@@ -132,6 +135,46 @@ final class CheckoutConsentReturningTest extends TestCase {
 		self::assertSame( $this->requests[0][1]['body'], $this->requests[1][1]['body'] );
 		self::assertSame( $this->event( 0 )['eventId'],
 			$this->proof->forCurrentShopper( '447400123456' )['grantEventId'] );
+	}
+
+	public function test_explicit_uncheck_cancels_unacknowledged_grant_retry_without_inventing_revoke(): void {
+		$this->unavailable = true;
+		$this->classic( true );
+		self::assertCount( 1, $this->requests );
+		$grant = $this->event( 0 );
+		$lease_key = 'moda_woo_consent_retry_' . hash( 'sha256', $grant['eventId'] );
+		self::assertIsArray( get_transient( $lease_key ), 'The original failed GRANT has a retry lease' );
+		self::assertNull( $this->proof->forCurrentShopper( $grant['canonicalPhone'] ) );
+
+		// A deliberate uncheck is authentic, but the missing ACK/proof means
+		// the server must not claim that durable consent has been revoked.
+		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertSame( 'capture_withdraw_grant_cancelled_unconfirmed', $this->capture->failureReason() );
+		self::assertFalse( get_transient( $lease_key ) );
+		$state = WC()->session->get( 'moda_interact_checkout_consent_observation_v2' );
+		self::assertNull( $state['pending'] );
+		self::assertFalse( $state['checked'] );
+		self::assertNull( $this->proof->forCurrentShopper( $grant['canonicalPhone'] ) );
+
+		$this->unavailable = false;
+		$this->publisher->deliver( $grant, 'installation-a', 'shop-a', 2 );
+		self::assertCount( 1, $this->requests, 'Cancelled background retry cannot publish the old GRANT' );
+		$this->classic( true ); // A later deliberate choice receives fresh evidence.
+		self::assertCount( 2, $this->requests );
+		self::assertSame( 'GRANT', $this->event( 1 )['decision'] );
+		self::assertNotSame( $grant['eventId'], $this->event( 1 )['eventId'] );
+	}
+
+	public function test_uncheck_with_different_phone_cannot_cancel_original_grant_retry(): void {
+		$this->unavailable = true;
+		$this->classic( true );
+		$grant = $this->event( 0 );
+		$lease_key = 'moda_woo_consent_retry_' . hash( 'sha256', $grant['eventId'] );
+		self::assertIsArray( get_transient( $lease_key ) );
+		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123457', 'GB', true ) );
+		self::assertSame( 'capture_withdraw_context_mismatch', $this->capture->failureReason() );
+		self::assertIsArray( get_transient( $lease_key ), 'Wrong-contact request must not change the retry lease' );
+		self::assertCount( 1, $this->requests );
 	}
 
 	public function test_guest_proof_cannot_cross_phone_checkout_or_account_boundary(): void {
@@ -491,6 +534,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 		$this->enableConfirmedStatus();
 		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
 		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
+		self::assertSame( 0, $this->featureReads, 'Consent grant and withdrawal never fetch feature preferences' );
 	}
 
 }

@@ -443,3 +443,73 @@ The first command runs the full integration suite, which may encounter a
 separate workstream's failure after connection setup. It must never run against
 a real merchant store. Alternatively, use the original fixture port if it can
 be freed safely, without deleting or resetting other developers' containers.
+
+## Attempt 1 follow-up r03: correlated Blocks acknowledgements and bounded diagnostics
+
+The native checkbox is still a presentation of the **shopper's latest deliberate
+choice**, not durable consent evidence. A `cart/extensions` request now subscribes
+to the Woo cart store **before** dispatch and retains only the fixed-shape
+response matching its own `requestId`. This prevents an ordinary `/checkout`
+or `/cart` refresh from replacing an acknowledgement with `status: idle` before
+the consent action reads it. A response that never arrives remains ambiguous
+after the existing bounded deadline; a timeout does **not** imply REVOKED or
+GRANTED permission. An unexpected PHP exception similarly returns a
+request-correlated `unverified` result while Woo's internal logger records the
+original error; the browser never receives the exception or customer details.
+
+A definite pre-publication GRANT rejection (e.g.,
+`store_api_expected_phone_unparseable` or `capture_observe_feature_ineligible`)
+no longer causes a subsequent uncheck to issue a proofless REVOKE. Conversely,
+a lost GRANT acknowledgement or an explicit
+`capture_observe_grant_publish_unacknowledged` outcome is **ambiguous** and
+continues through the protected withdrawal path, which may cancel pending
+retries and fail closed if proof/hosted verification is unavailable. These
+cases are distinguished rather than conflated with an attempted GRANT flag.
+
+Development diagnostics may be enabled in a checkout browser using
+`sessionStorage.setItem('modaWooConsentDebug', '1')` followed by a reload.
+`blocks_http_response` then reports the action, its fixed status, and any
+bounded server reason. `blocks_http_rejected` reports the original SDK error
+name/code, bounded/redacted original message, HTTP status when available, and
+whether it failed in transport or acknowledgement. This opt-in logging must
+not include phone numbers, contact data, nonce, installation credentials or
+raw Woo request/response payloads. No technical error is displayed on the
+merchant storefront or used to block checkout.
+
+Focused validation includes late and short-lived ACKs, queued changes,
+pre-publication rejection versus ambiguous grant, original transport errors,
+and an exception-path PHP request-correlation test. **The hosted API-006
+status/STOP proof and API-007 v2 write remain independent integration gates.**
+The separate per-person consent/phone-destination architecture decision is
+not silently changed by this transport/diagnostic correction.
+
+## 1 November 2026 — WOO-003 runtime correction: passive consent capture (r05)
+
+This section supersedes earlier attempt-specific text that used
+`checkout_recovery.effective`, `planEligible` or the merchant
+`/v1/merchant/feature-preferences` endpoint to admit an explicit GRANT.
+Customer consent is passive evidence: a verified, deliberate checkout action
+can be recorded even when the merchant cannot currently run Checkout Recovery.
+This action does **not** start a recovery, send WhatsApp, reserve a credit or
+clear a merchant-specific or global STOP. Recovery admission and the final
+outbound guards separately enforce effective feature/plan entitlement, current
+recipient consent, suppression and STOP. Nothing here migrates an existing
+phone-bound proof to another destination.
+
+`CheckoutConsentEligibility::eligibleForPresentation()` caches only the local
+installation/site check for one page render. `eligible()` freshly rechecks the
+installed connection record and configured site URL for every explicit GRANT;
+it never calls hosted feature preferences or resolves DNS. A revoked, invalid,
+disconnected or site-mismatched local installation cannot record a GRANT, while
+the authenticated v2 API writer remains authoritative for remote installation,
+tenancy and evidence validation. Only an acknowledged write is recorded consent.
+Neither browser checkbox state nor WooCommerce's native display-only additional
+field is itself permission. Valid withdrawals continue through existing proof
+and STOP safeguards; provider errors retain their original, redacted details.
+
+Regression tests must prove zero remote feature-preferences requests across
+Classic/Blocks render, deliberate GRANT, REVOKE, status hydration and retry,
+including disabled/plan-ineligible recovery and an unavailable feature-catalogue
+endpoint. Distinct tests keep installation/site mismatch, nonce, session,
+contact, replay and hosted-write failure admission intact. This r05 patch
+changes WooCommerce runtime only, not the already agreed API-007 contract.

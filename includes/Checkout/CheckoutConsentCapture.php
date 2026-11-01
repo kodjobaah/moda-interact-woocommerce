@@ -65,6 +65,18 @@ final class CheckoutConsentCapture {
 		return $this->accepted();
 	}
 
+	/**
+	 * An uncheck may cancel an unacknowledged GRANT without establishing that
+	 * the hosted write failed. A replay of that same uncheck must not become a
+	 * new REVOKE after another, independently verified GRANT succeeds.
+	 */
+	private function rememberUnverifiedWithdrawal( array &$state, ?string $request_id ): void {
+		if ( null === $request_id ) return;
+		$receipts = is_array( $state['storeChoiceReceipts'] ?? null )
+			? $state['storeChoiceReceipts'] : array();
+		$receipts[ hash( 'sha256', $request_id ) ] = 'UNVERIFIED_REVOKE';
+		$state['storeChoiceReceipts'] = $receipts;
+	}
 
 	public function __construct(
 		private readonly CheckoutConsentPublisher $publisher,
@@ -332,8 +344,10 @@ final class CheckoutConsentCapture {
 				return $this->rejected( 'capture_observe_grant_already_checked' );
 			}
 		}
+		// Recheck installation/site locally; the authenticated hosted writer validates
+		// the actual v2 consent write. Recovery entitlement is not a capture gate.
 		if ( ! ( $this->eligibility ?? new CheckoutConsentEligibility() )->eligible() ) {
-			return $this->rejected( 'capture_observe_feature_ineligible' );
+			return $this->rejected( 'capture_observe_installation_ineligible' );
 		}
 		// Never construct a positive event from an unchecked default or a phone match.
 		$observed_at = $this->timestamp( $state['observedAt'] ?? null );
@@ -425,6 +439,28 @@ final class CheckoutConsentCapture {
 		$replayed = $this->replayedStoreChoice( $state, $store_choice_id, false );
 		if ( null !== $replayed ) return $replayed;
 		$pending = $state['pending'] ?? null;
+		if ( is_array( $pending ) && 'GRANT' === ( $pending['decision'] ?? null ) ) {
+			// The shopper has explicitly unchecked after a GRANT with no durable
+			// ACK. Its retry lease MUST NOT survive this newer intent. The old
+			// HTTP request might still have committed at Moda, so cancelling its
+			// retry is not evidence of REVOKED consent.
+			$this->publisher->cancelPending( $pending );
+			$this->rememberStoreChoice( $state, $state['pendingStoreChoiceId'] ?? null, true );
+			$state['pending'] = null;
+			$state['checked'] = false;
+			unset( $state['pendingStoreChoiceId'] );
+			$session->set( self::SESSION_FIELD, $state );
+			CheckoutConsentDiagnostics::warn( 'unacknowledged_grant_retry_cancelled' );
+			// Continue only if a separately held, shopper-bound proof exists.
+			// Without it, API-006 cannot verify the current state and REVOKE
+			// must fail closed rather than invent a successful withdrawal.
+			if ( null === $this->proof->forCurrentShopper( $canonical ) ) {
+				$this->rememberUnverifiedWithdrawal( $state, $store_choice_id );
+				$session->set( self::SESSION_FIELD, $state );
+				return $this->rejected( 'capture_withdraw_grant_cancelled_unconfirmed' );
+			}
+			$pending = null;
+		}
 		// If an earlier withdrawal's ACK was lost, retry the identical event.
 		if ( is_array( $pending ) && 'REVOKE' === ( $pending['decision'] ?? null ) ) {
 			$event = $pending;

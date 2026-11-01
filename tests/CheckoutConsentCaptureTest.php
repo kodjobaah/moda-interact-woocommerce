@@ -19,6 +19,8 @@ final class CheckoutConsentCaptureTest extends TestCase {
 	private CheckoutConsentCapture $capture;
 	private CheckoutConsentPublisher $publisher;
 	private bool $feature = true;
+	private bool $planEligible = true;
+	private int $featureReads = 0;
 	private bool $unavailable = false;
 
 	protected function setUp(): void {
@@ -42,15 +44,18 @@ final class CheckoutConsentCaptureTest extends TestCase {
 		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $record;
 		$this->requests = array();
 		$this->feature = true;
+		$this->planEligible = true;
+		$this->featureReads = 0;
 		$this->unavailable = false;
 		$transport = function ( string $url, array $request ) {
 			$path = parse_url( $url, PHP_URL_PATH );
 			if ( '/v1/merchant/feature-preferences' === $path ) {
+				++$this->featureReads;
 				return $this->response( 200, array( 'schemaVersion' => 1, 'revision' => str_repeat( 'a', 64 ),
 					'features' => array( array( 'id' => 'feature-1', 'key' => 'checkout_recovery',
 					'name' => 'Checkout Recovery', 'description' => null,
 					'enabled' => true, 'effective' => $this->feature,
-					'editable' => false, 'required' => true, 'planEligible' => true ) ) ) );
+					'editable' => false, 'required' => true, 'planEligible' => $this->planEligible ) ) ) );
 			}
 			$this->requests[] = array( $url, $request );
 			if ( $this->unavailable ) return $this->response( 503, array( 'error' => 'unavailable' ) );
@@ -64,7 +69,7 @@ final class CheckoutConsentCaptureTest extends TestCase {
 		$site = new SiteIdentity( ModaApiConfiguration::MODE_PUBLIC, static fn( string $host ) => array( '93.184.216.34' ) );
 		$publisher = new CheckoutConsentPublisher( $client, new InstallationStore(), $site );
 		$this->publisher = $publisher;
-		$eligibility = new CheckoutConsentEligibility( $client, $site, new InstallationStore() );
+		$eligibility = new CheckoutConsentEligibility( new InstallationStore() );
 		$this->capture = new CheckoutConsentCapture( $publisher, $eligibility );
 	}
 
@@ -125,20 +130,33 @@ final class CheckoutConsentCaptureTest extends TestCase {
 
 	}
 
-	public function test_bad_nonce_disabled_feature_and_cross_checkout_phone_do_not_grant(): void {
+	public function test_bad_nonce_and_cross_checkout_phone_are_gated_but_disabled_feature_is_not(): void {
 		$this->classic( true, '+447400123456', 'forged' );
-		self::assertCount( 0, $this->requests );
+		self::assertCount( 0, $this->requests, 'Forged nonce must not grant' );
 		$this->feature = false;
+		$this->planEligible = false;
 		$this->classic( true );
-		self::assertCount( 0, $this->requests );
-		$this->feature = true;
-		$this->classic( true );
-		self::assertCount( 1, $this->requests );
+		self::assertCount( 1, $this->requests, 'Disabled and plan-ineligible recovery still records passive consent' );
+		self::assertSame( 0, $this->featureReads, 'Consent never calls feature preferences' );
+		self::assertSame( 'GRANT', json_decode( $this->requests[0][1]['body'], true )['decision'] );
 		$this->classic( true, '+447400123457' );
-		self::assertCount( 1, $this->requests, 'New phone must not inherit an existing check' );
+		self::assertCount( 1, $this->requests, 'New phone cannot inherit a prior contact proof' );
 		$this->classic( false, '+447400123457' );
 		$this->classic( true, '+447400123457' );
 		self::assertCount( 2, $this->requests );
+		self::assertSame( 0, $this->featureReads );
+	}
+
+	public function test_invalid_installation_fails_closed_and_reconnect_can_record_consent(): void {
+		$original = $GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ];
+		unset( $GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] );
+		$this->classic( true );
+		self::assertCount( 0, $this->requests );
+		self::assertSame( 'capture_observe_installation_ineligible', $this->capture->failureReason() );
+		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $original;
+		$this->classic( true );
+		self::assertCount( 1, $this->requests );
+		self::assertSame( 0, $this->featureReads );
 	}
 
 	public function test_native_checkout_field_changes_cannot_create_consent_hooks(): void {
