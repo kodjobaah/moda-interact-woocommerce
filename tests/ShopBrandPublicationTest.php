@@ -11,6 +11,7 @@ use ModaInteract\WooCommerce\Security\Base64Url;
 use ModaInteract\WooCommerce\ShopBrand\Publisher;
 use ModaInteract\WooCommerce\ShopBrand\SnapshotBuilder;
 use ModaInteract\WooCommerce\ShopBrand\SourceReader;
+use ModaInteract\WooCommerce\ShopBrand\SyncStatusStore;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname( __DIR__ ) . '/includes/ShopBrand/Publisher.php';
@@ -107,6 +108,7 @@ final class ShopBrandPublicationTest extends TestCase {
 		$GLOBALS['moda_interact_test_hooks'] = array();
 		$GLOBALS['arch049_logs'] = array();
 		$GLOBALS['arch049_logger_fails'] = false;
+		$GLOBALS['moda_interact_test_logger'] = new Arch049TestLogger();
 		$GLOBALS['arch035_queued'] = array();
 		$GLOBALS['arch035_delayed'] = array();
 		$GLOBALS['arch046_scheduled'] = array();
@@ -242,7 +244,7 @@ final class ShopBrandPublicationTest extends TestCase {
 		self::assertSame( array( 'https://api.example.test/v1/woocommerce/installations/connect' ), $urls );
 		self::assertCount( 1, $GLOBALS['arch035_queued'] );
 		self::assertSame( Publisher::CAPTURE_ACTION, $GLOBALS['arch035_queued'][0]['hook'] );
-		self::assertSame( array( $this->record['installationId'], $this->record['shopId'] ), $GLOBALS['arch035_queued'][0]['args'] );
+		self::assertSame( array( $this->record['installationId'], $this->record['shopId'] ), array_slice( $GLOBALS['arch035_queued'][0]['args'], 0, 2 ) );
 		self::assertArrayNotHasKey( 'credential', $GLOBALS['arch035_queued'][0]['args'] );
 	}
 
@@ -373,7 +375,7 @@ final class ShopBrandPublicationTest extends TestCase {
 		$publisher = new Publisher( null, $this->store, $this->identity );
 		$publisher->connected( $this->record );
 		self::assertCount( 1, $GLOBALS['arch035_queued'] );
-		self::assertGreaterThan( 0, $GLOBALS['arch049_scheduler_store_lookups'] );
+		self::assertSame( 0, $GLOBALS['arch049_scheduler_store_lookups'] );
 
 		// Model a processed initial capture followed by repeated ordinary WP loads.
 		$GLOBALS['arch035_queued'] = array();
@@ -387,7 +389,7 @@ final class ShopBrandPublicationTest extends TestCase {
 		self::assertCount( 0, $GLOBALS['arch049_recurring'] );
 	}
 
-	public function test_explicit_manual_request_reuses_current_capture_without_auto_change_tracking(): void {
+	public function test_later_manual_request_is_not_coalesced_away_and_only_latest_generation_sets_status(): void {
 		$observations = array();
 		$client = $this->client( static function ( string $url, array $args ) use ( &$observations ): array {
 			$observations[] = json_decode( $args['body'], true );
@@ -403,14 +405,87 @@ final class ShopBrandPublicationTest extends TestCase {
 		self::assertCount( 0, $GLOBALS['arch035_queued'] );
 		self::assertCount( 1, $observations );
 		self::assertTrue( $publisher->requestSync() );
-		self::assertTrue( $publisher->requestSync() ); // Coalesce the same manual request.
-		self::assertCount( 1, $GLOBALS['arch035_queued'] );
+		self::assertTrue( $publisher->requestSync() ); // A later explicit request must capture current Site Identity too.
+		self::assertCount( 2, $GLOBALS['arch035_queued'] );
+		self::assertNotSame( $GLOBALS['arch035_queued'][0]['args'][2], $GLOBALS['arch035_queued'][1]['args'][2] );
 		self::assertArrayNotHasKey( 'credential', $GLOBALS['arch035_queued'][0]['args'] );
 		$publisher->capture( ...$GLOBALS['arch035_queued'][0]['args'] );
-		self::assertCount( 2, $observations );
+		self::assertSame( 'QUEUED', ( new SyncStatusStore() )->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] )['status'] );
+		$publisher->capture( ...$GLOBALS['arch035_queued'][1]['args'] );
+		self::assertCount( 3, $observations );
 		self::assertSame( 'New merchant branding', $observations[1]['brandName'] );
 		self::assertNotSame( $observations[0]['eventId'], $observations[1]['eventId'] );
+		self::assertSame( 'ACCEPTED', ( new SyncStatusStore() )->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] )['status'] );
 		self::assertCount( 0, $GLOBALS['arch049_recurring'] );
+	}
+
+	public function test_status_is_installation_scoped_and_stale_completions_preserve_latest_request_and_acceptance(): void {
+		$statuses = new SyncStatusStore();
+		$old = $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertIsString( $old );
+		self::assertTrue( $statuses->accepted( $old, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$accepted_at = $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] )['lastAcceptedAt'];
+		$new = $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertIsString( $new );
+		self::assertNotSame( $old, $new );
+		self::assertTrue( $statuses->failed( $new, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		self::assertTrue( $statuses->accepted( $old, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$state = $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertSame( 'FAILED', $state['status'] );
+		self::assertSame( $accepted_at, $state['lastAcceptedAt'] );
+		self::assertSame( 'NEVER_SYNCED', $statuses->read( 'other-install', $this->record['canonicalSiteUrl'] )['status'] );
+		self::assertFalse( $GLOBALS['moda_interact_option_autoload'][SyncStatusStore::OPTION_NAME] );
+	}
+
+	public function test_status_option_write_failure_is_logged_with_a_bounded_reason(): void {
+		$GLOBALS['moda_interact_fail_option_writes'] = true;
+		$statuses = new SyncStatusStore();
+		self::assertNull( $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$logs = json_encode( $GLOBALS['arch049_logs'] );
+		self::assertStringContainsString( 'status_option_cas_exhausted', $logs );
+		self::assertStringNotContainsString( $this->record['credential'], $logs );
+	}
+
+	public function test_overlapping_stale_acceptance_cannot_replace_newer_failed_generation(): void {
+		$statuses = new SyncStatusStore();
+		$old = $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertIsString( $old );
+		$new = null;
+		$GLOBALS['moda_interact_before_status_cas'] = function () use ( $statuses, &$new ): void {
+			$new = $statuses->request( 'woo-install-1', 'https://merchant.example' );
+			self::assertIsString( $new );
+			self::assertTrue( $statuses->failed( $new, 'woo-install-1', 'https://merchant.example' ) );
+		};
+
+		// The test database interleaves the newer request after the old acceptance read,
+		// but before its conditional UPDATE; the old compare-and-swap must lose.
+		self::assertTrue( $statuses->accepted( $old, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$state = $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertSame( $new, $state['requestId'] );
+		self::assertSame( 'FAILED', $state['status'] );
+	}
+
+	public function test_malformed_retry_fails_current_generation_and_stale_retry_state_expires(): void {
+		$statuses = new SyncStatusStore();
+		$request_id = $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertIsString( $request_id );
+		self::assertTrue( $statuses->retrying( $request_id, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$publisher = new Publisher( null, $this->store, $this->identity, null, null, $statuses );
+		$publisher->deliver( array(), $this->record['installationId'], $this->record['shopId'], 2, $request_id );
+		self::assertSame( 'FAILED', $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] )['status'] );
+
+		$request_id = $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertIsString( $request_id );
+		self::assertTrue( $statuses->retrying( $request_id, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$event = ( new SnapshotBuilder() )->capture( $this->record['installationId'] );
+		$publisher->deliver( $event, $this->record['installationId'], $this->record['shopId'], 6, $request_id );
+		self::assertSame( 'FAILED', $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] )['status'] );
+
+		$request_id = $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertIsString( $request_id );
+		self::assertTrue( $statuses->retrying( $request_id, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$GLOBALS['moda_interact_options'][ SyncStatusStore::OPTION_NAME ]['lastRequestedAt'] = gmdate( 'Y-m-d\TH:i:s\Z', time() - 90000 );
+		self::assertSame( 'FAILED', $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] )['status'] );
 	}
 
 	public function test_retry_reuses_immutable_event_and_stops_on_permanent_failure(): void {
@@ -439,6 +514,26 @@ final class ShopBrandPublicationTest extends TestCase {
 		$serialized_logs = json_encode( $GLOBALS['arch049_logs'] );
 		self::assertStringNotContainsString( $this->record['credential'], $serialized_logs );
 		self::assertStringNotContainsString( 'https://merchant.example/uploads/', $serialized_logs );
+	}
+
+	public function test_legacy_retry_without_generation_does_not_replace_latest_request_status(): void {
+		$statuses = new SyncStatusStore();
+		$request_id = $statuses->request( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertIsString( $request_id );
+		self::assertTrue( $statuses->failed( $request_id, $this->record['installationId'], $this->record['canonicalSiteUrl'] ) );
+		$before = $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		$event = ( new SnapshotBuilder() )->capture( $this->record['installationId'] );
+		$client = $this->client( static fn() => self::http( 200, array( 'status' => 'updated' ) ) );
+		$publisher = new Publisher( $client, $this->store, $this->identity, null, null, $statuses );
+
+		$publisher->deliver( $event, $this->record['installationId'], $this->record['shopId'], 2 );
+
+		$after = $statuses->read( $this->record['installationId'], $this->record['canonicalSiteUrl'] );
+		self::assertSame( 'FAILED', $after['status'] );
+		self::assertSame( $request_id, $after['requestId'] );
+		self::assertSame( $before['lastRequestedAt'], $after['lastRequestedAt'] );
+		self::assertSame( $before['lastAcceptedAt'], $after['lastAcceptedAt'] );
+		self::assertSame( 'legacy_retry_uncorrelated', end( $GLOBALS['arch049_logs'] )['context']['reason'] );
 	}
 
 	public function test_retry_budget_and_changed_installation_prevent_stale_delivery(): void {

@@ -28,7 +28,57 @@ $GLOBALS['moda_interact_base_location'] = array( 'country' => 'GB', 'state' => '
 $GLOBALS['moda_interact_can_manage_woocommerce'] = true;
 $GLOBALS['moda_interact_valid_rest_nonce'] = true;
 $GLOBALS['moda_interact_fail_option_writes'] = false;
+$GLOBALS['wpdb'] = new ModaInteractTestWpdb();
 define( 'WC_VERSION', '11.1.2' );
+
+final class ModaInteractTestWpdb {
+	public string $options = 'wp_options';
+
+	public function prepare( string $query, mixed ...$args ): array {
+		return array( 'query' => $query, 'args' => $args );
+	}
+
+	public function get_var( array $prepared ): mixed {
+		$option_name = $prepared['args'][0] ?? null;
+		if ( ! is_string( $option_name ) || ! array_key_exists( $option_name, $GLOBALS['moda_interact_options'] ) ) return null;
+		return serialize( $GLOBALS['moda_interact_options'][ $option_name ] );
+	}
+
+	public function query( array $prepared ): int|false {
+		if ( $GLOBALS['moda_interact_fail_option_writes'] ) return false;
+		if ( is_callable( $GLOBALS['moda_interact_before_status_cas'] ?? null ) ) {
+			$interleave = $GLOBALS['moda_interact_before_status_cas'];
+			unset( $GLOBALS['moda_interact_before_status_cas'] );
+			$interleave();
+		}
+		$args = $prepared['args'];
+		$new_raw = $args[0] ?? null;
+		$option_name = $args[1] ?? null;
+		$expected_raw = $args[2] ?? null;
+		if ( ! is_string( $new_raw ) || ! is_string( $option_name ) || ! is_string( $expected_raw ) ||
+			! array_key_exists( $option_name, $GLOBALS['moda_interact_options'] ) ||
+			serialize( $GLOBALS['moda_interact_options'][ $option_name ] ) !== $expected_raw ) return 0;
+		$value = @unserialize( $new_raw, array( 'allowed_classes' => false ) );
+		if ( false === $value && 'b:0;' !== $new_raw ) return false;
+		$GLOBALS['moda_interact_options'][ $option_name ] = $value;
+		return 1;
+	}
+}
+
+function maybe_serialize( mixed $value ): string {
+	return is_array( $value ) || is_object( $value ) ? serialize( $value ) : (string) $value;
+}
+
+function maybe_unserialize( mixed $value ): mixed {
+	if ( ! is_string( $value ) ) return $value;
+	$unserialized = @unserialize( $value, array( 'allowed_classes' => false ) );
+	return false === $unserialized && 'b:0;' !== $value ? $value : $unserialized;
+}
+
+function wp_cache_delete( $key, $group = '' ): bool {
+	$GLOBALS['moda_interact_cache_deletes'][] = array( $key, $group );
+	return true;
+}
 
 function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
 	$GLOBALS['moda_interact_test_hooks'][ $hook ][] = $callback;

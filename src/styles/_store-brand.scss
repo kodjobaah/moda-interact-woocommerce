@@ -1,0 +1,38 @@
+.moda-interact-recovery .moda-interact-store-brand {
+	padding: 1.25rem;
+}
+
+.moda-interact-store-brand__heading {
+	max-width: 58rem;
+}
+
+.moda-interact-store-brand__heading h2 {
+	margin: 0 0 0.5rem;
+	color: var(--moda-ink-strong);
+	font-size: 1rem;
+}
+
+.moda-interact-store-brand__heading p,
+.moda-interact-store-brand > p {
+	max-width: 58rem;
+	color: var(--moda-ink-muted);
+}
+
+.moda-interact-store-brand__status {
+	margin-block: 0.75rem;
+}
+
+.moda-interact-store-brand__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+	.moda-interact-store-brand__actions .button {
+		min-height: 2.75rem;
+		width: 100%;
+		justify-content: center;
+	}
+}

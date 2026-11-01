@@ -6,6 +6,7 @@ import {
 	AiResponseDelayFields,
 } from '../../src/recovery-settings/ai-response-delay-panel';
 import { FeaturePreferencesPanel } from '../../src/recovery-settings/feature-preferences-panel';
+import { StoreBrandPanel } from '../../src/recovery-settings/store-brand-panel';
 import { WhatsAppConsentGuidance } from '../../src/recovery-settings/whatsapp-consent-guidance';
 import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
 import { StoreAssistantContext } from '../../src/recovery-settings/store-assistant-context';
@@ -60,7 +61,7 @@ function buttons(node, found = []) {
 }
 
 describe('Woo Recovery Settings category presentation', () => {
-	it('orders cards: summary, recovery controls, WhatsApp consent guidance, features, then store context', () => {
+	it('orders cards: summary, recovery controls, WhatsApp consent guidance, store branding, features, then store context', () => {
 		const featurePreferencesState = {
 			status: 'UNAVAILABLE',
 			data: null,
@@ -76,10 +77,11 @@ describe('Woo Recovery Settings category presentation', () => {
 		expect(children[3].props.featurePreferencesState).toBe(
 			featurePreferencesState
 		);
-		expect(children[4].type).toBe(FeaturePreferencesPanel);
-		expect(children[5].type).toBe(StoreAssistantContext);
-		expect(children[5].props.storeProfile.type).toBe(StoreProfileAccordion);
-		expect(children[5].props.merchantKnowledge.type).toBe(
+		expect(children[4].type).toBe(StoreBrandPanel);
+		expect(children[5].type).toBe(FeaturePreferencesPanel);
+		expect(children[6].type).toBe(StoreAssistantContext);
+		expect(children[6].props.storeProfile.type).toBe(StoreProfileAccordion);
+		expect(children[6].props.merchantKnowledge.type).toBe(
 			MerchantKnowledgePanel
 		);
 	});

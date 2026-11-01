@@ -2447,3 +2447,83 @@ msgstr "İnsan yanıtları hemen gönderilir."
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "Yapay zekâ yanıt gecikmesini kaydet"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "Marka eşitlemesi tamamlanamadı. Durumu yenileyin veya yeniden deneyin."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "Marka eşitlemesi başarısız oldu. Bağlantıyı kontrol edip yeniden deneyin."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "Marka eşitlemesi sıraya alındı. Moda henüz kabul etmedi."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "Site adını, logosunu ve simgesini WordPress Ayarlar → Genel veya Görünüm → Düzenleyici bölümünden düzenleyin. Hazır olduğunuzda güncel bilgileri Moda Interact'e göndermek için Markayı eşitle'yi seçin."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "Son eşitleme:"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "Eşitleme durumu yükleniyor…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda bu marka bilgilerini kabul etti. Arka planda görsel işleme devam ediyor olabilir."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda markayı henüz kabul edemedi. Yeniden deneme planlandı."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "Henüz eşitlenmedi"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "Henüz eşitlenmedi."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "Markayı eşitlemeden önce Moda Interact'i yeniden bağlayın."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "Durumu yenile"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "Marka eşitlemesi isteniyor…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "Mağaza markası"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "Markayı eşitle"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "Eşitleme durumu yüklenemedi. Yeniden denemek için yenileyin."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "Yerel bağlantı ayarları geçersiz. Moda Interact'i yeniden bağlayın."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "Site adresi değişti. Devam etmek için Moda Interact'i yeniden bağlayın."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "Eşitleme sıraya alınamadı. Action Scheduler'ın kullanılabilir olduğunu kontrol edip yeniden deneyin."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "Bu zaman, Moda'nın marka bilgilerini kabul ettiği anı gösterir. Arka planda görsel işleme devam ediyor olabilir."
