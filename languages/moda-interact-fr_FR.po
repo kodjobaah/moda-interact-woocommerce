@@ -2471,3 +2471,19 @@ msgstr "M’avertir lorsque la première prise de contact de récupération comm
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Cette notification ne modifie ni les messages envoyés aux clients ni l’utilisation des crédits de récupération."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "Délai de réponse de l’IA (minutes)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "Saisissez un nombre entier de 0 à 30."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "Les réponses humaines sont immédiates."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "Enregistrer le délai de réponse de l’IA"

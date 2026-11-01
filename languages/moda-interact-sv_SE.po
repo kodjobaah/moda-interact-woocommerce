@@ -2445,3 +2445,19 @@ msgstr "Meddela mig när det första återhämtningsmeddelandet börjar"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Aviseringen ändrar inte kundmeddelanden eller användningen av återhämtningskrediter."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "Fördröjning av AI-svar (minuter)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "Ange ett heltal från 0 till 30."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "Mänskliga svar skickas direkt."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "Spara fördröjning av AI-svar"

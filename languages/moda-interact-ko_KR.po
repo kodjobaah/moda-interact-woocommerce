@@ -2419,3 +2419,19 @@ msgstr "첫 번째 복구 메시지가 시작되면 알림"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "이 알림은 고객 메시지나 복구 크레딧 사용에 영향을 주지 않습니다."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "AI 응답 지연(분)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "0에서 30 사이의 정수를 입력하세요."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "사람이 보내는 답장은 즉시 전송됩니다."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "AI 응답 지연 저장"

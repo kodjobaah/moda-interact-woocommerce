@@ -2463,3 +2463,19 @@ msgstr "Avisarme cuando comience el primer mensaje de recuperación"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Este aviso no cambia los mensajes a los clientes ni el uso de créditos de recuperación."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "Retraso de respuesta de IA (minutos)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "Introduce un número entero del 0 al 30."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "Las respuestas humanas son inmediatas."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "Guardar retraso de respuesta de IA"

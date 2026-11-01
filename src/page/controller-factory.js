@@ -5,6 +5,7 @@ import { MerchantBootstrapController } from '../merchant-bootstrap-controller';
 import { StoreCategoryController } from '../store-category-controller';
 import { RecoverySummaryController } from '../recovery-summary-controller';
 import { RecoveryPolicyController } from '../recovery-policy-controller';
+import { AiResponseDelayController } from '../ai-response-delay-controller';
 import { FeaturePreferencesController } from '../recovery-settings/feature-preferences-controller';
 import { MerchantKnowledgeController } from '../recovery-settings/merchant-knowledge/knowledge-controller';
 import { StoreContextSyncController } from '../store-context-sync-controller';
@@ -33,6 +34,7 @@ export function createPageControllers() {
 	const recoveryPolicy = new RecoveryPolicyController(undefined, () =>
 		recoverySummary.refresh(true)
 	);
+	const aiResponseDelay = new AiResponseDelayController();
 	const readAccess = new ReadAccessController();
 	const featurePreferences = new FeaturePreferencesController();
 	const merchantKnowledge = new MerchantKnowledgeController();
@@ -44,6 +46,7 @@ export function createPageControllers() {
 		category,
 		recoverySummary,
 		recoveryPolicy,
+		aiResponseDelay,
 		readAccess,
 		featurePreferences,
 		merchantKnowledge,

@@ -2437,3 +2437,19 @@ msgstr "Ilmoita, kun ensimmäinen palautusviesti alkaa"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Tämä ilmoitus ei muuta asiakasviestejä eikä palautuskrediittien käyttöä."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "Tekoälyvastauksen viive (minuuttia)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "Anna kokonaisluku väliltä 0–30."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "Ihmisten vastaukset lähetetään heti."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "Tallenna tekoälyvastauksen viive"

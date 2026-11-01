@@ -6,6 +6,7 @@ import { FeaturePreferencesPanel } from './feature-preferences-panel';
 import { StoreAssistantContext } from './store-assistant-context';
 import { StoreProfileAccordion } from './store-profile-accordion';
 import { MerchantKnowledgePanel } from './merchant-knowledge/knowledge-panel';
+import { AiResponseDelayPanel } from './ai-response-delay-panel';
 
 /**
  * Compose Recovery Settings without owning category or knowledge form state.
@@ -24,6 +25,9 @@ export function RecoverySettingsScreen(props) {
 		policyState,
 		onRefreshPolicy,
 		onSavePolicy,
+		aiResponseDelayState,
+		onRefreshAiResponseDelay,
+		onSaveAiResponseDelay,
 		featurePreferencesState,
 		onRefreshFeatures,
 		onToggleFeature,
@@ -48,6 +52,11 @@ export function RecoverySettingsScreen(props) {
 			policyState,
 			onRefreshPolicy,
 			onSavePolicy,
+		}),
+		createElement(AiResponseDelayPanel, {
+			state: aiResponseDelayState,
+			onRefresh: onRefreshAiResponseDelay,
+			onSave: onSaveAiResponseDelay,
 		}),
 		createElement(WhatsAppConsentGuidance, {
 			featurePreferencesState,

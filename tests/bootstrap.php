@@ -353,6 +353,8 @@ require_once dirname( __DIR__ ) . '/includes/Checkout/CheckoutConsentDiagnostics
 require_once dirname( __DIR__ ) . '/includes/Api/DiscountOffersContracts.php';
 require_once dirname( __DIR__ ) . '/includes/Api/UsageHistoryResponseValidator.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/UsageHistoryController.php';
+require_once dirname( __DIR__ ) . '/includes/Api/AiResponseDelayResponseValidator.php';
+require_once dirname( __DIR__ ) . '/includes/Rest/AiResponseDelayController.php';
 require_once dirname( __DIR__ ) . '/includes/Api/MerchantKnowledgeContracts.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/MerchantKnowledgeController.php';
 require_once dirname( __DIR__ ) . '/includes/Rest/RecoveryDiscountOffersController.php';

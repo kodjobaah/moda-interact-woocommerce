@@ -2422,3 +2422,19 @@ msgstr "最初のリカバリーメッセージ開始時に通知する"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "この通知によって顧客へのメッセージやリカバリークレジットの使用が変わることはありません。"
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "AIの応答遅延（分）"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "0〜30の整数を入力してください。"
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "担当者からの返信はすぐに送信されます。"
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "AI応答遅延を保存"
