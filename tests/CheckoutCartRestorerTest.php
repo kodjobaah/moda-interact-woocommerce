@@ -42,6 +42,13 @@ if ( ! function_exists( 'wc_get_product' ) ) {
 if ( ! function_exists( 'WC' ) ) {
 	function WC() { return $GLOBALS['arch035_wc'] ?? null; }
 }
+if ( ! function_exists( 'wc_get_logger' ) ) {
+	function wc_get_logger() {
+		return $GLOBALS['moda_interact_test_logger'] ?? new class {
+			public function error( string $message, array $context = array() ): void {}
+		};
+	}
+}
 if ( ! function_exists( 'add_filter' ) ) {
 	function add_filter( string $hook, callable $callback, int $priority = 10, int $accepted_args = 1 ): bool {
 		$GLOBALS['arch053_test_filters'][ $hook ][] = $callback;
@@ -74,18 +81,23 @@ final class RestoreTestCart {
 	public array $rejected_coupon_codes = array();
 	public array $coupon_attempts = array();
 	public ?string $throw_coupon_code = null;
+	public string $throw_coupon_message = 'coupon service failed';
 	public ?CheckoutCapture $capture = null;
 	public function get_cart(): array { return $this->lines; }
 	public function get_applied_coupons(): array { return $this->coupons; }
 	public function apply_coupon( string $code ): bool {
 		$this->coupon_attempts[] = $code;
-		if ( $code === $this->throw_coupon_code ) throw new RuntimeException( 'coupon service failed' );
+		if ( $code === $this->throw_coupon_code ) throw new RuntimeException( $this->throw_coupon_message );
 		if ( in_array( strtolower( $code ), $this->rejected_coupon_codes, true ) ) {
 			$message = 'Coupon code ' . $code . ' is invalid.';
+			foreach ( array( 'arch053_test_filters', 'arch046_checkbox_filters' ) as $registry ) {
+				foreach ( $GLOBALS[ $registry ]['woocommerce_coupon_error'] ?? array() as $filter ) $message = $filter( $message );
+			}
 			foreach ( array( 'arch053_test_filters', 'arch046_checkbox_filters' ) as $registry ) {
 				foreach ( $GLOBALS[ $registry ]['woocommerce_add_error'] ?? array() as $filter ) $message = $filter( $message );
 			}
 			if ( '' !== $message ) $GLOBALS['restore_test_error_notices'][] = $message;
+			$GLOBALS['restore_test_error_notices'][] = 'unrelated extension error';
 			return false;
 		}
 		$this->coupons[] = strtolower( $code );
@@ -106,12 +118,15 @@ final class CheckoutCartRestorerTest extends TestCase {
 	private CheckoutCartRestorer $restorer;
 	private RestoreTestCart $cart;
 	private mixed $previous_test_logger;
+	private object $logger;
 
 	protected function setUp(): void {
 		$this->previous_test_logger = $GLOBALS['moda_interact_test_logger'] ?? null;
-		$GLOBALS['moda_interact_test_logger'] = new class {
-			public function error( string $message, array $context = array() ): void {}
+		$this->logger = new class {
+			public array $errors = array();
+			public function error( string $message, array $context = array() ): void { $this->errors[] = array( $message, $context ); }
 		};
+		$GLOBALS['moda_interact_test_logger'] = $this->logger;
 		$this->capture = new CheckoutCapture( new CheckoutActivityPublisher() );
 		$this->restorer = new CheckoutCartRestorer( $this->capture );
 		$this->cart = new RestoreTestCart();
@@ -180,13 +195,14 @@ final class CheckoutCartRestorerTest extends TestCase {
 		self::assertTrue( $result['cartTotalRecalculated'] );
 		self::assertSame( $codes, $this->cart->coupon_attempts );
 		self::assertSame( 1, $this->cart->calculations );
-		self::assertSame( array( 'unrelated Woo notice' ), $GLOBALS['restore_test_error_notices'],
-			'Coupon errors are suppressed while an existing unrelated Woo notice remains untouched.' );
+		self::assertSame( array( 'unrelated Woo notice', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error' ), $GLOBALS['restore_test_error_notices'],
+			'Only Woo coupon rejection errors are suppressed; pre-existing and unrelated errors remain untouched.' );
 	}
 
 	public function test_unexpected_coupon_error_rolls_back_cart_and_does_not_commit(): void {
 		$this->cart->lines = array( array( 'product_id' => 999, 'quantity' => 1, 'variation_id' => 0, 'variation' => array() ) );
 		$this->cart->throw_coupon_code = 'save10';
+		$this->cart->throw_coupon_message = 'Coupon code SAVE10 dependency failed for +44 7700 900123';
 		$snapshot = array( 'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'supported', 'appliedCouponCodes' => array( 'save10' ),
 			'lines' => array( array( 'productId' => '101', 'quantity' => 1 ) ) );
 		$commits = 0;
@@ -194,6 +210,12 @@ final class CheckoutCartRestorerTest extends TestCase {
 		self::assertSame( 0, $commits );
 		self::assertSame( array( 999 ), array_column( $this->cart->lines, 'product_id' ) );
 		self::assertSame( 1, $this->cart->calculations, 'Only rollback totals are recalculated after coupon application fails.' );
+		self::assertCount( 1, $this->logger->errors );
+		[ $message, $context ] = $this->logger->errors[0];
+		self::assertSame( 'restore_apply_failed', $context['reason'] );
+		self::assertStringContainsString( 'dependency failed', $context['error_message'] );
+		self::assertStringNotContainsString( 'SAVE10', $message . (string) json_encode( $context ) );
+		self::assertStringNotContainsString( '7700 900123', $message . (string) json_encode( $context ) );
 	}
 
 	public function test_mid_apply_failure_restores_the_original_cart_and_does_not_commit(): void {
