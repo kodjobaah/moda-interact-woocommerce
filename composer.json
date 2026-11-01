@@ -99,7 +99,6 @@
 			"@php -l includes/Admin/Setup.php",
 			"@php -l includes/Admin/NativeNavigation.php",
 			"@php -l tests/bootstrap.php",
-			"@php -l tests/integration/checkout-consent-saved-block-variant.php",
 			"@php -l tests/PluginTest.php",
 			"@php -l tests/BillingApiClientTest.php",
 			"@php -l tests/BillingPurchaseHistoryTest.php",

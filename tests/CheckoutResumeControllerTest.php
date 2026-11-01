@@ -31,6 +31,8 @@ if ( ! function_exists( 'wc_get_product' ) ) {
 }
 if ( ! function_exists( 'get_woocommerce_currency' ) ) { function get_woocommerce_currency() { return 'GBP'; } }
 if ( ! function_exists( 'wc_format_decimal' ) ) { function wc_format_decimal( $amount, $decimals = 2 ) { return number_format( (float) $amount, $decimals, '.', '' ); } }
+if ( ! function_exists( 'wc_get_checkout_url' ) ) { function wc_get_checkout_url() { return 'https://merchant.example/shop/checkout'; } }
+if ( ! function_exists( 'wc_get_cart_url' ) ) { function wc_get_cart_url() { return home_url( '/' ); } }
 if ( ! function_exists( 'as_enqueue_async_action' ) ) {
 	function as_enqueue_async_action( $hook, $args, $group, $unique ) {
 		if ( ! empty( $GLOBALS['arch035_async_fail'] ) ) throw new RuntimeException( 'Action Scheduler unavailable' );
@@ -250,7 +252,7 @@ final class CheckoutResumeControllerTest extends TestCase {
 		self::assertSame( wc_get_checkout_url(), $result['redirect'] );
 		self::assertSame( array( 'save10', 'extra15' ), $cart->coupons );
 		self::assertSame( 1, $this->resolve_count );
-		self::assertCount( 1, $GLOBALS['resume_test_actions'], 'Confirmed offer processing emits one final checkout activity.' );
+		self::assertCount( 1, $GLOBALS['arch035_queued'], 'Confirmed offer processing emits one final checkout activity.' );
 
 		$before_lines = $cart->lines;
 		$this->prepareRestorePost( $cart, str_repeat( 'D', 43 ), array(), null, static function (): array { throw new RuntimeException( 'API unavailable' ); } );
