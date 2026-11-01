@@ -18,18 +18,15 @@ final class CheckoutCouponRestorer {
 		foreach ( $coupon_codes as $code ) {
 			if ( ! is_string( $code ) || '' === $code ) throw new \RuntimeException( 'restore_coupon_code_invalid' );
 			$suppress_coupon_error = static fn( mixed $message ): string => '';
-			$suppress_error_notice = static fn( mixed $message ): string => '';
 			$filter_installed = function_exists( 'add_filter' ) && function_exists( 'remove_filter' );
 			if ( $filter_installed ) {
 				add_filter( 'woocommerce_coupon_error', $suppress_coupon_error, PHP_INT_MAX, 3 );
-				add_filter( 'woocommerce_add_error', $suppress_error_notice, PHP_INT_MAX, 1 );
 			}
 			try {
 				$cart->apply_coupon( $code );
 			} finally {
 				if ( $filter_installed ) {
 					remove_filter( 'woocommerce_coupon_error', $suppress_coupon_error, PHP_INT_MAX );
-					remove_filter( 'woocommerce_add_error', $suppress_error_notice, PHP_INT_MAX );
 				}
 			}
 
