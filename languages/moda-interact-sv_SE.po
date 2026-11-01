@@ -1252,6 +1252,10 @@ msgstr "Poster visas här när en återvinning börjar."
 msgid "Try another date range, customer or status."
 msgstr "Prova ett annat datumintervall, en annan kund eller status."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Prova de erbjudna kupongerna i stället"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Automatiskt meddelande"

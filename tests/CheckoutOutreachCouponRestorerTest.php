@@ -21,14 +21,25 @@ if ( ! function_exists( 'remove_filter' ) ) {
 		return true;
 	}
 }
+if ( ! function_exists( 'wc_get_logger' ) ) {
+	function wc_get_logger() {
+		return $GLOBALS['moda_interact_test_logger'] ?? new class {
+			public function error( string $message, array $context = array() ): void {}
+		};
+	}
+}
+
+final class SyntheticCouponProviderFailure extends RuntimeException {}
 
 final class OutreachOfferTestCart extends WC_Cart {
 	public array $coupons = array();
 	public array $attempts = array();
 	public array $reject = array();
+	public array $rejectWhileOtherCouponsApplied = array();
 	public array $replaceExisting = array();
 	public bool $failRemoval = false;
 	public bool $sparseCoupons = false;
+	public bool $throwForOfferWhenAlone = false;
 	public int $calculations = 0;
 	public function get_applied_coupons(): array {
 		if ( ! $this->sparseCoupons ) return $this->coupons;
@@ -38,7 +49,14 @@ final class OutreachOfferTestCart extends WC_Cart {
 	}
 	public function apply_coupon( string $code ): bool {
 		$this->attempts[] = $code;
-		if ( in_array( strtolower( $code ), $this->reject, true ) ) return false;
+		if ( $this->throwForOfferWhenAlone && array() === $this->coupons && 'extra15' === strtolower( $code ) ) {
+			throw new SyntheticCouponProviderFailure( 'catalog gateway unavailable while applying coupon code EXTRA15 for SAVE10' );
+		}
+		if ( in_array( strtolower( $code ), $this->reject, true ) ||
+			( array() !== $this->coupons && in_array( strtolower( $code ), $this->rejectWhileOtherCouponsApplied, true ) ) ) {
+			$GLOBALS['moda_interact_test_wc_notices']['error'][] = array( 'notice' => 'Coupon rejected: ' . $code );
+			return false;
+		}
 		foreach ( $this->replaceExisting as $replacement => $removed ) {
 			if ( strtolower( $replacement ) === strtolower( $code ) ) {
 				$this->coupons = array_values( array_filter( $this->coupons, static fn( $current ): bool => ! in_array( strtolower( $current ), $removed, true ) ) );
@@ -57,11 +75,28 @@ final class OutreachOfferTestCart extends WC_Cart {
 final class CheckoutOutreachCouponRestorerTest extends TestCase {
 	private CheckoutOutreachCouponRestorer $restorer;
 	private OutreachOfferTestCart $cart;
+	private mixed $previous_notices;
+	private mixed $previous_logger;
 
 	protected function setUp(): void {
+		$this->previous_logger = $GLOBALS['moda_interact_test_logger'] ?? null;
+		$GLOBALS['moda_interact_test_logger'] = new class {
+			public array $errors = array();
+			public function error( string $message, array $context = array() ): void { $this->errors[] = array( $message, $context ); }
+		};
+		$this->previous_notices = $GLOBALS['moda_interact_test_wc_notices'] ?? null;
+		$GLOBALS['moda_interact_test_wc_notices'] = array( 'notice' => array( 'merchant notice' ) );
 		$GLOBALS['arch053_offer_filters'] = array();
 		$this->restorer = new CheckoutOutreachCouponRestorer();
 		$this->cart = new OutreachOfferTestCart();
+	}
+
+	protected function tearDown(): void {
+		if ( null === $this->previous_logger ) unset( $GLOBALS['moda_interact_test_logger'] );
+		else $GLOBALS['moda_interact_test_logger'] = $this->previous_logger;
+		if ( null === $this->previous_notices ) unset( $GLOBALS['moda_interact_test_wc_notices'] );
+		else $GLOBALS['moda_interact_test_wc_notices'] = $this->previous_notices;
+		parent::tearDown();
 	}
 
 	public function test_handles_none_unverifiable_automatic_and_alternative_without_forcing_discounts(): void {
@@ -97,6 +132,7 @@ final class CheckoutOutreachCouponRestorerTest extends TestCase {
 		$result = $this->restorer->apply_outreach_offer( array( 'kind' => 'CHECKOUT_CODE', 'code' => 'EXTRA15' ), array( 'SAVE10' ), $this->cart );
 		self::assertSame( 'REJECTED', $result['outcome'] );
 		self::assertSame( array( 'save10' ), $this->cart->coupons );
+		self::assertSame( array( 'notice' => array( 'merchant notice' ) ), $GLOBALS['moda_interact_test_wc_notices'] );
 		$this->cart = new OutreachOfferTestCart();
 		$this->cart->coupons = array( 'save10' );
 		$this->cart->replaceExisting = array( 'extra15' => array( 'save10' ) );
@@ -115,6 +151,47 @@ final class CheckoutOutreachCouponRestorerTest extends TestCase {
 		self::assertSame( 'GROUP_CONFLICT', $result['rejectionReason'] );
 		self::assertSame( array( 'save10' ), $this->cart->coupons );
 		self::assertNotContains( 'extra20', $this->cart->coupons );
+	}
+
+	public function test_valid_offer_rejected_only_while_original_is_applied_becomes_a_switch_choice(): void {
+		$this->cart->coupons = array( 'individual-original' );
+		$this->cart->rejectWhileOtherCouponsApplied = array( 'extra15' );
+		$result = $this->restorer->apply_outreach_offer(
+			array( 'kind' => 'CHECKOUT_CODE', 'code' => 'EXTRA15' ),
+			array( 'INDIVIDUAL-ORIGINAL' ),
+			$this->cart
+		);
+		self::assertSame( 'CONFLICT_REQUIRES_CHOICE', $result['outcome'] );
+		self::assertTrue( $result['choiceAvailable'] );
+		self::assertSame( array( 'individual-original' ), $result['currentAppliedCodes'] );
+		self::assertSame( array( 'individual-original' ), $this->cart->coupons );
+		self::assertSame( array( 'EXTRA15', 'EXTRA15', 'INDIVIDUAL-ORIGINAL' ), $this->cart->attempts );
+	}
+
+	public function test_alternate_validation_logs_original_failure_with_coupon_values_redacted(): void {
+		$this->cart->coupons = array( 'save10' );
+		$this->cart->rejectWhileOtherCouponsApplied = array( 'extra15' );
+		$this->cart->throwForOfferWhenAlone = true;
+		$result = $this->restorer->apply_outreach_offer(
+			array( 'kind' => 'CHECKOUT_CODE', 'code' => 'EXTRA15' ),
+			array( 'SAVE10' ),
+			$this->cart
+		);
+		self::assertSame( 'REJECTED', $result['outcome'] );
+		self::assertSame( array( 'save10' ), $this->cart->coupons );
+		$failure = null;
+		foreach ( $GLOBALS['moda_interact_test_logger']->errors as [ , $context ] ) {
+			if ( 'offer_choice_validation_failed' === ( $context['reason'] ?? null ) ) $failure = $context['error_message'] ?? null;
+		}
+		self::assertIsString( $failure );
+		self::assertStringContainsString( 'catalog gateway unavailable', $failure );
+		self::assertStringNotContainsString( 'EXTRA15', $failure );
+		self::assertStringNotContainsString( 'SAVE10', $failure );
+		$failure_type = null;
+		foreach ( $GLOBALS['moda_interact_test_logger']->errors as [ , $context ] ) {
+			if ( 'offer_choice_validation_failed' === ( $context['reason'] ?? null ) ) $failure_type = $context['error_type'] ?? null;
+		}
+		self::assertSame( SyntheticCouponProviderFailure::class, $failure_type );
 	}
 
 	public function test_valid_group_applies_codes_in_source_order_and_duplicate_codes_are_not_attempted_twice(): void {

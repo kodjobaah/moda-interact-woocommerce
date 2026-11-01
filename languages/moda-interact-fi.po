@@ -1248,6 +1248,10 @@ msgstr "Tiedot näkyvät tässä, kun palautus alkaa."
 msgid "Try another date range, customer or status."
 msgstr "Kokeile toista ajanjaksoa, asiakasta tai tilaa."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Kokeile sen sijaan tarjottuja kuponkeja"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Automaattinen viesti"

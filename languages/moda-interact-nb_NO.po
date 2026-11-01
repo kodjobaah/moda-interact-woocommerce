@@ -1250,6 +1250,10 @@ msgstr "Oppføringer vises her når en gjenoppretting starter."
 msgid "Try another date range, customer or status."
 msgstr "Prøv en annen datoperiode, kunde eller status."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Prøv de tilbudte kupongene i stedet"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Automatisk melding"

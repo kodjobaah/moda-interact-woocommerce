@@ -1251,6 +1251,10 @@ msgstr "Poster vises her, når en genopretning starter."
 msgid "Try another date range, customer or status."
 msgstr "Prøv et andet datointerval, en anden kunde eller status."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Prøv de tilbudte kuponer i stedet"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Automatisk besked"

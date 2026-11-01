@@ -1184,6 +1184,10 @@ msgstr "开始挽回后，记录将显示在这里。"
 msgid "Try another date range, customer or status."
 msgstr "请尝试其他日期范围、客户或状态。"
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "改用提供的优惠券"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "自动消息"

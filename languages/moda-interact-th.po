@@ -1198,6 +1198,10 @@ msgstr "รายการจะแสดงที่นี่เมื่อเ
 msgid "Try another date range, customer or status."
 msgstr "ลองช่วงวันที่ ลูกค้า หรือสถานะอื่น"
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "ลองใช้คูปองที่เสนอแทน"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "ข้อความอัตโนมัติ"

@@ -3,6 +3,10 @@ const WooCommerceDependencyExtractionWebpackPlugin = require('@woocommerce/depen
 
 module.exports = {
 	...defaultConfig,
+	entry: {
+		index: './src/index.js',
+		'checkout-outreach-choice': './src/checkout-outreach-choice.js',
+	},
 	plugins: [
 		...defaultConfig.plugins.filter(
 			(plugin) =>

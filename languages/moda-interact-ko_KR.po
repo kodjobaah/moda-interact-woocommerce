@@ -1231,6 +1231,10 @@ msgstr "구매 복구가 시작되면 여기에 기록이 표시됩니다."
 msgid "Try another date range, customer or status."
 msgstr "다른 날짜 범위, 고객 또는 상태를 시도하세요."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "대신 제안된 쿠폰 사용해 보기"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "자동 메시지"

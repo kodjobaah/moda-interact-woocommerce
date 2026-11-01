@@ -1268,6 +1268,10 @@ msgstr "Gegevens verschijnen hier zodra een herstelpoging begint."
 msgid "Try another date range, customer or status."
 msgstr "Probeer een ander datumbereik, een andere klant of status."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Probeer in plaats daarvan de aangeboden coupons"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Automatisch bericht"

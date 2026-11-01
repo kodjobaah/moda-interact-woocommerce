@@ -1224,6 +1224,10 @@ msgstr ""
 msgid "Try another date range, customer or status."
 msgstr ""
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr ""
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr ""
