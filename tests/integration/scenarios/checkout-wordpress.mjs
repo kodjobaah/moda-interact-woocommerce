@@ -385,6 +385,7 @@ export async function assertCheckoutWordPress({
 	setActivityStatus,
 			getRestoreResolveRequests,
 			setRestoreResolveResult,
+			restoreOnly = false,
 }) {
 	const fixture = parseJsonOutput(
 		wp(
@@ -418,7 +419,11 @@ export async function assertCheckoutWordPress({
     $variation->set_attributes(array('size' => 'Large')); $variation->set_regular_price('19.99'); $variation->set_status('publish'); $variation->save();
     $variable->save();
     $coupon = new WC_Coupon(); $coupon->set_code('arch053save10'); $coupon->set_discount_type('percent'); $coupon->set_amount(10);
-    $coupon->set_individual_use(true); $coupon->save();
+    $coupon->set_individual_use(false); $coupon->save();
+    $offer_coupon = new WC_Coupon(); $offer_coupon->set_code('arch053offer5'); $offer_coupon->set_discount_type('percent'); $offer_coupon->set_amount(5);
+    $offer_coupon->save();
+    $conflict_coupon = new WC_Coupon(); $conflict_coupon->set_code('arch053conflict20'); $conflict_coupon->set_discount_type('percent'); $conflict_coupon->set_amount(20);
+    $conflict_coupon->set_individual_use(true); $conflict_coupon->save();
     $expired_coupon = new WC_Coupon(); $expired_coupon->set_code('arch053expired'); $expired_coupon->set_amount(10);
     $expired_coupon->set_date_expires('2000-01-01 00:00:00'); $expired_coupon->save();
     $exhausted_coupon = new WC_Coupon(); $exhausted_coupon->set_code('arch053exhausted'); $exhausted_coupon->set_amount(10);
@@ -433,6 +438,8 @@ export async function assertCheckoutWordPress({
     wp_update_user(array('ID' => $customer_id, 'role' => 'customer'));
     echo wp_json_encode(array('product' => $product->get_id(), 'variableProduct' => $variable->get_id(),
 	'variation' => $variation->get_id(), 'coupon' => $coupon->get_id(), 'couponCode' => $coupon->get_code(),
+	'offerCoupon' => $offer_coupon->get_id(), 'offerCouponCode' => $offer_coupon->get_code(),
+	'conflictCoupon' => $conflict_coupon->get_id(), 'conflictCouponCode' => $conflict_coupon->get_code(),
 	'expiredCoupon' => $expired_coupon->get_id(), 'exhaustedCoupon' => $exhausted_coupon->get_id(),
 	'rejectedCouponCodes' => array($expired_coupon->get_code(), $exhausted_coupon->get_code(), 'arch053-deleted-code'),
 	'observeCoupon' => $observe_coupon->get_id(), 'observeCouponTwo' => $observe_coupon_two->get_id(),
@@ -460,6 +467,7 @@ export async function assertCheckoutWordPress({
 	);
 
 	try {
+		if (!restoreOnly) {
 		await assertNeverActiveEmpty({
 			siteUrl,
 			checkoutPage: fixture.classicCheckoutPage,
@@ -846,6 +854,7 @@ export async function assertCheckoutWordPress({
 			);
 		}
 
+		}
 		// Real Classic and Blocks carts verify the exact nested Shared restoration
 		// projection with one original coupon and one selected variation.
 		const classicRestore = session(siteUrl);
@@ -1016,7 +1025,7 @@ export async function assertCheckoutWordPress({
 		setActivityStatus(202);
 		wp(
 			'eval',
-			`update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_post(${fixture.blocksCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.expiredCoupon}, true); wp_delete_post(${fixture.exhaustedCoupon}, true); wp_delete_post(${fixture.observeCoupon}, true); wp_delete_post(${fixture.observeCouponTwo}, true);`
+			`update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_post(${fixture.blocksCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.offerCoupon}, true); wp_delete_post(${fixture.conflictCoupon}, true); wp_delete_post(${fixture.expiredCoupon}, true); wp_delete_post(${fixture.exhaustedCoupon}, true); wp_delete_post(${fixture.observeCoupon}, true); wp_delete_post(${fixture.observeCouponTwo}, true);`
 		);
 	}
 }
@@ -1041,7 +1050,7 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 		recoveryId,
 		checkoutKey: 'woo-restore-checkout-key',
 		snapshot,
-		outreachOffer: { kind: 'NONE', reason: 'NO_CONFIRMED_OFFER' },
+		outreachOffer: { kind: 'CHECKOUT_CODE', code: fixture.offerCouponCode, providerDiscountId: 'woo:coupon:offer5' },
 	};
 	setRestoreResolveResult(200, eligible);
 	const browser = createSession(siteUrl);
@@ -1108,15 +1117,15 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.equal(afterRestore.items.length, 1, 'restoration replaces the existing basket');
 	assert.equal(Number(afterRestore.items[0].quantity), 1);
 	assert.ok([fixture.variableProduct, fixture.variation].includes(Number(afterRestore.items[0].id)), 'restored variation is present');
-	assert.deepEqual(afterRestore.coupons.map((coupon) => coupon.code), [fixture.couponCode],
-		'Woo applies the currently valid original coupon and rejects the deleted coupon');
-	assert.equal(afterRestore.totals.total_price, '1799', 'Woo recalculates the restored variation at its current 10%-discounted price');
+	assert.deepEqual(afterRestore.coupons.map((coupon) => coupon.code), [fixture.couponCode, fixture.offerCouponCode],
+		'Woo applies the currently valid original coupon and the confirmed stackable outreach coupon while rejecting deleted originals');
+	assert.ok(Number(afterRestore.totals.total_price) < 1799, 'Woo recalculates the restored variation after both native discounts');
 	assert.equal(getRestoreResolveRequests().length, resolveCountBeforePreview + 1);
 	const newCheckoutActions = getCheckoutActionHistory().filter((row) => !actionIdsBefore.has(String(row.id)) && row.args?.event?.eventType === 'CHECKOUT_UPDATED');
 	assert.equal(newCheckoutActions.length, 1, 'one fresh durable resumption event is enqueued');
 	assert.equal(newCheckoutActions[0].args.event.checkoutKey, eligible.checkoutKey);
-	assert.deepEqual(newCheckoutActions[0].args.event.checkout.restoration.appliedCouponCodes, [fixture.couponCode],
-		'fresh resumption evidence records the coupon Woo actually applied');
+	assert.deepEqual(newCheckoutActions[0].args.event.checkout.restoration.appliedCouponCodes, [fixture.couponCode, fixture.offerCouponCode],
+		'fresh resumption evidence records the original and outreach coupons Woo actually applied');
 
 	const classicPage = await browser.request(`/?page_id=${fixture.classicCheckoutPage}`);
 	assert.equal(classicPage.status, 200, 'Classic checkout renders the restored cart');
@@ -1174,8 +1183,33 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.deepEqual((await (await deniedBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, deniedBefore.items, 'stale link preserves visitor cart');
 	assert.equal(deniedHtml.includes('error'), false, 'confirmation landing contains no failure detail');
 
+	const unavailableBrowser = createSession(siteUrl);
+	await unavailableBrowser.request('/wp-json/wc/store/v1/cart');
+	await unavailableBrowser.request(`/?add-to-cart=${fixture.product}`);
+	const unavailableBefore = await (await unavailableBrowser.request('/wp-json/wc/store/v1/cart')).json();
+	const unavailableId = 'recovery_provider_error_fixture';
+	setRestoreResolveResult(503);
+	const unavailableLink = `/?moda_interact_resume=1&r=${unavailableId}&t=${'D'.repeat(43)}`;
+	const unavailableLanding = await unavailableBrowser.request(unavailableLink);
+	const unavailableNonce = (await unavailableLanding.text()).match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
+	const unavailableForm = new URLSearchParams({ moda_interact_resume: '1', r: unavailableId, t: 'D'.repeat(43), nonce: unavailableNonce, confirm: 'replace' });
+	response = await unavailableBrowser.request('/', {
+		method: 'POST',
+		headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
+		body: unavailableForm.toString(),
+	});
+	assert.equal(response.status, 303, 'v1 resolver outage redirects safely');
+	assert.equal(new URL(response.headers.get('location'), siteUrl).searchParams.has('error'), false);
+	assert.deepEqual((await (await unavailableBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, unavailableBefore.items,
+		'v1 resolver outage preserves the visitor basket');
+	assert.ok(getRestoreResolveRequests().some((request) => request.recoveryId === unavailableId && request.status === 503),
+		'v1 provider error reaches the WordPress integration fixture');
+
 	for (const [id, responsePayload] of [
-		['recovery_offer_fixture', { ...eligible, recoveryId: 'recovery_offer_fixture', outreachOffer: { kind: 'CHECKOUT_CODE', code: 'OFFER10', providerDiscountId: 'woo:coupon:10' } }],
+		['recovery_offer_fixture', { ...eligible, recoveryId: 'recovery_offer_fixture', outreachOffer: { kind: 'CHECKOUT_OFFERS', offers: [
+			{ method: 'CODE', code: fixture.offerCouponCode, providerDiscountId: 'woo:coupon:offer5' },
+			{ method: 'CODE', code: fixture.conflictCouponCode, providerDiscountId: 'woo:coupon:conflict20' },
+		] } }],
 	]) {
 		const protectedBrowser = createSession(siteUrl);
 		await protectedBrowser.request('/wp-json/wc/store/v1/cart');
@@ -1192,8 +1226,15 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 			body: protectedForm.toString(),
 		});
 		assert.equal(response.status, 303);
-		assert.deepEqual((await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, existing.items,
-			'confirmed-offer responses are rejected without cart mutation');
+		const restoredOfferCart = await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json();
+		assert.equal(restoredOfferCart.items.length, 1, 'confirmed offer still restores the proven basket');
+		assert.ok(
+			[fixture.variableProduct, fixture.variation].includes(Number(restoredOfferCart.items[0].id)),
+			`group conflict should restore the snapshot variation; cart items were ${JSON.stringify(restoredOfferCart.items)}`
+		);
+		assert.deepEqual(restoredOfferCart.coupons.map((coupon) => coupon.code), [fixture.couponCode],
+			'a native group conflict rolls back both recommended codes and preserves the original coupon');
+		assert.equal(existing.items.length, 1, 'conflict case began with one visitor basket line');
 	}
 	setRestoreResolveResult(404);
 	process.stdout.write('ARCH-053 confirmed Woo restore integration PASS\n');

@@ -6,6 +6,8 @@ use ModaInteract\WooCommerce\Checkout\CheckoutCartRestorer;
 use ModaInteract\WooCommerce\Checkout\CheckoutCouponRestorer;
 use PHPUnit\Framework\TestCase;
 
+if ( ! class_exists( '\WC_Cart' ) ) { class WC_Cart {} }
+
 if ( ! class_exists( '\\WC_Product_Simple' ) ) {
 	class WC_Product_Simple {
 		public function __construct( private int $id ) {}
@@ -73,7 +75,7 @@ final class RestoreTestSession {
 	public function set( string $key, mixed $value ): void { $this->values[ $key ] = $value; }
 }
 
-final class RestoreTestCart {
+final class RestoreTestCart extends WC_Cart {
 	public array $lines = array();
 	public array $coupons = array();
 	public int $calculations = 0;
@@ -85,6 +87,7 @@ final class RestoreTestCart {
 	public ?CheckoutCapture $capture = null;
 	public function get_cart(): array { return $this->lines; }
 	public function get_applied_coupons(): array { return $this->coupons; }
+	public function remove_coupon( string $code ): void { $this->coupons = array_values( array_filter( $this->coupons, static fn( $current ): bool => strtolower( $current ) !== strtolower( $code ) ) ); }
 	public function apply_coupon( string $code ): bool {
 		$this->coupon_attempts[] = $code;
 		if ( $code === $this->throw_coupon_code ) throw new RuntimeException( $this->throw_coupon_message );
@@ -103,7 +106,7 @@ final class RestoreTestCart {
 		$this->coupons[] = strtolower( $code );
 		return true;
 	}
-	public function empty_cart(): void { $this->lines = array(); $this->capture?->capture(); }
+	public function empty_cart(): void { $this->lines = array(); $this->coupons = array(); $this->capture?->capture(); }
 	public function add_to_cart( int $product_id, int $quantity, int $variation_id = 0, array $variation = array(), array $item_data = array() ): string|false {
 		if ( $product_id === $this->reject_product_id ) return false;
 		$this->lines[] = array_merge( array( 'product_id' => $product_id, 'variation_id' => $variation_id,
@@ -183,6 +186,17 @@ final class CheckoutCartRestorerTest extends TestCase {
 		self::assertSame( array( 101 ), array_column( $this->cart->lines, 'product_id' ) );
 		self::assertSame( 1, $this->cart->calculations );
 		self::assertSame( array( 'save10' ), $this->cart->coupon_attempts );
+	}
+
+	public function test_applies_confirmed_offer_after_originals_and_calculates_once(): void {
+		$snapshot = array( 'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'supported', 'appliedCouponCodes' => array( 'save10' ),
+			'lines' => array( array( 'productId' => '101', 'quantity' => 1 ) ) );
+		$result = $this->restorer->restore( $snapshot, static fn(): bool => true,
+			array( 'kind' => 'CHECKOUT_CODE', 'code' => 'extra15', 'providerDiscountId' => 'woo:coupon:15' ) );
+		self::assertSame( array( 'save10' ), $result['appliedCodes'] );
+		self::assertSame( 'APPLIED', $result['outreachOffer']['outcome'] );
+		self::assertSame( array( 'save10', 'extra15' ), $this->cart->coupons );
+		self::assertSame( 1, $this->cart->calculations );
 	}
 
 	public function test_coupon_restorer_continues_after_rejections_and_reports_actual_subset(): void {
