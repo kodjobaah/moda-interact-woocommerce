@@ -5,7 +5,6 @@ use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentEligibility;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCheckbox;
 use ModaInteract\WooCommerce\Connection\InstallationStore;
-use ModaInteract\WooCommerce\Connection\SiteIdentity;
 use ModaInteract\WooCommerce\Security\Base64Url;
 use PHPUnit\Framework\TestCase;
 
@@ -27,11 +26,6 @@ if ( ! function_exists( 'restore_previous_locale' ) ) {
 	}
 }
 
-if ( ! function_exists( 'add_filter' ) ) {
-	function add_filter( $name, $callback, $priority = 10, $accepted_args = 1 ) {
-		$GLOBALS['arch046_checkbox_filters'][ $name ][] = $callback;
-	}
-}
 if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
 	function woocommerce_register_additional_checkout_field( $definition ) {
 		$GLOBALS['arch046_checkbox_blocks'][] = $definition;
@@ -57,7 +51,7 @@ if ( ! function_exists( 'is_checkout_pay_page' ) ) {
 
 final class CheckoutConsentCheckboxTest extends TestCase {
 	protected function setUp(): void {
-		$GLOBALS['arch046_checkbox_filters'] = array();
+		$GLOBALS['moda_interact_test_filters'] = array();
 		$GLOBALS['arch046_checkbox_blocks'] = array();
 		$GLOBALS['arch046_checkout_page'] = false;
 		$GLOBALS['arch046_is_blocks_checkout'] = false;
@@ -92,67 +86,41 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		);
 	}
 
-	private function reader( array $features, ?callable $transport = null ): CheckoutConsentEligibility {
+	private function connectedReader(): CheckoutConsentEligibility {
 		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $this->connection();
-		$transport = $transport ?? static fn() => array(
-			'response' => array( 'code' => 200 ),
-			'headers' => array( 'content-type' => 'application/json' ),
-			'body' => json_encode( $features ),
-		);
-		return new CheckoutConsentEligibility(
-			new ModaApiClient( ModaApiConfiguration::fromServerConfiguration(), $transport ),
-			new SiteIdentity( ModaApiConfiguration::MODE_PUBLIC,
-				static fn( string $hostname ): array => array( '93.184.216.34' ) ),
-			new InstallationStore()
-		);
+		return new CheckoutConsentEligibility( new InstallationStore() );
 	}
 
-	private function features( bool $effective = true, bool $planEligible = true ): array {
-		return array(
-			'schemaVersion' => 1,
-			'revision' => str_repeat( 'a', 64 ),
-			'features' => array( array(
-				'id' => 'feature-1', 'key' => 'checkout_recovery',
-				'name' => 'Checkout Recovery', 'description' => null,
-				'enabled' => true, 'effective' => $effective,
-				'editable' => false, 'required' => true, 'planEligible' => $planEligible,
-			) ),
-		);
-	}
-
-	public function test_remote_feature_and_installation_must_remain_current(): void {
-		$reader = $this->reader( $this->features() );
+	public function test_local_installation_is_rechecked_on_explicit_action(): void {
+		$reader = $this->connectedReader();
+		self::assertTrue( $reader->eligibleForPresentation() );
 		self::assertTrue( $reader->eligible() );
 		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = null;
-		self::assertFalse( $reader->eligible() );
-		$reader = $this->reader( $this->features( false ) );
-		self::assertFalse( $reader->eligible() );
-		$reader = $this->reader( $this->features( true, false ) );
-		self::assertFalse( $reader->eligible() );
-		$reader = $this->reader( array( 'schemaVersion' => 1, 'revision' => 'bad', 'features' => array() ) );
-		self::assertFalse( $reader->eligible() );
+		self::assertTrue( $reader->eligibleForPresentation(), 'Page view is request-local' );
+		self::assertFalse( $reader->eligible(), 'A disconnected installation cannot mint a GRANT' );
 	}
 
-	public function test_revocation_or_reconnect_during_feature_read_fails_closed(): void {
-		$features = $this->features();
-		$reader = $this->reader( $features, static function () use ( $features ): array {
-			$changed = $GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ];
-			$changed['credentialVersion']++;
-			$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $changed;
-			return array( 'response' => array( 'code' => 200 ), 'headers' => array( 'content-type' => 'application/json' ), 'body' => json_encode( $features ) );
-		} );
+	public function test_invalid_reconnected_installation_or_changed_site_fails_closed(): void {
+		$reader = $this->connectedReader();
+		$original = $GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ];
+		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = array( 'invalid' => true );
 		self::assertFalse( $reader->eligible() );
-		$reader = $this->reader( $features, static fn() => array( 'response' => array( 'code' => 401 ), 'body' => '{}' ) );
+		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $original;
+		self::assertTrue( $reader->eligible() );
+		$GLOBALS['moda_interact_home_url'] = 'https://another-store.example';
 		self::assertFalse( $reader->eligible() );
-		$GLOBALS['moda_interact_home_url'] = 'https://changed.example';
-		self::assertFalse( $this->reader( $features )->eligible() );
+		$GLOBALS['moda_interact_home_url'] = 'https://merchant.example';
+		$replacement = $original;
+		$replacement['canonicalSiteUrl'] = 'https://another-store.example';
+		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $replacement;
+		self::assertFalse( $reader->eligible(), 'A reconnected site never inherits the old origin' );
 	}
 
 	public function test_original_wp_transport_error_is_retained_for_redacted_logging(): void {
 		$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration(),
 			static fn(): WP_Error => new WP_Error( 'http_request_failed',
 				'cURL error 28: Operation timed out after 2000 milliseconds' ) );
-		$this->reader( $this->features() );
+		$this->connectedReader();
 		$record = ( new InstallationStore() )->read()['record'];
 		try {
 			$client->merchantKnowledgeExchange( $record, '/v1/merchant/feature-preferences', 'GET', null, 2 );
@@ -179,45 +147,8 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		}
 	}
 
-	public function test_checkout_feature_read_uses_a_short_request_deadline(): void {
-		$timeouts = array();
-		$features = $this->features();
-		$reader = $this->reader( $features, static function ( string $url, array $args ) use ( &$timeouts, $features ): array {
-			$timeouts[] = $args['timeout'] ?? null;
-			return array( 'response' => array( 'code' => 200 ),
-				'headers' => array( 'content-type' => 'application/json' ),
-				'body' => json_encode( $features ) );
-		} );
-		self::assertTrue( $reader->eligible() );
-		self::assertSame( array( 2 ), $timeouts );
-	}
-
-	public function test_presentation_uses_no_remote_feature_read_but_commands_recheck_fresh_state(): void {
-		$reads = 0;
-		$features = $this->features();
-		$reader = $this->reader( $features, static function () use ( &$reads, $features ): array {
-			++$reads;
-			return array( 'response' => array( 'code' => 200 ),
-				'headers' => array( 'content-type' => 'application/json' ),
-				'body' => json_encode( $features ) );
-		} );
-		self::assertTrue( $reader->eligibleForPresentation() );
-		self::assertTrue( $reader->eligibleForPresentation() );
-		self::assertSame( 0, $reads, 'A checkout page never calls the remote feature API' );
-		self::assertTrue( $reader->eligible(), 'Explicit GRANT still checks the hosted feature' );
-		self::assertSame( 1, $reads );
-		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = null;
-		self::assertTrue( $reader->eligibleForPresentation(), 'Presentation memo is request-local only' );
-		self::assertFalse( $reader->eligible(), 'Consent action detects a disconnected installation' );
-	}
-
-	public function test_hosted_timeout_cannot_hide_checkbox_or_authorise_grant(): void {
-		$reads = 0;
-		$reader = $this->reader( $this->features(), static function () use ( &$reads ): WP_Error {
-			++$reads;
-			return new WP_Error( 'http_request_failed',
-				'cURL error 28: Operation timed out after 2000 milliseconds' );
-		} );
+	public function test_checkout_presentation_and_action_never_depend_on_hosted_feature_api(): void {
+		$reader = $this->connectedReader();
 		self::assertTrue( $reader->eligibleForPresentation() );
 		$fields = ( new CheckoutConsentCheckbox( static fn(): bool => $reader->eligibleForPresentation() ) )
 			->classicFields( array( 'billing' => array( 'billing_phone' => array( 'priority' => 50 ) ) ) );
@@ -225,29 +156,15 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		$_SERVER['REQUEST_URI'] = '/checkout/';
 		( new CheckoutConsentCheckbox( static fn(): bool => $reader->eligibleForPresentation() ) )->registerBlocksAtInit();
 		self::assertCount( 1, $GLOBALS['arch046_checkbox_blocks'] );
-		self::assertSame( 0, $reads, 'Neither Classic nor Blocks makes an HTTP request to render' );
-		self::assertFalse( $reader->eligible(), 'A transport timeout still fails closed for GRANT' );
-		self::assertSame( 1, $reads );
+		self::assertTrue( $reader->eligible(), 'A valid local installation permits consent evidence, not messaging' );
+		// No HTTP or DNS resolver is provided to eligibility. A hosted feature
+		// endpoint being disabled, ineligible or down cannot affect this decision.
 	}
 
-	public function test_ineligible_hosted_feature_cannot_authorise_grant_even_if_checkbox_renders(): void {
-		$reader = $this->reader( $this->features( false ) );
-		self::assertTrue( $reader->eligibleForPresentation(), 'A local installation permits display' );
-		self::assertFalse( $reader->eligible(), 'Hosted disabled feature forbids GRANT' );
-		$reader = $this->reader( $this->features( true, false ) );
-		self::assertTrue( $reader->eligibleForPresentation() );
-		self::assertFalse( $reader->eligible(), 'Hosted ineligible plan forbids GRANT' );
-	}
-
-	public function test_local_installation_or_site_mismatch_prevents_display_without_feature_read(): void {
-		$reads = 0;
-		$reader = $this->reader( $this->features(), static function () use ( &$reads ): array {
-			++$reads;
-			return array();
-		} );
+	public function test_local_installation_or_site_mismatch_prevents_display(): void {
+		$reader = $this->connectedReader();
 		$GLOBALS['moda_interact_home_url'] = 'https://changed.example';
 		self::assertFalse( $reader->eligibleForPresentation() );
-		self::assertSame( 0, $reads );
 		$GLOBALS['moda_interact_home_url'] = 'https://merchant.example';
 		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = null;
 		$missing = new CheckoutConsentEligibility();
@@ -285,7 +202,8 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 	public function test_classic_uses_only_native_checkbox_without_a_withdrawal_button(): void {
 		$checkbox = new CheckoutConsentCheckbox( static fn(): bool => true );
 		$checkbox->register();
-		self::assertCount( 1, $GLOBALS['arch046_checkbox_filters']['woocommerce_checkout_fields'] );
+		self::assertSame( array( array( $checkbox, 'classicFields' ) ),
+			$GLOBALS['moda_interact_test_filters']['woocommerce_checkout_fields'] ?? array() );
 		self::assertArrayNotHasKey( 'woocommerce_after_checkout_billing_form',
 			$GLOBALS['moda_interact_test_hooks'], 'No separate withdrawal control is registered' );
 		$fields = $checkbox->classicFields( array(
@@ -319,9 +237,11 @@ final class CheckoutConsentCheckboxTest extends TestCase {
 		self::assertSame( $field['label'], $field['optionalLabel'] );
 		self::assertFalse( $field['sanitize_callback']( true ) );
 		self::assertFalse( $field['sanitize_callback']( '1' ) );
-		self::assertFalse( $GLOBALS['arch046_checkbox_filters'][
+		$default_filters = $GLOBALS['moda_interact_test_filters'][
 			'woocommerce_get_default_value_for_' . CheckoutConsentCheckbox::BLOCK_FIELD
-		][0]() );
+		] ?? array();
+		self::assertCount( 1, $default_filters, 'The native checkbox must register its unchecked default' );
+		self::assertFalse( $default_filters[0]() );
 	}
 
 	public function test_native_field_fails_closed_without_eligibility_and_never_breaks_checkout(): void {

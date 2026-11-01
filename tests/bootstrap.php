@@ -4,6 +4,7 @@ use ModaInteract\WooCommerce\Plugin;
 
 define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 $GLOBALS['moda_interact_test_hooks'] = array();
+$GLOBALS['moda_interact_test_filters'] = array();
 $GLOBALS['moda_interact_registered_pages'] = array();
 $GLOBALS['moda_interact_native_menu'] = array();
 $GLOBALS['moda_interact_native_submenus'] = array();
@@ -32,6 +33,16 @@ define( 'WC_VERSION', '11.1.2' );
 
 function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
 	$GLOBALS['moda_interact_test_hooks'][ $hook ][] = $callback;
+}
+
+// Capture WP filter registration before production code and all test files load.
+// Do not define a second add_filter() stub in a single test file: PHPUnit's
+// suite discovery order must not decide which recorder receives the callback.
+if ( ! function_exists( 'add_filter' ) ) {
+	function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+		$GLOBALS['moda_interact_test_filters'][ $hook ][] = $callback;
+		return true;
+	}
 }
 
 function register_activation_hook( $file, $callback ) {
