@@ -385,6 +385,7 @@ export async function assertCheckoutWordPress({
 	setActivityStatus,
 			getRestoreResolveRequests,
 			setRestoreResolveResult,
+			restoreOnly = false,
 }) {
 	const fixture = parseJsonOutput(
 		wp(
@@ -466,6 +467,7 @@ export async function assertCheckoutWordPress({
 	);
 
 	try {
+		if (!restoreOnly) {
 		await assertNeverActiveEmpty({
 			siteUrl,
 			checkoutPage: fixture.classicCheckoutPage,
@@ -852,6 +854,7 @@ export async function assertCheckoutWordPress({
 			);
 		}
 
+		}
 		// Real Classic and Blocks carts verify the exact nested Shared restoration
 		// projection with one original coupon and one selected variation.
 		const classicRestore = session(siteUrl);
@@ -1180,6 +1183,28 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.deepEqual((await (await deniedBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, deniedBefore.items, 'stale link preserves visitor cart');
 	assert.equal(deniedHtml.includes('error'), false, 'confirmation landing contains no failure detail');
 
+	const unavailableBrowser = createSession(siteUrl);
+	await unavailableBrowser.request('/wp-json/wc/store/v1/cart');
+	await unavailableBrowser.request(`/?add-to-cart=${fixture.product}`);
+	const unavailableBefore = await (await unavailableBrowser.request('/wp-json/wc/store/v1/cart')).json();
+	const unavailableId = 'recovery_provider_error_fixture';
+	setRestoreResolveResult(503);
+	const unavailableLink = `/?moda_interact_resume=1&r=${unavailableId}&t=${'D'.repeat(43)}`;
+	const unavailableLanding = await unavailableBrowser.request(unavailableLink);
+	const unavailableNonce = (await unavailableLanding.text()).match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
+	const unavailableForm = new URLSearchParams({ moda_interact_resume: '1', r: unavailableId, t: 'D'.repeat(43), nonce: unavailableNonce, confirm: 'replace' });
+	response = await unavailableBrowser.request('/', {
+		method: 'POST',
+		headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
+		body: unavailableForm.toString(),
+	});
+	assert.equal(response.status, 303, 'v1 resolver outage redirects safely');
+	assert.equal(new URL(response.headers.get('location'), siteUrl).searchParams.has('error'), false);
+	assert.deepEqual((await (await unavailableBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, unavailableBefore.items,
+		'v1 resolver outage preserves the visitor basket');
+	assert.ok(getRestoreResolveRequests().some((request) => request.recoveryId === unavailableId && request.status === 503),
+		'v1 provider error reaches the WordPress integration fixture');
+
 	for (const [id, responsePayload] of [
 		['recovery_offer_fixture', { ...eligible, recoveryId: 'recovery_offer_fixture', outreachOffer: { kind: 'CHECKOUT_OFFERS', offers: [
 			{ method: 'CODE', code: fixture.offerCouponCode, providerDiscountId: 'woo:coupon:offer5' },
@@ -1203,7 +1228,10 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 		assert.equal(response.status, 303);
 		const restoredOfferCart = await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json();
 		assert.equal(restoredOfferCart.items.length, 1, 'confirmed offer still restores the proven basket');
-		assert.ok([fixture.variableProduct, fixture.variation].includes(Number(restoredOfferCart.items[0].id)));
+		assert.ok(
+			[fixture.variableProduct, fixture.variation].includes(Number(restoredOfferCart.items[0].id)),
+			`group conflict should restore the snapshot variation; cart items were ${JSON.stringify(restoredOfferCart.items)}`
+		);
 		assert.deepEqual(restoredOfferCart.coupons.map((coupon) => coupon.code), [fixture.couponCode],
 			'a native group conflict rolls back both recommended codes and preserves the original coupon');
 		assert.equal(existing.items.length, 1, 'conflict case began with one visitor basket line');

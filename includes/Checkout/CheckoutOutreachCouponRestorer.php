@@ -12,7 +12,7 @@ final class CheckoutOutreachCouponRestorer {
 			! method_exists( $cart, 'remove_coupon' ) || ! method_exists( $cart, 'calculate_totals' ) ) {
 			throw new \RuntimeException( 'restore_offer_cart_unavailable' );
 		}
-		$initial = self::couponList( $cart->get_applied_coupons() );
+		$initial = self::cartCouponList( $cart );
 		$originals = self::couponList( $appliedOriginalCoupons );
 		if ( null === $initial || null === $originals || ! self::containsAll( $initial, $originals ) ) {
 			throw new \RuntimeException( 'restore_offer_original_state_unavailable' );
@@ -36,7 +36,7 @@ final class CheckoutOutreachCouponRestorer {
 				$outcome = 'ALREADY_APPLIED';
 			} else {
 				self::attempt( $cart, $recommended );
-				$current = self::couponList( $cart->get_applied_coupons() );
+				$current = self::cartCouponList( $cart );
 				if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable' );
 				if ( ! self::containsAll( $current, $originals ) ) {
 					$outcome = 'CONFLICT_REQUIRES_CHOICE';
@@ -58,15 +58,15 @@ final class CheckoutOutreachCouponRestorer {
 				$outcome = 'AUTOMATIC_NOT_FORCED';
 			} else {
 				foreach ( $codes as $code ) {
-					$current_before_attempt = self::couponList( $cart->get_applied_coupons() );
-					if ( null === $current_before_attempt ) throw new \RuntimeException( 'restore_offer_state_unavailable' );
+					$current_before_attempt = self::cartCouponList( $cart );
+					if ( null === $current_before_attempt ) throw new \RuntimeException( 'restore_offer_state_unavailable_before_group_code' );
 					if ( self::containsCode( $current_before_attempt, $code ) ) continue;
 					self::attempt( $cart, $code );
-					$current = self::couponList( $cart->get_applied_coupons() );
-					if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable' );
+					$current = self::cartCouponList( $cart );
+					if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable_after_group_code' );
 				}
-				$current = self::couponList( $cart->get_applied_coupons() );
-				if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable' );
+				$current = self::cartCouponList( $cart );
+				if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable_after_group' );
 				$originals_retained = self::containsAll( $current, $originals );
 				$group_present = self::containsAll( $current, $codes );
 				if ( ! $originals_retained ) {
@@ -88,7 +88,7 @@ final class CheckoutOutreachCouponRestorer {
 		}
 
 		if ( $must_restore_originals ) self::restoreOriginals( $cart, $originals );
-		$final = self::couponList( $cart->get_applied_coupons() );
+		$final = self::cartCouponList( $cart );
 		if ( null === $final || ! self::containsAll( $final, $originals ) ) throw new \RuntimeException( 'restore_offer_original_rollback_failed' );
 		$cart->calculate_totals();
 		return array( 'outcome' => $outcome, 'recommendedCode' => $recommended, 'originalAppliedCodes' => $originals,
@@ -107,21 +107,22 @@ final class CheckoutOutreachCouponRestorer {
 	}
 
 	private static function restoreOriginals( object $cart, array $originals ): void {
-		$current = self::couponList( $cart->get_applied_coupons() );
-		if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable' );
+		$current = self::cartCouponList( $cart );
+		if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable_before_offer_rollback' );
 		foreach ( $current as $code ) {
 			if ( ! self::containsCode( $originals, $code ) ) $cart->remove_coupon( $code );
 		}
-		$current = self::couponList( $cart->get_applied_coupons() );
-		if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable' );
+		$current = self::cartCouponList( $cart );
+		if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable_after_offer_removal' );
 		foreach ( $originals as $code ) {
 			if ( ! self::containsCode( $current, $code ) ) {
 				self::attempt( $cart, $code );
-				$current = self::couponList( $cart->get_applied_coupons() );
-				if ( null === $current || ! self::containsCode( $current, $code ) ) throw new \RuntimeException( 'restore_offer_original_rollback_failed' );
+				$current = self::cartCouponList( $cart );
+				if ( null === $current ) throw new \RuntimeException( 'restore_offer_state_unavailable_after_original_reapply' );
+				if ( ! self::containsCode( $current, $code ) ) throw new \RuntimeException( 'restore_offer_original_reapply_rejected' );
 			}
 		}
-		if ( ! self::containsAll( $current, $originals ) ) throw new \RuntimeException( 'restore_offer_original_rollback_failed' );
+		if ( ! self::containsAll( $current, $originals ) ) throw new \RuntimeException( 'restore_offer_original_set_incomplete' );
 	}
 
 	private static function groupCodes( mixed $offers ): ?array {
@@ -141,6 +142,23 @@ final class CheckoutOutreachCouponRestorer {
 		if ( ! is_array( $codes ) || ! array_is_list( $codes ) ) return null;
 		foreach ( $codes as $code ) if ( ! is_string( $code ) || '' === $code ) return null;
 		return $codes;
+	}
+
+	/** Woo removal can leave sparse numeric keys in the live applied-code list. */
+	private static function cartCouponList( object $cart ): ?array {
+		$codes = $cart->get_applied_coupons();
+		if ( ! is_array( $codes ) ) return null;
+		$values = self::couponList( array_values( $codes ) );
+		if ( null !== $values ) return $values;
+		if ( ! array_is_list( $codes ) ) {
+			$keys = array();
+			foreach ( array_keys( $codes ) as $code ) {
+				if ( ( ! is_string( $code ) && ! is_int( $code ) ) || '' === (string) $code ) return null;
+				$keys[] = (string) $code;
+			}
+			return $keys;
+		}
+		return self::couponList( $codes );
 	}
 
 	private static function containsAll( array $actual, array $expected ): bool {

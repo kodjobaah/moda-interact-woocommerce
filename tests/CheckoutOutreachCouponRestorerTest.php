@@ -28,8 +28,14 @@ final class OutreachOfferTestCart extends WC_Cart {
 	public array $reject = array();
 	public array $replaceExisting = array();
 	public bool $failRemoval = false;
+	public bool $sparseCoupons = false;
 	public int $calculations = 0;
-	public function get_applied_coupons(): array { return $this->coupons; }
+	public function get_applied_coupons(): array {
+		if ( ! $this->sparseCoupons ) return $this->coupons;
+		$sparse = array();
+		foreach ( $this->coupons as $index => $code ) $sparse[ $index + 1 ] = $code;
+		return $sparse;
+	}
 	public function apply_coupon( string $code ): bool {
 		$this->attempts[] = $code;
 		if ( in_array( strtolower( $code ), $this->reject, true ) ) return false;
@@ -136,5 +142,18 @@ final class CheckoutOutreachCouponRestorerTest extends TestCase {
 		$this->cart->failRemoval = true;
 		$this->expectException( RuntimeException::class );
 		$this->restorer->apply_outreach_offer( array( 'kind' => 'CHECKOUT_CODE', 'code' => 'EXTRA15' ), array( 'SAVE10' ), $this->cart );
+	}
+
+	public function test_sparse_live_coupon_indexes_preserve_originals_after_group_conflict(): void {
+		$this->cart->coupons = array( 'save10' );
+		$this->cart->sparseCoupons = true;
+		$this->cart->replaceExisting = array( 'extra15' => array( 'save10' ) );
+		$result = $this->restorer->apply_outreach_offer( array( 'kind' => 'CHECKOUT_OFFERS', 'offers' => array(
+			array( 'method' => 'CODE', 'code' => 'EXTRA15' ),
+			array( 'method' => 'CODE', 'code' => 'EXTRA20' ),
+		) ), array( 'SAVE10' ), $this->cart );
+		self::assertSame( 'CONFLICT_REQUIRES_CHOICE', $result['outcome'] );
+		self::assertSame( array( 'save10' ), $result['currentAppliedCodes'] );
+		self::assertSame( array( 1 => 'save10' ), $this->cart->get_applied_coupons() );
 	}
 }
