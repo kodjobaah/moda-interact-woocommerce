@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
+import {
+	AiResponseDelayPanel,
+	AiResponseDelayFields,
+} from '../../src/recovery-settings/ai-response-delay-panel';
 import { FeaturePreferencesPanel } from '../../src/recovery-settings/feature-preferences-panel';
 import { WhatsAppConsentGuidance } from '../../src/recovery-settings/whatsapp-consent-guidance';
 import { MerchantKnowledgePanel } from '../../src/recovery-settings/merchant-knowledge/knowledge-panel';
@@ -19,7 +23,10 @@ function flatten(node) {
 	if (typeof node === 'string' || typeof node === 'number') {
 		return String(node);
 	}
-	if (node.type === RecoveryBehaviourPanel) {
+	if (
+		node.type === RecoveryBehaviourPanel ||
+		node.type === AiResponseDelayPanel
+	) {
 		return ''; // React hook owner is tested through its pure view.
 	}
 	if (typeof node.type === 'function') {
@@ -36,7 +43,10 @@ function buttons(node, found = []) {
 	if (node === null || node === undefined || typeof node !== 'object') {
 		return found;
 	}
-	if (node.type === RecoveryBehaviourPanel) {
+	if (
+		node.type === RecoveryBehaviourPanel ||
+		node.type === AiResponseDelayPanel
+	) {
 		return found;
 	}
 	if (typeof node.type === 'function') {
@@ -61,16 +71,29 @@ describe('Woo Recovery Settings category presentation', () => {
 		});
 		const children = view.props.children;
 		expect(children[1].type).toBe(RecoveryBehaviourPanel);
-		expect(children[2].type).toBe(WhatsAppConsentGuidance);
-		expect(children[2].props.featurePreferencesState).toBe(
+		expect(children[2].type).toBe(AiResponseDelayPanel);
+		expect(children[3].type).toBe(WhatsAppConsentGuidance);
+		expect(children[3].props.featurePreferencesState).toBe(
 			featurePreferencesState
 		);
-		expect(children[3].type).toBe(FeaturePreferencesPanel);
-		expect(children[4].type).toBe(StoreAssistantContext);
-		expect(children[4].props.storeProfile.type).toBe(StoreProfileAccordion);
-		expect(children[4].props.merchantKnowledge.type).toBe(
+		expect(children[4].type).toBe(FeaturePreferencesPanel);
+		expect(children[5].type).toBe(StoreAssistantContext);
+		expect(children[5].props.storeProfile.type).toBe(StoreProfileAccordion);
+		expect(children[5].props.merchantKnowledge.type).toBe(
 			MerchantKnowledgePanel
 		);
+	});
+
+	it('shows a bounded delay input and immediate-human guidance', () => {
+		const fields = AiResponseDelayFields({
+			value: '7',
+			disabled: false,
+			onChange: () => {},
+		});
+		const input = fields.props.children[0].props.children[1];
+		expect(input.props).toMatchObject({ min: 0, max: 30, step: 1 });
+		expect(flatten(fields)).toContain('AI response delay (minutes)');
+		expect(flatten(fields)).toContain('Human replies are immediate.');
 	});
 
 	it('matches Shopify conceptual hierarchy with a separate navigation and explicit save', () => {

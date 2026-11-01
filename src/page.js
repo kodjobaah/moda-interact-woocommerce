@@ -92,6 +92,7 @@ function ModaInteractPage() {
 						categoryState: page.categoryState,
 						recoverySummaryState: page.recoverySummaryState,
 						recoveryPolicyState: page.recoveryPolicyState,
+						aiResponseDelayState: page.aiResponseDelayState,
 						featurePreferencesState: page.featurePreferencesState,
 						knowledgeState: page.knowledgeState,
 						actions: page.actions,

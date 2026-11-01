@@ -46,6 +46,7 @@ function controllers() {
 		category: fakeController(),
 		recoverySummary: fakeController(),
 		recoveryPolicy: fakeController(),
+		aiResponseDelay: fakeController(),
 		featurePreferences: fakeController(),
 		merchantKnowledge: fakeController(),
 		readAccess: fakeController(),
@@ -65,6 +66,7 @@ describe('page controller session', () => {
 			onCategory: vi.fn(),
 			onRecoverySummary: vi.fn(),
 			onRecoveryPolicy: vi.fn(),
+			onAiResponseDelay: vi.fn(),
 			onFeaturePreferences: vi.fn(),
 			onMerchantKnowledge: vi.fn(),
 			onReadAccess: vi.fn(),
@@ -91,6 +93,7 @@ describe('page controller session', () => {
 			'category',
 			'recoverySummary',
 			'recoveryPolicy',
+			'aiResponseDelay',
 		]) {
 			expect(items[name].setConnectionStatus).toHaveBeenLastCalledWith(
 				'CONNECTED'
@@ -112,6 +115,7 @@ describe('page controller session', () => {
 			onCategory: vi.fn(),
 			onRecoverySummary: vi.fn(),
 			onRecoveryPolicy: vi.fn(),
+			onAiResponseDelay: vi.fn(),
 			onFeaturePreferences: vi.fn(),
 			onMerchantKnowledge: vi.fn(),
 			onReadAccess: vi.fn(),
@@ -138,6 +142,7 @@ describe('page controller session', () => {
 			onCategory: vi.fn(),
 			onRecoverySummary: vi.fn(),
 			onRecoveryPolicy: vi.fn(),
+			onAiResponseDelay: vi.fn(),
 			onFeaturePreferences: vi.fn(),
 			onMerchantKnowledge: vi.fn(),
 			onReadAccess: vi.fn(),
@@ -170,6 +175,7 @@ describe('page actions', () => {
 		expect(items.category.refresh).toHaveBeenCalledTimes(1);
 		expect(items.recoverySummary.setActive).toHaveBeenLastCalledWith(true);
 		expect(items.recoveryPolicy.setActive).toHaveBeenLastCalledWith(true);
+		expect(items.aiResponseDelay.setActive).toHaveBeenLastCalledWith(true);
 		expect(items.featurePreferences.setActive).toHaveBeenLastCalledWith(
 			true
 		);
@@ -197,6 +203,12 @@ describe('page actions', () => {
 		expect(items.recoveryPolicy.refresh).toHaveBeenCalledTimes(1);
 		expect(items.recoveryPolicy.save).toHaveBeenCalledWith({
 			recoveryDelayMinutes: '45',
+		});
+		actions.refreshAiResponseDelay();
+		actions.saveAiResponseDelay({ aiResponseDelayMinutes: '7' });
+		expect(items.aiResponseDelay.refresh).toHaveBeenCalledTimes(1);
+		expect(items.aiResponseDelay.save).toHaveBeenCalledWith({
+			aiResponseDelayMinutes: '7',
 		});
 		actions.connect();
 		actions.syncStoreContext();

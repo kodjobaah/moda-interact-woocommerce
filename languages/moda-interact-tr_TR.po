@@ -2431,3 +2431,19 @@ msgstr "İlk kurtarma mesajı başladığında bana bildir"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Bu bildirim müşteri mesajlarını veya kurtarma kredisi kullanımını değiştirmez."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "Yapay zekâ yanıt gecikmesi (dakika)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "0 ile 30 arasında bir tam sayı girin."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "İnsan yanıtları hemen gönderilir."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "Yapay zekâ yanıt gecikmesini kaydet"

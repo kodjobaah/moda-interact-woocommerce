@@ -19,6 +19,7 @@ export function createPageActions(sessionRef, setActiveSurface) {
 		refreshCategory: () => controllers()?.category.refresh(),
 		refreshRecoverySummary: () => controllers()?.recoverySummary.refresh(),
 		refreshRecoveryPolicy: () => controllers()?.recoveryPolicy.refresh(),
+		refreshAiResponseDelay: () => controllers()?.aiResponseDelay.refresh(),
 		refreshFeaturePreferences: () =>
 			controllers()?.featurePreferences.refresh(),
 		refreshMerchantKnowledge: () =>
@@ -29,6 +30,8 @@ export function createPageActions(sessionRef, setActiveSurface) {
 			controllers()?.featurePreferences.save(id, enabled),
 		saveRecoveryPolicy: (draft) =>
 			controllers()?.recoveryPolicy.save(draft),
+		saveAiResponseDelay: (draft) =>
+			controllers()?.aiResponseDelay.save(draft),
 		chooseCategory: (categoryId) =>
 			controllers()?.category.chooseCategory(categoryId),
 		toggleMapping: (mappingId) =>
@@ -39,6 +42,7 @@ export function createPageActions(sessionRef, setActiveSurface) {
 			controllers()?.billing.setActive(surface === 'BILLING');
 			controllers()?.recoverySummary.setActive(surface === 'RECOVERY');
 			controllers()?.recoveryPolicy.setActive(surface === 'RECOVERY');
+			controllers()?.aiResponseDelay.setActive(surface === 'RECOVERY');
 			controllers()?.featurePreferences.setActive(surface === 'RECOVERY');
 			controllers()?.merchantKnowledge.setActive(surface === 'RECOVERY');
 			if (surface === 'RECOVERY') {
