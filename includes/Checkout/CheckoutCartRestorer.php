@@ -12,8 +12,8 @@ final class CheckoutCartRestorer {
 
 	public function __construct( private readonly CheckoutCapture $capture ) {}
 
-	/** Rebuild a coupon-free snapshot and commit its fresh activity before success. */
-	public function restore( array $snapshot, callable $after_apply ): bool {
+	/** Rebuild a snapshot, apply original coupons and commit fresh activity before success. */
+	public function restore( array $snapshot, callable $after_apply ): array|false {
 		try {
 			$plan = $this->preflight( $snapshot );
 			$commerce = function_exists( 'WC' ) ? WC() : null;
@@ -50,12 +50,14 @@ final class CheckoutCartRestorer {
 					$result = $cart->add_to_cart( $line['productId'], $line['quantity'], $line['variationId'], $line['attributes'] );
 					if ( false === $result ) throw new \RuntimeException( 'restore_add_to_cart_rejected' );
 				}
-				$cart->calculate_totals();
+			} );
+			$coupon_result = $this->capture->withoutCapture( function () use ( $cart, $snapshot ): array {
+				return ( new CheckoutCouponRestorer() )->restore( $cart, $snapshot['appliedCouponCodes'] );
 			} );
 			if ( ! $after_apply() ) throw new \RuntimeException( 'restore_commit_rejected' );
-			return true;
+			return $coupon_result;
 		} catch ( \Throwable $error ) {
-			self::log( 'restore_apply_failed', $error );
+			self::log( 'restore_apply_failed', self::redactCouponValues( $error, $snapshot['appliedCouponCodes'] ?? array() ) );
 			try {
 				$this->capture->withoutCapture( function () use ( $cart, $backup ): void {
 					$cart->empty_cart();
@@ -82,7 +84,7 @@ final class CheckoutCartRestorer {
 					$cart->calculate_totals();
 				} );
 			} catch ( \Throwable $rollback_error ) {
-				self::log( 'restore_rollback_failed', $rollback_error );
+				self::log( 'restore_rollback_failed', self::redactCouponValues( $rollback_error, $backup['coupons'] ) );
 			}
 			return false;
 		}
@@ -93,9 +95,13 @@ final class CheckoutCartRestorer {
 		sort( $keys );
 		if ( $keys !== array( 'appliedCouponCodes', 'kind', 'lines', 'schemaVersion' ) ||
 			'woo.cart-restore.v1' !== ( $snapshot['schemaVersion'] ?? null ) || 'supported' !== ( $snapshot['kind'] ?? null ) ||
-			array() !== ( $snapshot['appliedCouponCodes'] ?? null ) || ! is_array( $snapshot['lines'] ?? null ) ||
+			! is_array( $snapshot['appliedCouponCodes'] ?? null ) || ! array_is_list( $snapshot['appliedCouponCodes'] ) ||
+			count( $snapshot['appliedCouponCodes'] ) > 10 || ! is_array( $snapshot['lines'] ?? null ) ||
 			array_is_list( $snapshot['lines'] ) === false || count( $snapshot['lines'] ) < 1 || count( $snapshot['lines'] ) > 50 ||
 			! function_exists( 'wc_get_product' ) ) return null;
+		foreach ( $snapshot['appliedCouponCodes'] as $code ) {
+			if ( ! self::boundedText( $code, 128 ) ) return null;
+		}
 
 		$plan = array();
 		foreach ( $snapshot['lines'] as $line ) {
@@ -166,5 +172,15 @@ final class CheckoutCartRestorer {
 
 	private static function log( string $reason, ?\Throwable $error = null ): void {
 		CheckoutDiagnosticLogger::record( 'checkout_restore', $reason, $error );
+	}
+
+	private static function redactCouponValues( \Throwable $error, mixed $coupon_codes ): \Throwable {
+		$message = $error->getMessage();
+		if ( is_array( $coupon_codes ) ) {
+			foreach ( $coupon_codes as $code ) {
+				if ( is_string( $code ) && '' !== $code ) $message = str_ireplace( $code, '[redacted-coupon]', $message );
+			}
+		}
+		return new \RuntimeException( CheckoutDiagnosticLogger::redact( $message ) );
 	}
 }

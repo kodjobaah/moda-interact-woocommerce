@@ -4,6 +4,7 @@ import { RecoverySettingsHeader } from '../../src/recovery-settings/recovery-set
 import { CategoryProfileSummary } from '../../src/recovery-settings/category-profile-summary';
 import { RecoverySettingsScreen } from '../../src/recovery-settings/recovery-settings-screen';
 import { RecoveryBehaviourPanel } from '../../src/recovery-settings/recovery-behaviour-panel';
+import { AiResponseDelayPanel } from '../../src/recovery-settings/ai-response-delay-panel';
 import { categoriesFixture } from './store-category-fixtures';
 
 function walk(node, visitor) {
@@ -14,7 +15,10 @@ function walk(node, visitor) {
 	if (!node || typeof node !== 'object') {
 		return;
 	}
-	if (node.type === RecoveryBehaviourPanel) {
+	if (
+		node.type === RecoveryBehaviourPanel ||
+		node.type === AiResponseDelayPanel
+	) {
 		return;
 	}
 	if (typeof node.type === 'function') {

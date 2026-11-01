@@ -2367,3 +2367,19 @@ msgstr "首次恢复消息开始时通知我"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "此通知不会改变发送给客户的消息，也不会影响恢复额度的使用。"
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "AI 回复延迟（分钟）"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "请输入 0 到 30 之间的整数。"
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "人工回复会立即发送。"
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "保存 AI 回复延迟"

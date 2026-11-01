@@ -2446,3 +2446,19 @@ msgstr "Giv mig besked, når den første gendannelseskontakt starter"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "Denne meddelelse ændrer ikke kundebeskeder eller brugen af gendannelseskreditter."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "Forsinkelse af AI-svar (minutter)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "Indtast et helt tal fra 0 til 30."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "Svar fra medarbejdere sendes med det samme."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "Gem forsinkelse af AI-svar"

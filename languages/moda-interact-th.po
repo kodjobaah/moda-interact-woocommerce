@@ -2384,3 +2384,19 @@ msgstr "แจ้งเตือนเมื่อเริ่มการติ
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "การแจ้งเตือนนี้ไม่เปลี่ยนข้อความถึงลูกค้าหรือการใช้เครดิตการกู้คืน"
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "การหน่วงเวลาการตอบกลับของ AI (นาที)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "ป้อนจำนวนเต็มตั้งแต่ 0 ถึง 30"
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "การตอบกลับจากเจ้าหน้าที่จะส่งทันที"
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "บันทึกการหน่วงเวลาการตอบกลับของ AI"

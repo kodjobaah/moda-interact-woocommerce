@@ -2447,3 +2447,19 @@ msgstr "Powiadom mnie o rozpoczęciu pierwszej wiadomości odzyskiwania"
 
 msgid "This notice does not change customer messages or recovery credit use."
 msgstr "To powiadomienie nie zmienia wiadomości do klientów ani wykorzystania kredytów odzyskiwania."
+
+#: src/recovery-settings/ai-response-delay-panel.js:22
+msgid "AI response delay (minutes)"
+msgstr "Opóźnienie odpowiedzi AI (minuty)"
+
+#: src/recovery-settings/ai-response-delay-panel.js:44
+msgid "Enter a whole number from 0 to 30."
+msgstr "Wpisz liczbę całkowitą od 0 do 30."
+
+#: src/recovery-settings/ai-response-delay-panel.js:53
+msgid "Human replies are immediate."
+msgstr "Odpowiedzi człowieka są natychmiastowe."
+
+#: src/recovery-settings/ai-response-delay-panel.js:181
+msgid "Save AI response delay"
+msgstr "Zapisz opóźnienie odpowiedzi AI"

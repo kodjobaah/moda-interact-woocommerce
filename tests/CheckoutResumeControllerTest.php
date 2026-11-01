@@ -57,6 +57,7 @@ final class ResumeControllerSession {
 
 final class ResumeControllerCart {
 	public array $lines = array();
+	public ?string $throw_coupon_code = null;
 	public function get_cart(): array { return $this->lines; }
 	public function get_applied_coupons(): array { return array(); }
 	public function empty_cart(): void { $this->lines = array(); }
@@ -67,7 +68,10 @@ final class ResumeControllerCart {
 	}
 	public function calculate_totals(): void {}
 	public function get_total( string $context = 'view' ): string { return '29.99'; }
-	public function apply_coupon( string $code ): bool { return true; }
+	public function apply_coupon( string $code ): bool {
+		if ( $code === $this->throw_coupon_code ) throw new RuntimeException( 'Coupon code ' . $code . ' dependency unavailable for +44 7700 900123' );
+		return true;
+	}
 }
 
 final class CheckoutResumeControllerTest extends TestCase {
@@ -75,8 +79,13 @@ final class CheckoutResumeControllerTest extends TestCase {
 	private ResumeControllerSession $session;
 	private int $resolve_count = 0;
 	private mixed $previous_home_url;
+	private mixed $previous_test_logger;
 
 	protected function setUp(): void {
+		$this->previous_test_logger = $GLOBALS['moda_interact_test_logger'] ?? null;
+		$GLOBALS['moda_interact_test_logger'] = new class {
+			public function error( string $message, array $context = array() ): void {}
+		};
 		$this->previous_home_url = $GLOBALS['moda_interact_home_url'] ?? null;
 		$GLOBALS['moda_interact_home_url'] = 'https://merchant.example/shop';
 	$GLOBALS['restore_test_products'] = array();
@@ -92,6 +101,8 @@ final class CheckoutResumeControllerTest extends TestCase {
 
 	protected function tearDown(): void {
 		$GLOBALS['moda_interact_home_url'] = $this->previous_home_url;
+		if ( null === $this->previous_test_logger ) unset( $GLOBALS['moda_interact_test_logger'] );
+		else $GLOBALS['moda_interact_test_logger'] = $this->previous_test_logger;
 		parent::tearDown();
 	}
 
@@ -207,7 +218,26 @@ final class CheckoutResumeControllerTest extends TestCase {
 		self::assertSame( array(), $GLOBALS['resume_test_actions'] );
 	}
 
-	private function prepareRestorePost( ResumeControllerCart $cart, string $nonce ): array {
+	public function test_coupon_dependency_failure_rolls_back_and_redirects_without_frontend_error(): void {
+		$cart = new ResumeControllerCart();
+		$cart->lines = array( array( 'product_id' => 999, 'variation_id' => 0, 'quantity' => 2, 'variation' => array() ) );
+		$cart->throw_coupon_code = 'SAVE10';
+		$post = $this->prepareRestorePost( $cart, str_repeat( 'B', 43 ), array( 'SAVE10' ) );
+
+		$result = $this->controller->handleRequest( 'POST', '/shop/', array(), $post, array(
+			'HTTP_ORIGIN' => 'https://merchant.example', 'CONTENT_LENGTH' => '512',
+		) );
+
+		self::assertSame( home_url( '/' ), $result['redirect'] );
+		self::assertStringNotContainsString( 'SAVE10', $result['redirect'] );
+		self::assertStringNotContainsString( '7700 900123', $result['redirect'] );
+		self::assertSame( array( 999 ), array_column( $cart->lines, 'product_id' ) );
+		self::assertSame( array( 2 ), array_column( $cart->lines, 'quantity' ) );
+		self::assertNull( $this->session->get( CheckoutKey::SESSION_FIELD ) );
+		self::assertSame( array(), $GLOBALS['resume_test_actions'] );
+	}
+
+	private function prepareRestorePost( ResumeControllerCart $cart, string $nonce, array $coupon_codes = array() ): array {
 		$GLOBALS['restore_test_products'] = array( 101 => new WC_Product_Simple( 101 ) );
 		$GLOBALS['arch035_wc']->cart = $cart;
 		$prior_nonce = array( 'digest' => hash( 'sha256', $nonce ), 'issuedAt' => time() );
@@ -225,7 +255,7 @@ final class CheckoutResumeControllerTest extends TestCase {
 		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $connection;
 		$response = json_decode( file_get_contents( __DIR__ . '/fixtures/woo-restore-v1.json' ), true )['eligibleResolveResponse'];
 		$response['checkoutKey'] = 'woo-restored-checkout';
-		$response['snapshot'] = array( 'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'supported', 'appliedCouponCodes' => array(),
+		$response['snapshot'] = array( 'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'supported', 'appliedCouponCodes' => $coupon_codes,
 			'lines' => array( array( 'productId' => '101', 'quantity' => 1 ) ) );
 		$response['outreachOffer'] = array( 'kind' => 'NONE', 'reason' => 'NO_CONFIRMED_OFFER' );
 		$capture = new CheckoutCapture( new CheckoutActivityPublisher() );

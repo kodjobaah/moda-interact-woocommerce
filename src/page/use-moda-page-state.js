@@ -46,6 +46,10 @@ export function useModaPageState() {
 		status: 'IDLE',
 		data: null,
 	});
+	const [aiResponseDelayState, setAiResponseDelayState] = useState({
+		status: 'IDLE',
+		data: null,
+	});
 
 	useEffect(() => {
 		const session = createControllerSession(createPageControllers(), {
@@ -57,6 +61,7 @@ export function useModaPageState() {
 			onCategory: setCategoryState,
 			onRecoverySummary: setRecoverySummaryState,
 			onRecoveryPolicy: setRecoveryPolicyState,
+			onAiResponseDelay: setAiResponseDelayState,
 			onFeaturePreferences: setFeaturePreferencesState,
 			onMerchantKnowledge: setKnowledgeState,
 			onConnectionLost: () => {
@@ -96,6 +101,7 @@ export function useModaPageState() {
 			activeSurface === 'RECOVERY';
 		sessionRef.current?.controllers.recoverySummary.setActive(active);
 		sessionRef.current?.controllers.recoveryPolicy.setActive(active);
+		sessionRef.current?.controllers.aiResponseDelay.setActive(active);
 		sessionRef.current?.controllers.featurePreferences.setActive(active);
 		sessionRef.current?.controllers.merchantKnowledge.setActive(active);
 	}, [activeSurface, connectionState.connection.status]);
@@ -155,6 +161,7 @@ export function useModaPageState() {
 		categoryState,
 		recoverySummaryState,
 		recoveryPolicyState,
+		aiResponseDelayState,
 		featurePreferencesState,
 		knowledgeState,
 		actions,

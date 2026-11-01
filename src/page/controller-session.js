@@ -5,6 +5,7 @@ export function createControllerSession(controllers, listeners) {
 		controllers.category.subscribe(listeners.onCategory),
 		controllers.recoverySummary.subscribe(listeners.onRecoverySummary),
 		controllers.recoveryPolicy.subscribe(listeners.onRecoveryPolicy),
+		controllers.aiResponseDelay.subscribe(listeners.onAiResponseDelay),
 		controllers.featurePreferences.subscribe(
 			listeners.onFeaturePreferences
 		),
@@ -32,6 +33,7 @@ export function createControllerSession(controllers, listeners) {
 			controllers.category.setConnectionStatus(status);
 			controllers.recoverySummary.setConnectionStatus(status);
 			controllers.recoveryPolicy.setConnectionStatus(status);
+			controllers.aiResponseDelay.setConnectionStatus(status);
 		}),
 	];
 	let disposed = false;
@@ -59,6 +61,7 @@ export function createControllerSession(controllers, listeners) {
 				'category',
 				'recoverySummary',
 				'recoveryPolicy',
+				'aiResponseDelay',
 				'featurePreferences',
 				'merchantKnowledge',
 				'readAccess',
