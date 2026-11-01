@@ -101,7 +101,7 @@ final class CheckoutResumeController {
 			$encoded = wp_json_encode( $response );
 			$decoded = is_string( $encoded ) ? json_decode( $encoded ) : null;
 			if ( ! WooRestoreResolveResponseValidator::isValid( $decoded, $post['r'] ) ||
-				'NONE' !== $response['outreachOffer']['kind'] || array() !== $response['snapshot']['appliedCouponCodes'] ) {
+				'NONE' !== $response['outreachOffer']['kind'] ) {
 				return self::redirect( $headers, self::safeReturnUrl() );
 			}
 			if ( null !== $existing_key && $existing_key !== $response['checkoutKey'] ) return self::redirect( $headers, self::safeReturnUrl() );

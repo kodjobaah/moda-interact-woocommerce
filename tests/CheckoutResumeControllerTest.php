@@ -75,8 +75,13 @@ final class CheckoutResumeControllerTest extends TestCase {
 	private ResumeControllerSession $session;
 	private int $resolve_count = 0;
 	private mixed $previous_home_url;
+	private mixed $previous_test_logger;
 
 	protected function setUp(): void {
+		$this->previous_test_logger = $GLOBALS['moda_interact_test_logger'] ?? null;
+		$GLOBALS['moda_interact_test_logger'] = new class {
+			public function error( string $message, array $context = array() ): void {}
+		};
 		$this->previous_home_url = $GLOBALS['moda_interact_home_url'] ?? null;
 		$GLOBALS['moda_interact_home_url'] = 'https://merchant.example/shop';
 	$GLOBALS['restore_test_products'] = array();
@@ -92,6 +97,8 @@ final class CheckoutResumeControllerTest extends TestCase {
 
 	protected function tearDown(): void {
 		$GLOBALS['moda_interact_home_url'] = $this->previous_home_url;
+		if ( null === $this->previous_test_logger ) unset( $GLOBALS['moda_interact_test_logger'] );
+		else $GLOBALS['moda_interact_test_logger'] = $this->previous_test_logger;
 		parent::tearDown();
 	}
 
