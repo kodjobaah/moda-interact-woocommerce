@@ -11,6 +11,7 @@ use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
 use ModaInteract\WooCommerce\Security\Base64Url;
 use PHPUnit\Framework\TestCase;
 
+if ( ! class_exists( '\WC_Cart' ) ) { class WC_Cart {} }
 if ( ! function_exists( 'WC' ) ) { function WC() { return $GLOBALS['arch035_wc'] ?? null; } }
 if ( ! class_exists( '\\WC_Product_Simple' ) ) {
 	class WC_Product_Simple {
@@ -55,12 +56,13 @@ final class ResumeControllerSession {
 	}
 }
 
-final class ResumeControllerCart {
+final class ResumeControllerCart extends WC_Cart {
 	public array $lines = array();
+	public array $coupons = array();
 	public ?string $throw_coupon_code = null;
 	public function get_cart(): array { return $this->lines; }
-	public function get_applied_coupons(): array { return array(); }
-	public function empty_cart(): void { $this->lines = array(); }
+	public function get_applied_coupons(): array { return $this->coupons; }
+	public function empty_cart(): void { $this->lines = array(); $this->coupons = array(); }
 	public function add_to_cart( int $product_id, int $quantity, int $variation_id = 0, array $variation = array(), array $item_data = array() ): string|false {
 		$this->lines[] = array_merge( array( 'product_id' => $product_id, 'variation_id' => $variation_id, 'quantity' => $quantity, 'variation' => $variation,
 			'data' => wc_get_product( $variation_id ?: $product_id ) ), $item_data );
@@ -70,8 +72,10 @@ final class ResumeControllerCart {
 	public function get_total( string $context = 'view' ): string { return '29.99'; }
 	public function apply_coupon( string $code ): bool {
 		if ( $code === $this->throw_coupon_code ) throw new RuntimeException( 'Coupon code ' . $code . ' dependency unavailable for +44 7700 900123' );
+		$this->coupons[] = strtolower( $code );
 		return true;
 	}
+	public function remove_coupon( string $code ): void { $this->coupons = array_values( array_filter( $this->coupons, static fn( $current ): bool => strtolower( $current ) !== strtolower( $code ) ) ); }
 }
 
 final class CheckoutResumeControllerTest extends TestCase {
@@ -237,7 +241,27 @@ final class CheckoutResumeControllerTest extends TestCase {
 		self::assertSame( array(), $GLOBALS['resume_test_actions'] );
 	}
 
-	private function prepareRestorePost( ResumeControllerCart $cart, string $nonce, array $coupon_codes = array() ): array {
+	public function test_confirmed_offer_is_applied_after_original_coupon_and_resolver_outage_leaves_cart_unchanged(): void {
+		$cart = new ResumeControllerCart();
+		$cart->lines = array( array( 'product_id' => 999, 'variation_id' => 0, 'quantity' => 1, 'variation' => array() ) );
+		$this->prepareRestorePost( $cart, str_repeat( 'C', 43 ), array( 'SAVE10' ), array( 'kind' => 'CHECKOUT_CODE', 'code' => 'EXTRA15', 'providerDiscountId' => 'woo:coupon:15' ) );
+		$post = array( 'moda_interact_resume' => '1', 'r' => 'recovery_456', 't' => str_repeat( 'A', 43 ), 'nonce' => str_repeat( 'C', 43 ), 'confirm' => 'replace' );
+		$result = $this->controller->handleRequest( 'POST', '/shop/', array(), $post, array( 'HTTP_ORIGIN' => 'https://merchant.example', 'CONTENT_LENGTH' => '512' ) );
+		self::assertSame( wc_get_checkout_url(), $result['redirect'] );
+		self::assertSame( array( 'save10', 'extra15' ), $cart->coupons );
+		self::assertSame( 1, $this->resolve_count );
+		self::assertCount( 1, $GLOBALS['resume_test_actions'], 'Confirmed offer processing emits one final checkout activity.' );
+
+		$before_lines = $cart->lines;
+		$this->prepareRestorePost( $cart, str_repeat( 'D', 43 ), array(), null, static function (): array { throw new RuntimeException( 'API unavailable' ); } );
+		$post['nonce'] = str_repeat( 'D', 43 );
+		$result = $this->controller->handleRequest( 'POST', '/shop/', array(), $post, array( 'HTTP_ORIGIN' => 'https://merchant.example', 'CONTENT_LENGTH' => '512' ) );
+		self::assertSame( home_url( '/' ), $result['redirect'] );
+		self::assertSame( $before_lines, $cart->lines );
+		self::assertSame( array( 'save10', 'extra15' ), $cart->coupons );
+	}
+
+	private function prepareRestorePost( ResumeControllerCart $cart, string $nonce, array $coupon_codes = array(), ?array $offer = null, ?callable $resolver = null ): array {
 		$GLOBALS['restore_test_products'] = array( 101 => new WC_Product_Simple( 101 ) );
 		$GLOBALS['arch035_wc']->cart = $cart;
 		$prior_nonce = array( 'digest' => hash( 'sha256', $nonce ), 'issuedAt' => time() );
@@ -257,10 +281,11 @@ final class CheckoutResumeControllerTest extends TestCase {
 		$response['checkoutKey'] = 'woo-restored-checkout';
 		$response['snapshot'] = array( 'schemaVersion' => 'woo.cart-restore.v1', 'kind' => 'supported', 'appliedCouponCodes' => $coupon_codes,
 			'lines' => array( array( 'productId' => '101', 'quantity' => 1 ) ) );
-		$response['outreachOffer'] = array( 'kind' => 'NONE', 'reason' => 'NO_CONFIRMED_OFFER' );
+		$response['outreachOffer'] = $offer ?? array( 'kind' => 'NONE', 'reason' => 'NO_CONFIRMED_OFFER' );
 		$capture = new CheckoutCapture( new CheckoutActivityPublisher() );
 		$this->controller = new CheckoutResumeController( $capture, new CheckoutCartRestorer( $capture ), new InstallationStore(),
-			static fn() => $response, new SiteIdentity( ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT, static fn() => array( '127.0.0.1' ) ) );
+			$resolver ?? function () use ( $response ): array { ++$this->resolve_count; return $response; },
+			new SiteIdentity( ModaApiConfiguration::MODE_LOCAL_DEVELOPMENT, static fn() => array( '127.0.0.1' ) ) );
 		return array( 'moda_interact_resume' => '1', 'r' => 'recovery_456', 't' => str_repeat( 'A', 43 ), 'nonce' => $nonce, 'confirm' => 'replace' );
 	}
 }

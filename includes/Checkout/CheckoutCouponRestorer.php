@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || exit;
 /** Applies captured coupon codes through WooCommerce's current validation rules. */
 final class CheckoutCouponRestorer {
 	/** @return array{appliedCodes: array<string>, rejectedCodes: array<string>, cartTotalRecalculated: bool} */
-	public function restore( object $cart, array $coupon_codes ): array {
+	public function restore( object $cart, array $coupon_codes, bool $recalculate_totals = true ): array {
 		if ( ! method_exists( $cart, 'apply_coupon' ) || ! method_exists( $cart, 'get_applied_coupons' ) ||
 			! method_exists( $cart, 'calculate_totals' ) ) {
 			throw new \RuntimeException( 'restore_coupon_cart_unavailable' );
@@ -36,8 +36,8 @@ final class CheckoutCouponRestorer {
 			else $rejected[] = $code;
 		}
 
-		$cart->calculate_totals();
-		return array( 'appliedCodes' => $applied, 'rejectedCodes' => $rejected, 'cartTotalRecalculated' => true );
+		if ( $recalculate_totals ) $cart->calculate_totals();
+		return array( 'appliedCodes' => $applied, 'rejectedCodes' => $rejected, 'cartTotalRecalculated' => $recalculate_totals );
 	}
 
 	private static function containsCode( array $actual_codes, string $expected ): bool {

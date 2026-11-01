@@ -100,8 +100,7 @@ final class CheckoutResumeController {
 			$response = ( $this->resolver ?? self::defaultResolver() )( $installation['record'], $post['r'], $post['t'] );
 			$encoded = wp_json_encode( $response );
 			$decoded = is_string( $encoded ) ? json_decode( $encoded ) : null;
-			if ( ! WooRestoreResolveResponseValidator::isValid( $decoded, $post['r'] ) ||
-				'NONE' !== $response['outreachOffer']['kind'] ) {
+			if ( ! WooRestoreResolveResponseValidator::isValid( $decoded, $post['r'] ) ) {
 				return self::redirect( $headers, self::safeReturnUrl() );
 			}
 			if ( null !== $existing_key && $existing_key !== $response['checkoutKey'] ) return self::redirect( $headers, self::safeReturnUrl() );
@@ -132,7 +131,7 @@ final class CheckoutResumeController {
 					return false;
 				}
 				return true;
-			} );
+			}, $response['outreachOffer'] );
 			if ( ! $restored ) return self::redirect( $headers, self::safeReturnUrl() );
 			( new CheckoutCouponOutcomeHandler() )->handle( $restored );
 			return self::redirect( $headers, self::checkoutUrl() );
