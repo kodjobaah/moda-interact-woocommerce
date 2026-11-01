@@ -391,8 +391,9 @@ final class CheckoutConsentCapture {
 	 * Dedicated, confirmed withdrawal command. The caller must separately verify
 	 * a real checkout-bound WordPress nonce or Store API Cart-Token, then supply
 	 * the Woo-observed billing contact (not a phone-only status query).
-	 * Status is ALWAYS rechecked through API-006; with no accepted reader it fails
-	 * closed and cannot send a REVOKE event.
+	 * Same-checkout observed GRANTs are directly reversible without API-006;
+	 * returning-checkout proof-only withdrawal still requires API-006 to avoid
+	 * acting on stale customer/recipient evidence.
 	 */
 	public function withdrawExplicit( string $mode, mixed $phone, ?string $country, bool $verified, ?string $store_choice_id = null ): bool {
 		$this->lastFailureReason = 'capture_withdraw_unclassified';
@@ -428,6 +429,18 @@ final class CheckoutConsentCapture {
 				return $this->rejected( 'capture_withdraw_context_mismatch' );
 			}
 			$state = null;
+		}
+		// This very checkout already observed an explicit GRANT by the same
+		// principal for the same recipient. Its explicit uncheck is a NEW,
+		// authenticated decision, not a status query. Reuse the existing
+		// observation/retry path rather than requiring a second round-trip to
+		// API-006 before the v2 REVOKE can be sent. The original GRANT may have
+		// committed even if its acknowledgement was lost; its pending retry must
+		// be cancelled and the newer withdrawal published with its own event ID.
+		// A returning shopper with only saved proof cannot use this shortcut.
+		if ( is_array( $state ) && true === ( $state['checked'] ?? null ) &&
+			empty( $state['awaitingNeutralSelection'] ) ) {
+			return $this->observe( $mode, false, $phone, $country, true, true, $store_choice_id );
 		}
 		if ( ! is_array( $state ) ) {
 			$state = array( 'checkoutKey' => $key, 'principal' => $principal,

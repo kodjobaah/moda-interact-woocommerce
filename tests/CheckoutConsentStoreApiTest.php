@@ -218,7 +218,7 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		self::assertCount( 2, $this->events );
 	}
 
-	public function test_uncheck_cancels_unacknowledged_store_grant_and_cannot_replay_after_new_grant(): void {
+	public function test_uncheck_reverses_ambiguous_store_grant_and_replays_cannot_override_newer_choice(): void {
 		$this->unavailable = true;
 		$this->api->update( $this->action( 'choice', 'unstable-grant', array( 'checked' => true ) ) );
 		self::assertSame( 'capture_observe_grant_publish_unacknowledged', $this->api->data()['reason'] );
@@ -228,21 +228,26 @@ final class CheckoutConsentStoreApiTest extends TestCase {
 		self::assertIsArray( get_transient( $lease_key ) );
 
 		$this->api->update( $this->action( 'withdraw', 'unstable-uncheck', array( 'confirmed' => true ) ) );
-		self::assertSame( 'capture_withdraw_grant_cancelled_unconfirmed', $this->api->data()['reason'] );
+		self::assertSame( 'capture_observe_revoke_publish_unacknowledged', $this->api->data()['reason'] );
 		self::assertFalse( get_transient( $lease_key ) );
-		self::assertCount( 1, $this->events, 'No REVOKE without proof-backed status' );
+		self::assertCount( 2, $this->events, 'Explicit uncheck sends REVOKE despite ambiguous GRANT ACK' );
+		self::assertSame( 'REVOKE', $this->events[1]['decision'] );
 
 		$this->unavailable = false;
+		$this->api->update( $this->action( 'withdraw', 'unstable-uncheck', array( 'confirmed' => true ) ) );
+		self::assertSame( 'recorded', $this->api->data()['status'] );
+		self::assertSame( $this->events[1]['eventId'], $this->events[2]['eventId'],
+			'Retry uses the identical withdrawal event' );
 		$this->api->update( $this->action( 'choice', 'unstable-grant', array( 'checked' => true ) ) );
 		self::assertSame( 'capture_observe_store_choice_stale_replay', $this->api->data()['reason'] );
 		$this->api->update( $this->action( 'choice', 'new-deliberate-grant', array( 'checked' => true ) ) );
 		self::assertSame( 'recorded', $this->api->data()['status'] );
-		self::assertCount( 2, $this->events );
-		self::assertNotSame( $first['eventId'], $this->events[1]['eventId'] );
+		self::assertCount( 4, $this->events );
+		self::assertNotSame( $first['eventId'], $this->events[3]['eventId'] );
 
 		$this->api->update( $this->action( 'withdraw', 'unstable-uncheck', array( 'confirmed' => true ) ) );
-		self::assertSame( 'capture_observe_store_choice_id_conflict', $this->api->data()['reason'] );
-		self::assertCount( 2, $this->events, 'Old uncheck cannot revoke a newer confirmed GRANT' );
+		self::assertSame( 'capture_observe_store_choice_stale_replay', $this->api->data()['reason'] );
+		self::assertCount( 4, $this->events, 'Old withdrawal cannot undo a newer GRANT' );
 	}
 
 	public function test_store_choice_replay_cannot_regrant_after_withdrawal_or_change_decision(): void {

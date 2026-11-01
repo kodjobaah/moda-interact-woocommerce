@@ -91,7 +91,7 @@ The live scenario fails unless all of the following hold:
   acknowledged by the stand-in before the UI declares it recorded.
 - Proof-backed `status` reads without any consent write; proofless second
   guests and phone mismatches cannot use another shopper's grant.
-- Only a deliberate uncheck of verified existing permission sends authenticated REVOKE. Ordinary Woo field updates, status hydration, and stored field values never publish consent.
+- A deliberate uncheck following this shopper's same-checkout GRANT publishes an authenticated REVOKE directly, with no extra API-006 status round-trip; it cancels pending GRANT retries and can safely retry an unacknowledged REVOKE using the same event ID. Returning proof-only withdrawal continues to require current API-006 confirmation until the write-side conditional-authorisation contract is established. Ordinary Woo field updates, status hydration, and stored field values never publish consent.
 - Replaying an old GRANT request ID after REVOKE never creates another write.
 - HTTP 503 on a write or proof read does not claim durable permission.
 - A returning logged-in shopper can use their own proof, not another person's
