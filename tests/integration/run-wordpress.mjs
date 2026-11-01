@@ -576,6 +576,9 @@ try {
 			wpAsync,
 			parseJsonOutput,
 			fixture: apiFixture,
+			siteUrl,
+			auth,
+			fetchWordPress,
 		});
 		if (!shopBrandOnly) {
 			command(

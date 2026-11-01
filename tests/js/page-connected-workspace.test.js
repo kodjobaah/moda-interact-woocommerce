@@ -26,6 +26,8 @@ function renderWorkspace(activeSurface) {
 			cancelPlan: vi.fn(),
 			setBillingView: vi.fn(),
 			refreshCategory: vi.fn(),
+			refreshShopBrandSync: vi.fn(),
+			syncShopBrand: vi.fn(),
 			chooseCategory: vi.fn(),
 			toggleMapping: vi.fn(),
 			saveCategory: vi.fn(),
@@ -60,5 +62,7 @@ describe('connected workspace composition', () => {
 		expect(content.props).toHaveProperty('onRefreshKnowledge');
 		expect(content.props).toHaveProperty('onRefreshFeatures');
 		expect(content.props).toHaveProperty('onToggleFeature');
+		expect(content.props).toHaveProperty('shopBrandSyncState');
+		expect(content.props).toHaveProperty('onSyncShopBrand');
 	});
 });

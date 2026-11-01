@@ -2383,3 +2383,83 @@ msgstr "人工回复会立即发送。"
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "保存 AI 回复延迟"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "无法完成品牌同步。请刷新状态或重试。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "品牌同步失败。请检查连接后重试。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "品牌同步已排队。Moda 尚未接受。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "请在 WordPress“设置 → 常规”或“外观 → 编辑器”中编辑网站名称、徽标和图标。准备好后，选择“同步品牌”，将当前信息发送到 Moda Interact。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "上次同步："
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "正在加载同步状态…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda 已接受这些品牌信息。后台图片处理可能仍在进行。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda 暂时无法接受品牌信息。已安排重试。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "尚未同步"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "尚未同步。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "同步品牌前，请重新连接 Moda Interact。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "刷新状态"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "正在请求同步品牌…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "商店品牌"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "同步品牌"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "无法加载同步状态。请刷新后重试。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "本地连接设置无效。请重新连接 Moda Interact。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "网站地址已更改。请重新连接 Moda Interact 以继续。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "无法将同步任务加入队列。请确认 Action Scheduler 可用后重试。"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "此时间表示 Moda 接受品牌信息的时间。后台图片处理可能仍在进行。"

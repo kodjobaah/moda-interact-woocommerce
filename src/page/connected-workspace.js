@@ -21,6 +21,7 @@ export function ConnectedWorkspace({
 	aiResponseDelayState,
 	featurePreferencesState,
 	knowledgeState,
+	shopBrandSyncState,
 	actions,
 	showSurfaceNavigation = true,
 }) {
@@ -77,10 +78,13 @@ export function ConnectedWorkspace({
 			onSaveAiResponseDelay: actions.saveAiResponseDelay,
 			featurePreferencesState,
 			knowledgeState,
+			shopBrandSyncState,
 			onRefreshKnowledge: actions.refreshMerchantKnowledge,
 			onKnowledgeAction: actions.merchantKnowledgeAction,
 			onRefreshFeatures: actions.refreshFeaturePreferences,
 			onToggleFeature: actions.toggleFeaturePreference,
+			onRefreshShopBrandSync: actions.refreshShopBrandSync,
+			onSyncShopBrand: actions.syncShopBrand,
 		});
 	} else {
 		activeContent = createElement(OverviewScreen, {

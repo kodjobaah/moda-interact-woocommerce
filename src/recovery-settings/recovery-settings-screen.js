@@ -7,6 +7,7 @@ import { StoreAssistantContext } from './store-assistant-context';
 import { StoreProfileAccordion } from './store-profile-accordion';
 import { MerchantKnowledgePanel } from './merchant-knowledge/knowledge-panel';
 import { AiResponseDelayPanel } from './ai-response-delay-panel';
+import { StoreBrandPanel } from './store-brand-panel';
 
 /**
  * Compose Recovery Settings without owning category or knowledge form state.
@@ -34,6 +35,9 @@ export function RecoverySettingsScreen(props) {
 		knowledgeState,
 		onRefreshKnowledge,
 		onKnowledgeAction,
+		shopBrandSyncState,
+		onRefreshShopBrandSync,
+		onSyncShopBrand,
 	} = props;
 	return createElement(
 		'section',
@@ -60,6 +64,11 @@ export function RecoverySettingsScreen(props) {
 		}),
 		createElement(WhatsAppConsentGuidance, {
 			featurePreferencesState,
+		}),
+		createElement(StoreBrandPanel, {
+			state: shopBrandSyncState,
+			onRefresh: onRefreshShopBrandSync,
+			onSync: onSyncShopBrand,
 		}),
 		createElement(FeaturePreferencesPanel, {
 			state: featurePreferencesState,

@@ -2400,3 +2400,83 @@ msgstr "การตอบกลับจากเจ้าหน้าที่
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "บันทึกการหน่วงเวลาการตอบกลับของ AI"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "ไม่สามารถซิงค์แบรนด์ให้เสร็จได้ รีเฟรชสถานะแล้วลองอีกครั้ง"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "ซิงค์แบรนด์ไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "เพิ่มการซิงค์แบรนด์ในคิวแล้ว Moda ยังไม่ได้ยอมรับ"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "แก้ไขชื่อ โลโก้ และไอคอนของเว็บไซต์ได้ที่ การตั้งค่า → ทั่วไป หรือ รูปลักษณ์ → เครื่องมือแก้ไข ใน WordPress เมื่อต้องการส่งข้อมูลปัจจุบันไปยัง Moda Interact ให้เลือก ซิงค์แบรนด์"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "ซิงค์ล่าสุด:"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "กำลังโหลดสถานะการซิงค์…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda ยอมรับข้อมูลแบรนด์นี้แล้ว การประมวลผลภาพเบื้องหลังอาจยังดำเนินอยู่"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda ยังไม่สามารถยอมรับแบรนด์ได้ กำหนดลองใหม่แล้ว"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "ยังไม่ได้ซิงค์"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "ยังไม่ได้ซิงค์"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "เชื่อมต่อ Moda Interact อีกครั้งก่อนซิงค์แบรนด์"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "รีเฟรชสถานะ"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "กำลังขอซิงค์แบรนด์…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "แบรนด์ของร้านค้า"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "ซิงค์แบรนด์"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "โหลดสถานะการซิงค์ไม่ได้ รีเฟรชเพื่อลองอีกครั้ง"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "การตั้งค่าการเชื่อมต่อในเครื่องไม่ถูกต้อง เชื่อมต่อ Moda Interact อีกครั้ง"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "ที่อยู่เว็บไซต์เปลี่ยนไป เชื่อมต่อ Moda Interact อีกครั้งเพื่อดำเนินการต่อ"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "เพิ่มการซิงค์ในคิวไม่ได้ ตรวจสอบว่า Action Scheduler พร้อมใช้งาน แล้วลองอีกครั้ง"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "เวลานี้คือเวลาที่ Moda ยอมรับข้อมูลแบรนด์ การประมวลผลภาพเบื้องหลังอาจยังดำเนินอยู่"

@@ -2462,3 +2462,83 @@ msgstr "Svar fra medarbejdere sendes med det samme."
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "Gem forsinkelse af AI-svar"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "Synkronisering af brand kunne ikke gennemføres. Opdater status, eller prøv igen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "Synkronisering af brand mislykkedes. Kontrollér forbindelsen, og prøv igen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "Synkronisering af brand er sat i kø. Moda har ikke accepteret den endnu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "Rediger webstedsnavn, logo og ikon under WordPress Indstillinger → Generelt eller Udseende → Editor. Vælg Synkronisér brand, når du vil sende de aktuelle oplysninger til Moda Interact."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "Senest synkroniseret:"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "Indlæser synkroniseringsstatus…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda har accepteret disse brandoplysninger. Billedbehandling i baggrunden kan stadig være i gang."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda kunne endnu ikke acceptere brandet. Et nyt forsøg er planlagt."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "Ikke synkroniseret endnu"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "Ikke synkroniseret endnu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "Tilslut Moda Interact igen, før du synkroniserer brandet."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "Opdater status"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "Anmoder om synkronisering af brand…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "Butikkens brand"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "Synkronisér brand"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "Synkroniseringsstatus kunne ikke indlæses. Opdater for at prøve igen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "De lokale forbindelsesindstillinger er ugyldige. Tilslut Moda Interact igen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "Webstedsadressen er ændret. Tilslut Moda Interact igen for at fortsætte."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "Synkroniseringen kunne ikke sættes i kø. Kontrollér, at Action Scheduler er tilgængelig, og prøv igen."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "Dette tidspunkt viser, hvornår Moda accepterede brandoplysningerne. Billedbehandling i baggrunden kan stadig være i gang."

@@ -9,6 +9,7 @@ import { AiResponseDelayController } from '../ai-response-delay-controller';
 import { FeaturePreferencesController } from '../recovery-settings/feature-preferences-controller';
 import { MerchantKnowledgeController } from '../recovery-settings/merchant-knowledge/knowledge-controller';
 import { StoreContextSyncController } from '../store-context-sync-controller';
+import { ShopBrandSyncController } from '../shop-brand-sync-controller';
 
 /** Create controllers with the same cross-controller callbacks as the original page. */
 export function createPageControllers() {
@@ -38,6 +39,7 @@ export function createPageControllers() {
 	const readAccess = new ReadAccessController();
 	const featurePreferences = new FeaturePreferencesController();
 	const merchantKnowledge = new MerchantKnowledgeController();
+	const shopBrandSync = new ShopBrandSyncController();
 	return {
 		connection,
 		merchant,
@@ -50,5 +52,6 @@ export function createPageControllers() {
 		readAccess,
 		featurePreferences,
 		merchantKnowledge,
+		shopBrandSync,
 	};
 }

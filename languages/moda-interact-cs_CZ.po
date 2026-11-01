@@ -2444,3 +2444,83 @@ msgstr "Odpovědi od lidí jsou okamžité."
 #: src/recovery-settings/ai-response-delay-panel.js:181
 msgid "Save AI response delay"
 msgstr "Uložit zpoždění odpovědi AI"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync could not be completed. Refresh status or try again."
+msgstr "Synchronizaci značky se nepodařilo dokončit. Obnovte stav nebo to zkuste znovu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync failed. Review the connection, then try again."
+msgstr "Synchronizace značky se nezdařila. Zkontrolujte připojení a zkuste to znovu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Branding sync is queued. Moda has not accepted it yet."
+msgstr "Synchronizace značky je zařazena do fronty. Moda ji zatím nepřijala."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Edit your Site Name, Site Logo and Site Icon in WordPress Settings → General or Appearance → Editor. When you are ready, choose Sync branding to send the current details to Moda Interact."
+msgstr "Název webu, logo a ikonu upravíte v Nastavení → Obecné nebo Vzhled → Editor ve WordPressu. Až budete připraveni, zvolte Synchronizovat značku a odešlete aktuální údaje do Moda Interact."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Last synchronised:"
+msgstr "Naposledy synchronizováno:"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Loading sync status…"
+msgstr "Načítá se stav synchronizace…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda accepted these brand details. Background image processing may still be pending."
+msgstr "Moda tyto údaje o značce přijala. Zpracování obrázků na pozadí může ještě probíhat."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Moda could not accept the branding yet. A retry is scheduled."
+msgstr "Moda zatím nemohla značku přijmout. Další pokus je naplánován."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet"
+msgstr "Zatím nesynchronizováno"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Not synchronised yet."
+msgstr "Zatím nesynchronizováno."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Reconnect Moda Interact before synchronising branding."
+msgstr "Před synchronizací značky znovu připojte Moda Interact."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Refresh status"
+msgstr "Obnovit stav"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Requesting a branding sync…"
+msgstr "Požaduje se synchronizace značky…"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Store branding"
+msgstr "Značka obchodu"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync branding"
+msgstr "Synchronizovat značku"
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "Sync status could not be loaded. Refresh to retry."
+msgstr "Stav synchronizace se nepodařilo načíst. Obnovte stránku a zkuste to znovu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The local connection settings are invalid. Reconnect Moda Interact."
+msgstr "Místní nastavení připojení jsou neplatná. Znovu připojte Moda Interact."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The site address changed. Reconnect Moda Interact to continue."
+msgstr "Adresa webu se změnila. Znovu připojte Moda Interact a pokračujte."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "The sync could not be queued. Check that Action Scheduler is available, then retry."
+msgstr "Synchronizaci se nepodařilo zařadit do fronty. Zkontrolujte dostupnost Action Scheduleru a zkuste to znovu."
+
+#: src/recovery-settings/store-brand-panel.js
+msgid "This time is when Moda accepted the brand details. Background image processing may still be pending."
+msgstr "Tento čas označuje přijetí údajů o značce službou Moda. Zpracování obrázků na pozadí může ještě probíhat."
