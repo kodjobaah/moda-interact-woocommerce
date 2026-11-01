@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 /** Applies only confirmed outreach codes through Woo's current coupon rules. */
 final class CheckoutOutreachCouponRestorer {
-	/** @return array{outcome:'NO_OFFER'|'UNVERIFIABLE'|'NOT_APPLICABLE'|'AUTOMATIC_NOT_FORCED'|'APPLIED'|'ALREADY_APPLIED'|'REJECTED'|'CONFLICT_REQUIRES_CHOICE',recommendedCode:?string,originalAppliedCodes:list<string>,currentAppliedCodes:list<string>,rejectionReason:?string,totalsRecalculated:bool} */
+	/** @return array{outcome:string,recommendedCode:?string,recommendedCodes:list<string>,choiceAvailable:bool,originalAppliedCodes:list<string>,currentAppliedCodes:list<string>,rejectionReason:?string,totalsRecalculated:bool} */
 	public function apply_outreach_offer( array $validatedOffer, array $appliedOriginalCoupons, \WC_Cart $cart ): array {
 		if ( ! method_exists( $cart, 'get_applied_coupons' ) || ! method_exists( $cart, 'apply_coupon' ) ||
 			! method_exists( $cart, 'remove_coupon' ) || ! method_exists( $cart, 'calculate_totals' ) ) {
@@ -20,6 +20,8 @@ final class CheckoutOutreachCouponRestorer {
 
 		$kind = $validatedOffer['kind'] ?? null;
 		$recommended = null;
+		$recommended_codes = array();
+		$choice_available = false;
 		$outcome = 'NO_OFFER';
 		$reason = null;
 		$must_restore_originals = false;
@@ -32,6 +34,7 @@ final class CheckoutOutreachCouponRestorer {
 		} elseif ( 'CHECKOUT_CODE' === $kind ) {
 			$recommended = $validatedOffer['code'] ?? null;
 			if ( ! is_string( $recommended ) || '' === $recommended ) throw new \RuntimeException( 'restore_offer_contract_invalid' );
+			$recommended_codes = array( $recommended );
 			if ( self::containsCode( $initial, $recommended ) ) {
 				$outcome = 'ALREADY_APPLIED';
 			} else {
@@ -42,17 +45,23 @@ final class CheckoutOutreachCouponRestorer {
 					$outcome = 'CONFLICT_REQUIRES_CHOICE';
 					$reason = 'ORIGINAL_COUPON_CONFLICT';
 					$must_restore_originals = true;
+					$choice_available = true;
 				} elseif ( self::containsCode( $current, $recommended ) ) {
 					$outcome = 'APPLIED';
 				} else {
-					$outcome = 'REJECTED';
-					$reason = 'NOT_APPLICABLE';
-					$must_restore_originals = self::containsCode( $current, $recommended );
+					// Woo may reject a valid alternative while preserving an
+					// individual-use original coupon. Probe the alternative alone
+					// below before deciding whether to expose a safe switch choice.
+					$outcome = 'CONFLICT_REQUIRES_CHOICE';
+					$reason = 'ORIGINAL_COUPON_CONFLICT';
+					$must_restore_originals = true;
+					$choice_available = true;
 				}
 			}
 		} elseif ( 'CHECKOUT_OFFERS' === $kind ) {
 			$codes = self::groupCodes( $validatedOffer['offers'] ?? null );
 			if ( null === $codes ) throw new \RuntimeException( 'restore_offer_contract_invalid' );
+			$recommended_codes = $codes;
 			$recommended = $codes[0] ?? null;
 			if ( array() === $codes ) {
 				$outcome = 'AUTOMATIC_NOT_FORCED';
@@ -73,10 +82,13 @@ final class CheckoutOutreachCouponRestorer {
 					$outcome = 'CONFLICT_REQUIRES_CHOICE';
 					$reason = 'GROUP_CONFLICT';
 					$must_restore_originals = true;
+					$offers = $validatedOffer['offers'] ?? array();
+					$choice_available = count( $codes ) > 0 && count( $offers ) === count( $codes );
 				} elseif ( ! $group_present ) {
-					$outcome = 'REJECTED';
-					$reason = 'GROUP_REJECTED';
+					$outcome = 'CONFLICT_REQUIRES_CHOICE';
+					$reason = 'GROUP_CONFLICT';
 					$must_restore_originals = true;
+					$choice_available = count( $codes ) > 0 && count( $validatedOffer['offers'] ?? array() ) === count( $codes );
 				} elseif ( self::containsAll( $initial, $codes ) ) {
 					$outcome = 'ALREADY_APPLIED';
 				} else {
@@ -88,21 +100,31 @@ final class CheckoutOutreachCouponRestorer {
 		}
 
 		if ( $must_restore_originals ) self::restoreOriginals( $cart, $originals );
+		if ( $choice_available ) {
+			$choice_available = self::canApplyChoiceSetAlone( $cart, $recommended_codes, $originals );
+			if ( ! $choice_available ) {
+				$outcome = 'REJECTED';
+				$reason = in_array( $reason, array( 'GROUP_CONFLICT', 'GROUP_REJECTED' ), true ) ? 'GROUP_REJECTED' : 'NOT_APPLICABLE';
+			}
+		}
 		$final = self::cartCouponList( $cart );
 		if ( null === $final || ! self::containsAll( $final, $originals ) ) throw new \RuntimeException( 'restore_offer_original_rollback_failed' );
 		$cart->calculate_totals();
-		return array( 'outcome' => $outcome, 'recommendedCode' => $recommended, 'originalAppliedCodes' => $originals,
+		return array( 'outcome' => $outcome, 'recommendedCode' => $recommended, 'recommendedCodes' => $recommended_codes,
+			'choiceAvailable' => $choice_available, 'originalAppliedCodes' => $originals,
 			'currentAppliedCodes' => $final, 'rejectionReason' => $reason, 'totalsRecalculated' => true );
 	}
 
 	private static function attempt( object $cart, string $code ): void {
 		$suppress = static fn( mixed $message ): string => '';
 		$installed = function_exists( 'add_filter' ) && function_exists( 'remove_filter' );
+		$notices = function_exists( 'wc_get_notices' ) ? wc_get_notices() : null;
 		if ( $installed ) add_filter( 'woocommerce_coupon_error', $suppress, PHP_INT_MAX, 3 );
 		try {
 			$cart->apply_coupon( $code );
 		} finally {
 			if ( $installed ) remove_filter( 'woocommerce_coupon_error', $suppress, PHP_INT_MAX );
+			if ( is_array( $notices ) && function_exists( 'wc_set_notices' ) ) wc_set_notices( $notices );
 		}
 	}
 
@@ -123,6 +145,35 @@ final class CheckoutOutreachCouponRestorer {
 			}
 		}
 		if ( ! self::containsAll( $current, $originals ) ) throw new \RuntimeException( 'restore_offer_original_set_incomplete' );
+	}
+
+	/** Verify the alternate set is valid by itself, then restore the original default. */
+	private static function canApplyChoiceSetAlone( object $cart, array $codes, array $originals ): bool {
+		if ( array() === $codes || count( $codes ) > 3 || count( array_unique( array_map( self::normalize( ... ), $codes ) ) ) !== count( $codes ) ) return false;
+		$valid = false;
+		try {
+			$current = self::cartCouponList( $cart );
+			if ( null === $current || ! self::containsAll( $current, $originals ) ) throw new \RuntimeException( 'restore_offer_choice_state_unavailable' );
+			foreach ( $current as $code ) $cart->remove_coupon( $code );
+			foreach ( $codes as $code ) self::attempt( $cart, $code );
+			$alternate = self::cartCouponList( $cart );
+			$valid = null !== $alternate && count( $alternate ) === count( $codes ) && self::containsAll( $alternate, $codes );
+		} catch ( \Throwable $error ) {
+			CheckoutDiagnosticLogger::record( 'checkout_coupon_restore', 'offer_choice_validation_failed', $error, self::safeChoiceErrorMessage( $error, $codes, $originals ) );
+		} finally {
+			self::restoreOriginals( $cart, $originals );
+			$cart->calculate_totals();
+		}
+		return $valid;
+	}
+
+	/** Retain the dependency failure while explicitly removing all involved coupons. */
+	private static function safeChoiceErrorMessage( \Throwable $error, array $codes, array $originals ): string {
+		$message = $error->getMessage();
+		foreach ( array_merge( $codes, $originals ) as $code ) {
+			if ( is_string( $code ) && '' !== $code ) $message = str_ireplace( $code, '[redacted-coupon]', $message );
+		}
+		return $message;
 	}
 
 	private static function groupCodes( mixed $offers ): ?array {

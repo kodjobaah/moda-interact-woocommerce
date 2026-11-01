@@ -1266,6 +1266,10 @@ msgstr "I record appariranno qui quando inizierà un recupero."
 msgid "Try another date range, customer or status."
 msgstr "Prova un altro intervallo, cliente o stato."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Prova invece i coupon offerti"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Messaggio automatico"

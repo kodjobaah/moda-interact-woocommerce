@@ -112,6 +112,12 @@ function current_user_can( $capability ) {
 }
 
 function wp_verify_nonce( $nonce, $action ) {
+	if ( isset( $GLOBALS['moda_interact_nonces'][ $action ] ) ) {
+		return $GLOBALS['moda_interact_nonces'][ $action ] === $nonce ? 1 : false;
+	}
+	if ( is_string( $action ) && str_starts_with( $action, 'moda_interact_outreach_coupon_choice_v1:' ) ) {
+		return hash_equals( 'choice-nonce-' . substr( hash( 'sha256', $action ), 0, 16 ), (string) $nonce ) ? 1 : false;
+	}
 	if ( 'wc_store_api' === $action && 'fixture_store_nonce' === $nonce ) return 1;
 	if ( isset( $GLOBALS['arch046_nonce_action'] ) ) {
 		return $action === $GLOBALS['arch046_nonce_action'] && $nonce === 'arch046-fixture-nonce' ? 1 : false;
@@ -120,8 +126,15 @@ function wp_verify_nonce( $nonce, $action ) {
 }
 
 function wp_create_nonce( $action ) {
+	if ( isset( $GLOBALS['moda_interact_nonces'][ $action ] ) ) return $GLOBALS['moda_interact_nonces'][ $action ];
+	if ( is_string( $action ) && str_starts_with( $action, 'moda_interact_outreach_coupon_choice_v1:' ) ) {
+		return 'choice-nonce-' . substr( hash( 'sha256', $action ), 0, 16 );
+	}
 	return 'wp_rest' === $action ? 'fixture_rest_nonce' : false;
 }
+
+function wc_get_notices() { return $GLOBALS['moda_interact_test_wc_notices'] ?? array(); }
+function wc_set_notices( $notices ) { $GLOBALS['moda_interact_test_wc_notices'] = $notices; }
 
 function get_current_user_id() { return $GLOBALS['arch046_current_user_id'] ?? 0; }
 
@@ -171,6 +184,14 @@ function esc_html__( $text, $domain = 'default' ) {
 
 function esc_html( $text ) {
 	return $text;
+}
+
+function esc_attr( $text ) {
+	return htmlspecialchars( (string) $text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+}
+
+function esc_url( $url ) {
+	return htmlspecialchars( (string) $url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
 }
 
 function wc_admin_register_page( $page ) {

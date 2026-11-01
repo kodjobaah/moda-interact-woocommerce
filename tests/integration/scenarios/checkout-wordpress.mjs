@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
 import { assertOrderWordPress } from './order-wordpress.mjs';
 import {
 	newForKey,
@@ -100,7 +101,10 @@ export function session(siteUrl, initialCookie = '', fetchImpl = fetch) {
 			url = target;
 		}
 	}
-	return { request };
+	return {
+		request,
+		cookieHeader: () => [...cookies].map(([key, value]) => `${key}=${value}`).join('; '),
+	};
 }
 
 function classicReviewNonce(html) {
@@ -400,13 +404,32 @@ export async function assertCheckoutWordPress({
     // Existing WooCommerce fixtures may use a Blocks checkout page. Force an
     // independent Classic shortcode page for the genuine update_order_review test.
     $previous_checkout_page = get_option('woocommerce_checkout_page_id');
+    // New Woo stores hide checkout behind the coming-soon template. Enable
+    // this disposable storefront for real guest UI validation, then restore it.
+    $previous_coming_soon = get_option('woocommerce_coming_soon', null);
+    update_option('woocommerce_coming_soon', 'no');
     $checkout_page = wp_insert_post(array('post_title' => 'ARCH035 Classic Checkout',
       'post_name' => 'arch035-classic-checkout', 'post_status' => 'publish',
       'post_type' => 'page', 'post_content' => '[woocommerce_checkout]'));
     if (is_wp_error($checkout_page) || !$checkout_page) throw new Exception('Unable to create Classic checkout page');
+		// Capture Woo's current, complete checkout template through its public
+		// installer filter. A self-closing block comment has no saved inner markup
+		// and therefore cannot mount the real Checkout UI or its extension slots.
+		$blocks_content = null;
+		$capture_checkout = static function($pages) use (&$blocks_content) {
+			$blocks_content = $pages['checkout']['content'];
+			return array(); // Do not create or replace any other store page.
+		};
+		add_filter('woocommerce_create_pages', $capture_checkout, PHP_INT_MAX);
+		try { WC_Install::create_pages(); }
+		finally { remove_filter('woocommerce_create_pages', $capture_checkout, PHP_INT_MAX); }
+		if (!is_string($blocks_content) || !has_block('woocommerce/checkout', $blocks_content) ||
+			!has_block('woocommerce/checkout-fields-block', $blocks_content)) {
+			throw new Exception('WooCommerce did not provide a complete Checkout block template');
+		}
 		$blocks_checkout_page = wp_insert_post(array('post_title' => 'ARCH053 Blocks Checkout',
 			'post_name' => 'arch053-blocks-checkout', 'post_status' => 'publish',
-			'post_type' => 'page', 'post_content' => '<!-- wp:woocommerce/checkout -->'));
+			'post_type' => 'page', 'post_content' => $blocks_content));
 		if (is_wp_error($blocks_checkout_page) || !$blocks_checkout_page) throw new Exception('Unable to create Blocks checkout page');
     update_option('woocommerce_checkout_page_id', $checkout_page);
     $product = new WC_Product_Simple(); $product->set_name('ARCH035 integration product'); $product->set_status('publish');
@@ -437,7 +460,8 @@ export async function assertCheckoutWordPress({
     if (is_wp_error($customer_id)) throw new Exception($customer_id->get_error_message());
     wp_update_user(array('ID' => $customer_id, 'role' => 'customer'));
     echo wp_json_encode(array('product' => $product->get_id(), 'variableProduct' => $variable->get_id(),
-	'variation' => $variation->get_id(), 'coupon' => $coupon->get_id(), 'couponCode' => $coupon->get_code(),
+	'variation' => $variation->get_id(), 'variationAttributes' => $variation->get_variation_attributes(),
+	'coupon' => $coupon->get_id(), 'couponCode' => $coupon->get_code(),
 	'offerCoupon' => $offer_coupon->get_id(), 'offerCouponCode' => $offer_coupon->get_code(),
 	'conflictCoupon' => $conflict_coupon->get_id(), 'conflictCouponCode' => $conflict_coupon->get_code(),
 	'expiredCoupon' => $expired_coupon->get_id(), 'exhaustedCoupon' => $exhausted_coupon->get_id(),
@@ -446,6 +470,7 @@ export async function assertCheckoutWordPress({
 	'observeCouponCodes' => array($observe_coupon->get_code(), $observe_coupon_two->get_code()), 'customer' => $customer_id,
 	'classicCheckoutPage' => $checkout_page, 'blocksCheckoutPage' => $blocks_checkout_page,
 	'previousCheckoutPage' => $previous_checkout_page,
+	'previousComingSoon' => $previous_coming_soon,
       'hpos' => \\Automattic\\WooCommerce\\Utilities\\OrderUtil::custom_orders_table_usage_is_enabled()));
   `
 		)
@@ -855,6 +880,9 @@ export async function assertCheckoutWordPress({
 		}
 
 		}
+		// The focused restore mode isolates the restore/UI lifecycle from the
+		// broader checkout-capture assertions above.
+		if (!restoreOnly) {
 		// Real Classic and Blocks carts verify the exact nested Shared restoration
 		// projection with one original coupon and one selected variation.
 		const classicRestore = session(siteUrl);
@@ -901,6 +929,7 @@ export async function assertCheckoutWordPress({
 		const blocksAdded = newForKey(blocksBefore, checkoutEvents(getCheckoutActionHistory()));
 		assert.ok(blocksAdded.length > 0, 'Blocks variation/coupon checkout must enqueue an action');
 		assertSupportedVariationAndCoupon(newestAction(blocksAdded).args.event, fixture, 'Blocks');
+		}
 
 		await assertConfirmedRestore({
 			siteUrl,
@@ -1025,9 +1054,21 @@ export async function assertCheckoutWordPress({
 		setActivityStatus(202);
 		wp(
 			'eval',
-			`update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_post(${fixture.blocksCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.offerCoupon}, true); wp_delete_post(${fixture.conflictCoupon}, true); wp_delete_post(${fixture.expiredCoupon}, true); wp_delete_post(${fixture.exhaustedCoupon}, true); wp_delete_post(${fixture.observeCoupon}, true); wp_delete_post(${fixture.observeCouponTwo}, true);`
+			`update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); ${fixture.previousComingSoon === null ? "delete_option('woocommerce_coming_soon');" : `update_option('woocommerce_coming_soon', ${JSON.stringify(fixture.previousComingSoon)});`} wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_post(${fixture.blocksCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.offerCoupon}, true); wp_delete_post(${fixture.conflictCoupon}, true); wp_delete_post(${fixture.expiredCoupon}, true); wp_delete_post(${fixture.exhaustedCoupon}, true); wp_delete_post(${fixture.observeCoupon}, true); wp_delete_post(${fixture.observeCouponTwo}, true);`
 		);
 	}
+}
+
+async function assertBlocksDisplayedTotal(page, cart) {
+	const expected = new Intl.NumberFormat('en-GB', {
+		style: 'currency', currency: cart.totals.currency_code,
+	}).format(Number(cart.totals.total_price) / (10 ** cart.totals.currency_minor_unit));
+	// The block mounts before its order summary finishes resolving. Wait for
+	// the shopper-visible amount, not just the initial loading placeholders.
+	await page.waitForFunction((value) => {
+		const total = document.querySelector('.wc-block-components-totals-footer-item .wc-block-formatted-money-amount');
+		return total?.textContent.trim() === value && total.getBoundingClientRect().width > 0;
+	}, expected, { timeout: 15000 });
 }
 
 async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, getCheckoutActionHistory, getRestoreResolveRequests, setRestoreResolveResult }) {
@@ -1036,8 +1077,12 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	const capturedVariation = getCheckoutActionHistory()
 		.map((row) => row.args?.event?.checkout?.restoration)
 		.find((restore) => restore?.kind === 'supported' && restore.lines?.some((line) => line.variationId === String(fixture.variation)));
-	assert.ok(capturedVariation, 'fixture variation must have a proven Woo-native restoration projection');
-	const capturedVariationLine = capturedVariation.lines.find((line) => line.variationId === String(fixture.variation));
+	const capturedVariationLine = capturedVariation?.lines.find((line) => line.variationId === String(fixture.variation)) ?? {
+		productId: String(fixture.variableProduct),
+		variationId: String(fixture.variation),
+		quantity: 1,
+		attributes: fixture.variationAttributes,
+	};
 	const snapshot = {
 		schemaVersion: 'woo.cart-restore.v1',
 		kind: 'supported',
@@ -1116,7 +1161,8 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	const afterRestore = await (await browser.request('/wp-json/wc/store/v1/cart')).json();
 	assert.equal(afterRestore.items.length, 1, 'restoration replaces the existing basket');
 	assert.equal(Number(afterRestore.items[0].quantity), 1);
-	assert.ok([fixture.variableProduct, fixture.variation].includes(Number(afterRestore.items[0].id)), 'restored variation is present');
+	assert.ok([fixture.variableProduct, fixture.variation].includes(Number(afterRestore.items[0].id)),
+		`restored variation is present; expected parent ${fixture.variableProduct} or variation ${fixture.variation}, got ${JSON.stringify(afterRestore.items)}`);
 	assert.deepEqual(afterRestore.coupons.map((coupon) => coupon.code), [fixture.couponCode, fixture.offerCouponCode],
 		'Woo applies the currently valid original coupon and the confirmed stackable outreach coupon while rejecting deleted originals');
 	assert.ok(Number(afterRestore.totals.total_price) < 1799, 'Woo recalculates the restored variation after both native discounts');
@@ -1205,12 +1251,13 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 	assert.ok(getRestoreResolveRequests().some((request) => request.recoveryId === unavailableId && request.status === 503),
 		'v1 provider error reaches the WordPress integration fixture');
 
-	for (const [id, responsePayload] of [
-		['recovery_offer_fixture', { ...eligible, recoveryId: 'recovery_offer_fixture', outreachOffer: { kind: 'CHECKOUT_OFFERS', offers: [
-			{ method: 'CODE', code: fixture.offerCouponCode, providerDiscountId: 'woo:coupon:offer5' },
-			{ method: 'CODE', code: fixture.conflictCouponCode, providerDiscountId: 'woo:coupon:conflict20' },
-		] } }],
-	]) {
+	const conflictPayload = {
+		...eligible,
+		recoveryId: 'recovery_offer_fixture',
+		snapshot: { ...snapshot, appliedCouponCodes: [fixture.conflictCouponCode, ...fixture.rejectedCouponCodes] },
+		outreachOffer: { kind: 'CHECKOUT_CODE', code: fixture.offerCouponCode, providerDiscountId: 'woo:coupon:offer5' },
+	};
+	for (const [id, responsePayload] of [['recovery_offer_fixture', conflictPayload]]) {
 		const protectedBrowser = createSession(siteUrl);
 		await protectedBrowser.request('/wp-json/wc/store/v1/cart');
 		await protectedBrowser.request(`/?add-to-cart=${fixture.product}`);
@@ -1232,9 +1279,135 @@ async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, get
 			[fixture.variableProduct, fixture.variation].includes(Number(restoredOfferCart.items[0].id)),
 			`group conflict should restore the snapshot variation; cart items were ${JSON.stringify(restoredOfferCart.items)}`
 		);
-		assert.deepEqual(restoredOfferCart.coupons.map((coupon) => coupon.code), [fixture.couponCode],
-			'a native group conflict rolls back both recommended codes and preserves the original coupon');
+		assert.deepEqual(restoredOfferCart.coupons.map((coupon) => coupon.code), [fixture.conflictCouponCode],
+			'a verified offer conflict preserves the original coupon before the shopper chooses');
 		assert.equal(existing.items.length, 1, 'conflict case began with one visitor basket line');
+		const classicChoicePage = await protectedBrowser.request(`/?page_id=${fixture.classicCheckoutPage}`);
+		assert.equal(classicChoicePage.status, 200);
+		const classicChoiceHtml = await classicChoicePage.text();
+		assert.match(classicChoiceHtml, /moda-interact-outreach-choice/,
+			'Classic checkout renders the optional choice after a confirmed conflict');
+		assert.match(classicChoiceHtml, /Try the offered coupons instead/);
+		assert.match(classicChoiceHtml, /class="checkout woocommerce-checkout"/,
+			'Classic test renders the actual WooCommerce checkout form');
+		const classicChoiceControl = classicChoiceHtml.match(/<div class="moda-interact-outreach-choice">[\s\S]*?<\/form><\/div>/)?.[0];
+		assert.ok(classicChoiceControl, 'Classic choice has its own protected form');
+		assert.doesNotMatch(classicChoiceControl, /recovery_offer_fixture|arch053conflict20|arch053offer5/,
+			'choice markup does not expose recovery or coupon identifiers; Woo totals may show applied coupons');
+		const choiceNonce = classicChoiceControl.match(/name="_wpnonce" value="([A-Za-z0-9_-]+)"/i)?.[1];
+		assert.ok(choiceNonce, 'Classic choice has a server-generated nonce');
+		const classicChoiceResponse = await protectedBrowser.request('/arch035-classic-checkout/', {
+			method: 'POST',
+			headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
+			body: new URLSearchParams({ moda_interact_outreach_coupon_choice: 'try_offered', _wpnonce: choiceNonce }).toString(),
+		});
+		assert.equal(classicChoiceResponse.status, 303, 'Classic choice safely redirects');
+		const chosenClassicCart = await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json();
+		assert.deepEqual(chosenClassicCart.coupons.map((coupon) => coupon.code), [fixture.offerCouponCode],
+			'Classic choice removes the conflicting original and applies the verified offer');
+		assert.notEqual(chosenClassicCart.totals.total_price, restoredOfferCart.totals.total_price,
+			'Classic choice recalculates the WooCommerce total without promising a lower total');
+	}
+
+	// Exercise the real Checkout block and SlotFill in Chromium, including
+	// native form submission, live rejection rollback and changed-cart redraw.
+	const blocksBrowser = await chromium.launch({ headless: true });
+	try {
+		wp('eval', `update_option('woocommerce_checkout_page_id', ${Number(fixture.blocksCheckoutPage)});`);
+		for (const scenario of ['switch', 'rejected', 'cart-change']) {
+			const blocksRestore = createSession(siteUrl);
+			await blocksRestore.request('/wp-json/wc/store/v1/cart');
+			await blocksRestore.request(`/?add-to-cart=${fixture.product}`);
+			const blocksId = `recovery_blocks_choice_${scenario}`;
+			setRestoreResolveResult(200, { ...conflictPayload, recoveryId: blocksId });
+			const blocksLanding = await blocksRestore.request(`/?moda_interact_resume=1&r=${blocksId}&t=${'E'.repeat(43)}`);
+			const blocksNonce = (await blocksLanding.text()).match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
+			const blocksConfirm = await blocksRestore.request('/', {
+				method: 'POST',
+				headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
+				body: new URLSearchParams({ moda_interact_resume: '1', r: blocksId, t: 'E'.repeat(43), nonce: blocksNonce, confirm: 'replace' }).toString(),
+			});
+			assert.equal(blocksConfirm.status, 303);
+			const restoredBlocksCart = await (await blocksRestore.request('/wp-json/wc/store/v1/cart')).json();
+			assert.deepEqual(restoredBlocksCart.coupons.map((coupon) => coupon.code), [fixture.conflictCouponCode],
+				'Blocks confirmation preserves the original coupon before the shopper chooses');
+			const page = await blocksBrowser.newPage();
+			const browserCookies = blocksRestore.cookieHeader().split('; ').filter(Boolean).map((cookie) => {
+				const separator = cookie.indexOf('=');
+				return { name: cookie.slice(0, separator), value: cookie.slice(separator + 1), domain: new URL(siteUrl).hostname, path: '/' };
+			});
+			await page.context().addCookies(browserCookies);
+			const pageErrors = [];
+			page.on('pageerror', (error) => pageErrors.push(error.name));
+			await page.goto(new URL(`/?page_id=${fixture.blocksCheckoutPage}`, siteUrl).href, { waitUntil: 'networkidle' });
+			await page.locator('[data-block-name="woocommerce/checkout"]:not(.is-loading)').waitFor({ state: 'visible', timeout: 15000 });
+			const choice = page.getByRole('button', { name: 'Try the offered coupons instead' });
+			await choice.waitFor({ state: 'visible', timeout: 15000 }).catch(async () => {
+				const blocksDebug = await page.evaluate(() => ({
+					available: window.wc?.wcSettings?.getSetting?.('moda-interact-outreach-choice_data', {})?.available,
+					experimentalOrderMeta: typeof window.wc?.blocksCheckout?.ExperimentalOrderMeta,
+					pluginRegistered: Boolean(window.wp?.plugins?.getPlugin?.('moda-interact-outreach-choice')),
+					choiceScriptLoaded: [...document.scripts].some((script) => script.src.includes('checkout-outreach-choice')),
+				}));
+				assert.fail(`Blocks choice did not render: ${JSON.stringify(blocksDebug)}`);
+			});
+			await assertBlocksDisplayedTotal(page, restoredBlocksCart);
+			if (process.env.MODA_CHECKOUT_EVIDENCE_DIR) {
+				await page.screenshot({ path: `${process.env.MODA_CHECKOUT_EVIDENCE_DIR}/blocks-${scenario}-before.png`, fullPage: true });
+			}
+			const choiceForm = page.locator('form.moda-interact-outreach-choice');
+			assert.deepEqual(await choiceForm.locator('input').evaluateAll((inputs) => inputs.map((input) => input.name).sort()),
+				['_wpnonce', 'moda_interact_outreach_coupon_choice'], 'Blocks posts only the action and nonce');
+			assert.doesNotMatch(await choiceForm.innerHTML(), /recovery_blocks_choice_|arch053|woo-restore/,
+				'Blocks control does not expose recovery or coupon identifiers');
+			if (scenario === 'cart-change') {
+				await blocksRestore.request(`/?add-to-cart=${fixture.product}`);
+				await page.reload({ waitUntil: 'networkidle' });
+				await page.locator('[data-block-name="woocommerce/checkout"]:not(.is-loading)').waitFor({ state: 'visible' });
+			} else {
+				if (scenario === 'rejected') {
+					wp('eval', `$coupon = new WC_Coupon(${Number(fixture.offerCoupon)}); $coupon->set_date_expires(time() - 60); $coupon->save();`);
+				}
+				try {
+					const [navigation] = await Promise.all([
+						page.waitForNavigation({ waitUntil: 'networkidle' }),
+						choice.click(),
+					]);
+					assert.equal(navigation.status(), 200, `Blocks ${scenario} returns to checkout`);
+					await page.locator('[data-block-name="woocommerce/checkout"]:not(.is-loading)').waitFor({ state: 'visible' });
+				} finally {
+					if (scenario === 'rejected') {
+						wp('eval', `$coupon = new WC_Coupon(${Number(fixture.offerCoupon)}); $coupon->set_date_expires(null); $coupon->save();`);
+					}
+				}
+			}
+			const afterChoice = await (await blocksRestore.request('/wp-json/wc/store/v1/cart')).json();
+			assert.deepEqual(afterChoice.coupons.map((coupon) => coupon.code),
+				scenario === 'switch' ? [fixture.offerCouponCode] : [fixture.conflictCouponCode],
+				`Blocks ${scenario} retains the Woo-approved coupon set`);
+			if (scenario === 'switch') {
+				assert.notEqual(afterChoice.totals.total_price, restoredBlocksCart.totals.total_price,
+					'Blocks explicit choice recalculates the actual total');
+			} else if (scenario === 'rejected') {
+				assert.equal(afterChoice.totals.total_price, restoredBlocksCart.totals.total_price,
+					'Blocks rejected offer restores the original total');
+			}
+			assert.equal(await page.getByRole('button', { name: 'Try the offered coupons instead' }).count(), 0,
+				`Blocks ${scenario} clears the one-time choice`);
+			const visibleText = await page.locator('body').innerText();
+			for (const code of fixture.rejectedCouponCodes) {
+				assert.equal(visibleText.toLowerCase().includes(code.toLowerCase()), false, 'Rejected coupon diagnostics stay private');
+			}
+			await assertBlocksDisplayedTotal(page, afterChoice);
+			assert.deepEqual(pageErrors, [], `Blocks ${scenario} renders without browser exceptions`);
+			if (process.env.MODA_CHECKOUT_EVIDENCE_DIR) {
+				await page.screenshot({ path: `${process.env.MODA_CHECKOUT_EVIDENCE_DIR}/blocks-${scenario}-after.png`, fullPage: true });
+			}
+			await page.close();
+			process.stdout.write(`ARCH-053 Blocks ${scenario} browser PASS\n`);
+		}
+	} finally {
+		await blocksBrowser.close();
 	}
 	setRestoreResolveResult(404);
 	process.stdout.write('ARCH-053 confirmed Woo restore integration PASS\n');

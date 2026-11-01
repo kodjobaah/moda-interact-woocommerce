@@ -1267,6 +1267,10 @@ msgstr "Les relances apparaîtront ici dès leur démarrage."
 msgid "Try another date range, customer or status."
 msgstr "Essayez une autre période, un autre client ou un autre statut."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Essayer plutôt les coupons proposés"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Message automatique"

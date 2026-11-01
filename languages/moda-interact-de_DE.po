@@ -1272,6 +1272,10 @@ msgstr "Einträge erscheinen hier, sobald eine Wiederherstellung beginnt."
 msgid "Try another date range, customer or status."
 msgstr "Versuchen Sie einen anderen Zeitraum, Kunden oder Status."
 
+#: includes/Checkout/CheckoutOutreachOfferChoicePresenter.php:61
+msgid "Try the offered coupons instead"
+msgstr "Stattdessen die angebotenen Gutscheine ausprobieren"
+
 #: src/recoveries/detail/conversation/conversation-message.js:36
 msgid "Automated message"
 msgstr "Automatische Nachricht"
