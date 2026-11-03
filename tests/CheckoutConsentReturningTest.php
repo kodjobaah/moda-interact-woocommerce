@@ -26,6 +26,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 	private CheckoutConsentProof $proof;
 	private CheckoutConsentEligibility $eligibility;
 	private bool $feature = true;
+	private int $featureReads = 0;
 	private bool $unavailable = false;
 
 	protected function setUp(): void {
@@ -50,10 +51,12 @@ final class CheckoutConsentReturningTest extends TestCase {
 		$GLOBALS['moda_interact_options'][ InstallationStore::OPTION_NAME ] = $record;
 		$this->requests = array();
 		$this->feature = true;
+		$this->featureReads = 0;
 		$this->unavailable = false;
 		$transport = function ( string $url, array $request ) {
 			$path = parse_url( $url, PHP_URL_PATH );
 			if ( '/v1/merchant/feature-preferences' === $path ) {
+				++$this->featureReads;
 				return $this->response( 200, array( 'schemaVersion' => 1, 'revision' => str_repeat( 'a', 64 ),
 					'features' => array( array( 'id' => 'feature-1', 'key' => 'checkout_recovery',
 					'name' => 'Checkout Recovery', 'description' => null,
@@ -71,7 +74,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 		$client = new ModaApiClient( ModaApiConfiguration::fromServerConfiguration( 'https://api.example.test' ), $transport );
 		$site = new SiteIdentity( ModaApiConfiguration::MODE_PUBLIC, static fn( string $host ) => array( '93.184.216.34' ) );
 		$this->publisher = new CheckoutConsentPublisher( $client, new InstallationStore(), $site );
-		$this->eligibility = new CheckoutConsentEligibility( $client, $site, new InstallationStore() );
+		$this->eligibility = new CheckoutConsentEligibility( new InstallationStore() );
 		$this->proof = new CheckoutConsentProof();
 		$this->capture = new CheckoutConsentCapture( $this->publisher, $this->eligibility, $this->proof );
 	}
@@ -134,6 +137,56 @@ final class CheckoutConsentReturningTest extends TestCase {
 			$this->proof->forCurrentShopper( '447400123456' )['grantEventId'] );
 	}
 
+	public function test_explicit_uncheck_supersedes_unacknowledged_grant_with_retryable_revoke(): void {
+		$this->unavailable = true;
+		$this->classic( true );
+		self::assertCount( 1, $this->requests );
+		$grant = $this->event( 0 );
+		$lease_key = 'moda_woo_consent_retry_' . hash( 'sha256', $grant['eventId'] );
+		self::assertIsArray( get_transient( $lease_key ) );
+		self::assertNull( $this->proof->forCurrentShopper( $grant['canonicalPhone'] ) );
+
+		// HTTP 503 does not prove the GRANT was never committed. This shopper's
+		// same-checkout uncheck must supersede its retry and attempt a REVOKE,
+		// even when the API-006 status reader is absent.
+		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertSame( 'capture_observe_revoke_publish_unacknowledged', $this->capture->failureReason() );
+		self::assertFalse( get_transient( $lease_key ) );
+		self::assertCount( 2, $this->requests );
+		$revoke = $this->event( 1 );
+		self::assertSame( 'REVOKE', $revoke['decision'] );
+		self::assertNotSame( $grant['eventId'], $revoke['eventId'] );
+		$state = WC()->session->get( 'moda_interact_checkout_consent_observation_v2' );
+		self::assertSame( 'REVOKE', $state['pending']['decision'] );
+		self::assertFalse( $state['checked'] );
+
+		$this->unavailable = false;
+		$this->publisher->deliver( $grant, 'installation-a', 'shop-a', 2 );
+		self::assertCount( 2, $this->requests, 'Cancelled background retry cannot publish an obsolete GRANT' );
+		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertCount( 3, $this->requests );
+		self::assertSame( $revoke['eventId'], $this->event( 2 )['eventId'],
+			'Lost REVOKE ACK retries the same event identity' );
+		self::assertNull( $this->proof->forCurrentShopper( $grant['canonicalPhone'] ) );
+
+		$this->classic( true );
+		self::assertCount( 4, $this->requests );
+		self::assertSame( 'GRANT', $this->event( 3 )['decision'] );
+		self::assertNotSame( $grant['eventId'], $this->event( 3 )['eventId'] );
+	}
+
+	public function test_uncheck_with_different_phone_cannot_cancel_original_grant_retry(): void {
+		$this->unavailable = true;
+		$this->classic( true );
+		$grant = $this->event( 0 );
+		$lease_key = 'moda_woo_consent_retry_' . hash( 'sha256', $grant['eventId'] );
+		self::assertIsArray( get_transient( $lease_key ) );
+		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123457', 'GB', true ) );
+		self::assertSame( 'capture_withdraw_context_mismatch', $this->capture->failureReason() );
+		self::assertIsArray( get_transient( $lease_key ), 'Wrong-contact request must not change the retry lease' );
+		self::assertCount( 1, $this->requests );
+	}
+
 	public function test_guest_proof_cannot_cross_phone_checkout_or_account_boundary(): void {
 		$this->classic( true );
 		self::assertNotNull( $this->proof->forCurrentShopper( '447400123456' ) );
@@ -160,12 +213,12 @@ final class CheckoutConsentReturningTest extends TestCase {
 		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
 	}
 
-	public function test_separate_withdrawal_command_requires_current_remote_confirmation(): void {
+	public function test_same_checkout_withdraw_does_not_depend_on_remote_status(): void {
 		$this->classic( true );
-		$this->classic( false );
-		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
-		self::assertCount( 1, $this->requests, 'With no API-006 reader, a local grant proof cannot authorise withdrawal' );
-		$this->enableConfirmedStatus();
+		$this->classic( false ); // Routine checkout refresh is not a withdrawal.
+		self::assertCount( 1, $this->requests );
+		// Default status reader cannot reach API-006 in this fixture; it must not
+		// be invoked for the same shopper's explicit reversal of this GRANT.
 		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
 		self::assertCount( 2, $this->requests );
 		$event = $this->event( 1 );
@@ -174,6 +227,19 @@ final class CheckoutConsentReturningTest extends TestCase {
 		self::assertNull( $this->proof->forCurrentShopper( '447400123456' ) );
 		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
 		self::assertCount( 2, $this->requests );
+	}
+
+	public function test_returning_account_proof_still_needs_current_status_confirmation(): void {
+		$GLOBALS['arch046_current_user_id'] = 42;
+		$this->classic( true );
+		$this->capture->endCheckout();
+		$GLOBALS['arch046_woo']->session = new Arch046Session();
+		self::assertFalse( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertSame( 'capture_withdraw_status_unconfirmed', $this->capture->failureReason() );
+		self::assertCount( 1, $this->requests, 'Stale proof must not revoke without hosted confirmation' );
+		$this->enableConfirmedStatus();
+		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
+		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
 	}
 
 	public function test_native_woo_ajax_action_requires_nonce_confirmation_and_server_proof(): void {
@@ -272,7 +338,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 		self::assertTrue( $this->capture->observe( 'BLOCKS', true,
 			'+447400123456', 'GB', true, false, 'explicit-request-1' ) );
 		self::assertCount( 1, $this->requests );
-		$this->enableConfirmedStatus();
+		// A fresh same-checkout uncheck does not need API-006.
 		self::assertTrue( $this->capture->withdrawExplicit( 'BLOCKS', '+447400123456', 'GB', true,
 			'explicit-request-2' ) );
 		self::assertCount( 2, $this->requests );
@@ -491,6 +557,7 @@ final class CheckoutConsentReturningTest extends TestCase {
 		$this->enableConfirmedStatus();
 		self::assertTrue( $this->capture->withdrawExplicit( 'CLASSIC', '+447400123456', 'GB', true ) );
 		self::assertSame( 'REVOKE', $this->event( 1 )['decision'] );
+		self::assertSame( 0, $this->featureReads, 'Consent grant and withdrawal never fetch feature preferences' );
 	}
 
 }

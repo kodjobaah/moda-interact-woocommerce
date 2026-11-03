@@ -17,7 +17,10 @@ import { assertReleaseLocales } from './scenarios/release-locales.mjs';
 import { assertCheckoutWordPress } from './scenarios/checkout-wordpress.mjs';
 import { assertCheckoutConsentWordPress } from './scenarios/checkout-consent-wordpress.mjs';
 import { assertBillingWordPress } from './scenarios/billing-wordpress.mjs';
-import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
+import {
+	siteUrlFromWpEnvStatus,
+	assertConsentFixtureSiteIdentity,
+} from './wp-env-status.mjs';
 import {
 	readPendingCheckoutActions,
 	readCheckoutActionHistory,
@@ -38,8 +41,14 @@ const restoreOnly = process.argv.includes('--restore-only');
 const consentOnly = process.argv.includes('--consent-only');
 const consentBrowser = process.argv.includes('--consent-browser');
 const shopBrandOnly = process.argv.includes('--shop-brand-only');
-assert.ok(!(shopBrandOnly && (checkoutOnly || consentOnly)), 'Choose one focused WordPress integration mode');
-assert.ok(!(restoreOnly && (checkoutOnly || consentOnly || shopBrandOnly)), 'Choose one focused WordPress integration mode');
+assert.ok(
+	!(shopBrandOnly && (checkoutOnly || consentOnly)),
+	'Choose one focused WordPress integration mode'
+);
+assert.ok(
+	!(restoreOnly && (checkoutOnly || consentOnly || shopBrandOnly)),
+	'Choose one focused WordPress integration mode'
+);
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
 let siteUrl;
@@ -238,6 +247,8 @@ try {
 				'woo' => class_exists('WooCommerce'),
 				'installationId' => is_array($connection) ? ($connection['installationId'] ?? null) : null,
 				'credentialVersion' => is_array($connection) ? ($connection['credentialVersion'] ?? null) : null,
+				'installationSiteUrl' => is_array($connection) ? ($connection['canonicalSiteUrl'] ?? null) : null,
+				'effectiveSiteUrl' => rtrim((string) home_url('/'), '/'),
 			));
 		`
 			)
@@ -256,6 +267,12 @@ try {
 			2,
 			'Checkout-only requires the existing integration fixture credential version 2'
 		);
+		if (consentOnly) {
+			// A fixture created at localhost:8888 is not authorised for a site
+			// subsequently started on localhost:8890. Check before any test
+			// data/configuration mutations; do not silently rewrite its identity.
+			assertConsentFixtureSiteIdentity(siteUrl, state);
+		}
 		const previous = parseJsonOutput(
 			wp(
 				'eval',
@@ -319,18 +336,19 @@ try {
 						readCheckoutActionHistory(wpEnvComposeFile),
 					getActivityRequests: apiFixture.getActivityRequests,
 					setActivityStatus: apiFixture.setActivityStatus,
-					getRestoreResolveRequests: apiFixture.getRestoreResolveRequests,
+					getRestoreResolveRequests:
+						apiFixture.getRestoreResolveRequests,
 					setRestoreResolveResult: apiFixture.setRestoreResolveResult,
 					restoreOnly,
 				});
 			}
-			process.stdout.write(
-				consentOnly
-					? 'ARCH-046 consent-only integration PASS\n'
-					: restoreOnly
-						? 'ARCH-053 restore-only integration PASS\n'
-						: 'ARCH-035 checkout-only integration PASS\n'
-			);
+			let message = 'ARCH-035 checkout-only integration PASS';
+			if (consentOnly) {
+				message = 'ARCH-046 consent-only integration PASS';
+			} else if (restoreOnly) {
+				message = 'ARCH-053 restore-only integration PASS';
+			}
+			process.stdout.write(message + '\n');
 		} finally {
 			for (const [name, prior] of applied.reverse()) {
 				try {
@@ -526,7 +544,10 @@ try {
 		// fixture installation ID, and reconnecting that same installation must
 		// NOT enqueue another initial capture. Reset only owned fixture state
 		// before the connection scenario so reruns still exercise first connect.
-		const brandFixtureReset = parseJsonOutput(await wpAsync('eval', `
+		const brandFixtureReset = parseJsonOutput(
+			await wpAsync(
+				'eval',
+				`
 			$record = get_option('moda_interact_woocommerce_connection', null);
 			if (null !== $record && (!is_array($record) ||
 				($record['installationId'] ?? null) !== 'install_wp_fixture' ||
@@ -562,7 +583,9 @@ try {
 				'markerCleared' => get_option('moda_interact_shop_brand_bootstrapped_installation', '') === '',
 				'pendingActionsCleared' => $cleared,
 			));
-		`));
+		`
+			)
+		);
 		assert.equal(brandFixtureReset.connectionCleared, true);
 		assert.equal(brandFixtureReset.markerCleared, true);
 		await assertConnectionWordPress({
@@ -571,11 +594,12 @@ try {
 			fetchWordPress,
 			request,
 			merchantBootstrapRequest,
-			onInitialConnection: () => assertInitialShopBrandWordPress({
-				wpAsync,
-				parseJsonOutput,
-				fixture: apiFixture,
-			}),
+			onInitialConnection: () =>
+				assertInitialShopBrandWordPress({
+					wpAsync,
+					parseJsonOutput,
+					fixture: apiFixture,
+				}),
 		});
 		await assertShopBrandWordPress({
 			wpAsync,

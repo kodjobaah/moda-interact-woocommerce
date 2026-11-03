@@ -91,7 +91,7 @@ The live scenario fails unless all of the following hold:
   acknowledged by the stand-in before the UI declares it recorded.
 - Proof-backed `status` reads without any consent write; proofless second
   guests and phone mismatches cannot use another shopper's grant.
-- Only a deliberate uncheck of verified existing permission sends authenticated REVOKE. Ordinary Woo field updates, status hydration, and stored field values never publish consent.
+- A deliberate uncheck following this shopper's same-checkout GRANT publishes an authenticated REVOKE directly, with no extra API-006 status round-trip; it cancels pending GRANT retries and can safely retry an unacknowledged REVOKE using the same event ID. Returning proof-only withdrawal continues to require current API-006 confirmation until the write-side conditional-authorisation contract is established. Ordinary Woo field updates, status hydration, and stored field values never publish consent.
 - Replaying an old GRANT request ID after REVOKE never creates another write.
 - HTTP 503 on a write or proof read does not claim durable permission.
 - A returning logged-in shopper can use their own proof, not another person's
@@ -318,8 +318,15 @@ status read for verified permission; a successful REVOKE updates the server
 state. A rejected GRANT leaves the UI checked but cannot create permission; a
 rejected REVOKE leaves the UI unchecked but cannot remove a prior grant. An
 ambiguous transport outcome is not evidence of either success or failure and
-must be reverified on a subsequent checkout read. A phone change clears the
-old local choice without sending a new action. Neither path displays
+must be reverified on a subsequent checkout read. A change from an established phone to a different phone clears the
+old local choice without sending a new action. A deliberate choice made
+*before any phone is available* stays visually selected during the first
+billing-phone entry and Woo re-renders. That earlier visual choice is not
+silently published as a GRANT when the phone appears: publishing requires a
+fresh deliberate checkbox check with the current phone established. A
+returning guest in a different browser/incognito session has no local
+shopper-bound proof, even if Woo restores their address; only the accepted
+API-006 proof-backed status may check their control. Neither path displays
 an error, popup, confirmation button or operational message on the merchant
 storefront; PHP failures use the internal structured diagnostic boundary.
 
@@ -404,3 +411,101 @@ Validation: both checkout types must render their unchecked control on a
 locally connected store with the feature API offline, and the site must still
 complete checkout. A later verified status can check the box only with valid
 shopper-bound proof; no display-only value may generate a consent event.
+
+
+## Disposable wp-env port changes and the consent fixture
+
+The focused consent tests reuse a previously connected, **synthetic** WordPress
+installation (`install_wp_fixture`, credential version 2). The installation's
+`canonicalSiteUrl` is an authorization boundary, not a display preference. If
+a disposable `wp-env` site originally connected on `localhost:8888` is later
+started on `localhost:8890`, Classic/Blocks consent presentation intentionally
+fails closed until that synthetic connection is re-established for the new
+origin. Changing `WP_ENV_PORT` does not reconnect an installation.
+
+The consent-only runner verifies both effective WordPress `home_url()` and the
+fixture's stored canonical URL against the port reported by `wp-env status`
+**before mutating checkout settings or creating test products**. On mismatch
+it fails with an actionable, redacted diagnostic rather than an indirect
+"checkbox missing" error. The test never rewrites installation credentials,
+relaxes canonical-site comparison or exposes those values in logs.
+
+On a disposable test instance, the supported recovery is to run the main
+WordPress integration setup at the new port (which reconnects the synthetic
+fixture through the normal connection API), then re-run consent-only:
+
+```sh
+WP_ENV_PORT=8890 npm run test:integration:wordpress
+WP_ENV_PORT=8890 MODA_CHECKOUT_TEST_DISPOSABLE=1 npm run test:integration:consent:browser
+```
+
+The first command runs the full integration suite, which may encounter a
+separate workstream's failure after connection setup. It must never run against
+a real merchant store. Alternatively, use the original fixture port if it can
+be freed safely, without deleting or resetting other developers' containers.
+
+## Attempt 1 follow-up r03: correlated Blocks acknowledgements and bounded diagnostics
+
+The native checkbox is still a presentation of the **shopper's latest deliberate
+choice**, not durable consent evidence. A `cart/extensions` request now subscribes
+to the Woo cart store **before** dispatch and retains only the fixed-shape
+response matching its own `requestId`. This prevents an ordinary `/checkout`
+or `/cart` refresh from replacing an acknowledgement with `status: idle` before
+the consent action reads it. A response that never arrives remains ambiguous
+after the existing bounded deadline; a timeout does **not** imply REVOKED or
+GRANTED permission. An unexpected PHP exception similarly returns a
+request-correlated `unverified` result while Woo's internal logger records the
+original error; the browser never receives the exception or customer details.
+
+A definite pre-publication GRANT rejection (e.g.,
+`store_api_expected_phone_unparseable` or `capture_observe_feature_ineligible`)
+no longer causes a subsequent uncheck to issue a proofless REVOKE. Conversely,
+a lost GRANT acknowledgement or an explicit
+`capture_observe_grant_publish_unacknowledged` outcome is **ambiguous** and
+continues through the protected withdrawal path, which may cancel pending
+retries and fail closed if proof/hosted verification is unavailable. These
+cases are distinguished rather than conflated with an attempted GRANT flag.
+
+Development diagnostics may be enabled in a checkout browser using
+`sessionStorage.setItem('modaWooConsentDebug', '1')` followed by a reload.
+Browser diagnostics include fixed event names, allowlisted status and action
+values, boolean confirmation, and bounded HTTP status. SDK error text, names,
+codes, and server reason strings are omitted.
+
+Focused validation includes late and short-lived ACKs, queued changes,
+pre-publication rejection versus ambiguous grant, original transport errors,
+and an exception-path PHP request-correlation test. **The hosted API-006
+status/STOP proof and API-007 v2 write remain independent integration gates.**
+The separate per-person consent/phone-destination architecture decision is
+not silently changed by this transport/diagnostic correction.
+
+## 1 November 2026 — WOO-003 runtime correction: passive consent capture (r05)
+
+This section supersedes earlier attempt-specific text that used
+`checkout_recovery.effective`, `planEligible` or the merchant
+`/v1/merchant/feature-preferences` endpoint to admit an explicit GRANT.
+Customer consent is passive evidence: a verified, deliberate checkout action
+can be recorded even when the merchant cannot currently run Checkout Recovery.
+This action does **not** start a recovery, send WhatsApp, reserve a credit or
+clear a merchant-specific or global STOP. Recovery admission and the final
+outbound guards separately enforce effective feature/plan entitlement, current
+recipient consent, suppression and STOP. Nothing here migrates an existing
+phone-bound proof to another destination.
+
+`CheckoutConsentEligibility::eligibleForPresentation()` caches only the local
+installation/site check for one page render. `eligible()` freshly rechecks the
+installed connection record and configured site URL for every explicit GRANT;
+it never calls hosted feature preferences or resolves DNS. A revoked, invalid,
+disconnected or site-mismatched local installation cannot record a GRANT, while
+the authenticated v2 API writer remains authoritative for remote installation,
+tenancy and evidence validation. Only an acknowledged write is recorded consent.
+Neither browser checkbox state nor WooCommerce's native display-only additional
+field is itself permission. Valid withdrawals continue through existing proof
+and STOP safeguards; provider errors retain their original, redacted details.
+
+Regression tests must prove zero remote feature-preferences requests across
+Classic/Blocks render, deliberate GRANT, REVOKE, status hydration and retry,
+including disabled/plan-ineligible recovery and an unavailable feature-catalogue
+endpoint. Distinct tests keep installation/site mismatch, nonce, session,
+contact, replay and hosted-write failure admission intact. This r05 patch
+changes WooCommerce runtime only, not the already agreed API-007 contract.

@@ -17,6 +17,13 @@ function fixture({
 	failWrite = false,
 	failStatus = false,
 	writeDelay = 0,
+	ackDelay = 0,
+	ackEphemeral = false,
+	failWriteReason = 'store_api_expected_phone_unparseable',
+	failTransport = false,
+	debugEnabled = false,
+	noChoiceAck = false,
+	fastTimeout = false,
 } = {}) {
 	const cart = { billingAddress: { country: 'GB', phone }, extensions: {} };
 	const writes = [];
@@ -27,7 +34,8 @@ function fixture({
 		checked: false,
 		disabled: false,
 		setAttribute() {},
-		matches: (selector) => selector === 'input[data-moda-consent-control="1"]',
+		matches: (selector) =>
+			selector === 'input[data-moda-consent-control="1"]',
 		closest: () => null,
 	};
 	const document = {
@@ -39,31 +47,106 @@ function fixture({
 	const win = {
 		document,
 		modaWooCheckoutConsentConfig: { optIn: 'Consent text' },
-		MutationObserver: class { observe() {} },
-		setTimeout(callback, ms) { return setTimeout(callback, ms === 450 ? 0 : ms); },
+		sessionStorage: { getItem: () => (debugEnabled ? '1' : null) },
+		MutationObserver: class {
+			observe() {}
+		},
+		setTimeout(callback, ms) {
+			if (ms === 4000 && fastTimeout) {
+				return setTimeout(callback, 15);
+			}
+			return setTimeout(callback, ms === 450 ? 0 : ms);
+		},
 		clearTimeout,
-		wp: { data: {
-			select: () => ({ getCartData: () => cart }),
-			subscribe: (callback) => subscriptions.push(callback),
-		} },
-		wc: { blocksCheckout: {
-			extensionCartUpdate: async ({ namespace, overwriteDirtyCustomerData, data }) => {
-				assert.equal(namespace, 'moda-interact-consent');
-				assert.equal(overwriteDirtyCustomerData, false);
-				writes.push(data);
-				if (data.action !== 'status' && writeDelay > 0) {
-					await new Promise((resolve) => setTimeout(resolve, writeDelay));
-				}
-				if (data.action === 'choice' && !failWrite) granted = true;
-				if (data.action === 'withdraw' && !failWrite) granted = false;
-				cart.extensions['moda-interact-consent'] = {
-					requestId: data.requestId,
-					status: data.action === 'status' ? 'checked' : (failWrite ? 'unverified' : 'recorded'),
-					confirmed: data.action === 'status' ? (granted && !failStatus) : false,
-				};
-				for (const callback of subscriptions) callback();
+		wp: {
+			data: {
+				select: () => ({ getCartData: () => cart }),
+				subscribe: (callback) => {
+					subscriptions.push(callback);
+					return () => {
+						const index = subscriptions.indexOf(callback);
+						if (index !== -1) {
+							subscriptions.splice(index, 1);
+						}
+					};
+				},
 			},
-		} },
+		},
+		wc: {
+			blocksCheckout: {
+				extensionCartUpdate: async ({
+					namespace,
+					overwriteDirtyCustomerData,
+					data,
+				}) => {
+					assert.equal(namespace, 'moda-interact-consent');
+					assert.equal(overwriteDirtyCustomerData, false);
+					writes.push(data);
+					if (data.action === 'choice' && failTransport) {
+						const error = new Error(
+							'proof=private-capability cookie=private-session'
+						);
+						error.code = 'woocommerce_api_unavailable';
+						error.data = { status: 503 };
+						throw error;
+					}
+					if (data.action !== 'status' && writeDelay > 0) {
+						await new Promise((resolve) =>
+							setTimeout(resolve, writeDelay)
+						);
+					}
+					if (data.action === 'choice' && !failWrite) {
+						granted = true;
+					}
+					if (data.action === 'withdraw' && !failWrite) {
+						granted = false;
+					}
+					let status = 'checked';
+					if (data.action !== 'status') {
+						status = failWrite ? 'unverified' : 'recorded';
+					}
+					if (data.action === 'choice' && noChoiceAck) {
+						return;
+					}
+					const response = {
+						requestId: data.requestId,
+						status,
+						confirmed:
+							data.action === 'status'
+								? granted && !failStatus
+								: false,
+						reason:
+							failWrite && data.action !== 'status'
+								? failWriteReason
+								: '',
+					};
+					const deliver = () => {
+						cart.extensions['moda-interact-consent'] = response;
+						for (const callback of [...subscriptions]) {
+							callback();
+						}
+						if (ackEphemeral) {
+							// Woo's ordinary checkout refresh may immediately overwrite
+							// the cart extension slot with a requestId-less idle value.
+							cart.extensions['moda-interact-consent'] = {
+								requestId: '',
+								status: 'idle',
+								confirmed: false,
+								reason: '',
+							};
+							for (const callback of [...subscriptions]) {
+								callback();
+							}
+						}
+					};
+					if (ackDelay) {
+						setTimeout(deliver, ackDelay);
+					} else {
+						deliver();
+					}
+				},
+			},
+		},
 		console: { info: (...args) => messages.push(args) },
 	};
 	runInNewContext(source, { window: win });
@@ -91,11 +174,32 @@ function fixture({
 		await settle();
 	}
 	return {
-		input, writes, messages, settle, click, clickImmediate,
-		setPhone(value) { cart.billingAddress.phone = value; subscriptions.forEach((s) => s()); },
-		setFailWrite(value) { failWrite = value; },
-		setFailStatus(value) { failStatus = value; },
-		get granted() { return granted; },
+		input,
+		writes,
+		messages,
+		settle,
+		click,
+		clickImmediate,
+		setPhone(value) {
+			cart.billingAddress.phone = value;
+			subscriptions.forEach((s) => s());
+		},
+		rerenderNative() {
+			input.checked = false;
+			subscriptions.forEach((s) => s());
+		},
+		setFailWrite(value) {
+			failWrite = value;
+		},
+		setFailStatus(value) {
+			failStatus = value;
+		},
+		setFailTransport(value) {
+			failTransport = value;
+		},
+		get granted() {
+			return granted;
+		},
 	};
 }
 
@@ -103,7 +207,10 @@ test('verified grant checks the native field without publishing a duplicate GRAN
 	const app = fixture({ granted: true });
 	await app.settle();
 	assert.equal(app.input.checked, true);
-	assert.deepEqual(app.writes.map((w) => w.action), ['status']);
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status']
+	);
 	await app.click();
 	assert.equal(app.input.checked, false);
 	assert.equal(app.writes.at(-1).action, 'withdraw');
@@ -116,9 +223,16 @@ test('no grant starts unchecked; deliberate click publishes one choice and verif
 	assert.equal(app.input.checked, false);
 	await app.click();
 	assert.equal(app.input.checked, true);
-	assert.deepEqual(app.writes.map((w) => w.action), ['status', 'choice', 'status']);
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status', 'choice', 'status']
+	);
 	assert.equal(app.granted, true);
-	assert.deepEqual(app.messages, [], 'No technical messages on the storefront');
+	assert.deepEqual(
+		app.messages,
+		[],
+		'No technical messages on the storefront'
+	);
 });
 
 test('failed GRANT keeps the clicked checkbox checked without recording consent', async () => {
@@ -126,7 +240,11 @@ test('failed GRANT keeps the clicked checkbox checked without recording consent'
 	await app.settle();
 	await app.click();
 	assert.equal(app.granted, false, 'Backend status quo remains ungranted');
-	assert.equal(app.input.checked, true, 'UI does not revert after failed GRANT');
+	assert.equal(
+		app.input.checked,
+		true,
+		'UI does not revert after failed GRANT'
+	);
 	assert.equal(app.input.disabled, false);
 	assert.equal(app.writes.filter((w) => w.action === 'choice').length, 1);
 });
@@ -167,28 +285,84 @@ test('status outage and phone changes never publish consent automatically', asyn
 	app.setPhone('+447400123457');
 	await app.settle();
 	assert.equal(app.input.checked, false);
-	assert.equal(app.writes.every((w) => w.action === 'status'), true);
+	assert.equal(
+		app.writes.every((w) => w.action === 'status'),
+		true
+	);
 });
 
-test('no phone cannot stage a future automatic grant', async () => {
+test('a pre-phone click stays visible through first billing entry, but cannot silently grant', async () => {
 	const app = fixture({ phone: '' });
 	await app.settle();
 	await app.click();
 	assert.equal(
 		app.input.checked,
 		true,
-		'Even without a phone the shopper can select'
+		'The explicit pre-phone choice is visible'
 	);
 	assert.equal(app.writes.length, 0);
 	app.setPhone('+447400123456');
 	await app.settle();
-	assert.equal(app.writes.every((w) => w.action === 'status'), true);
+	assert.equal(
+		app.input.checked,
+		true,
+		'Typing the initial phone cannot undo the click'
+	);
+	assert.equal(
+		app.writes.every((w) => w.action === 'status'),
+		true
+	);
+	assert.equal(
+		app.granted,
+		false,
+		'A phone appearing cannot publish a new GRANT'
+	);
+	app.rerenderNative();
+	await app.settle();
+	assert.equal(
+		app.input.checked,
+		true,
+		'Native Woo checkout re-render preserves selection'
+	);
+	// An unchecked-then-checked deliberate interaction WITH the contact
+	// established is the only way to publish a grant in this checkout.
+	await app.click();
 	assert.equal(app.input.checked, false);
+	assert.equal(
+		app.writes.every((w) => w.action === 'status'),
+		true
+	);
+	await app.click();
+	assert.equal(app.granted, true);
+	assert.equal(app.writes.filter((w) => w.action === 'choice').length, 1);
+});
+
+test('a pre-phone visual choice cannot cross a subsequent phone change', async () => {
+	const app = fixture({ phone: '' });
+	await app.settle();
+	await app.click();
+	app.setPhone('+447400123456');
+	await app.settle();
+	assert.equal(app.input.checked, true);
+	app.setPhone('+447400123457');
+	await app.settle();
+	assert.equal(
+		app.input.checked,
+		false,
+		'Initial contact is now bound and changed'
+	);
+	assert.equal(app.granted, false);
+	assert.equal(
+		app.writes.every((w) => w.action === 'status'),
+		true
+	);
 });
 
 test('missing native Woo runtime never throws or affects checkout', () => {
 	assert.doesNotThrow(() => runInNewContext(source, { window: {} }));
-	assert.doesNotThrow(() => runInNewContext(source, { window: { document: {}, wp: {} } }));
+	assert.doesNotThrow(() =>
+		runInNewContext(source, { window: { document: {}, wp: {} } })
+	);
 });
 
 test('an unavailable status request does not block new checkbox choices', async () => {
@@ -198,7 +372,11 @@ test('an unavailable status request does not block new checkbox choices', async 
 	await app.click();
 	assert.equal(app.input.checked, true);
 	assert.equal(app.input.disabled, false);
-	assert.equal(app.granted, true, 'Only an acknowledged command changes backend state');
+	assert.equal(
+		app.granted,
+		true,
+		'Only an acknowledged command changes backend state'
+	);
 });
 
 test('programmatic render changes never become consent operations', async () => {
@@ -239,4 +417,157 @@ test('rapid changes stay interactive and the final deliberate choice wins', asyn
 		'Distinct deliberate transitions must not reuse stale GRANT request identities'
 	);
 	assert.deepEqual(app.messages, []);
+});
+
+test('a delayed cart-store acknowledgement is captured after the Woo promise resolves', async () => {
+	const app = fixture({ ackDelay: 12 });
+	await app.settle();
+	await app.click();
+	assert.equal(app.granted, true);
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status', 'choice', 'status']
+	);
+	assert.equal(app.input.checked, true);
+});
+
+test('a short-lived matching acknowledgement survives an immediate checkout idle refresh', async () => {
+	const app = fixture({ ackEphemeral: true });
+	await app.settle();
+	await app.click();
+	assert.equal(app.granted, true);
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status', 'choice', 'status']
+	);
+	await app.click();
+	assert.equal(
+		app.granted,
+		false,
+		'The protected withdrawal still receives its ACK'
+	);
+	assert.equal(app.input.checked, false);
+});
+
+test('a pre-publication rejected GRANT cannot trigger a proofless withdrawal', async () => {
+	const app = fixture({
+		failWrite: true,
+		failWriteReason: 'store_api_expected_phone_unparseable',
+	});
+	await app.settle();
+	await app.click();
+	await app.click();
+	assert.equal(app.input.checked, false);
+	assert.equal(app.granted, false);
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status', 'choice']
+	);
+});
+
+test('a queued uncheck after a pre-publication rejection cannot publish REVOKE', async () => {
+	const app = fixture({ failWrite: true, writeDelay: 40 });
+	await app.settle();
+	app.clickImmediate();
+	app.clickImmediate();
+	await new Promise((resolve) => setTimeout(resolve, 120));
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status', 'choice']
+	);
+	assert.equal(app.input.checked, false);
+});
+
+test('ambiguous lost GRANT acknowledgement still invokes protected withdrawal', async () => {
+	const app = fixture({
+		failWrite: true,
+		failWriteReason: 'capture_observe_grant_publish_unacknowledged',
+	});
+	await app.settle();
+	await app.click();
+	await app.click();
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status', 'choice', 'withdraw']
+	);
+});
+
+test('development diagnostics omit private error data', async () => {
+	const app = fixture({ failTransport: true, debugEnabled: true });
+	await app.settle();
+	await app.click();
+	const failure = app.messages.find(
+		([event, name]) =>
+			event === '[Moda Woo Consent]' && name === 'blocks_http_rejected'
+	);
+	assert.ok(failure, 'Transport rejection has explicit diagnostic event');
+	assert.equal(failure[2].errorCode, undefined);
+	assert.equal(failure[2].httpStatus, 503);
+	assert.equal(failure[2].originalMessage, undefined);
+	assert.equal(failure[2].action, 'choice');
+	assert.equal(JSON.stringify(failure[2]).includes('+447400123456'), false);
+});
+
+test('server rejection diagnostics omit the server reason', async () => {
+	const app = fixture({
+		failWrite: true,
+		failWriteReason: 'capture_observe_installation_ineligible',
+		debugEnabled: true,
+	});
+	await app.settle();
+	await app.click();
+	assert.ok(
+		app.messages.some(
+			(message) =>
+				message[1] === 'blocks_http_response' &&
+				message[2].status === 'unverified' &&
+				message[2].reason === undefined
+		)
+	);
+	assert.ok(
+		app.messages.some(
+			(message) =>
+				message[1] === 'blocks_choice_failed' &&
+				message[2].reason === undefined
+		)
+	);
+});
+
+test('a lost GRANT ACK remains ambiguous and a later explicit uncheck attempts protected withdrawal', async () => {
+	const app = fixture({
+		noChoiceAck: true,
+		fastTimeout: true,
+		debugEnabled: true,
+	});
+	await app.settle();
+	await app.click();
+	assert.equal(
+		app.input.checked,
+		true,
+		'The shopper choice remains displayed after timeout'
+	);
+	assert.equal(
+		app.granted,
+		true,
+		'The backend may have committed despite a missing acknowledgement'
+	);
+	assert.ok(
+		app.messages.some(
+			(message) =>
+				message[1] === 'blocks_http_rejected' &&
+				message[2].stage === 'acknowledgement' &&
+				message[2].originalMessage === undefined
+		)
+	);
+	await app.click();
+	assert.equal(app.input.checked, false);
+	assert.equal(
+		app.granted,
+		false,
+		'Uncheck still attempts protected withdrawal after ambiguous GRANT'
+	);
+	assert.deepEqual(
+		app.writes.map((w) => w.action),
+		['status', 'choice', 'withdraw']
+	);
 });

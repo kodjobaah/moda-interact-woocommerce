@@ -4,7 +4,8 @@ import { assertNoConsentCheckoutActivity } from '../consent-checkout-isolation.m
 
 const extensionRoute = '/wp-json/wc/store/v1/cart/extensions';
 const extensionName = 'moda-interact-consent';
-const classicCheckoutForm = /<form\b[^>]*class=["'][^"']*\bwoocommerce-checkout\b/;
+const classicCheckoutForm =
+	/<form\b[^>]*class=["'][^"']*\bwoocommerce-checkout\b/;
 
 /** Read only the fixed-shape, non-sensitive signals from the disposable WP probe. */
 export function classicCheckoutProbe(html) {
@@ -21,8 +22,7 @@ export function classicCheckoutProbe(html) {
 		probePresent: !!data && typeof data === 'object',
 		phpCartLoaded: data?.phpCartLoaded === true,
 		phpCartCount:
-			Number.isSafeInteger(data?.phpCartCount) &&
-			data.phpCartCount >= 0
+			Number.isSafeInteger(data?.phpCartCount) && data.phpCartCount >= 0
 				? Math.min(data.phpCartCount, 10000)
 				: null,
 		hasClassicShortcode: data?.hasClassicShortcode === true,
@@ -159,7 +159,6 @@ export function checkPageBody(
 			/data-block-name=["']moda-interact\/checkout-consent["']/,
 			'Obsolete custom child block must not be emitted'
 		);
-
 	}
 }
 
@@ -167,9 +166,7 @@ export function checkPageBody(
 export function assertCartContainsProduct(cart, product) {
 	assert.ok(
 		Array.isArray(cart?.items) &&
-			cart.items.some(
-				(item) => item.id === product && item.quantity > 0
-			),
+			cart.items.some((item) => item.id === product && item.quantity > 0),
 		'Live checkout cart must contain the exact fixture product before consent assertions'
 	);
 }
@@ -183,9 +180,17 @@ export function assertCartContainsProduct(cart, product) {
 export async function bootstrapClassicCart(client, product) {
 	assert.ok(Number.isSafeInteger(product) && product > 0);
 	const added = await client.request(`/?add-to-cart=${product}`);
-	assert.equal(added.status, 200, 'Classic frontend add-to-cart must succeed');
+	assert.equal(
+		added.status,
+		200,
+		'Classic frontend add-to-cart must succeed'
+	);
 	const cart = await client.request('/wp-json/wc/store/v1/cart');
-	assert.equal(cart.status, 200, 'Classic cookie-backed cart verification GET');
+	assert.equal(
+		cart.status,
+		200,
+		'Classic cookie-backed cart verification GET'
+	);
 	assertCartContainsProduct(await cart.json(), product);
 }
 
@@ -779,7 +784,9 @@ export async function assertCheckoutConsentWordPress({
 		pages.blocks > 0,
 		'Consent test requires a real saved WooCommerce Blocks checkout page; do not invent a placeholder template'
 	);
-	fixture.consent.setFeatureEnabled(true);
+	// An explicitly disabled recovery feature must not suppress v2 passive
+	// consent evidence. The old Woo capture gate used this endpoint on GRANT.
+	fixture.consent.setFeatureEnabled(false);
 	let probeInstalled = false;
 	try {
 		// The mu-plugin reports only whether the PHP checkout had a cart and
@@ -860,6 +867,11 @@ export async function assertCheckoutConsentWordPress({
 			consent: fixture.consent,
 			getCheckoutActionHistory,
 		});
+		assert.deepEqual(
+			fixture.consent.getFeatureReadDiagnostics(),
+			{ total: 0, enabled: 0 },
+			'No Classic/Blocks render, GRANT, REVOKE, retry or status operation may fetch recovery feature preferences'
+		);
 		process.stdout.write(
 			'ARCH-046 consent real WordPress HTTP integration PASS (hosted read simulated)\n'
 		);

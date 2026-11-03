@@ -4,6 +4,7 @@ use ModaInteract\WooCommerce\Plugin;
 
 define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 $GLOBALS['moda_interact_test_hooks'] = array();
+$GLOBALS['moda_interact_test_filters'] = array();
 $GLOBALS['moda_interact_registered_pages'] = array();
 $GLOBALS['moda_interact_native_menu'] = array();
 $GLOBALS['moda_interact_native_submenus'] = array();
@@ -82,6 +83,16 @@ function wp_cache_delete( $key, $group = '' ): bool {
 
 function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
 	$GLOBALS['moda_interact_test_hooks'][ $hook ][] = $callback;
+}
+
+// Capture WP filter registration before production code and all test files load.
+// Do not define a second add_filter() stub in a single test file: PHPUnit's
+// suite discovery order must not decide which recorder receives the callback.
+if ( ! function_exists( 'add_filter' ) ) {
+	function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+		$GLOBALS['moda_interact_test_filters'][ $hook ][] = $callback;
+		return true;
+	}
 }
 
 function register_activation_hook( $file, $callback ) {
@@ -431,3 +442,14 @@ require_once dirname( __DIR__ ) . '/includes/Rest/MerchantKnowledgeController.ph
 require_once dirname( __DIR__ ) . '/includes/Rest/RecoveryDiscountOffersController.php';
 require_once dirname( __DIR__ ) . '/moda-interact.php';
 $GLOBALS['moda_interact_initial_hooks'] = $GLOBALS['moda_interact_test_hooks'];
+
+// Share checkout predicates across test classes regardless of discovery order.
+function is_checkout() {
+	return ! empty( $GLOBALS['arch046_checkout_page'] ) || ! empty( $GLOBALS['arch053_checkout_page'] );
+}
+function is_order_received_page() {
+	return ! empty( $GLOBALS['arch046_order_received'] ) || ! empty( $GLOBALS['arch053_order_received'] );
+}
+function is_checkout_pay_page() {
+	return ! empty( $GLOBALS['arch046_order_pay'] );
+}

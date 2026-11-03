@@ -70,7 +70,14 @@ final class CheckoutConsentStoreApi {
 			$this->updateSafe( $data );
 		} catch ( \Throwable $error ) {
 			CheckoutConsentDiagnostics::warn( 'blocks_consent_request_failed', $error );
-			$this->result = array( 'requestId' => '', 'status' => 'unverified',
+			// Preserve only the already validated, bounded request correlation ID.
+			// Otherwise a real backend exception looks like a client-side ACK
+			// timeout when the cart schema serialises this response. No shopper
+			// data or original exception message belongs in this public field.
+			$request_id = is_array( $data ) && is_string( $data['requestId'] ?? null ) &&
+				preg_match( '/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/D', $data['requestId'] )
+				? $data['requestId'] : '';
+			$this->result = array( 'requestId' => $request_id, 'status' => 'unverified',
 				'confirmed' => false, 'reason' => 'capture_observe_unclassified' );
 		}
 	}
