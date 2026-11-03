@@ -468,13 +468,9 @@ cases are distinguished rather than conflated with an attempted GRANT flag.
 
 Development diagnostics may be enabled in a checkout browser using
 `sessionStorage.setItem('modaWooConsentDebug', '1')` followed by a reload.
-`blocks_http_response` then reports the action, its fixed status, and any
-bounded server reason. `blocks_http_rejected` reports the original SDK error
-name/code, bounded/redacted original message, HTTP status when available, and
-whether it failed in transport or acknowledgement. This opt-in logging must
-not include phone numbers, contact data, nonce, installation credentials or
-raw Woo request/response payloads. No technical error is displayed on the
-merchant storefront or used to block checkout.
+Browser diagnostics include fixed event names, allowlisted status and action
+values, boolean confirmation, and bounded HTTP status. SDK error text, names,
+codes, and server reason strings are omitted.
 
 Focused validation includes late and short-lived ACKs, queued changes,
 pre-publication rejection versus ambiguous grant, original transport errors,

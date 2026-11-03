@@ -442,3 +442,14 @@ require_once dirname( __DIR__ ) . '/includes/Rest/MerchantKnowledgeController.ph
 require_once dirname( __DIR__ ) . '/includes/Rest/RecoveryDiscountOffersController.php';
 require_once dirname( __DIR__ ) . '/moda-interact.php';
 $GLOBALS['moda_interact_initial_hooks'] = $GLOBALS['moda_interact_test_hooks'];
+
+// Share checkout predicates across test classes regardless of discovery order.
+function is_checkout() {
+	return ! empty( $GLOBALS['arch046_checkout_page'] ) || ! empty( $GLOBALS['arch053_checkout_page'] );
+}
+function is_order_received_page() {
+	return ! empty( $GLOBALS['arch046_order_received'] ) || ! empty( $GLOBALS['arch053_order_received'] );
+}
+function is_checkout_pay_page() {
+	return ! empty( $GLOBALS['arch046_order_pay'] );
+}

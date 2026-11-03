@@ -66,7 +66,7 @@ function fixture({
 				assert.equal(overwriteDirtyCustomerData, false);
 				writes.push(data);
 				if (data.action === 'choice' && failTransport) {
-					const error = new Error('Store API rejected consent with HTTP 503');
+					const error = new Error('proof=private-capability cookie=private-session');
 					error.code = 'woocommerce_api_unavailable';
 					error.data = { status: 503 };
 					throw error;
@@ -353,29 +353,29 @@ test('ambiguous lost GRANT acknowledgement still invokes protected withdrawal', 
 	assert.deepEqual(app.writes.map((w) => w.action), ['status', 'choice', 'withdraw']);
 });
 
-test('development diagnostics retain the original HTTP failure and reason without exposing contacts', async () => {
+test('development diagnostics omit private error data', async () => {
 	const app = fixture({ failTransport: true, debugEnabled: true });
 	await app.settle();
 	await app.click();
 	const failure = app.messages.find(([event, name]) =>
 		event === '[Moda Woo Consent]' && name === 'blocks_http_rejected');
 	assert.ok(failure, 'Transport rejection has explicit diagnostic event');
-	assert.equal(failure[2].errorCode, 'woocommerce_api_unavailable');
+	assert.equal(failure[2].errorCode, undefined);
 	assert.equal(failure[2].httpStatus, 503);
-	assert.equal(failure[2].originalMessage, 'Store API rejected consent with HTTP 503');
+	assert.equal(failure[2].originalMessage, undefined);
 	assert.equal(failure[2].action, 'choice');
 	assert.equal(JSON.stringify(failure[2]).includes('+447400123456'), false);
 });
 
-test('a server rejection reason is reported without conflating it with HTTP failure', async () => {
+test('server rejection diagnostics omit the server reason', async () => {
 	const app = fixture({ failWrite: true, failWriteReason: 'capture_observe_installation_ineligible', debugEnabled: true });
 	await app.settle();
 	await app.click();
 	assert.ok(app.messages.some((message) => message[1] === 'blocks_http_response' &&
 		message[2].status === 'unverified' &&
-		message[2].reason === 'capture_observe_installation_ineligible'));
+		message[2].reason === undefined));
 	assert.ok(app.messages.some((message) => message[1] === 'blocks_choice_failed' &&
-		message[2].reason === 'capture_observe_installation_ineligible'));
+		message[2].reason === undefined));
 });
 
 
@@ -387,7 +387,7 @@ test('a lost GRANT ACK remains ambiguous and a later explicit uncheck attempts p
 	assert.equal(app.granted, true, 'The backend may have committed despite a missing acknowledgement');
 	assert.ok(app.messages.some((message) => message[1] === 'blocks_http_rejected' &&
 		message[2].stage === 'acknowledgement' &&
-		message[2].originalMessage === 'consent_ack_timeout'));
+		message[2].originalMessage === undefined));
 	await app.click();
 	assert.equal(app.input.checked, false);
 	assert.equal(app.granted, false, 'Uncheck still attempts protected withdrawal after ambiguous GRANT');

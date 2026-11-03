@@ -22,7 +22,21 @@
 	function debug(event, details = {}) {
 		if (!debugEnabled) return;
 		try {
-			window.console?.info?.('[Moda Woo Consent]', event, details);
+			const safe = {};
+			for (const key of ['action', 'decision', 'stage', 'status']) {
+				if (['status', 'choice', 'withdraw', 'GRANT', 'REVOKE', 'transport',
+					'acknowledgement', 'verification', 'recorded', 'unverified',
+					'granted', 'neutral'].includes(details[key])) {
+					safe[key] = details[key];
+				}
+			}
+			if (typeof details.confirmed === 'boolean') {
+				safe.confirmed = details.confirmed;
+			}
+			if (Number.isInteger(details.httpStatus) && details.httpStatus >= 100 && details.httpStatus <= 599) {
+				safe.httpStatus = details.httpStatus;
+			}
+			window.console?.info?.('[Moda Woo Consent]', event, safe);
 		} catch {
 			// DevTools are optional.
 		}
@@ -116,24 +130,7 @@
 	]);
 
 	function diagnosticError(error, action, stage) {
-		// Preserve the provider/SDK error's own code, message and HTTP status
-		// when debugging is enabled, without printing checkout payloads or keys.
-		const clean = (value) => typeof value === 'string'
-			? value.slice(0, 400)
-				.replace(/[^\s@]+@[^\s@]+/g, '[email]')
-				.replace(/\+?\d[\d\s().-]{7,}\d/g, '[phone]')
-				.replace(/(nonce|token|authorization|password|secret)\s*[:=]\s*\S+/gi, '$1=[redacted]')
-			: null;
-		const code = typeof error?.code === 'string' ? error.code.slice(0, 96) : null;
-		const status = error?.status ?? error?.data?.status;
-		return {
-			action,
-			stage,
-			errorName: clean(error?.name),
-			errorCode: clean(code),
-			httpStatus: Number.isInteger(status) ? status : null,
-			originalMessage: clean(error?.message),
-		};
+		return { action, stage, httpStatus: error?.status ?? error?.data?.status };
 	}
 
 	async function request(action, payload, contactSnapshot, stableId = null) {
