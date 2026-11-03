@@ -17,7 +17,10 @@ import { assertReleaseLocales } from './scenarios/release-locales.mjs';
 import { assertCheckoutWordPress } from './scenarios/checkout-wordpress.mjs';
 import { assertCheckoutConsentWordPress } from './scenarios/checkout-consent-wordpress.mjs';
 import { assertBillingWordPress } from './scenarios/billing-wordpress.mjs';
-import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
+import {
+	siteUrlFromWpEnvStatus,
+	assertConsentFixtureSiteIdentity,
+} from './wp-env-status.mjs';
 import {
 	readPendingCheckoutActions,
 	readCheckoutActionHistory,
@@ -236,6 +239,8 @@ try {
 				'woo' => class_exists('WooCommerce'),
 				'installationId' => is_array($connection) ? ($connection['installationId'] ?? null) : null,
 				'credentialVersion' => is_array($connection) ? ($connection['credentialVersion'] ?? null) : null,
+				'installationSiteUrl' => is_array($connection) ? ($connection['canonicalSiteUrl'] ?? null) : null,
+				'effectiveSiteUrl' => rtrim((string) home_url('/'), '/'),
 			));
 		`
 			)
@@ -254,6 +259,12 @@ try {
 			2,
 			'Checkout-only requires the existing integration fixture credential version 2'
 		);
+		if (consentOnly) {
+			// A fixture created at localhost:8888 is not authorised for a site
+			// subsequently started on localhost:8890. Check before any test
+			// data/configuration mutations; do not silently rewrite its identity.
+			assertConsentFixtureSiteIdentity(siteUrl, state);
+		}
 		const previous = parseJsonOutput(
 			wp(
 				'eval',

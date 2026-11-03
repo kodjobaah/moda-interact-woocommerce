@@ -19,10 +19,10 @@
 	} catch {
 		// Browser storage restrictions must never affect checkout.
 	}
-	function debug(event) {
+	function debug(event, details = {}) {
 		if (!debugEnabled) return;
 		try {
-			window.console?.info?.('[Moda Woo Consent]', event);
+			window.console?.info?.('[Moda Woo Consent]', event, details);
 		} catch {
 			// DevTools are optional.
 		}
@@ -44,7 +44,9 @@
 	let pendingIds = { GRANT: null, REVOKE: null };
 	let actions = [];
 	let sending = false;
-	let grantAttempted = false;
+	// An attempted GRANT is not proof of an acknowledged grant. Distinguish
+	// definite pre-publication rejection from an ambiguous lost acknowledgement.
+	let grantState = 'NONE';
 	let counter = 0;
 	let refreshTimer;
 	let reconcileTimer;
@@ -82,13 +84,102 @@
 		}, 0);
 	}
 
+	// An explicit pre-publication rejection cannot have created a new grant.
+	// Other errors, including an ACK lost after a possible write, are ambiguous;
+	// an uncheck in that case still needs the protected server withdrawal path.
+	const prePublicationRejections = new Set([
+		'store_api_expected_phone_invalid',
+		'store_api_expected_phone_unparseable',
+		'store_api_expected_country_invalid',
+		'store_api_session_unavailable',
+		'store_api_customer_unavailable',
+		'store_api_server_phone_invalid',
+		'store_api_billing_phone_mismatch',
+		'store_api_choice_value_invalid',
+		'capture_observe_unverified_context',
+		'capture_observe_invalid_mode',
+		'capture_observe_session_unavailable',
+		'capture_observe_cart_unavailable',
+		'capture_observe_cart_invalid',
+		'capture_observe_cart_empty',
+		'capture_observe_checkout_key_unavailable',
+		'capture_observe_phone_missing',
+		'capture_observe_phone_invalid',
+		'capture_observe_session_identity_unavailable',
+		'capture_observe_context_change_requires_neutral',
+		'capture_observe_phone_change_requires_neutral',
+		'capture_observe_neutral_selection_required',
+		'capture_observe_neutral_selection_observed',
+		'capture_observe_store_choice_history_full',
+		'capture_observe_feature_ineligible',
+		'capture_observe_grant_timestamp_unavailable',
+	]);
+
+	function diagnosticError(error, action, stage) {
+		// Preserve the provider/SDK error's own code, message and HTTP status
+		// when debugging is enabled, without printing checkout payloads or keys.
+		const clean = (value) => typeof value === 'string'
+			? value.slice(0, 400)
+				.replace(/[^\s@]+@[^\s@]+/g, '[email]')
+				.replace(/\+?\d[\d\s().-]{7,}\d/g, '[phone]')
+				.replace(/(nonce|token|authorization|password|secret)\s*[:=]\s*\S+/gi, '$1=[redacted]')
+			: null;
+		const code = typeof error?.code === 'string' ? error.code.slice(0, 96) : null;
+		const status = error?.status ?? error?.data?.status;
+		return {
+			action,
+			stage,
+			errorName: clean(error?.name),
+			errorCode: clean(code),
+			httpStatus: Number.isInteger(status) ? status : null,
+			originalMessage: clean(error?.message),
+		};
+	}
+
 	async function request(action, payload, contactSnapshot, stableId = null) {
 		const separator = contactSnapshot.indexOf('|');
 		const requestId =
 			stableId || `moda-${Date.now().toString(36)}-${++counter}`;
 		let timeout;
-		debug('blocks_http_started');
+		let unsubscribe;
+		let resolveAcknowledgement;
+		let acknowledgement = null;
+		let stage = 'transport';
+		const acknowledgementPromise = new Promise((resolve) => {
+			resolveAcknowledgement = resolve;
+		});
+		const captureAcknowledgement = () => {
+			try {
+				const result = wp.data.select('wc/store/cart')?.getCartData?.()
+					?.extensions?.['moda-interact-consent'];
+				if (!acknowledgement && result?.requestId === requestId) {
+					// Copy the complete, fixed-shape action response before another
+					// Woo checkout/cart refresh replaces it with status: idle.
+					acknowledgement = {
+						requestId: result.requestId,
+						status: result.status,
+						confirmed: result.confirmed === true,
+						reason: result.reason,
+					};
+					resolveAcknowledgement(acknowledgement);
+				}
+			} catch {
+				// A partially hydrated cart is not an acknowledgement.
+			}
+		};
+		debug('blocks_http_started', { action });
 		try {
+			// Subscribe BEFORE issuing the request. The cart-store response may
+			// appear only briefly, or after extensionCartUpdate resolves.
+			if (typeof wp.data.subscribe === 'function') {
+				unsubscribe = wp.data.subscribe(captureAcknowledgement);
+			}
+			const deadline = new Promise((_, reject) => {
+				timeout = window.setTimeout(() => reject(
+					new Error(stage === 'transport'
+						? 'consent_transport_timeout' : 'consent_ack_timeout')
+				), 4000);
+			});
 			const update = blocks.extensionCartUpdate({
 				namespace: 'moda-interact-consent',
 				overwriteDirtyCustomerData: false,
@@ -100,26 +191,27 @@
 					expectedCountry: contactSnapshot.slice(0, separator),
 				},
 			});
-			await Promise.race([
-				update,
-				new Promise((_, reject) => {
-					timeout = window.setTimeout(
-						() => reject(new Error('consent_timeout')),
-						4000
-					);
-				}),
-			]);
-			const result = wp.data.select('wc/store/cart')?.getCartData?.()
-				?.extensions?.['moda-interact-consent'];
-			if (result?.requestId !== requestId) {
-				throw new Error('consent_ack_unavailable');
-			}
-			debug('blocks_http_response');
+			await Promise.race([update, deadline]);
+			stage = 'acknowledgement';
+			captureAcknowledgement();
+			const result = acknowledgement ||
+				await Promise.race([acknowledgementPromise, deadline]);
+			debug('blocks_http_response', {
+				action,
+				status: result.status,
+				confirmed: result.confirmed,
+				reason: typeof result.reason === 'string' &&
+					/^[a-zA-Z0-9_-]{0,128}$/.test(result.reason)
+						? result.reason : null,
+			});
 			return result;
-		} catch {
-			debug('blocks_http_rejected');
-			throw new Error('consent_request_unavailable');
+		} catch (error) {
+			debug('blocks_http_rejected', diagnosticError(error, action, stage));
+			// Do not replace the original SDK/network exception with a generic
+			// consent_request_unavailable: the reason matters during development.
+			throw error;
 		} finally {
+			if (typeof unsubscribe === 'function') unsubscribe();
 			if (timeout !== undefined) window.clearTimeout?.(timeout);
 		}
 	}
@@ -137,6 +229,15 @@
 				}
 				const { decision, requestId, contact: at, generation: id } = action;
 				try {
+					// Do not invent a REVOKE when the preceding GRANT was
+					// definitively rejected before any publication. Ambiguous
+					// writes still require the proof-checked withdrawal path.
+					if (decision === 'REVOKE' && !verified && grantState === 'REJECTED') {
+						if (pendingIds.REVOKE === requestId) pendingIds.REVOKE = null;
+						grantState = 'NONE';
+						debug('blocks_withdraw_skipped_no_grant');
+						continue;
+					}
 					const result = await request(
 						decision === 'GRANT' ? 'choice' : 'withdraw',
 						decision === 'GRANT'
@@ -147,7 +248,15 @@
 					);
 					if (id !== generation || at !== contact) continue;
 					if (result.status !== 'recorded') {
-						debug('blocks_choice_failed');
+						if (decision === 'GRANT') {
+							grantState = prePublicationRejections.has(result.reason)
+								? 'REJECTED' : 'AMBIGUOUS';
+						}
+						debug('blocks_choice_failed', {
+							decision,
+							status: result.status,
+							reason: typeof result.reason === 'string' ? result.reason : null,
+						});
 						continue;
 					}
 					if (pendingIds[decision] === requestId) {
@@ -155,8 +264,9 @@
 					}
 					if (decision === 'REVOKE') {
 						verified = false;
-						grantAttempted = false;
+						grantState = 'NONE';
 					} else {
+						grantState = 'ACKNOWLEDGED';
 						// GRANT ACK cannot override STOP. The read only updates
 						// verified state; it never overrides the local checkbox.
 						try {
@@ -168,14 +278,18 @@
 							if (id === generation && at === contact) {
 								verified = status.confirmed === true;
 							}
-						} catch {
-							debug('blocks_status_failed');
+						} catch (error) {
+							debug('blocks_status_failed', diagnosticError(error, 'status', 'verification'));
 						}
 					}
-				} catch {
+				} catch (error) {
+					// The hosted GRANT may have succeeded even if the response was
+					// lost; a later uncheck must still attempt protected withdrawal.
+					if (decision === 'GRANT') grantState = 'AMBIGUOUS';
 					// Failed/ambiguous commands do not change verified consent.
 					// The latest customer selection remains displayed.
-					debug('blocks_choice_failed');
+					debug('blocks_choice_failed', diagnosticError(error,
+						decision === 'GRANT' ? 'choice' : 'withdraw', 'action'));
 				} finally {
 					if (id === generation) {
 						render();
@@ -211,10 +325,10 @@
 		// subsequent check needs no duplicate GRANT. Conversely, an uncheck
 		// of a never-granted choice does not invent a withdrawal.
 		if (!sending && !actions.length) {
-			if (decision === 'GRANT' && verified) {
+			if (decision === 'GRANT' && (verified || grantState === 'ACKNOWLEDGED')) {
 				return;
 			}
-			if (decision === 'REVOKE' && !verified && !grantAttempted) {
+			if (decision === 'REVOKE' && !verified && grantState === 'NONE') {
 				return;
 			}
 		}
@@ -223,7 +337,7 @@
 			`moda-${Date.now().toString(36)}-${++counter}`;
 		pendingIds[decision] = requestId;
 		if (decision === 'GRANT') {
-			grantAttempted = true;
+			grantState = 'PENDING';
 		}
 		actions.push({ decision, requestId, generation, contact: at });
 		void drainActions();
@@ -247,7 +361,7 @@
 		}
 		checking = !!next.split('|')[1];
 		pendingIds = { GRANT: null, REVOKE: null };
-		grantAttempted = false;
+		grantState = 'NONE';
 		actions = [];
 		window.clearTimeout?.(refreshTimer);
 		scheduleRender();
@@ -262,10 +376,10 @@
 					verified = result.confirmed === true;
 					debug('blocks_status_result');
 				}
-			} catch {
+			} catch (error) {
 				if (id === generation) {
 					verified = false;
-					debug('blocks_status_failed');
+					debug('blocks_status_failed', diagnosticError(error, 'status', 'verification'));
 				}
 			} finally {
 				if (id === generation && next === contact) {

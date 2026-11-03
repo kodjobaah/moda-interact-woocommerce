@@ -45,3 +45,27 @@ export function siteUrlFromWpEnvStatus(status) {
 	);
 	return url.origin;
 }
+
+/**
+ * Consent-only tests reuse an already connected disposable installation. A
+ * wp-env port change can leave its *persisted* canonical URL bound to the old
+ * origin, which correctly suppresses the checkbox in production code. Diagnose
+ * that mismatch before creating products or modifying checkout configuration.
+ * Never rebind credentials or relax the runtime's site-identity validation.
+ */
+export function assertConsentFixtureSiteIdentity(siteUrl, identity) {
+	const expected = new URL(siteUrl);
+	assert.equal(expected.pathname, '/', 'Fixture must run at the local site root');
+	const trim = (value) =>
+		typeof value === 'string' ? value.replace(/\/+$/, '') : '';
+	const expectedRoot = trim(expected.origin);
+
+	assert.ok(
+		trim(identity?.effectiveSiteUrl) === expectedRoot,
+		'WordPress home_url does not match the running wp-env origin. The disposable site may retain configuration from an earlier port; restore its site URL using the full WordPress integration setup before running consent-only tests.'
+	);
+	assert.ok(
+		trim(identity?.installationSiteUrl) === expectedRoot,
+		'Stored Moda fixture installation is bound to another WordPress origin (for example a previous wp-env port). Reconnect the synthetic installation using the full disposable WordPress integration setup at the current port before running consent-only tests. Never bypass canonical-site authorization.'
+	);
+}

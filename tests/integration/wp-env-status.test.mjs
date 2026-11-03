@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { siteUrlFromWpEnvStatus } from './wp-env-status.mjs';
+import { siteUrlFromWpEnvStatus, assertConsentFixtureSiteIdentity } from './wp-env-status.mjs';
 
 function status(url = 'http://localhost:8888', port = 8888) {
 	return {
@@ -49,5 +49,50 @@ test('requires Docker because the suite executes WP-CLI in a container', () => {
 	assert.throws(
 		() => siteUrlFromWpEnvStatus({ ...status(), runtime: 'playground' }),
 		/Docker runtime/
+	);
+});
+
+
+test('consent-only accepts a fixture bound to the running nondefault port', () => {
+	assert.doesNotThrow(() =>
+		assertConsentFixtureSiteIdentity('http://localhost:8890', {
+			effectiveSiteUrl: 'http://localhost:8890/',
+			installationSiteUrl: 'http://localhost:8890',
+		})
+	);
+});
+
+test('consent-only refuses a stale installation after a wp-env port change', () => {
+	assert.throws(
+		() =>
+			assertConsentFixtureSiteIdentity('http://localhost:8890', {
+				effectiveSiteUrl: 'http://localhost:8890',
+				installationSiteUrl: 'http://localhost:8888',
+			}),
+		/Stored Moda fixture installation is bound to another WordPress origin/
+	);
+});
+
+test('consent-only refuses a stale WordPress home URL before changing test state', () => {
+	assert.throws(
+		() =>
+			assertConsentFixtureSiteIdentity('http://localhost:8890', {
+				effectiveSiteUrl: 'http://localhost:8888',
+				installationSiteUrl: 'http://localhost:8890',
+			}),
+		/WordPress home_url does not match/
+	);
+});
+
+test('consent-only handles missing site identity without echoing a stored URL', () => {
+	assert.throws(
+		() =>
+			assertConsentFixtureSiteIdentity('http://localhost:8890', {
+				effectiveSiteUrl: 'http://localhost:8890',
+				installationSiteUrl: null,
+			}),
+		(error) =>
+			/Stored Moda fixture installation/.test(error.message) &&
+			!error.message.includes('https://merchant.example')
 	);
 });
