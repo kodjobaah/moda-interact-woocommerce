@@ -55,6 +55,19 @@ export async function assertCheckoutConsentBrowser({
 		});
 		const initialCount = consent.getRequests().length;
 		await page.goto(new URL(`/?add-to-cart=${product}`, siteUrl).href);
+		const contactSetupStatus = await page.evaluate(async () => {
+			const cart = await fetch('/wp-json/wc/store/v1/cart');
+			const response = await fetch('/wp-json/wc/store/v1/cart/update-customer', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', Nonce: cart.headers.get('Nonce') },
+				body: JSON.stringify({
+					billing_address: { country: 'GB' },
+					shipping_address: { country: 'GB' },
+				}),
+			});
+			return response.status;
+		});
+		assert.equal(contactSetupStatus, 200, 'Browser fixture establishes the UK billing country');
 		await page.goto(new URL(`/?page_id=${pageId}`, siteUrl).href);
 		// WooCommerce owns the native checkbox; there is no custom inner
 		// block placeholder or Moda React renderer to wait for.
@@ -98,9 +111,48 @@ export async function assertCheckoutConsentBrowser({
 		await phone.waitFor({ state: 'visible', timeout: 15000 });
 		await phone.fill('+447400123456');
 		await phone.blur();
+		await page.waitForFunction(() =>
+			{
+				const billing = window.wp?.data?.select('wc/store/cart')?.getCartData()?.billingAddress;
+				return billing?.phone === '+447400123456' && billing.country === 'GB';
+			}
+		);
+		const clickAndWaitForConsent = async (action) => {
+			const response = page.waitForResponse((candidate) => {
+				const request = candidate.request();
+				const path = new URL(candidate.url()).pathname;
+				if (request.method() !== 'POST' || !/\/(?:batch|cart\/extensions)$/.test(path)) {
+					return false;
+				}
+				const body = request.postDataJSON();
+				if (path.endsWith('/batch')) {
+					return body?.requests?.some((entry) =>
+						entry.path?.split('?')[0].endsWith('/cart/extensions') &&
+						entry.body?.data?.action === action
+					);
+				}
+				return body?.data?.action === action;
+			});
+			const [result] = await Promise.all([response, checkbox.click()]);
+			assert.ok(result.ok(), 'Store API accepted the consent transport');
+			const payload = await result.json();
+			const cart = payload.responses?.find((entry) =>
+				entry.body?.extensions?.['moda-interact-consent']?.status !== 'idle' &&
+				entry.body?.extensions?.['moda-interact-consent']
+			)?.body ?? payload;
+			const consentResult = cart.extensions?.['moda-interact-consent'];
+			const reason = consentResult?.reason;
+			assert.equal(
+				consentResult?.status,
+				'recorded',
+				typeof reason === 'string' && /^(?:capture|store_api)_[a-z_]{1,80}$/.test(reason)
+					? 'Consent action rejected: ' + reason
+					: 'Consent action was not acknowledged'
+			);
+		};
 		await checkbox.waitFor({ state: 'visible', timeout: 15000 });
 		const before = consent.getRequests().length;
-		await checkbox.click();
+		await clickAndWaitForConsent('choice');
 		await page.waitForFunction(
 			() => document.querySelector('input[data-moda-consent-control="1"]')?.checked === true,
 			null, { timeout: 20000 }
@@ -108,7 +160,7 @@ export async function assertCheckoutConsentBrowser({
 		assert.equal(
 			await checkbox.isChecked(),
 			true,
-			'GRANT ACK checks consent'
+			'Deliberate GRANT keeps the checkbox checked'
 		);
 		assert.equal(
 			await checkbox.isEnabled(),
@@ -123,7 +175,7 @@ export async function assertCheckoutConsentBrowser({
 		);
 		assert.equal(consent.getRequests().at(-1).event.decision, 'GRANT');
 		assert.equal(await page.locator('#moda-woo-consent-withdraw').count(), 0);
-		await checkbox.click();
+		await clickAndWaitForConsent('withdraw');
 		await page.waitForFunction(
 			() => document.querySelector('input[data-moda-consent-control="1"]')?.checked === false,
 			null, { timeout: 20000 }
@@ -132,7 +184,7 @@ export async function assertCheckoutConsentBrowser({
 		assert.equal(
 			await checkbox.isChecked(),
 			false,
-			'REVOKE ACK returns to neutral opt-in'
+			'Deliberate REVOKE keeps the checkbox unchecked'
 		);
 		assert.equal(await checkbox.isEnabled(), true);
 		assert.equal(await page.locator('[data-moda-consent-error]').count(), 0);
