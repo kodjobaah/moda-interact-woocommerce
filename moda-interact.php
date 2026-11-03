@@ -27,6 +27,8 @@ if ( ! defined( 'MODA_INTERACT_MAIN_PLUGIN_FILE' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+// Woo Blocks may initialize its IntegrationRegistry before plugins_loaded.
+( new Checkout\CheckoutOutreachOfferChoicePresenter() )->register();
 
 add_action( 'before_woocommerce_init', array( Plugin::class, 'declare_hpos_compatibility' ) );
 

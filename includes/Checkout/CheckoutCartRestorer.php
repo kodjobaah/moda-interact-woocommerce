@@ -4,6 +4,8 @@ namespace ModaInteract\WooCommerce\Checkout;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/CheckoutOutreachCouponRestorer.php';
+
 final class CheckoutCartRestorer {
 	private const CORE_CART_ITEM_KEYS = array(
 		'key', 'product_id', 'variation_id', 'variation', 'quantity', 'data', 'data_hash',
@@ -13,7 +15,7 @@ final class CheckoutCartRestorer {
 	public function __construct( private readonly CheckoutCapture $capture ) {}
 
 	/** Rebuild a snapshot, apply original coupons and commit fresh activity before success. */
-	public function restore( array $snapshot, callable $after_apply ): array|false {
+	public function restore( array $snapshot, callable $after_apply, array $outreach_offer = array( 'kind' => 'NONE', 'reason' => 'NO_CONFIRMED_OFFER' ) ): array|false {
 		try {
 			$plan = $this->preflight( $snapshot );
 			$commerce = function_exists( 'WC' ) ? WC() : null;
@@ -51,8 +53,14 @@ final class CheckoutCartRestorer {
 					if ( false === $result ) throw new \RuntimeException( 'restore_add_to_cart_rejected' );
 				}
 			} );
-			$coupon_result = $this->capture->withoutCapture( function () use ( $cart, $snapshot ): array {
-				return ( new CheckoutCouponRestorer() )->restore( $cart, $snapshot['appliedCouponCodes'] );
+			$coupon_result = $this->capture->withoutCapture( function () use ( $cart, $snapshot, $outreach_offer ): array {
+				$original_result = ( new CheckoutCouponRestorer() )->restore( $cart, $snapshot['appliedCouponCodes'], false );
+				$offer_result = ( new CheckoutOutreachCouponRestorer() )->apply_outreach_offer(
+					$outreach_offer, $original_result['appliedCodes'], $cart
+				);
+				$original_result['cartTotalRecalculated'] = $offer_result['totalsRecalculated'];
+				$original_result['outreachOffer'] = $offer_result;
+				return $original_result;
 			} );
 			if ( ! $after_apply() ) throw new \RuntimeException( 'restore_commit_rejected' );
 			return $coupon_result;

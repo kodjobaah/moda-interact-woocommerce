@@ -95,6 +95,7 @@ function ModaInteractPage() {
 						aiResponseDelayState: page.aiResponseDelayState,
 						featurePreferencesState: page.featurePreferencesState,
 						knowledgeState: page.knowledgeState,
+						shopBrandSyncState: page.shopBrandSyncState,
 						actions: page.actions,
 						showSurfaceNavigation: !isNativeMerchantPage(
 							globalThis.location?.search ?? ''

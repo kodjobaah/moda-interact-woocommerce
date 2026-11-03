@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 final class CheckoutDiagnosticLogger {
 	private const MAX_MESSAGE_BYTES = 384;
 
-	public static function record( string $component, string $reason, ?\Throwable $error = null ): void {
+	public static function record( string $component, string $reason, ?\Throwable $error = null, ?string $safe_error_message = null ): void {
 		$context = array(
 			'source' => 'moda-interact',
 			'component' => $component,
@@ -17,7 +17,7 @@ final class CheckoutDiagnosticLogger {
 		$message = 'Checkout ' . $component . ': ' . $reason;
 		if ( null !== $error ) {
 			$context['error_type'] = self::safeType( $error );
-			$context['error_message'] = self::redact( $error->getMessage() );
+			$context['error_message'] = self::redact( $safe_error_message ?? $error->getMessage() );
 			if ( $error instanceof \ModaInteract\WooCommerce\Api\ModaApiClientException ) {
 				if ( null !== $error->http_status ) $context['http_status'] = $error->http_status;
 				if ( is_string( $error->remote_error ) && preg_match( '/^[a-z0-9_]{1,64}$/D', $error->remote_error ) ) {

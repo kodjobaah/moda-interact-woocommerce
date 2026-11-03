@@ -32,6 +32,8 @@ require_once __DIR__ . '/Checkout/CheckoutConsentDiagnostics.php';
 require_once __DIR__ . '/Checkout/CheckoutCartRestorer.php';
 require_once __DIR__ . '/Checkout/CheckoutCouponRestorer.php';
 require_once __DIR__ . '/Checkout/CheckoutCouponOutcomeHandler.php';
+require_once __DIR__ . '/Checkout/CheckoutOutreachCouponChoice.php';
+require_once __DIR__ . '/Checkout/CheckoutOutreachOfferChoicePresenter.php';
 require_once __DIR__ . '/Checkout/CheckoutResumeController.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentEligibility.php';
 require_once __DIR__ . '/Checkout/CheckoutConsentCheckbox.php';
@@ -47,6 +49,8 @@ require_once __DIR__ . '/Checkout/OrderLifecycleCapture.php';
 require_once __DIR__ . '/ShopBrand/SourceReader.php';
 require_once __DIR__ . '/ShopBrand/SnapshotBuilder.php';
 require_once __DIR__ . '/ShopBrand/Publisher.php';
+require_once __DIR__ . '/ShopBrand/SyncStatusStore.php';
+require_once __DIR__ . '/Rest/ShopBrandSyncController.php';
 
 use ModaInteract\WooCommerce\Admin\Setup;
 use ModaInteract\WooCommerce\Api\ModaApiConfiguration;
@@ -70,9 +74,11 @@ use ModaInteract\WooCommerce\Rest\UsageHistoryController;
 use ModaInteract\WooCommerce\Rest\SupportController;
 use ModaInteract\WooCommerce\Rest\PromotionsController;
 use ModaInteract\WooCommerce\Rest\RecoverySelectionController;
+use ModaInteract\WooCommerce\Rest\ShopBrandSyncController;
 use ModaInteract\WooCommerce\Checkout\CheckoutCapture;
 use ModaInteract\WooCommerce\Checkout\CheckoutCartRestorer;
 use ModaInteract\WooCommerce\Checkout\CheckoutResumeController;
+use ModaInteract\WooCommerce\Checkout\CheckoutOutreachCouponChoice;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCheckbox;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentEligibility;
 use ModaInteract\WooCommerce\Checkout\CheckoutConsentCapture;
@@ -159,6 +165,8 @@ final class Runtime {
 		$checkout_capture = new CheckoutCapture( $activity_publisher );
 		$checkout_capture->register();
 		( new CheckoutResumeController( $checkout_capture, new CheckoutCartRestorer( $checkout_capture ) ) )->register();
+		$outreach_choice = new CheckoutOutreachCouponChoice();
+		$outreach_choice->register();
 		// Presentation hooks share ONE cheap local installation check per request.
 		// Do not synchronously fetch merchant features during checkout rendering.
 		// Actual GRANT admission always revalidates remotely via eligible().
@@ -173,6 +181,7 @@ final class Runtime {
 		( new OrderLifecycleCapture( $activity_publisher ) )->register();
 		$brand_publisher = new ShopBrandPublisher();
 		$brand_publisher->register();
+		( new ShopBrandSyncController( $brand_publisher, new SiteIdentity( $mode ) ) )->register();
 		if ( is_admin() ) {
 			new Setup();
 		}

@@ -24,6 +24,8 @@ export function createPageActions(sessionRef, setActiveSurface) {
 			controllers()?.featurePreferences.refresh(),
 		refreshMerchantKnowledge: () =>
 			controllers()?.merchantKnowledge.refresh(),
+		refreshShopBrandSync: () => controllers()?.shopBrandSync.refresh(),
+		syncShopBrand: () => controllers()?.shopBrandSync.sync(),
 		merchantKnowledgeAction: (action, payload) =>
 			controllers()?.merchantKnowledge.perform(action, payload),
 		toggleFeaturePreference: (id, enabled) =>
@@ -45,6 +47,7 @@ export function createPageActions(sessionRef, setActiveSurface) {
 			controllers()?.aiResponseDelay.setActive(surface === 'RECOVERY');
 			controllers()?.featurePreferences.setActive(surface === 'RECOVERY');
 			controllers()?.merchantKnowledge.setActive(surface === 'RECOVERY');
+			controllers()?.shopBrandSync.setActive(surface === 'RECOVERY');
 			if (surface === 'RECOVERY') {
 				controllers()?.category.refresh();
 			}

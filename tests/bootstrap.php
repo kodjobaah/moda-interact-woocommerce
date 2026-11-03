@@ -29,7 +29,57 @@ $GLOBALS['moda_interact_base_location'] = array( 'country' => 'GB', 'state' => '
 $GLOBALS['moda_interact_can_manage_woocommerce'] = true;
 $GLOBALS['moda_interact_valid_rest_nonce'] = true;
 $GLOBALS['moda_interact_fail_option_writes'] = false;
+$GLOBALS['wpdb'] = new ModaInteractTestWpdb();
 define( 'WC_VERSION', '11.1.2' );
+
+final class ModaInteractTestWpdb {
+	public string $options = 'wp_options';
+
+	public function prepare( string $query, mixed ...$args ): array {
+		return array( 'query' => $query, 'args' => $args );
+	}
+
+	public function get_var( array $prepared ): mixed {
+		$option_name = $prepared['args'][0] ?? null;
+		if ( ! is_string( $option_name ) || ! array_key_exists( $option_name, $GLOBALS['moda_interact_options'] ) ) return null;
+		return serialize( $GLOBALS['moda_interact_options'][ $option_name ] );
+	}
+
+	public function query( array $prepared ): int|false {
+		if ( $GLOBALS['moda_interact_fail_option_writes'] ) return false;
+		if ( is_callable( $GLOBALS['moda_interact_before_status_cas'] ?? null ) ) {
+			$interleave = $GLOBALS['moda_interact_before_status_cas'];
+			unset( $GLOBALS['moda_interact_before_status_cas'] );
+			$interleave();
+		}
+		$args = $prepared['args'];
+		$new_raw = $args[0] ?? null;
+		$option_name = $args[1] ?? null;
+		$expected_raw = $args[2] ?? null;
+		if ( ! is_string( $new_raw ) || ! is_string( $option_name ) || ! is_string( $expected_raw ) ||
+			! array_key_exists( $option_name, $GLOBALS['moda_interact_options'] ) ||
+			serialize( $GLOBALS['moda_interact_options'][ $option_name ] ) !== $expected_raw ) return 0;
+		$value = @unserialize( $new_raw, array( 'allowed_classes' => false ) );
+		if ( false === $value && 'b:0;' !== $new_raw ) return false;
+		$GLOBALS['moda_interact_options'][ $option_name ] = $value;
+		return 1;
+	}
+}
+
+function maybe_serialize( mixed $value ): string {
+	return is_array( $value ) || is_object( $value ) ? serialize( $value ) : (string) $value;
+}
+
+function maybe_unserialize( mixed $value ): mixed {
+	if ( ! is_string( $value ) ) return $value;
+	$unserialized = @unserialize( $value, array( 'allowed_classes' => false ) );
+	return false === $unserialized && 'b:0;' !== $value ? $value : $unserialized;
+}
+
+function wp_cache_delete( $key, $group = '' ): bool {
+	$GLOBALS['moda_interact_cache_deletes'][] = array( $key, $group );
+	return true;
+}
 
 function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
 	$GLOBALS['moda_interact_test_hooks'][ $hook ][] = $callback;
@@ -73,6 +123,12 @@ function current_user_can( $capability ) {
 }
 
 function wp_verify_nonce( $nonce, $action ) {
+	if ( isset( $GLOBALS['moda_interact_nonces'][ $action ] ) ) {
+		return $GLOBALS['moda_interact_nonces'][ $action ] === $nonce ? 1 : false;
+	}
+	if ( is_string( $action ) && str_starts_with( $action, 'moda_interact_outreach_coupon_choice_v1:' ) ) {
+		return hash_equals( 'choice-nonce-' . substr( hash( 'sha256', $action ), 0, 16 ), (string) $nonce ) ? 1 : false;
+	}
 	if ( 'wc_store_api' === $action && 'fixture_store_nonce' === $nonce ) return 1;
 	if ( isset( $GLOBALS['arch046_nonce_action'] ) ) {
 		return $action === $GLOBALS['arch046_nonce_action'] && $nonce === 'arch046-fixture-nonce' ? 1 : false;
@@ -81,8 +137,15 @@ function wp_verify_nonce( $nonce, $action ) {
 }
 
 function wp_create_nonce( $action ) {
+	if ( isset( $GLOBALS['moda_interact_nonces'][ $action ] ) ) return $GLOBALS['moda_interact_nonces'][ $action ];
+	if ( is_string( $action ) && str_starts_with( $action, 'moda_interact_outreach_coupon_choice_v1:' ) ) {
+		return 'choice-nonce-' . substr( hash( 'sha256', $action ), 0, 16 );
+	}
 	return 'wp_rest' === $action ? 'fixture_rest_nonce' : false;
 }
+
+function wc_get_notices() { return $GLOBALS['moda_interact_test_wc_notices'] ?? array(); }
+function wc_set_notices( $notices ) { $GLOBALS['moda_interact_test_wc_notices'] = $notices; }
 
 function get_current_user_id() { return $GLOBALS['arch046_current_user_id'] ?? 0; }
 
@@ -132,6 +195,14 @@ function esc_html__( $text, $domain = 'default' ) {
 
 function esc_html( $text ) {
 	return $text;
+}
+
+function esc_attr( $text ) {
+	return htmlspecialchars( (string) $text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+}
+
+function esc_url( $url ) {
+	return htmlspecialchars( (string) $url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
 }
 
 function wc_admin_register_page( $page ) {

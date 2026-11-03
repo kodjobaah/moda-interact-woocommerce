@@ -1,8 +1,9 @@
 # ARCH-049: WooCommerce native ShopBrand publication
 
 The WooCommerce plugin publishes a complete `woo.shop-brand.v1` observation to
-`POST /v1/woocommerce/shop-brand` on the **hosted Moda API**. It creates **no
-new public WordPress REST route**, R2 upload or database connection. The caller's
+`POST /v1/woocommerce/shop-brand` on the **hosted Moda API**. Its local merchant
+control uses a capability- and REST-nonce-protected WordPress route; it creates no
+unauthenticated publication endpoint, R2 upload or database connection. The caller's
 installation is authenticated using the same local `InstallationStore` record
 and `ModaApiClient` bearer/installation headers as other hosted Woo commands;
 `shopId` and installation credentials are never present in the snapshot body.
@@ -35,10 +36,18 @@ and `ModaApiClient` bearer/installation headers as other hosted Woo commands;
   no legacy Action Scheduler cleanup, migration marker or recurring-job lookup
   is required. Bootstrap waits for `action_scheduler_init` and also runs if the
   scheduler initialized before the Woo runtime registered its callback.
-- A future authorised merchant **Sync branding** action can invoke
-  `ShopBrand\Publisher::requestSync()`. It uses the same coalesced async capture,
-  without a second HTTP or image-processing implementation. The merchant UI,
-  nonce/capability-gated controller and last-sync display are not part of this task.
+- The connected merchant can use **Sync branding** in Recovery Settings. The
+  same-origin `GET` and `POST /moda-interact/v1/merchant/shop-brand/sync` routes
+  require `manage_woocommerce` and the standard REST nonce. `POST` accepts no
+  business input and only queues a distinct Action Scheduler capture; it returns
+  `202 QUEUED`, never a publication-success response. The UI can refresh status
+  for a bounded period after the command, with no recurring status or brand job.
+- A non-autoloaded status option is scoped by a hash of installation ID and
+  canonical site URL. It records request generation, bounded timestamps and
+  `QUEUED`, `RETRYING`, `ACCEPTED` or `FAILED` state. Only a validated hosted
+  `updated`/`unchanged` acknowledgement advances `lastAcceptedAt`; a newer
+  request preserves the previous accepted time and stale generation completions
+  cannot update the current status. The initial capture uses the same status path.
 - Each capture produces a deterministic `eventId` from installation ID and the
   canonical source JSON. Its UTC `observedAt` is created once per snapshot and
   passed unchanged through retries. The API orders/deduplicates observations;
@@ -101,8 +110,8 @@ with mocked globals. Its assertions cover:
 - explicit `null` for deleted/removed icon/logo and non-HTTPS sources;
 - 503/429 backoff with durable retry payload and unchanged `observedAt`;
 - permanent 400 rejection and suppression of stale-installation retries;
-- absence of a public shop-brand WordPress route or synchronous settings-call
-  network publication; initial bootstrap waits for the initialized Action
+- absence of an unauthenticated shop-brand WordPress route or synchronous
+  settings-call network publication; initial bootstrap waits for the initialized Action
   Scheduler store.
 
 The existing complete WordPress suite (`npm run test:integration:wordpress`)

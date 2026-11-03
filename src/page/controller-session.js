@@ -10,6 +10,7 @@ export function createControllerSession(controllers, listeners) {
 			listeners.onFeaturePreferences
 		),
 		controllers.merchantKnowledge.subscribe(listeners.onMerchantKnowledge),
+		controllers.shopBrandSync.subscribe(listeners.onShopBrandSync),
 		controllers.readAccess.subscribe(listeners.onReadAccess),
 		controllers.sync.subscribe(listeners.onSync),
 		controllers.merchant.subscribe(listeners.onMerchant),
@@ -20,6 +21,7 @@ export function createControllerSession(controllers, listeners) {
 			controllers.readAccess.setConnection(nextState.connection);
 			controllers.featurePreferences.setConnection(nextState.connection);
 			controllers.merchantKnowledge.setConnection(nextState.connection);
+			controllers.shopBrandSync.setConnection(nextState.connection);
 			controllers.merchant.setConnectionStatus(status);
 			controllers.billing.setConnectionStatus(status);
 			controllers.sync.setConnectionStatus(status);
@@ -64,6 +66,7 @@ export function createControllerSession(controllers, listeners) {
 				'aiResponseDelay',
 				'featurePreferences',
 				'merchantKnowledge',
+				'shopBrandSync',
 				'readAccess',
 			]) {
 				controllers[name].dispose();

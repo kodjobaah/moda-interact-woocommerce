@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 // The shipped Composer loader is class-map authoritative; new classes are explicit.
 require_once __DIR__ . '/SourceReader.php';
 require_once __DIR__ . '/SnapshotBuilder.php';
+require_once __DIR__ . '/SyncStatusStore.php';
 
 use ModaInteract\WooCommerce\Api\ModaApiClient;
 use ModaInteract\WooCommerce\Api\ModaApiClientException;
@@ -28,12 +29,13 @@ final class Publisher {
 		private readonly ?InstallationStore $installations = null,
 		private readonly ?SiteIdentity $site_identity = null,
 		private readonly ?SourceReader $reader = null,
-		private readonly ?SnapshotBuilder $builder = null
+		private readonly ?SnapshotBuilder $builder = null,
+		private readonly ?SyncStatusStore $sync_status = null
 	) {}
 
 	public function register(): void {
-		add_action( self::CAPTURE_ACTION, array( $this, 'capture' ), 10, 2 );
-		add_action( self::DELIVERY_ACTION, array( $this, 'deliver' ), 10, 4 );
+		add_action( self::CAPTURE_ACTION, array( $this, 'capture' ), 10, 3 );
+		add_action( self::DELIVERY_ACTION, array( $this, 'deliver' ), 10, 5 );
 		add_action( 'action_scheduler_init', array( $this, 'ensureInitialSync' ), 20, 0 );
 		// WooCommerce and Action Scheduler may initialize in either order.
 		// Never inspect the scheduler store before action_scheduler_init.
@@ -59,7 +61,7 @@ final class Publisher {
 		if ( get_option( self::BOOTSTRAP_OPTION, '' ) === $installation['installationId'] ) {
 			return;
 		}
-		if ( $this->enqueue( $installation ) ) {
+		if ( null !== $this->enqueue( $installation ) ) {
 			$this->markInitialSyncRequested( $installation['installationId'] );
 		}
 	}
@@ -70,17 +72,28 @@ final class Publisher {
 		if ( get_option( self::BOOTSTRAP_OPTION, '' ) === ( $installation['installationId'] ?? null ) ) {
 			return;
 		}
-		if ( $this->enqueue( $installation ) ) {
+		if ( null !== $this->enqueue( $installation ) ) {
 			$this->markInitialSyncRequested( $installation['installationId'] );
 		}
 	}
 
-	/**
-	 * Reusable internal entry point for a future merchant-initiated Sync branding action.
-	 * The future WordPress controller must verify capability and nonce before calling it.
-	 */
+	/** Reusable internal entry point; the REST boundary must authorize before calling it. */
 	public function requestSync(): bool {
-		return $this->enqueue();
+		return null !== $this->requestSyncDetailed();
+	}
+
+	/** Queue one distinct capture so a later merchant request cannot coalesce away. */
+	public function requestSyncDetailed(): ?array {
+		$local = ( $this->installations ?? new InstallationStore() )->read();
+		if ( 'valid' !== $local['state'] ) return null;
+		$installation = $local['record'];
+		try {
+			if ( ( $this->site_identity ?? new SiteIdentity( ModaApiConfiguration::serverMode() ) )->currentCanonicalUrl() !== $installation['canonicalSiteUrl'] ) return null;
+		} catch ( \Throwable $error ) { return null; }
+		// Each request gets its own id and Action Scheduler args, preserving the latest requested settings.
+		$request_id = $this->enqueue( $installation );
+		if ( null === $request_id ) return null;
+		return array( 'status' => 'QUEUED' );
 	}
 
 	private function markInitialSyncRequested( string $installation_id ): void {
@@ -93,75 +106,105 @@ final class Publisher {
 		}
 	}
 
-	/** Initial and explicit requests coalesce by installation-scoped action identity. */
-	private function enqueue( ?array $installation = null ): bool {
-		if ( ! self::schedulerReady() || ! function_exists( 'as_enqueue_async_action' ) ) {
-			self::log( 'scheduler_unavailable' );
-			return false;
-		}
+	/** Initial and explicit captures carry a unique generation to preserve later requests. */
+	private function enqueue( ?array $installation = null ): ?string {
 		if ( null === $installation ) {
 			$local = ( $this->installations ?? new InstallationStore() )->read();
 			if ( 'valid' !== $local['state'] ) {
-				return false;
+				return null;
 			}
 			$installation = $local['record'];
 		}
 		if ( ! InstallationStore::isValidRecord( $installation ) ) {
-			return false;
+			return null;
 		}
-		$args = array( $installation['installationId'], $installation['shopId'] );
-		if ( self::hasScheduled( self::CAPTURE_ACTION, $args ) ) {
-			return true;
+		$store = $this->sync_status ?? new SyncStatusStore();
+		$request_id = $store->request( $installation['installationId'], $installation['canonicalSiteUrl'] );
+		if ( null === $request_id ) return null;
+		if ( ! self::schedulerReady() || ! function_exists( 'as_enqueue_async_action' ) ) {
+			self::log( 'scheduler_unavailable' );
+			$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
+			return null;
 		}
+		$args = array( $installation['installationId'], $installation['shopId'], $request_id );
 		try {
 			$id = as_enqueue_async_action( self::CAPTURE_ACTION, $args, self::GROUP, true );
 			if ( self::positiveActionId( $id ) || self::hasScheduled( self::CAPTURE_ACTION, $args ) ) {
-				return true;
+				return $request_id;
 			}
 		} catch ( \Throwable $error ) {
 			self::log( 'capture_enqueue_failed' );
-			return false;
+			$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
+			return null;
 		}
 		self::log( 'capture_enqueue_failed' );
-		return false;
+		$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
+		return null;
 	}
 
 	/** Snapshots are captured asynchronously, never during plugin connection or checkout. */
-	public function capture( string $installation_id, string $shop_id ): void {
+	public function capture( string $installation_id, string $shop_id, string $request_id = '' ): void {
 		$installation = $this->currentInstallation( $installation_id, $shop_id );
 		if ( null === $installation ) {
 			return;
 		}
+		if ( '' === $request_id ) {
+			$request_id = ( $this->sync_status ?? new SyncStatusStore() )->request( $installation_id, $installation['canonicalSiteUrl'] ) ?? '';
+		}
+		if ( '' === $request_id ) return;
 		try {
 			$event = ( $this->builder ?? new SnapshotBuilder( $this->reader ) )->capture( $installation_id );
 		} catch ( \Throwable $error ) {
 			self::log( 'capture_failed' );
+			( $this->sync_status ?? new SyncStatusStore() )->failed( $request_id, $installation_id, $installation['canonicalSiteUrl'] );
 			return;
 		}
-		$this->publish( $installation, $event, 1 );
+		$this->publish( $installation, $event, 1, $request_id );
 	}
 
 	/** Retry the exact bytes and observedAt of the first failed observation. */
-	public function deliver( array $event, string $installation_id, string $shop_id, int $attempt ): void {
-		if ( $attempt < 2 || $attempt > self::MAX_ATTEMPTS || ! SnapshotBuilder::valid( $event ) ) {
+	public function deliver( mixed $event, mixed $installation_id, mixed $shop_id, mixed $attempt, mixed $request_id = '' ): void {
+		if ( ! is_string( $installation_id ) || '' === $installation_id || ! is_string( $shop_id ) || '' === $shop_id ||
+			! is_int( $attempt ) || $attempt < 2 || $attempt > self::MAX_ATTEMPTS || ! is_array( $event ) || ! SnapshotBuilder::valid( $event ) ) {
 			self::log( 'retry_payload_invalid' );
+			// Terminally settle a correlated malformed action; uncorrelated legacy payloads
+			// cannot safely change whichever generation is currently visible.
+			if ( is_string( $installation_id ) && '' !== $installation_id && is_string( $shop_id ) && '' !== $shop_id &&
+				is_string( $request_id ) && '' !== $request_id ) {
+				$installation = $this->currentInstallation( $installation_id, $shop_id );
+				if ( null !== $installation ) {
+					( $this->sync_status ?? new SyncStatusStore() )->failed( $request_id, $installation_id, $installation['canonicalSiteUrl'] );
+				}
+			}
 			return;
 		}
+		if ( ! is_string( $request_id ) ) $request_id = '';
 		$installation = $this->currentInstallation( $installation_id, $shop_id );
 		if ( null !== $installation ) {
-			$this->publish( $installation, $event, $attempt );
+			// Legacy retry payloads have no request generation. Deliver their immutable
+			// observation, but never let one create or transition the latest status row.
+			if ( '' === $request_id ) self::log( 'legacy_retry_uncorrelated' );
+			$this->publish( $installation, $event, $attempt, $request_id );
 		}
 	}
 
-	private function publish( array $installation, array $event, int $attempt ): void {
+	private function publish( array $installation, array $event, int $attempt, string $request_id ): void {
+		$store = $this->sync_status ?? new SyncStatusStore();
 		try {
 			$client = $this->api ?? new ModaApiClient( ModaApiConfiguration::fromServerConfiguration() );
-			$client->publishShopBrand( $installation, $event );
+			$result = $client->publishShopBrand( $installation, $event );
+			if ( ! is_array( $result ) || ! in_array( $result['status'] ?? null, array( 'updated', 'unchanged' ), true ) ) {
+				$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
+				self::log( 'remote_response_invalid' );
+				return;
+			}
+			$store->accepted( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
 			return;
 		} catch ( ModaApiClientException $error ) {
 			$status = $error->http_status;
 			if ( null !== $status && $status >= 400 && $status < 500 && ! in_array( $status, array( 408, 429 ), true ) ) {
 				self::log( 'permanent_rejection', $status, $attempt );
+				$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
 				return;
 			}
 			self::log( 'transient_publish_failure', $status, $attempt );
@@ -170,17 +213,21 @@ final class Publisher {
 		}
 		if ( $attempt >= self::MAX_ATTEMPTS || ! function_exists( 'as_schedule_single_action' ) ) {
 			self::log( 'retry_exhausted', null, $attempt );
+			$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
 			return;
 		}
+		$store->retrying( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
 		try {
 			$id = as_schedule_single_action( time() + self::RETRY_DELAYS[ $attempt ], self::DELIVERY_ACTION,
-				array( $event, $installation['installationId'], $installation['shopId'], $attempt + 1 ), self::GROUP, true );
+				array( $event, $installation['installationId'], $installation['shopId'], $attempt + 1, $request_id ), self::GROUP, true );
 			if ( ! self::positiveActionId( $id ) && ! self::hasScheduled( self::DELIVERY_ACTION,
-				array( $event, $installation['installationId'], $installation['shopId'], $attempt + 1 ) ) ) {
+				array( $event, $installation['installationId'], $installation['shopId'], $attempt + 1, $request_id ) ) ) {
 				self::log( 'retry_schedule_failed' );
+				$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
 			}
 		} catch ( \Throwable $error ) {
 			self::log( 'retry_schedule_failed' );
+			$store->failed( $request_id, $installation['installationId'], $installation['canonicalSiteUrl'] );
 		}
 	}
 
@@ -244,4 +291,6 @@ final class Publisher {
 		}
 		error_log( 'moda.woocommerce.shop_brand.' . $reason . ( null === $status ? '' : '.' . $status ) );
 	}
+
+	public static function logStatusFailure( string $reason ): void { self::log( $reason ); }
 }

@@ -85,6 +85,7 @@ final class CheckoutResumeController {
 				! hash_equals( $evidence['digest'], hash( 'sha256', $nonce ) ) ) return self::redirect( $headers, self::safeReturnUrl() );
 			$prior_session_state = self::snapshotSessionState( $session );
 			$session->set( self::NONCE_SESSION_FIELD, null );
+			( new CheckoutOutreachCouponChoice() )->invalidate();
 			$completed = $session->get( self::COMPLETED_SESSION_FIELD );
 			if ( is_array( $completed ) && ( $completed['recoveryId'] ?? null ) === $post['r'] ) {
 				return self::redirect( $headers, self::checkoutUrl() );
@@ -100,8 +101,7 @@ final class CheckoutResumeController {
 			$response = ( $this->resolver ?? self::defaultResolver() )( $installation['record'], $post['r'], $post['t'] );
 			$encoded = wp_json_encode( $response );
 			$decoded = is_string( $encoded ) ? json_decode( $encoded ) : null;
-			if ( ! WooRestoreResolveResponseValidator::isValid( $decoded, $post['r'] ) ||
-				'NONE' !== $response['outreachOffer']['kind'] ) {
+			if ( ! WooRestoreResolveResponseValidator::isValid( $decoded, $post['r'] ) ) {
 				return self::redirect( $headers, self::safeReturnUrl() );
 			}
 			if ( null !== $existing_key && $existing_key !== $response['checkoutKey'] ) return self::redirect( $headers, self::safeReturnUrl() );
@@ -132,9 +132,10 @@ final class CheckoutResumeController {
 					return false;
 				}
 				return true;
-			} );
+			}, $response['outreachOffer'] );
 			if ( ! $restored ) return self::redirect( $headers, self::safeReturnUrl() );
 			( new CheckoutCouponOutcomeHandler() )->handle( $restored );
+			( new CheckoutOutreachCouponChoice() )->record( $restored['outreachOffer'] ?? null, $post['r'], $response['checkoutKey'] );
 			return self::redirect( $headers, self::checkoutUrl() );
 		} catch ( \Throwable $error ) {
 			self::log( 'restore_confirmation_failed', $error );

@@ -37,10 +37,12 @@ import {
 
 const execFileAsync = promisify(execFile);
 const checkoutOnly = process.argv.includes('--checkout-only');
+const restoreOnly = process.argv.includes('--restore-only');
 const consentOnly = process.argv.includes('--consent-only');
 const consentBrowser = process.argv.includes('--consent-browser');
 const shopBrandOnly = process.argv.includes('--shop-brand-only');
 assert.ok(!(shopBrandOnly && (checkoutOnly || consentOnly)), 'Choose one focused WordPress integration mode');
+assert.ok(!(restoreOnly && (checkoutOnly || consentOnly || shopBrandOnly)), 'Choose one focused WordPress integration mode');
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
 let siteUrl;
@@ -215,7 +217,7 @@ const apiPort = server.address().port;
 const apiOrigin = `https://host.docker.internal:${apiPort}`;
 
 try {
-	if (checkoutOnly || consentOnly) {
+	if (checkoutOnly || restoreOnly || consentOnly) {
 		// Never start, stop, activate or reset a developer's existing wp-env.
 		// The checkout assertions create test orders/users and alter WooCommerce settings.
 		assert.equal(
@@ -330,12 +332,15 @@ try {
 					setActivityStatus: apiFixture.setActivityStatus,
 					getRestoreResolveRequests: apiFixture.getRestoreResolveRequests,
 					setRestoreResolveResult: apiFixture.setRestoreResolveResult,
+					restoreOnly,
 				});
 			}
 			process.stdout.write(
 				consentOnly
 					? 'ARCH-046 consent-only integration PASS\n'
-					: 'ARCH-035 checkout-only integration PASS\n'
+					: restoreOnly
+						? 'ARCH-053 restore-only integration PASS\n'
+						: 'ARCH-035 checkout-only integration PASS\n'
 			);
 		} finally {
 			for (const [name, prior] of applied.reverse()) {
@@ -587,6 +592,9 @@ try {
 			wpAsync,
 			parseJsonOutput,
 			fixture: apiFixture,
+			siteUrl,
+			auth,
+			fetchWordPress,
 		});
 		if (!shopBrandOnly) {
 			command(

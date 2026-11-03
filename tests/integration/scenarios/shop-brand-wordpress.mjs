@@ -50,7 +50,14 @@ export async function assertInitialShopBrandWordPress({ wpAsync, parseJsonOutput
 }
 
 /** Real WP-CLI -> WordPress hooks -> Action Scheduler -> HTTPS fixture test. */
-export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixture }) {
+export async function assertShopBrandWordPress({
+	wpAsync,
+	parseJsonOutput,
+	fixture,
+	siteUrl,
+	auth,
+	fetchWordPress,
+}) {
 	const wpJson = async (php) => parseJsonOutput(await wpAsync('eval', php));
 	const drain = (hook) =>
 		wpAsync('action-scheduler', 'run', `--hooks=${hook}`, '--batch-size=20', '--batches=1');
@@ -60,6 +67,17 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 		assert.ok(entries.length > 0, 'the real WordPress worker must POST to the HTTPS fixture');
 		return entries.at(-1);
 	};
+	const shopBrandRoute = `${siteUrl}/wp-json/moda-interact/v1/merchant/shop-brand/sync`;
+	const merchantRequest = (method = 'GET', options = {}) =>
+		fetchWordPress(shopBrandRoute, {
+			...options,
+			method,
+			headers: {
+				...(options.headers ?? {}),
+				Cookie: `${auth.cookieName}=${auth.cookie}`,
+				'X-WP-Nonce': auth.nonce,
+			},
+		});
 	const pending = async (hook) =>
 		wpJson(`
 			$actions = as_get_scheduled_actions(array(
@@ -108,6 +126,40 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 		// in assertConnectionWordPress. Reconnect must not start another capture.
 		assert.equal(latest().httpStatus, 200, 'initial connection publishes asynchronously');
 		assert.deepEqual(await pending(CAPTURE), [], 'credential reconnect must not recapture branding');
+
+		// The local merchant route is authenticated, nonce-protected and exposes
+		// only the bounded status projection. Its POST queues work without making
+		// the Moda API request in the browser request lifecycle.
+		const unauthenticated = await fetchWordPress(shopBrandRoute);
+		assert.ok([401, 403].includes(unauthenticated.status), 'shop-brand route rejects unauthenticated requests');
+		const invalidNonce = await fetchWordPress(shopBrandRoute, {
+			headers: {
+				Cookie: `${auth.cookieName}=${auth.cookie}`,
+				'X-WP-Nonce': 'invalid-shop-brand-nonce',
+			},
+		});
+		assert.ok([401, 403].includes(invalidNonce.status), 'shop-brand route rejects invalid REST nonces');
+		const initialStatusResponse = await merchantRequest();
+		assert.equal(initialStatusResponse.status, 200);
+		const initialStatus = await initialStatusResponse.json();
+		assert.deepEqual(Object.keys(initialStatus).sort(), ['lastAcceptedAt', 'lastRequestedAt', 'status']);
+		assert.equal(initialStatus.status, 'ACCEPTED');
+		const requestsBeforeRoutePost = requests().length;
+		const routePost = await merchantRequest('POST');
+		assert.equal(routePost.status, 202, 'merchant POST accepts a queued sync');
+		assert.deepEqual(await routePost.json(), { status: 'QUEUED' });
+		assert.equal(requests().length, requestsBeforeRoutePost, 'merchant POST must not call Moda synchronously');
+		assert.equal((await pending(CAPTURE)).length, 1, 'merchant POST queues one capture');
+		const queuedStatusResponse = await merchantRequest();
+		assert.equal((await queuedStatusResponse.json()).status, 'QUEUED');
+		await drain(CAPTURE);
+		assert.equal(requests().length, requestsBeforeRoutePost + 1);
+		const acceptedStatusResponse = await merchantRequest();
+		const acceptedStatus = await acceptedStatusResponse.json();
+		assert.equal(acceptedStatusResponse.status, 200);
+		assert.equal(acceptedStatus.status, 'ACCEPTED');
+		assert.ok(acceptedStatus.lastRequestedAt);
+		assert.ok(acceptedStatus.lastAcceptedAt);
 
 		// Use native attachment posts and native Site Identity APIs; WordPress
 		// itself derives the public HTTPS attachment URLs (no PHP source mocks).
@@ -161,7 +213,11 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 					static fn($route) => str_contains($route, 'shop-brand'))),
 			));
 		`);
-		assert.deepEqual(setup.publicRoutes, [], 'no new public WordPress shop-brand REST route');
+		assert.deepEqual(
+			setup.publicRoutes,
+			['/moda-interact/v1/merchant/shop-brand/sync'],
+			'the authenticated merchant shop-brand route is registered'
+		);
 		assert.equal(setup.source.brandName, 'ARCH049 Original Store');
 		assert.equal(setup.source.logo.attachmentId, setup.ids['logo-original']);
 		assert.equal(setup.source.siteIcon.attachmentId, setup.ids['icon-original']);
@@ -173,13 +229,17 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 		assert.deepEqual(await pending(CAPTURE), [], 'Site Identity changes must not auto-enqueue');
 		const beforeExplicit = requests().length;
 		await requestSync();
-		await requestSync(); // Two explicit requests must coalesce into one durable capture.
+		await requestSync(); // Each explicit request gets its own generation and durable capture.
 		assert.equal(requests().length, beforeExplicit, 'requestSync must not POST synchronously');
-		assert.equal((await pending(CAPTURE)).length, 1);
+		assert.equal((await pending(CAPTURE)).length, 2);
 		await drain(CAPTURE);
-		const initial = latest();
+		const explicitResults = requests().slice(beforeExplicit);
+		assert.equal(explicitResults.length, 2, 'both explicit generations publish');
+		const initial = explicitResults[0];
 		assert.equal(initial.httpStatus, 200);
 		assert.equal(initial.disposition, 'updated');
+		assert.equal(explicitResults[1].httpStatus, 200);
+		assert.equal(explicitResults[1].disposition, 'unchanged');
 		assert.deepEqual(initial.event.brandName, setup.source.brandName);
 		assert.deepEqual(initial.event.logo, setup.source.logo);
 		assert.deepEqual(initial.event.siteIcon, setup.source.siteIcon);
@@ -253,18 +313,22 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 		// Upgrade of an already-connected store with no bootstrap marker queues once.
 		const upgrade = await wpJson(`
 			delete_option('moda_interact_shop_brand_bootstrapped_installation');
+			// A fresh WP-CLI eval does not replay the earlier Action Scheduler
+			// lifecycle hook. Trigger the real readiness event before exercising
+			// the public method, matching the production upgrade path.
+			do_action('action_scheduler_init');
 			$publisher = new \\ModaInteract\\WooCommerce\\ShopBrand\\Publisher();
 			$publisher->ensureInitialSync();
 			$publisher->ensureInitialSync();
 			echo wp_json_encode(array(
 				'marker' => get_option('moda_interact_shop_brand_bootstrapped_installation'),
-				'queued' => (bool) as_has_scheduled_action('${CAPTURE}',
-					array('install_wp_fixture', 'shop_wp_fixture'), '${GROUP}'),
 			));
 		`);
 		assert.equal(upgrade.marker, 'install_wp_fixture');
-		assert.equal(upgrade.queued, true);
-		assert.equal((await pending(CAPTURE)).length, 1);
+		const upgradeCaptures = await pending(CAPTURE);
+		assert.equal(upgradeCaptures.length, 1);
+		assert.deepEqual(upgradeCaptures[0].args.slice(0, 2), ['install_wp_fixture', 'shop_wp_fixture']);
+		assert.match(upgradeCaptures[0].args[2], /^[0-9a-f-]{36}$/i, 'capture includes a unique request ID');
 		await drain(CAPTURE);
 		assert.equal(latest().disposition, 'unchanged');
 		assert.deepEqual(await pending(CAPTURE), []);
@@ -348,7 +412,9 @@ export async function assertShopBrandWordPress({ wpAsync, parseJsonOutput, fixtu
 				assert.equal(third.length, 1);
 				assert.equal(third[0].args[3], 3);
 				assert.deepEqual(third[0].args[0], failed.event);
-				assert.ok(Math.abs(third[0].runAt - Date.now() / 1000 - 60) < 15);
+				// WP-CLI and the container round trip can take several seconds
+				// between scheduling and observation on slower local runtimes.
+				assert.ok(Math.abs(third[0].runAt - Date.now() / 1000 - 60) < 45);
 				fixture.setShopBrandStatus(200);
 				await advanceRetry(third[0]);
 			} else {

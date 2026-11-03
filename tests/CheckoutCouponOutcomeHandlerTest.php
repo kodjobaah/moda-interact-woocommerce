@@ -66,4 +66,19 @@ final class CheckoutCouponOutcomeHandlerTest extends TestCase {
 			self::assertStringNotContainsString( 'SAVE10', $logged );
 		}
 	}
+
+	public function test_records_typed_outreach_outcome_without_coupon_values(): void {
+		$this->handler->handle( array(
+			'appliedCodes' => array(), 'rejectedCodes' => array(), 'cartTotalRecalculated' => true,
+			'outreachOffer' => array( 'outcome' => 'CONFLICT_REQUIRES_CHOICE', 'recommendedCode' => 'SECRET15',
+				'originalAppliedCodes' => array( 'SAVE10' ), 'currentAppliedCodes' => array( 'SAVE10' ),
+				'rejectionReason' => 'GROUP_CONFLICT', 'totalsRecalculated' => true ),
+		) );
+		self::assertCount( 2, $this->logger->entries );
+		[ $message, $context ] = $this->logger->entries[1];
+		self::assertSame( 'outreach_offer_conflict_requires_choice', $context['reason'] );
+		self::assertSame( 'outcome=CONFLICT_REQUIRES_CHOICE;original_count=1;current_count=1;reason=GROUP_CONFLICT', $context['error_message'] );
+		self::assertStringNotContainsString( 'SECRET15', $message . (string) json_encode( $context ) );
+		self::assertStringNotContainsString( 'SAVE10', $message . (string) json_encode( $context ) );
+	}
 }
