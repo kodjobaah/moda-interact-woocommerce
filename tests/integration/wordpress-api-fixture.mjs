@@ -94,36 +94,67 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 			// HTTPS, including its installation-scoped authentication boundary.
 			assert.equal(url.search, '');
 			assert.equal(request.headers.cookie, undefined);
-			assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
+			assert.equal(
+				request.headers['x-moda-installation-id'],
+				'install_wp_fixture'
+			);
 			assert.equal(
 				request.headers.authorization,
 				`Bearer ${Buffer.alloc(32, connectCount).toString('base64url')}`
 			);
-			assert.match(request.headers['content-type'] ?? '', /^application\/json/i);
+			assert.match(
+				request.headers['content-type'] ?? '',
+				/^application\/json/i
+			);
 			assert.ok(bodyBytes.length <= 16384);
 			const event = JSON.parse(bodyBytes.toString('utf8'));
 			assert.deepEqual(Object.keys(event).sort(), [
-				'brandName', 'coverImage', 'eventId', 'logo', 'observedAt',
-				'schemaVersion', 'siteIcon',
+				'brandName',
+				'coverImage',
+				'eventId',
+				'logo',
+				'observedAt',
+				'schemaVersion',
+				'siteIcon',
 			]);
 			assert.equal(event.schemaVersion, 'woo.shop-brand.v1');
-			assert.ok(event.brandName === null ||
-				(typeof event.brandName === 'string' && [...event.brandName].length <= 160));
+			assert.ok(
+				event.brandName === null ||
+					(typeof event.brandName === 'string' &&
+						[...event.brandName].length <= 160)
+			);
 			assert.equal(event.coverImage, null);
-			assert.match(event.observedAt,
-				/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+			assert.match(
+				event.observedAt,
+				/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+			);
 			for (const role of ['logo', 'siteIcon']) {
 				const source = event[role];
-				if (source === null) continue;
+				if (source === null) {
+					continue;
+				}
 				assert.deepEqual(Object.keys(source).sort(), [
-					'altText', 'attachmentId', 'height', 'url', 'width',
+					'altText',
+					'attachmentId',
+					'height',
+					'url',
+					'width',
 				]);
-				assert.ok(Number.isSafeInteger(source.attachmentId) && source.attachmentId > 0);
-				assert.ok(source.altText === null ||
-					(typeof source.altText === 'string' && [...source.altText].length <= 256));
+				assert.ok(
+					Number.isSafeInteger(source.attachmentId) &&
+						source.attachmentId > 0
+				);
+				assert.ok(
+					source.altText === null ||
+						(typeof source.altText === 'string' &&
+							[...source.altText].length <= 256)
+				);
 				for (const dimension of ['height', 'width']) {
-					assert.ok(source[dimension] === null ||
-						(Number.isSafeInteger(source[dimension]) && source[dimension] > 0));
+					assert.ok(
+						source[dimension] === null ||
+							(Number.isSafeInteger(source[dimension]) &&
+								source[dimension] > 0)
+					);
 				}
 				const asset = new URL(source.url);
 				assert.equal(asset.protocol, 'https:');
@@ -164,20 +195,41 @@ export function createWordPressApiFixture({ fetchWordPress, getSiteUrl }) {
 		) {
 			assert.equal(url.search, '');
 			assert.equal(request.headers.cookie, undefined);
-			assert.equal(request.headers['x-moda-installation-id'], 'install_wp_fixture');
-			assert.match(request.headers.authorization ?? '', /^Bearer [A-Za-z0-9_-]{43}$/);
-			assert.match(request.headers['content-type'] ?? '', /^application\/json/i);
+			assert.equal(
+				request.headers['x-moda-installation-id'],
+				'install_wp_fixture'
+			);
+			assert.match(
+				request.headers.authorization ?? '',
+				/^Bearer [A-Za-z0-9_-]{43}$/
+			);
+			assert.match(
+				request.headers['content-type'] ?? '',
+				/^application\/json/i
+			);
 			assert.ok(bodyBytes.length <= 4096);
 			const payload = JSON.parse(bodyBytes.toString('utf8'));
-			assert.deepEqual(Object.keys(payload).sort(), ['recoveryId', 'schemaVersion', 'token']);
+			assert.deepEqual(Object.keys(payload).sort(), [
+				'recoveryId',
+				'schemaVersion',
+				'token',
+			]);
 			assert.equal(payload.schemaVersion, 'woo.restore.resolve.v1');
-			assert.match(payload.recoveryId, /^[A-Za-z0-9][A-Za-z0-9._:~-]{0,127}$/);
+			assert.match(
+				payload.recoveryId,
+				/^[A-Za-z0-9][A-Za-z0-9._:~-]{0,127}$/
+			);
 			assert.match(payload.token, /^[A-Za-z0-9_-]{43}$/);
-			restoreResolveRequests.push({ recoveryId: payload.recoveryId, status: restoreResolveStatus });
+			restoreResolveRequests.push({
+				recoveryId: payload.recoveryId,
+				status: restoreResolveStatus,
+			});
 			if (restoreResolveStatus === 200) {
 				sendJson(response, 200, restoreResolveResponse);
 			} else {
-				sendJson(response, restoreResolveStatus, { error: 'restore_unavailable' });
+				sendJson(response, restoreResolveStatus, {
+					error: 'restore_unavailable',
+				});
 			}
 			return true;
 		}

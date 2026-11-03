@@ -15,25 +15,45 @@
 
 	let debugEnabled = false;
 	try {
-		debugEnabled = window.sessionStorage?.getItem('modaWooConsentDebug') === '1';
+		debugEnabled =
+			window.sessionStorage?.getItem('modaWooConsentDebug') === '1';
 	} catch {
 		// Browser storage restrictions must never affect checkout.
 	}
 	function debug(event, details = {}) {
-		if (!debugEnabled) return;
+		if (!debugEnabled) {
+			return;
+		}
 		try {
 			const safe = {};
 			for (const key of ['action', 'decision', 'stage', 'status']) {
-				if (['status', 'choice', 'withdraw', 'GRANT', 'REVOKE', 'transport',
-					'acknowledgement', 'verification', 'recorded', 'unverified',
-					'granted', 'neutral'].includes(details[key])) {
+				if (
+					[
+						'status',
+						'choice',
+						'withdraw',
+						'GRANT',
+						'REVOKE',
+						'transport',
+						'acknowledgement',
+						'verification',
+						'recorded',
+						'unverified',
+						'granted',
+						'neutral',
+					].includes(details[key])
+				) {
 					safe[key] = details[key];
 				}
 			}
 			if (typeof details.confirmed === 'boolean') {
 				safe.confirmed = details.confirmed;
 			}
-			if (Number.isInteger(details.httpStatus) && details.httpStatus >= 100 && details.httpStatus <= 599) {
+			if (
+				Number.isInteger(details.httpStatus) &&
+				details.httpStatus >= 100 &&
+				details.httpStatus <= 599
+			) {
 				safe.httpStatus = details.httpStatus;
 			}
 			window.console?.info?.('[Moda Woo Consent]', event, safe);
@@ -77,7 +97,9 @@
 
 	function render() {
 		const field = doc.querySelector(fieldSelector);
-		if (!field) return;
+		if (!field) {
+			return;
+		}
 		// Woo can recreate the native input after an API/cart update. Reapply
 		// the customer's choice, never the result of a failed network request.
 		// Property writes do not generate a new consent action.
@@ -87,7 +109,9 @@
 	}
 
 	function scheduleRender() {
-		if (reconcileTimer !== undefined) return;
+		if (reconcileTimer !== undefined) {
+			return;
+		}
 		reconcileTimer = window.setTimeout(() => {
 			reconcileTimer = undefined;
 			try {
@@ -130,7 +154,11 @@
 	]);
 
 	function diagnosticError(error, action, stage) {
-		return { action, stage, httpStatus: error?.status ?? error?.data?.status };
+		return {
+			action,
+			stage,
+			httpStatus: error?.status ?? error?.data?.status,
+		};
 	}
 
 	async function request(action, payload, contactSnapshot, stableId = null) {
@@ -172,10 +200,17 @@
 				unsubscribe = wp.data.subscribe(captureAcknowledgement);
 			}
 			const deadline = new Promise((_, reject) => {
-				timeout = window.setTimeout(() => reject(
-					new Error(stage === 'transport'
-						? 'consent_transport_timeout' : 'consent_ack_timeout')
-				), 4000);
+				timeout = window.setTimeout(
+					() =>
+						reject(
+							new Error(
+								stage === 'transport'
+									? 'consent_transport_timeout'
+									: 'consent_ack_timeout'
+							)
+						),
+					4000
+				);
 			});
 			const update = blocks.extensionCartUpdate({
 				namespace: 'moda-interact-consent',
@@ -191,46 +226,72 @@
 			await Promise.race([update, deadline]);
 			stage = 'acknowledgement';
 			captureAcknowledgement();
-			const result = acknowledgement ||
-				await Promise.race([acknowledgementPromise, deadline]);
+			const result =
+				acknowledgement ||
+				(await Promise.race([acknowledgementPromise, deadline]));
 			debug('blocks_http_response', {
 				action,
 				status: result.status,
 				confirmed: result.confirmed,
-				reason: typeof result.reason === 'string' &&
+				reason:
+					typeof result.reason === 'string' &&
 					/^[a-zA-Z0-9_-]{0,128}$/.test(result.reason)
-						? result.reason : null,
+						? result.reason
+						: null,
 			});
 			return result;
 		} catch (error) {
-			debug('blocks_http_rejected', diagnosticError(error, action, stage));
+			debug(
+				'blocks_http_rejected',
+				diagnosticError(error, action, stage)
+			);
 			// Do not replace the original SDK/network exception with a generic
 			// consent_request_unavailable: the reason matters during development.
 			throw error;
 		} finally {
-			if (typeof unsubscribe === 'function') unsubscribe();
-			if (timeout !== undefined) window.clearTimeout?.(timeout);
+			if (typeof unsubscribe === 'function') {
+				unsubscribe();
+			}
+			if (timeout !== undefined) {
+				window.clearTimeout?.(timeout);
+			}
 		}
 	}
 
 	// Process deliberate transitions in order. A second click is never blocked
 	// by an in-flight request, and a stale response cannot rewrite the UI.
 	async function drainActions() {
-		if (sending) return;
+		if (sending) {
+			return;
+		}
 		sending = true;
 		try {
 			while (actions.length) {
 				const action = actions.shift();
-				if (action.generation !== generation || action.contact !== contact) {
+				if (
+					action.generation !== generation ||
+					action.contact !== contact
+				) {
 					continue;
 				}
-				const { decision, requestId, contact: at, generation: id } = action;
+				const {
+					decision,
+					requestId,
+					contact: at,
+					generation: id,
+				} = action;
 				try {
 					// Do not invent a REVOKE when the preceding GRANT was
 					// definitively rejected before any publication. Ambiguous
 					// writes still require the proof-checked withdrawal path.
-					if (decision === 'REVOKE' && !verified && grantState === 'REJECTED') {
-						if (pendingIds.REVOKE === requestId) pendingIds.REVOKE = null;
+					if (
+						decision === 'REVOKE' &&
+						!verified &&
+						grantState === 'REJECTED'
+					) {
+						if (pendingIds.REVOKE === requestId) {
+							pendingIds.REVOKE = null;
+						}
 						grantState = 'NONE';
 						debug('blocks_withdraw_skipped_no_grant');
 						continue;
@@ -243,16 +304,24 @@
 						at,
 						requestId
 					);
-					if (id !== generation || at !== contact) continue;
+					if (id !== generation || at !== contact) {
+						continue;
+					}
 					if (result.status !== 'recorded') {
 						if (decision === 'GRANT') {
-							grantState = prePublicationRejections.has(result.reason)
-								? 'REJECTED' : 'AMBIGUOUS';
+							grantState = prePublicationRejections.has(
+								result.reason
+							)
+								? 'REJECTED'
+								: 'AMBIGUOUS';
 						}
 						debug('blocks_choice_failed', {
 							decision,
 							status: result.status,
-							reason: typeof result.reason === 'string' ? result.reason : null,
+							reason:
+								typeof result.reason === 'string'
+									? result.reason
+									: null,
 						});
 						continue;
 					}
@@ -276,17 +345,28 @@
 								verified = status.confirmed === true;
 							}
 						} catch (error) {
-							debug('blocks_status_failed', diagnosticError(error, 'status', 'verification'));
+							debug(
+								'blocks_status_failed',
+								diagnosticError(error, 'status', 'verification')
+							);
 						}
 					}
 				} catch (error) {
 					// The hosted GRANT may have succeeded even if the response was
 					// lost; a later uncheck must still attempt protected withdrawal.
-					if (decision === 'GRANT') grantState = 'AMBIGUOUS';
+					if (decision === 'GRANT') {
+						grantState = 'AMBIGUOUS';
+					}
 					// Failed/ambiguous commands do not change verified consent.
 					// The latest customer selection remains displayed.
-					debug('blocks_choice_failed', diagnosticError(error,
-						decision === 'GRANT' ? 'choice' : 'withdraw', 'action'));
+					debug(
+						'blocks_choice_failed',
+						diagnosticError(
+							error,
+							decision === 'GRANT' ? 'choice' : 'withdraw',
+							'action'
+						)
+					);
 				} finally {
 					if (id === generation) {
 						render();
@@ -297,47 +377,6 @@
 			sending = false;
 			render();
 		}
-	}
-
-	function onChange(event) {
-		const field = event.target;
-		if (!field?.matches?.(fieldSelector) || event.isTrusted !== true) {
-			return;
-		}
-		// Allow Woo's native checkbox interaction. Woo's stored field is
-		// display-only and is never authoritative consent evidence.
-		const checked = field.checked === true;
-		// The native input may blur the billing field immediately before its
-		// change event. Do not use a stale contact from the last subscription.
-		if (currentContact() !== contact) observeContact();
-		localChoice = checked;
-		choiceContact = contact.split('|')[1] ? contact : null;
-		render();
-		const at = contact;
-		if (!at.split('|')[1]) {
-			return;
-		}
-		const decision = localChoice ? 'GRANT' : 'REVOKE';
-		// A failed REVOKE does not erase the server's existing grant; a
-		// subsequent check needs no duplicate GRANT. Conversely, an uncheck
-		// of a never-granted choice does not invent a withdrawal.
-		if (!sending && !actions.length) {
-			if (decision === 'GRANT' && (verified || grantState === 'ACKNOWLEDGED')) {
-				return;
-			}
-			if (decision === 'REVOKE' && !verified && grantState === 'NONE') {
-				return;
-			}
-		}
-		const requestId =
-			(!sending && !actions.length && pendingIds[decision]) ||
-			`moda-${Date.now().toString(36)}-${++counter}`;
-		pendingIds[decision] = requestId;
-		if (decision === 'GRANT') {
-			grantState = 'PENDING';
-		}
-		actions.push({ decision, requestId, generation, contact: at });
-		void drainActions();
 	}
 
 	function observeContact() {
@@ -363,12 +402,18 @@
 		window.clearTimeout?.(refreshTimer);
 		scheduleRender();
 		debug('blocks_contact_changed');
-		if (!checking) return;
+		if (!checking) {
+			return;
+		}
 		// Billing edits debounce before a proof-backed read. There is no
 		// staged choice and no automatic GRANT on a phone change.
 		refreshTimer = window.setTimeout(async () => {
 			try {
-				const result = await request('status', { mode: 'BLOCKS' }, next);
+				const result = await request(
+					'status',
+					{ mode: 'BLOCKS' },
+					next
+				);
 				if (id === generation && next === contact) {
 					verified = result.confirmed === true;
 					debug('blocks_status_result');
@@ -376,7 +421,10 @@
 			} catch (error) {
 				if (id === generation) {
 					verified = false;
-					debug('blocks_status_failed', diagnosticError(error, 'status', 'verification'));
+					debug(
+						'blocks_status_failed',
+						diagnosticError(error, 'status', 'verification')
+					);
 				}
 			} finally {
 				if (id === generation && next === contact) {
@@ -393,6 +441,52 @@
 		}, 450);
 	}
 
+	function onChange(event) {
+		const field = event.target;
+		if (!field?.matches?.(fieldSelector) || event.isTrusted !== true) {
+			return;
+		}
+		// Allow Woo's native checkbox interaction. Woo's stored field is
+		// display-only and is never authoritative consent evidence.
+		const checked = field.checked === true;
+		// The native input may blur the billing field immediately before its
+		// change event. Do not use a stale contact from the last subscription.
+		if (currentContact() !== contact) {
+			observeContact();
+		}
+		localChoice = checked;
+		choiceContact = contact.split('|')[1] ? contact : null;
+		render();
+		const at = contact;
+		if (!at.split('|')[1]) {
+			return;
+		}
+		const decision = localChoice ? 'GRANT' : 'REVOKE';
+		// A failed REVOKE does not erase the server's existing grant; a
+		// subsequent check needs no duplicate GRANT. Conversely, an uncheck
+		// of a never-granted choice does not invent a withdrawal.
+		if (!sending && !actions.length) {
+			if (
+				decision === 'GRANT' &&
+				(verified || grantState === 'ACKNOWLEDGED')
+			) {
+				return;
+			}
+			if (decision === 'REVOKE' && !verified && grantState === 'NONE') {
+				return;
+			}
+		}
+		const requestId =
+			(!sending && !actions.length && pendingIds[decision]) ||
+			`moda-${Date.now().toString(36)}-${++counter}`;
+		pendingIds[decision] = requestId;
+		if (decision === 'GRANT') {
+			grantState = 'PENDING';
+		}
+		actions.push({ decision, requestId, generation, contact: at });
+		void drainActions();
+	}
+
 	// Subscriptions and DOM observation never publish consent; they only
 	// reconcile the native checkbox after Woo re-renders its own form.
 	doc.addEventListener('change', onChange, true);
@@ -403,12 +497,17 @@
 	}
 	try {
 		const observer = new window.MutationObserver(scheduleRender);
-		observer.observe(doc.documentElement, { childList: true, subtree: true });
+		observer.observe(doc.documentElement, {
+			childList: true,
+			subtree: true,
+		});
 	} catch {
 		debug('blocks_native_observer_unavailable');
 	}
 	if (doc.readyState === 'loading') {
-		doc.addEventListener('DOMContentLoaded', observeContact, { once: true });
+		doc.addEventListener('DOMContentLoaded', observeContact, {
+			once: true,
+		});
 	} else {
 		observeContact();
 	}

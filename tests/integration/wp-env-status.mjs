@@ -55,7 +55,11 @@ export function siteUrlFromWpEnvStatus(status) {
  */
 export function assertConsentFixtureSiteIdentity(siteUrl, identity) {
 	const expected = new URL(siteUrl);
-	assert.equal(expected.pathname, '/', 'Fixture must run at the local site root');
+	assert.equal(
+		expected.pathname,
+		'/',
+		'Fixture must run at the local site root'
+	);
 	const trim = (value) =>
 		typeof value === 'string' ? value.replace(/\/+$/, '') : '';
 	const expectedRoot = trim(expected.origin);

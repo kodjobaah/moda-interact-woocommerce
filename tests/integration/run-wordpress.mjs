@@ -41,8 +41,14 @@ const restoreOnly = process.argv.includes('--restore-only');
 const consentOnly = process.argv.includes('--consent-only');
 const consentBrowser = process.argv.includes('--consent-browser');
 const shopBrandOnly = process.argv.includes('--shop-brand-only');
-assert.ok(!(shopBrandOnly && (checkoutOnly || consentOnly)), 'Choose one focused WordPress integration mode');
-assert.ok(!(restoreOnly && (checkoutOnly || consentOnly || shopBrandOnly)), 'Choose one focused WordPress integration mode');
+assert.ok(
+	!(shopBrandOnly && (checkoutOnly || consentOnly)),
+	'Choose one focused WordPress integration mode'
+);
+assert.ok(
+	!(restoreOnly && (checkoutOnly || consentOnly || shopBrandOnly)),
+	'Choose one focused WordPress integration mode'
+);
 const repository = resolve(import.meta.dirname, '../..');
 const fixtureCaPath = join(repository, 'tests/integration/.fixture-ca.pem');
 let siteUrl;
@@ -330,18 +336,19 @@ try {
 						readCheckoutActionHistory(wpEnvComposeFile),
 					getActivityRequests: apiFixture.getActivityRequests,
 					setActivityStatus: apiFixture.setActivityStatus,
-					getRestoreResolveRequests: apiFixture.getRestoreResolveRequests,
+					getRestoreResolveRequests:
+						apiFixture.getRestoreResolveRequests,
 					setRestoreResolveResult: apiFixture.setRestoreResolveResult,
 					restoreOnly,
 				});
 			}
-			process.stdout.write(
-				consentOnly
-					? 'ARCH-046 consent-only integration PASS\n'
-					: restoreOnly
-						? 'ARCH-053 restore-only integration PASS\n'
-						: 'ARCH-035 checkout-only integration PASS\n'
-			);
+			let message = 'ARCH-035 checkout-only integration PASS';
+			if (consentOnly) {
+				message = 'ARCH-046 consent-only integration PASS';
+			} else if (restoreOnly) {
+				message = 'ARCH-053 restore-only integration PASS';
+			}
+			process.stdout.write(message + '\n');
 		} finally {
 			for (const [name, prior] of applied.reverse()) {
 				try {
@@ -537,7 +544,10 @@ try {
 		// fixture installation ID, and reconnecting that same installation must
 		// NOT enqueue another initial capture. Reset only owned fixture state
 		// before the connection scenario so reruns still exercise first connect.
-		const brandFixtureReset = parseJsonOutput(await wpAsync('eval', `
+		const brandFixtureReset = parseJsonOutput(
+			await wpAsync(
+				'eval',
+				`
 			$record = get_option('moda_interact_woocommerce_connection', null);
 			if (null !== $record && (!is_array($record) ||
 				($record['installationId'] ?? null) !== 'install_wp_fixture' ||
@@ -573,7 +583,9 @@ try {
 				'markerCleared' => get_option('moda_interact_shop_brand_bootstrapped_installation', '') === '',
 				'pendingActionsCleared' => $cleared,
 			));
-		`));
+		`
+			)
+		);
 		assert.equal(brandFixtureReset.connectionCleared, true);
 		assert.equal(brandFixtureReset.markerCleared, true);
 		await assertConnectionWordPress({
@@ -582,11 +594,12 @@ try {
 			fetchWordPress,
 			request,
 			merchantBootstrapRequest,
-			onInitialConnection: () => assertInitialShopBrandWordPress({
-				wpAsync,
-				parseJsonOutput,
-				fixture: apiFixture,
-			}),
+			onInitialConnection: () =>
+				assertInitialShopBrandWordPress({
+					wpAsync,
+					parseJsonOutput,
+					fixture: apiFixture,
+				}),
 		});
 		await assertShopBrandWordPress({
 			wpAsync,

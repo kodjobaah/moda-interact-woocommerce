@@ -172,8 +172,12 @@
 				setView('neutral');
 			}
 		} finally {
-			if (id === serial && contact === contactKey(form()) &&
-				localChoice !== null && choiceContact === null) {
+			if (
+				id === serial &&
+				contact === contactKey(form()) &&
+				localChoice !== null &&
+				choiceContact === null
+			) {
 				// Bind only the presentation choice after the first phone
 				// settles, including if status failed. No write is generated.
 				choiceContact = contact;
@@ -250,13 +254,16 @@
 			withdrawalPending = false;
 			const retry = withdrawalRetryRequested;
 			withdrawalRetryRequested = false;
-			if (retry && contact === contactKey(form()) && localChoice === false) {
+			if (
+				retry &&
+				contact === contactKey(form()) &&
+				localChoice === false
+			) {
 				void revokeFromCheckbox();
 			}
 			setView('checking');
 		}
 	}
-
 
 	$(document.body).on('change', choice, function (event) {
 		// Never infer consent from Woo's programmatic form hydration.
@@ -275,7 +282,9 @@
 		// before WooCommerce has submitted this deliberate choice.
 		serial++;
 		localChoice = this.checked === true;
-		choiceContact = current.slice(current.indexOf('|') + 1) ? current : null;
+		choiceContact = current.slice(current.indexOf('|') + 1)
+			? current
+			: null;
 		debug('classic_checkbox_changed', { checked: localChoice });
 		const checkout = $(this).closest('form.checkout');
 		if (checkout.length) {

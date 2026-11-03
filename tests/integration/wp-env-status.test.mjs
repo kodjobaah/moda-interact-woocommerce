@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { siteUrlFromWpEnvStatus, assertConsentFixtureSiteIdentity } from './wp-env-status.mjs';
+import {
+	siteUrlFromWpEnvStatus,
+	assertConsentFixtureSiteIdentity,
+} from './wp-env-status.mjs';
 
 function status(url = 'http://localhost:8888', port = 8888) {
 	return {
@@ -51,7 +54,6 @@ test('requires Docker because the suite executes WP-CLI in a container', () => {
 		/Docker runtime/
 	);
 });
-
 
 test('consent-only accepts a fixture bound to the running nondefault port', () => {
 	assert.doesNotThrow(() =>

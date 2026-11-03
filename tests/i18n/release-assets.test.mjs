@@ -1,4 +1,3 @@
-import { verifyTranslationSources } from '../../scripts/i18n/verify-source.mjs';
 import assert from 'node:assert/strict';
 import {
 	copyFileSync,
@@ -10,6 +9,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { verifyTranslationSources } from '../../scripts/i18n/verify-source.mjs';
 import { compileCatalogues } from '../../scripts/i18n/compile.mjs';
 import { verifyReleaseAssets } from '../../scripts/i18n/release-assets.mjs';
 
@@ -50,7 +50,10 @@ test('WOO-014 release manifest covers all 20 languages and source keys', () => {
 			languagesDirectory: directory,
 		});
 		assert.equal(release.languages, 20);
-		assert.equal(release.messages, verifyTranslationSources().sourceMessages);
+		assert.equal(
+			release.messages,
+			verifyTranslationSources().sourceMessages
+		);
 		assert.equal(release.assets, 38);
 		assert.equal(release.manifest.length, 19);
 	});

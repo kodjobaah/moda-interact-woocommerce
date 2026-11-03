@@ -160,12 +160,16 @@ test('Classic verified checkbox uncheck performs proof-backed REVOKE with same W
 	});
 	await new Promise((done) => setImmediate(done));
 	assert.equal(
-		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].checked'),
+		props.get(
+			'input[name="moda_interact_whatsapp_recovery_opt_in"].checked'
+		),
 		true,
 		'Confirmed grant checks the existing checkbox'
 	);
 	assert.equal(
-		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].disabled'),
+		props.get(
+			'input[name="moda_interact_whatsapp_recovery_opt_in"].disabled'
+		),
 		false,
 		'Verified consent can be revoked by deliberate uncheck'
 	);
@@ -184,7 +188,9 @@ test('Classic verified checkbox uncheck performs proof-backed REVOKE with same W
 		'Failed withdrawal retains the stored GRANT'
 	);
 	assert.equal(
-		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].checked'),
+		props.get(
+			'input[name="moda_interact_whatsapp_recovery_opt_in"].checked'
+		),
 		false,
 		'Failed REVOKE must not override the deliberate uncheck'
 	);
@@ -196,7 +202,9 @@ test('Classic verified checkbox uncheck performs proof-backed REVOKE with same W
 	change.call(consentCheckbox, { originalEvent: { isTrusted: true } });
 	await new Promise((done) => setImmediate(done));
 	assert.equal(
-		props.get('input[name="moda_interact_whatsapp_recovery_opt_in"].checked'),
+		props.get(
+			'input[name="moda_interact_whatsapp_recovery_opt_in"].checked'
+		),
 		false,
 		'The checkbox remains unchecked while the backend confirms withdrawal'
 	);
@@ -306,7 +314,9 @@ test('Classic consent UI remains interactive during status failures and never st
 	checkbox.checked = true;
 	change.call(checkbox, { originalEvent: { isTrusted: true } });
 	assert.equal(
-		values.get('input[name="moda_interact_whatsapp_recovery_opt_in"].disabled'),
+		values.get(
+			'input[name="moda_interact_whatsapp_recovery_opt_in"].disabled'
+		),
 		false
 	);
 	assert.equal(
@@ -322,7 +332,6 @@ test('Classic consent UI remains interactive during status failures and never st
 	);
 });
 
-
 test('Classic pre-phone checkbox choice survives first billing entry without auto-grant', async () => {
 	const body = {};
 	const document = { body };
@@ -333,48 +342,92 @@ test('Classic pre-phone checkbox choice survives first billing entry without aut
 	const calls = [];
 	const checkout = {
 		length: 1,
-		first() { return this; },
-		serialize() { return `billing_phone=${encodeURIComponent(phone)}&billing_country=${country}`; },
+		first() {
+			return this;
+		},
+		serialize() {
+			return `billing_phone=${encodeURIComponent(phone)}&billing_country=${country}`;
+		},
 		find(selector) {
-			if (selector.includes('billing_phone')) return { val: () => phone };
-			if (selector.includes('billing_country')) return { val: () => country };
+			if (selector.includes('billing_phone')) {
+				return { val: () => phone };
+			}
+			if (selector.includes('billing_country')) {
+				return { val: () => country };
+			}
 			return { remove() {} };
 		},
 	};
 	function jQuery(target) {
-		if (target === body) return {
-			on(name, selector, callback) {
-				listeners.set(`${name}:${typeof selector === 'string' ? selector : '*'}`, callback || selector);
-			},
-			trigger() {},
-		};
-		if (target === document) return { ready(callback) { callback(); } };
-		if (target === 'form.checkout') return checkout;
-		if (target === box) return { closest: () => checkout };
-		if (target === '<input>') return { appendTo() {} };
-		if (target === 'input[name="moda_interact_whatsapp_recovery_opt_in"]') return {
-			length: 1,
-			prop(name, value) {
-				if (arguments.length > 1) box[name] = value;
-				return box[name];
-			},
-		};
+		if (target === body) {
+			return {
+				on(name, selector, callback) {
+					listeners.set(
+						`${name}:${typeof selector === 'string' ? selector : '*'}`,
+						callback || selector
+					);
+				},
+				trigger() {},
+			};
+		}
+		if (target === document) {
+			return {
+				ready(callback) {
+					callback();
+				},
+			};
+		}
+		if (target === 'form.checkout') {
+			return checkout;
+		}
+		if (target === box) {
+			return { closest: () => checkout };
+		}
+		if (target === '<input>') {
+			return { appendTo() {} };
+		}
+		if (target === 'input[name="moda_interact_whatsapp_recovery_opt_in"]') {
+			return {
+				length: 1,
+				prop(name, value) {
+					if (arguments.length > 1) {
+						box[name] = value;
+					}
+					return box[name];
+				},
+			};
+		}
 		throw new Error('Unexpected jQuery selection');
 	}
 	const fetch = async (url) => {
 		calls.push(url);
-		return { ok: true, status: 200, json: async () => ({ confirmed: false }) };
+		return {
+			ok: true,
+			status: 200,
+			json: async () => ({ confirmed: false }),
+		};
 	};
 	vm.runInNewContext(source, {
-		jQuery, document, fetch, URLSearchParams,
+		jQuery,
+		document,
+		fetch,
+		URLSearchParams,
 		window: {
-			modaWooCheckoutConsentConfig: { statusEndpoint: '/status', withdrawEndpoint: '/withdraw', nonce: 'test' },
+			modaWooCheckoutConsentConfig: {
+				statusEndpoint: '/status',
+				withdrawEndpoint: '/withdraw',
+				nonce: 'test',
+			},
 		},
 		setTimeout: (callback, ms) => setTimeout(callback, ms === 450 ? 0 : ms),
 		clearTimeout,
 	});
-	const changeChoice = listeners.get('change:input[name="moda_interact_whatsapp_recovery_opt_in"]');
-	const changeBilling = listeners.get('change:input[name="billing_phone"], select[name="billing_country"]');
+	const changeChoice = listeners.get(
+		'change:input[name="moda_interact_whatsapp_recovery_opt_in"]'
+	);
+	const changeBilling = listeners.get(
+		'change:input[name="billing_phone"], select[name="billing_country"]'
+	);
 	assert.equal(typeof changeChoice, 'function');
 	assert.equal(typeof changeBilling, 'function');
 	box.checked = true;
@@ -382,11 +435,23 @@ test('Classic pre-phone checkbox choice survives first billing entry without aut
 	assert.equal(box.checked, true);
 	phone = '+447400123456';
 	changeBilling();
-	await new Promise((resolve) => setTimeout(resolve, 30));
-	assert.equal(box.checked, true, 'First phone entry cannot erase deliberate pre-phone choice');
-	assert.equal(calls.every((url) => url === '/status'), true, 'Phone update never writes GRANT');
+	await new Promise((done) => setTimeout(done, 30));
+	assert.equal(
+		box.checked,
+		true,
+		'First phone entry cannot erase deliberate pre-phone choice'
+	);
+	assert.equal(
+		calls.every((url) => url === '/status'),
+		true,
+		'Phone update never writes GRANT'
+	);
 	phone = '+447400123457';
 	changeBilling();
-	await new Promise((resolve) => setTimeout(resolve, 30));
-	assert.equal(box.checked, false, 'Subsequent phone change cannot inherit prior choice');
+	await new Promise((done) => setTimeout(done, 30));
+	assert.equal(
+		box.checked,
+		false,
+		'Subsequent phone change cannot inherit prior choice'
+	);
 });

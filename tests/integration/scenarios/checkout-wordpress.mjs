@@ -103,7 +103,8 @@ export function session(siteUrl, initialCookie = '', fetchImpl = fetch) {
 	}
 	return {
 		request,
-		cookieHeader: () => [...cookies].map(([key, value]) => `${key}=${value}`).join('; '),
+		cookieHeader: () =>
+			[...cookies].map(([key, value]) => `${key}=${value}`).join('; '),
 	};
 }
 
@@ -124,19 +125,52 @@ function checkoutEngagementConfig(html, context) {
 	const match = html.match(
 		/window\.ModaWooCheckoutEngagement\s*=\s*(\{[^;]+\});/
 	);
-	assert.ok(match, `${context}: cart/checkout page must expose the session engagement nonce`);
+	assert.ok(
+		match,
+		`${context}: cart/checkout page must expose the session engagement nonce`
+	);
 	const config = JSON.parse(match[1]);
-	assert.equal(new URL(config.url).pathname, '/wp-json/moda-interact/v1/checkout-engagement');
+	assert.equal(
+		new URL(config.url).pathname,
+		'/wp-json/moda-interact/v1/checkout-engagement'
+	);
 	assert.match(config.nonce, /^[a-f0-9]{64}$/);
 	assert.equal(typeof config.wpNonce, 'string');
 	return config;
 }
 
+function checkoutEvents(rows) {
+	return rows.filter(
+		(row) => row.args?.event?.eventType === 'CHECKOUT_UPDATED'
+	);
+}
+
+// Action Scheduler's pending list is not an insertion-ordered event stream.
+// Select actions by their stable IDs, not by the last array position.
+export function newCheckoutActions(before, after) {
+	const existingIds = new Set(before.map((row) => String(row.id)));
+	return after.filter((row) => !existingIds.has(String(row.id)));
+}
+
+function newestAction(rows) {
+	return rows.reduce(
+		(newest, row) =>
+			newest === null || BigInt(row.id) > BigInt(newest.id)
+				? row
+				: newest,
+		null
+	);
+}
+
+// Diagnostics contain only action IDs and booleans; never log checkout PII.
 async function assertManualReturnSignal(browser, html, context, getActions) {
 	const config = checkoutEngagementConfig(html, context);
 	const before = checkoutEvents(getActions());
 	const prior = newestAction(before);
-	assert.ok(prior, `${context}: fixture needs a previously captured checkout`);
+	assert.ok(
+		prior,
+		`${context}: fixture needs a previously captured checkout`
+	);
 	const response = await browser.request(new URL(config.url).pathname, {
 		method: 'POST',
 		headers: {
@@ -153,13 +187,29 @@ async function assertManualReturnSignal(browser, html, context, getActions) {
 	);
 	const after = checkoutEvents(getActions());
 	const added = newCheckoutActions(before, after);
-	assert.equal(added.length, 1, `${context}: one page visit publishes exactly one event`);
+	assert.equal(
+		added.length,
+		1,
+		`${context}: one page visit publishes exactly one event`
+	);
 	const resumed = added[0].args.event;
 	assert.equal(resumed.eventType, 'CHECKOUT_UPDATED');
 	assert.equal(resumed.checkoutKey, prior.args.event.checkoutKey);
-	assert.deepEqual(resumed.checkout.items, prior.args.event.checkout.items, `${context}: basket lines remain unchanged`);
-	assert.equal(resumed.checkout.total, prior.args.event.checkout.total, `${context}: basket total remains unchanged`);
-	assert.deepEqual(resumed.checkout.restoration, prior.args.event.checkout.restoration, `${context}: restoration remains unchanged`);
+	assert.deepEqual(
+		resumed.checkout.items,
+		prior.args.event.checkout.items,
+		`${context}: basket lines remain unchanged`
+	);
+	assert.equal(
+		resumed.checkout.total,
+		prior.args.event.checkout.total,
+		`${context}: basket total remains unchanged`
+	);
+	assert.deepEqual(
+		resumed.checkout.restoration,
+		prior.args.event.checkout.restoration,
+		`${context}: restoration remains unchanged`
+	);
 	const replay = await browser.request(new URL(config.url).pathname, {
 		method: 'POST',
 		headers: {
@@ -169,8 +219,15 @@ async function assertManualReturnSignal(browser, html, context, getActions) {
 		},
 		body: JSON.stringify({ nonce: config.nonce }),
 	});
-	assert.equal(replay.status, 403, `${context}: replayed visit nonce must be rejected`);
-	assert.equal(newCheckoutActions(after, checkoutEvents(getActions())).length, 0);
+	assert.equal(
+		replay.status,
+		403,
+		`${context}: replayed visit nonce must be rejected`
+	);
+	assert.equal(
+		newCheckoutActions(after, checkoutEvents(getActions())).length,
+		0
+	);
 }
 
 async function assertHttpOk(response, context) {
@@ -249,30 +306,6 @@ export async function persistBlocksBilling(blocks, billingAddress, kind) {
 	);
 }
 
-function checkoutEvents(rows) {
-	return rows.filter(
-		(row) => row.args?.event?.eventType === 'CHECKOUT_UPDATED'
-	);
-}
-
-// Action Scheduler's pending list is not an insertion-ordered event stream.
-// Select actions by their stable IDs, not by the last array position.
-export function newCheckoutActions(before, after) {
-	const existingIds = new Set(before.map((row) => String(row.id)));
-	return after.filter((row) => !existingIds.has(String(row.id)));
-}
-
-function newestAction(rows) {
-	return rows.reduce(
-		(newest, row) =>
-			newest === null || BigInt(row.id) > BigInt(newest.id)
-				? row
-				: newest,
-		null
-	);
-}
-
-// Diagnostics contain only action IDs and booleans; never log checkout PII.
 function changedCheckoutDiagnostic(
 	before,
 	after,
@@ -300,8 +333,13 @@ function assertEvent(event) {
 	assert.match(event.checkout.currency, /^[A-Z]{3}$/);
 	assert.ok(Number(event.checkout.total) >= 0);
 	assert.ok(event.checkout.items?.length > 0);
-	assert.equal(event.checkout.restoration?.schemaVersion, 'woo.cart-restore.v1');
-	assert.ok(['supported', 'unsupported'].includes(event.checkout.restoration?.kind));
+	assert.equal(
+		event.checkout.restoration?.schemaVersion,
+		'woo.cart-restore.v1'
+	);
+	assert.ok(
+		['supported', 'unsupported'].includes(event.checkout.restoration?.kind)
+	);
 	if (event.checkout.restoration.kind === 'supported') {
 		assert.ok(Array.isArray(event.checkout.restoration.appliedCouponCodes));
 		assert.ok(event.checkout.restoration.lines.length > 0);
@@ -310,7 +348,11 @@ function assertEvent(event) {
 
 async function addVariableCartAndCoupon(browser, fixture, kind) {
 	const cartResponse = await browser.request('/wp-json/wc/store/v1/cart');
-	assert.equal(cartResponse.status, 200, `${kind}: initialize Store API cart session`);
+	assert.equal(
+		cartResponse.status,
+		200,
+		`${kind}: initialize Store API cart session`
+	);
 	let response = await browser.request('/wp-json/wc/store/v1/cart/add-item', {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
@@ -332,15 +374,22 @@ async function addVariableCartAndCoupon(browser, fixture, kind) {
 function assertSupportedVariationAndCoupon(event, fixture, kind) {
 	assertEvent(event);
 	const snapshot = event.checkout.restoration;
-	assert.equal(snapshot.kind, 'supported', `${kind}: native variable cart must be restorable`);
+	assert.equal(
+		snapshot.kind,
+		'supported',
+		`${kind}: native variable cart must be restorable`
+	);
 	assert.deepEqual(snapshot.appliedCouponCodes, [fixture.couponCode]);
 	assert.equal(snapshot.lines.length, 1);
 	assert.equal(snapshot.lines[0].productId, String(fixture.variableProduct));
 	assert.equal(snapshot.lines[0].variationId, String(fixture.variation));
-	const nativeAttribute = Object.entries(snapshot.lines[0].attributes ?? {}).find(
-		([key]) => key.startsWith('attribute_')
+	const nativeAttribute = Object.entries(
+		snapshot.lines[0].attributes ?? {}
+	).find(([key]) => key.startsWith('attribute_'));
+	assert.ok(
+		nativeAttribute,
+		`${kind}: selected native variation attribute must be retained`
 	);
-	assert.ok(nativeAttribute, `${kind}: selected native variation attribute must be retained`);
 	assert.equal(nativeAttribute[1].toLowerCase(), 'large');
 }
 
@@ -356,26 +405,849 @@ async function assertCouponTransitions({
 	const beforeApply = checkoutEvents(getActions());
 	await applyCoupon();
 	const appliedRows = newForKey(beforeApply, checkoutEvents(getActions()));
-	assert.ok(appliedRows.length, `${kind}: apply must enqueue a coupon snapshot`);
+	assert.ok(
+		appliedRows.length,
+		`${kind}: apply must enqueue a coupon snapshot`
+	);
 	const applied = newestAction(appliedRows).args.event;
-	assert.deepEqual(applied.checkout.restoration.appliedCouponCodes, fixture.observeCouponCodes);
-	assert.equal(applied.checkout.total, initialEvent.checkout.total, `${kind}: coupon-only update preserves total`);
+	assert.deepEqual(
+		applied.checkout.restoration.appliedCouponCodes,
+		fixture.observeCouponCodes
+	);
+	assert.equal(
+		applied.checkout.total,
+		initialEvent.checkout.total,
+		`${kind}: coupon-only update preserves total`
+	);
 	assert.deepEqual(applied.checkout.items, initialEvent.checkout.items);
 	assert.equal(applied.checkoutKey, initialEvent.checkoutKey);
 
 	const beforeDuplicate = checkoutEvents(getActions());
 	await duplicateSnapshot();
-	assert.equal(newForKey(beforeDuplicate, checkoutEvents(getActions())).length, 0,
-		`${kind}: unchanged coupon snapshot must deduplicate`);
+	assert.equal(
+		newForKey(beforeDuplicate, checkoutEvents(getActions())).length,
+		0,
+		`${kind}: unchanged coupon snapshot must deduplicate`
+	);
 
 	const beforeRemove = checkoutEvents(getActions());
 	await removeCoupon();
 	const removedRows = newForKey(beforeRemove, checkoutEvents(getActions()));
-	assert.ok(removedRows.length, `${kind}: remove must enqueue a coupon snapshot`);
+	assert.ok(
+		removedRows.length,
+		`${kind}: remove must enqueue a coupon snapshot`
+	);
 	const removed = newestAction(removedRows).args.event;
 	assert.deepEqual(removed.checkout.restoration.appliedCouponCodes, []);
-	assert.equal(removed.checkout.total, initialEvent.checkout.total, `${kind}: coupon-only removal preserves total`);
+	assert.equal(
+		removed.checkout.total,
+		initialEvent.checkout.total,
+		`${kind}: coupon-only removal preserves total`
+	);
 	assert.equal(removed.checkoutKey, initialEvent.checkoutKey);
+}
+
+async function assertBlocksDisplayedTotal(page, cart) {
+	const expected = new Intl.NumberFormat('en-GB', {
+		style: 'currency',
+		currency: cart.totals.currency_code,
+	}).format(
+		Number(cart.totals.total_price) / 10 ** cart.totals.currency_minor_unit
+	);
+	// The block mounts before its order summary finishes resolving. Wait for
+	// the shopper-visible amount, not just the initial loading placeholders.
+	await page.waitForFunction(
+		(value) => {
+			const total = document.querySelector(
+				'.wc-block-components-totals-footer-item .wc-block-formatted-money-amount'
+			);
+			return (
+				total?.textContent.trim() === value &&
+				total.getBoundingClientRect().width > 0
+			);
+		},
+		expected,
+		{ timeout: 15000 }
+	);
+}
+
+async function assertConfirmedRestore({
+	siteUrl,
+	fixture,
+	createSession,
+	wp,
+	getCheckoutActionHistory,
+	getRestoreResolveRequests,
+	setRestoreResolveResult,
+}) {
+	const recoveryId = 'recovery_restore_fixture';
+	const token = 'A'.repeat(43);
+	const capturedVariation = getCheckoutActionHistory()
+		.map((row) => row.args?.event?.checkout?.restoration)
+		.find(
+			(restore) =>
+				restore?.kind === 'supported' &&
+				restore.lines?.some(
+					(line) => line.variationId === String(fixture.variation)
+				)
+		);
+	const capturedVariationLine = capturedVariation?.lines.find(
+		(line) => line.variationId === String(fixture.variation)
+	) ?? {
+		productId: String(fixture.variableProduct),
+		variationId: String(fixture.variation),
+		quantity: 1,
+		attributes: fixture.variationAttributes,
+	};
+	const snapshot = {
+		schemaVersion: 'woo.cart-restore.v1',
+		kind: 'supported',
+		appliedCouponCodes: [
+			fixture.couponCode,
+			...fixture.rejectedCouponCodes,
+		],
+		lines: [{ ...capturedVariationLine, quantity: 1 }],
+	};
+	const eligible = {
+		schemaVersion: 'woo.restore.resolve.v1',
+		status: 'eligible',
+		recoveryId,
+		checkoutKey: 'woo-restore-checkout-key',
+		snapshot,
+		outreachOffer: {
+			kind: 'CHECKOUT_CODE',
+			code: fixture.offerCouponCode,
+			providerDiscountId: 'woo:coupon:offer5',
+		},
+	};
+	setRestoreResolveResult(200, eligible);
+	const browser = createSession(siteUrl);
+	let response = await browser.request('/wp-json/wc/store/v1/cart');
+	assert.equal(response.status, 200);
+	response = await browser.request(`/?add-to-cart=${fixture.product}`);
+	assert.ok([200, 302].includes(response.status));
+	const before = await (
+		await browser.request('/wp-json/wc/store/v1/cart')
+	).json();
+	assert.equal(
+		before.items.length,
+		1,
+		'visitor basket exists before opening the link'
+	);
+	const shopperCouponNonce = wp(
+		'eval',
+		`echo wp_create_nonce('apply-coupon');`
+	).trim();
+	response = await browser.request('/?wc-ajax=apply_coupon', {
+		method: 'POST',
+		headers: { 'content-type': 'application/x-www-form-urlencoded' },
+		body: new URLSearchParams({
+			coupon_code: 'arch053-shopper-invalid',
+			security: shopperCouponNonce,
+		}).toString(),
+	});
+	assert.equal(
+		response.status,
+		200,
+		'ordinary shopper coupon rejection is handled by WooCommerce'
+	);
+	assert.match(
+		await response.text(),
+		/arch053-shopper-invalid/i,
+		'ordinary shopper-entered coupon errors remain visible in Woo’s coupon response'
+	);
+	const link = `/?moda_interact_resume=1&r=${recoveryId}&t=${token}`;
+	const resolveCountBeforePreview = getRestoreResolveRequests().length;
+	response = await browser.request(link, { method: 'HEAD' });
+	assert.equal(response.status, 200, 'HEAD preview is nonmutating');
+	response = await browser.request(link);
+	assert.equal(response.status, 200, 'customer receives a confirmation page');
+	assert.equal(response.headers.get('cache-control'), 'no-store');
+	assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+	const confirmation = await response.text();
+	assert.match(confirmation, /Replace current basket and continue/);
+	assert.doesNotMatch(confirmation, /<script/i);
+	for (const [, absoluteUrl] of confirmation.matchAll(
+		/(https?:\/\/[^"'\s<>]+)/gi
+	)) {
+		assert.equal(
+			new URL(absoluteUrl).origin,
+			new URL(siteUrl).origin,
+			'confirmation page must not reference third-party URLs'
+		);
+	}
+	assert.doesNotMatch(confirmation, /woo-restore-checkout-key/);
+	assert.equal(
+		getRestoreResolveRequests().length,
+		resolveCountBeforePreview,
+		'GET/HEAD do not resolve the link'
+	);
+	const afterPreview = await (
+		await browser.request('/wp-json/wc/store/v1/cart')
+	).json();
+	assert.deepEqual(
+		afterPreview.items,
+		before.items,
+		'GET/HEAD leave the current cart unchanged'
+	);
+	const nonce = confirmation.match(
+		/name="nonce" value="([A-Za-z0-9_-]{43})"/
+	)?.[1];
+	assert.ok(nonce, 'landing page provides a Woo-session-bound nonce');
+	const form = new URLSearchParams({
+		moda_interact_resume: '1',
+		r: recoveryId,
+		t: token,
+		nonce,
+		confirm: 'replace',
+	});
+	response = await browser.request('/', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+			origin: 'https://attacker.example',
+		},
+		body: form.toString(),
+	});
+	assert.equal(response.status, 303, 'cross-origin confirmation is rejected');
+	assert.equal(
+		getRestoreResolveRequests().length,
+		resolveCountBeforePreview,
+		'forged POST never calls Moda'
+	);
+	const afterForgedPost = await (
+		await browser.request('/wp-json/wc/store/v1/cart')
+	).json();
+	assert.deepEqual(
+		afterForgedPost.items,
+		before.items,
+		'forged POST preserves visitor cart'
+	);
+
+	const actionIdsBefore = new Set(
+		getCheckoutActionHistory().map((row) => String(row.id))
+	);
+	response = await browser.request('/', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+			origin: new URL(siteUrl).origin,
+		},
+		body: form.toString(),
+	});
+	assert.equal(
+		response.status,
+		303,
+		'confirmed restoration redirects to checkout'
+	);
+	const redirect = new URL(response.headers.get('location'), siteUrl);
+	assert.equal(
+		redirect.origin,
+		new URL(siteUrl).origin,
+		'redirect remains same-origin'
+	);
+	assert.equal(
+		redirect.searchParams.has('error'),
+		false,
+		'no Moda error marker is exposed'
+	);
+	const afterRestore = await (
+		await browser.request('/wp-json/wc/store/v1/cart')
+	).json();
+	assert.equal(
+		afterRestore.items.length,
+		1,
+		'restoration replaces the existing basket'
+	);
+	assert.equal(Number(afterRestore.items[0].quantity), 1);
+	assert.ok(
+		[fixture.variableProduct, fixture.variation].includes(
+			Number(afterRestore.items[0].id)
+		),
+		`restored variation is present; expected parent ${fixture.variableProduct} or variation ${fixture.variation}, got ${JSON.stringify(afterRestore.items)}`
+	);
+	assert.deepEqual(
+		afterRestore.coupons.map((coupon) => coupon.code),
+		[fixture.couponCode, fixture.offerCouponCode],
+		'Woo applies the currently valid original coupon and the confirmed stackable outreach coupon while rejecting deleted originals'
+	);
+	assert.ok(
+		Number(afterRestore.totals.total_price) < 1799,
+		'Woo recalculates the restored variation after both native discounts'
+	);
+	assert.equal(
+		getRestoreResolveRequests().length,
+		resolveCountBeforePreview + 1
+	);
+	const resumptionActions = getCheckoutActionHistory().filter(
+		(row) =>
+			!actionIdsBefore.has(String(row.id)) &&
+			row.args?.event?.eventType === 'CHECKOUT_UPDATED'
+	);
+	assert.equal(
+		resumptionActions.length,
+		1,
+		'one fresh durable resumption event is enqueued'
+	);
+	assert.equal(
+		resumptionActions[0].args.event.checkoutKey,
+		eligible.checkoutKey
+	);
+	assert.deepEqual(
+		resumptionActions[0].args.event.checkout.restoration.appliedCouponCodes,
+		[fixture.couponCode, fixture.offerCouponCode],
+		'fresh resumption evidence records the original and outreach coupons Woo actually applied'
+	);
+
+	const classicPage = await browser.request(
+		`/?page_id=${fixture.classicCheckoutPage}`
+	);
+	assert.equal(
+		classicPage.status,
+		200,
+		'Classic checkout renders the restored cart'
+	);
+	const classicCheckoutHtml = await classicPage.text();
+	assert.match(classicCheckoutHtml, /woocommerce-checkout/);
+	for (const code of fixture.rejectedCouponCodes) {
+		assert.equal(
+			classicCheckoutHtml.toLowerCase().includes(code.toLowerCase()),
+			false,
+			`rejected coupon ${code} is not shown to the shopper`
+		);
+	}
+	const blocksPage = await browser.request(
+		`/?page_id=${fixture.blocksCheckoutPage}`
+	);
+	assert.equal(
+		blocksPage.status,
+		200,
+		'Blocks checkout renders the restored cart'
+	);
+	assert.match(
+		await blocksPage.text(),
+		/wc-block-checkout|blocks-checkout\.js|woocommerce\/checkout/
+	);
+	const blocksCheckout = await browser.request(
+		'/wp-json/wc/store/v1/checkout'
+	);
+	assert.equal(
+		blocksCheckout.status,
+		200,
+		'Blocks checkout Store API accepts restored cart'
+	);
+	const blocksBody = await blocksCheckout.text();
+	for (const code of fixture.rejectedCouponCodes) {
+		assert.equal(
+			blocksBody.toLowerCase().includes(code.toLowerCase()),
+			false,
+			`Blocks response does not expose rejected original coupon ${code}`
+		);
+	}
+
+	await browser.request(`/?add-to-cart=${fixture.product}`);
+	const newerBasket = await (
+		await browser.request('/wp-json/wc/store/v1/cart')
+	).json();
+	assert.equal(newerBasket.items.length, 2);
+	const duplicateLanding = await browser.request(link);
+	const duplicateNonce = (await duplicateLanding.text()).match(
+		/name="nonce" value="([A-Za-z0-9_-]{43})"/
+	)?.[1];
+	const duplicateForm = new URLSearchParams({
+		moda_interact_resume: '1',
+		r: recoveryId,
+		t: token,
+		nonce: duplicateNonce,
+		confirm: 'replace',
+	});
+	const beforeDuplicateResolve = getRestoreResolveRequests().length;
+	response = await browser.request('/', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+			origin: new URL(siteUrl).origin,
+		},
+		body: duplicateForm.toString(),
+	});
+	assert.equal(response.status, 303);
+	assert.equal(
+		getRestoreResolveRequests().length,
+		beforeDuplicateResolve,
+		'same visitor cannot replay a completed link'
+	);
+	assert.equal(
+		(await (await browser.request('/wp-json/wc/store/v1/cart')).json())
+			.items.length,
+		2,
+		'replay preserves the newer basket'
+	);
+
+	const deniedBrowser = createSession(siteUrl);
+	await deniedBrowser.request('/wp-json/wc/store/v1/cart');
+	await deniedBrowser.request(`/?add-to-cart=${fixture.product}`);
+	const deniedBefore = await (
+		await deniedBrowser.request('/wp-json/wc/store/v1/cart')
+	).json();
+	const deniedId = 'recovery_stale_fixture';
+	setRestoreResolveResult(404);
+	const deniedLink = `/?moda_interact_resume=1&r=${deniedId}&t=${'B'.repeat(43)}`;
+	const deniedLanding = await deniedBrowser.request(deniedLink);
+	const deniedHtml = await deniedLanding.text();
+	const deniedNonce = deniedHtml.match(
+		/name="nonce" value="([A-Za-z0-9_-]{43})"/
+	)?.[1];
+	const deniedForm = new URLSearchParams({
+		moda_interact_resume: '1',
+		r: deniedId,
+		t: 'B'.repeat(43),
+		nonce: deniedNonce,
+		confirm: 'replace',
+	});
+	response = await deniedBrowser.request('/', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+			origin: new URL(siteUrl).origin,
+		},
+		body: deniedForm.toString(),
+	});
+	assert.equal(response.status, 303);
+	assert.equal(
+		new URL(response.headers.get('location'), siteUrl).searchParams.has(
+			'error'
+		),
+		false
+	);
+	assert.deepEqual(
+		(
+			await (
+				await deniedBrowser.request('/wp-json/wc/store/v1/cart')
+			).json()
+		).items,
+		deniedBefore.items,
+		'stale link preserves visitor cart'
+	);
+	assert.equal(
+		deniedHtml.includes('error'),
+		false,
+		'confirmation landing contains no failure detail'
+	);
+
+	const unavailableBrowser = createSession(siteUrl);
+	await unavailableBrowser.request('/wp-json/wc/store/v1/cart');
+	await unavailableBrowser.request(`/?add-to-cart=${fixture.product}`);
+	const unavailableBefore = await (
+		await unavailableBrowser.request('/wp-json/wc/store/v1/cart')
+	).json();
+	const unavailableId = 'recovery_provider_error_fixture';
+	setRestoreResolveResult(503);
+	const unavailableLink = `/?moda_interact_resume=1&r=${unavailableId}&t=${'D'.repeat(43)}`;
+	const unavailableLanding =
+		await unavailableBrowser.request(unavailableLink);
+	const unavailableNonce = (await unavailableLanding.text()).match(
+		/name="nonce" value="([A-Za-z0-9_-]{43})"/
+	)?.[1];
+	const unavailableForm = new URLSearchParams({
+		moda_interact_resume: '1',
+		r: unavailableId,
+		t: 'D'.repeat(43),
+		nonce: unavailableNonce,
+		confirm: 'replace',
+	});
+	response = await unavailableBrowser.request('/', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+			origin: new URL(siteUrl).origin,
+		},
+		body: unavailableForm.toString(),
+	});
+	assert.equal(response.status, 303, 'v1 resolver outage redirects safely');
+	assert.equal(
+		new URL(response.headers.get('location'), siteUrl).searchParams.has(
+			'error'
+		),
+		false
+	);
+	assert.deepEqual(
+		(
+			await (
+				await unavailableBrowser.request('/wp-json/wc/store/v1/cart')
+			).json()
+		).items,
+		unavailableBefore.items,
+		'v1 resolver outage preserves the visitor basket'
+	);
+	assert.ok(
+		getRestoreResolveRequests().some(
+			(request) =>
+				request.recoveryId === unavailableId && request.status === 503
+		),
+		'v1 provider error reaches the WordPress integration fixture'
+	);
+
+	const conflictPayload = {
+		...eligible,
+		recoveryId: 'recovery_offer_fixture',
+		snapshot: {
+			...snapshot,
+			appliedCouponCodes: [
+				fixture.conflictCouponCode,
+				...fixture.rejectedCouponCodes,
+			],
+		},
+		outreachOffer: {
+			kind: 'CHECKOUT_CODE',
+			code: fixture.offerCouponCode,
+			providerDiscountId: 'woo:coupon:offer5',
+		},
+	};
+	for (const [id, responsePayload] of [
+		['recovery_offer_fixture', conflictPayload],
+	]) {
+		const protectedBrowser = createSession(siteUrl);
+		await protectedBrowser.request('/wp-json/wc/store/v1/cart');
+		await protectedBrowser.request(`/?add-to-cart=${fixture.product}`);
+		const existing = await (
+			await protectedBrowser.request('/wp-json/wc/store/v1/cart')
+		).json();
+		setRestoreResolveResult(200, responsePayload);
+		const protectedLink = `/?moda_interact_resume=1&r=${id}&t=${'C'.repeat(43)}`;
+		const landing = await protectedBrowser.request(protectedLink);
+		const protectedNonce = (await landing.text()).match(
+			/name="nonce" value="([A-Za-z0-9_-]{43})"/
+		)?.[1];
+		const protectedForm = new URLSearchParams({
+			moda_interact_resume: '1',
+			r: id,
+			t: 'C'.repeat(43),
+			nonce: protectedNonce,
+			confirm: 'replace',
+		});
+		response = await protectedBrowser.request('/', {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/x-www-form-urlencoded',
+				origin: new URL(siteUrl).origin,
+			},
+			body: protectedForm.toString(),
+		});
+		assert.equal(response.status, 303);
+		const restoredOfferCart = await (
+			await protectedBrowser.request('/wp-json/wc/store/v1/cart')
+		).json();
+		assert.equal(
+			restoredOfferCart.items.length,
+			1,
+			'confirmed offer still restores the proven basket'
+		);
+		assert.ok(
+			[fixture.variableProduct, fixture.variation].includes(
+				Number(restoredOfferCart.items[0].id)
+			),
+			`group conflict should restore the snapshot variation; cart items were ${JSON.stringify(restoredOfferCart.items)}`
+		);
+		assert.deepEqual(
+			restoredOfferCart.coupons.map((coupon) => coupon.code),
+			[fixture.conflictCouponCode],
+			'a verified offer conflict preserves the original coupon before the shopper chooses'
+		);
+		assert.equal(
+			existing.items.length,
+			1,
+			'conflict case began with one visitor basket line'
+		);
+		const classicChoicePage = await protectedBrowser.request(
+			`/?page_id=${fixture.classicCheckoutPage}`
+		);
+		assert.equal(classicChoicePage.status, 200);
+		const classicChoiceHtml = await classicChoicePage.text();
+		assert.match(
+			classicChoiceHtml,
+			/moda-interact-outreach-choice/,
+			'Classic checkout renders the optional choice after a confirmed conflict'
+		);
+		assert.match(classicChoiceHtml, /Try the offered coupons instead/);
+		assert.match(
+			classicChoiceHtml,
+			/class="checkout woocommerce-checkout"/,
+			'Classic test renders the actual WooCommerce checkout form'
+		);
+		const classicChoiceControl = classicChoiceHtml.match(
+			/<div class="moda-interact-outreach-choice">[\s\S]*?<\/form><\/div>/
+		)?.[0];
+		assert.ok(
+			classicChoiceControl,
+			'Classic choice has its own protected form'
+		);
+		assert.doesNotMatch(
+			classicChoiceControl,
+			/recovery_offer_fixture|arch053conflict20|arch053offer5/,
+			'choice markup does not expose recovery or coupon identifiers; Woo totals may show applied coupons'
+		);
+		const choiceNonce = classicChoiceControl.match(
+			/name="_wpnonce" value="([A-Za-z0-9_-]+)"/i
+		)?.[1];
+		assert.ok(choiceNonce, 'Classic choice has a server-generated nonce');
+		const classicChoiceResponse = await protectedBrowser.request(
+			'/arch035-classic-checkout/',
+			{
+				method: 'POST',
+				headers: {
+					'content-type': 'application/x-www-form-urlencoded',
+					origin: new URL(siteUrl).origin,
+				},
+				body: new URLSearchParams({
+					moda_interact_outreach_coupon_choice: 'try_offered',
+					_wpnonce: choiceNonce,
+				}).toString(),
+			}
+		);
+		assert.equal(
+			classicChoiceResponse.status,
+			303,
+			'Classic choice safely redirects'
+		);
+		const chosenClassicCart = await (
+			await protectedBrowser.request('/wp-json/wc/store/v1/cart')
+		).json();
+		assert.deepEqual(
+			chosenClassicCart.coupons.map((coupon) => coupon.code),
+			[fixture.offerCouponCode],
+			'Classic choice removes the conflicting original and applies the verified offer'
+		);
+		assert.notEqual(
+			chosenClassicCart.totals.total_price,
+			restoredOfferCart.totals.total_price,
+			'Classic choice recalculates the WooCommerce total without promising a lower total'
+		);
+	}
+
+	// Exercise the real Checkout block and SlotFill in Chromium, including
+	// native form submission, live rejection rollback and changed-cart redraw.
+	const blocksBrowser = await chromium.launch({ headless: true });
+	try {
+		wp(
+			'eval',
+			`update_option('woocommerce_checkout_page_id', ${Number(fixture.blocksCheckoutPage)});`
+		);
+		for (const scenario of ['switch', 'rejected', 'cart-change']) {
+			const blocksRestore = createSession(siteUrl);
+			await blocksRestore.request('/wp-json/wc/store/v1/cart');
+			await blocksRestore.request(`/?add-to-cart=${fixture.product}`);
+			const blocksId = `recovery_blocks_choice_${scenario}`;
+			setRestoreResolveResult(200, {
+				...conflictPayload,
+				recoveryId: blocksId,
+			});
+			const blocksLanding = await blocksRestore.request(
+				`/?moda_interact_resume=1&r=${blocksId}&t=${'E'.repeat(43)}`
+			);
+			const blocksNonce = (await blocksLanding.text()).match(
+				/name="nonce" value="([A-Za-z0-9_-]{43})"/
+			)?.[1];
+			const blocksConfirm = await blocksRestore.request('/', {
+				method: 'POST',
+				headers: {
+					'content-type': 'application/x-www-form-urlencoded',
+					origin: new URL(siteUrl).origin,
+				},
+				body: new URLSearchParams({
+					moda_interact_resume: '1',
+					r: blocksId,
+					t: 'E'.repeat(43),
+					nonce: blocksNonce,
+					confirm: 'replace',
+				}).toString(),
+			});
+			assert.equal(blocksConfirm.status, 303);
+			const restoredBlocksCart = await (
+				await blocksRestore.request('/wp-json/wc/store/v1/cart')
+			).json();
+			assert.deepEqual(
+				restoredBlocksCart.coupons.map((coupon) => coupon.code),
+				[fixture.conflictCouponCode],
+				'Blocks confirmation preserves the original coupon before the shopper chooses'
+			);
+			const page = await blocksBrowser.newPage();
+			const browserCookies = blocksRestore
+				.cookieHeader()
+				.split('; ')
+				.filter(Boolean)
+				.map((cookie) => {
+					const separator = cookie.indexOf('=');
+					return {
+						name: cookie.slice(0, separator),
+						value: cookie.slice(separator + 1),
+						domain: new URL(siteUrl).hostname,
+						path: '/',
+					};
+				});
+			await page.context().addCookies(browserCookies);
+			const pageErrors = [];
+			page.on('pageerror', (error) => pageErrors.push(error.name));
+			await page.goto(
+				new URL(`/?page_id=${fixture.blocksCheckoutPage}`, siteUrl)
+					.href,
+				{ waitUntil: 'networkidle' }
+			);
+			await page
+				.locator(
+					'[data-block-name="woocommerce/checkout"]:not(.is-loading)'
+				)
+				.waitFor({ state: 'visible', timeout: 15000 });
+			const choice = page.getByRole('button', {
+				name: 'Try the offered coupons instead',
+			});
+			await choice
+				.waitFor({ state: 'visible', timeout: 15000 })
+				.catch(async () => {
+					const blocksDebug = await page.evaluate(() => ({
+						available: window.wc?.wcSettings?.getSetting?.(
+							'moda-interact-outreach-choice_data',
+							{}
+						)?.available,
+						experimentalOrderMeta:
+							typeof window.wc?.blocksCheckout
+								?.ExperimentalOrderMeta,
+						pluginRegistered: Boolean(
+							window.wp?.plugins?.getPlugin?.(
+								'moda-interact-outreach-choice'
+							)
+						),
+						choiceScriptLoaded: [...document.scripts].some(
+							(script) =>
+								script.src.includes('checkout-outreach-choice')
+						),
+					}));
+					assert.fail(
+						`Blocks choice did not render: ${JSON.stringify(blocksDebug)}`
+					);
+				});
+			await assertBlocksDisplayedTotal(page, restoredBlocksCart);
+			if (process.env.MODA_CHECKOUT_EVIDENCE_DIR) {
+				await page.screenshot({
+					path: `${process.env.MODA_CHECKOUT_EVIDENCE_DIR}/blocks-${scenario}-before.png`,
+					fullPage: true,
+				});
+			}
+			const choiceForm = page.locator(
+				'form.moda-interact-outreach-choice'
+			);
+			assert.deepEqual(
+				await choiceForm
+					.locator('input')
+					.evaluateAll((inputs) =>
+						inputs.map((input) => input.name).sort()
+					),
+				['_wpnonce', 'moda_interact_outreach_coupon_choice'],
+				'Blocks posts only the action and nonce'
+			);
+			assert.doesNotMatch(
+				await choiceForm.innerHTML(),
+				/recovery_blocks_choice_|arch053|woo-restore/,
+				'Blocks control does not expose recovery or coupon identifiers'
+			);
+			if (scenario === 'cart-change') {
+				await blocksRestore.request(`/?add-to-cart=${fixture.product}`);
+				await page.reload({ waitUntil: 'networkidle' });
+				await page
+					.locator(
+						'[data-block-name="woocommerce/checkout"]:not(.is-loading)'
+					)
+					.waitFor({ state: 'visible' });
+			} else {
+				if (scenario === 'rejected') {
+					wp(
+						'eval',
+						`$coupon = new WC_Coupon(${Number(fixture.offerCoupon)}); $coupon->set_date_expires(time() - 60); $coupon->save();`
+					);
+				}
+				try {
+					const [navigation] = await Promise.all([
+						page.waitForNavigation({ waitUntil: 'networkidle' }),
+						choice.click(),
+					]);
+					assert.equal(
+						navigation.status(),
+						200,
+						`Blocks ${scenario} returns to checkout`
+					);
+					await page
+						.locator(
+							'[data-block-name="woocommerce/checkout"]:not(.is-loading)'
+						)
+						.waitFor({ state: 'visible' });
+				} finally {
+					if (scenario === 'rejected') {
+						wp(
+							'eval',
+							`$coupon = new WC_Coupon(${Number(fixture.offerCoupon)}); $coupon->set_date_expires(null); $coupon->save();`
+						);
+					}
+				}
+			}
+			const afterChoice = await (
+				await blocksRestore.request('/wp-json/wc/store/v1/cart')
+			).json();
+			assert.deepEqual(
+				afterChoice.coupons.map((coupon) => coupon.code),
+				scenario === 'switch'
+					? [fixture.offerCouponCode]
+					: [fixture.conflictCouponCode],
+				`Blocks ${scenario} retains the Woo-approved coupon set`
+			);
+			if (scenario === 'switch') {
+				assert.notEqual(
+					afterChoice.totals.total_price,
+					restoredBlocksCart.totals.total_price,
+					'Blocks explicit choice recalculates the actual total'
+				);
+			} else if (scenario === 'rejected') {
+				assert.equal(
+					afterChoice.totals.total_price,
+					restoredBlocksCart.totals.total_price,
+					'Blocks rejected offer restores the original total'
+				);
+			}
+			assert.equal(
+				await page
+					.getByRole('button', {
+						name: 'Try the offered coupons instead',
+					})
+					.count(),
+				0,
+				`Blocks ${scenario} clears the one-time choice`
+			);
+			const visibleText = await page.locator('body').innerText();
+			for (const code of fixture.rejectedCouponCodes) {
+				assert.equal(
+					visibleText.toLowerCase().includes(code.toLowerCase()),
+					false,
+					'Rejected coupon diagnostics stay private'
+				);
+			}
+			await assertBlocksDisplayedTotal(page, afterChoice);
+			assert.deepEqual(
+				pageErrors,
+				[],
+				`Blocks ${scenario} renders without browser exceptions`
+			);
+			if (process.env.MODA_CHECKOUT_EVIDENCE_DIR) {
+				await page.screenshot({
+					path: `${process.env.MODA_CHECKOUT_EVIDENCE_DIR}/blocks-${scenario}-after.png`,
+					fullPage: true,
+				});
+			}
+			await page.close();
+			process.stdout.write(`ARCH-053 Blocks ${scenario} browser PASS\n`);
+		}
+	} finally {
+		await blocksBrowser.close();
+	}
+	setRestoreResolveResult(404);
+	process.stdout.write('ARCH-053 confirmed Woo restore integration PASS\n');
 }
 
 export async function assertCheckoutWordPress({
@@ -387,9 +1259,9 @@ export async function assertCheckoutWordPress({
 	getCheckoutActionHistory,
 	getActivityRequests,
 	setActivityStatus,
-			getRestoreResolveRequests,
-			setRestoreResolveResult,
-			restoreOnly = false,
+	getRestoreResolveRequests,
+	setRestoreResolveResult,
+	restoreOnly = false,
 }) {
 	const fixture = parseJsonOutput(
 		wp(
@@ -503,442 +1375,532 @@ MODA_FIXTURE
 
 	try {
 		if (!restoreOnly) {
-		await assertNeverActiveEmpty({
-			siteUrl,
-			checkoutPage: fixture.classicCheckoutPage,
-			createSession: session,
-			getActions: getCheckoutActionHistory,
-		});
-		for (const [kind, cookie] of [
-			['guest', ''],
-			['customer', customerCookie],
-		]) {
-			// Classic: use a separate browser session, the real checkout page and
-			// WooCommerce's update_order_review AJAX endpoint (no direct hook calls).
-			const classic = session(siteUrl, cookie);
-			let classicResponse = await classic.request(
-				`/?add-to-cart=${fixture.product}`
-			);
-			assert.ok(
-				[200, 302].includes(classicResponse.status),
-				`${kind} classic add to cart`
-			);
-			classicResponse = await classic.request(
+			await assertNeverActiveEmpty({
+				siteUrl,
+				checkoutPage: fixture.classicCheckoutPage,
+				createSession: session,
+				getActions: getCheckoutActionHistory,
+			});
+			for (const [kind, cookie] of [
+				['guest', ''],
+				['customer', customerCookie],
+			]) {
+				// Classic: use a separate browser session, the real checkout page and
+				// WooCommerce's update_order_review AJAX endpoint (no direct hook calls).
+				const classic = session(siteUrl, cookie);
+				let classicResponse = await classic.request(
+					`/?add-to-cart=${fixture.product}`
+				);
+				assert.ok(
+					[200, 302].includes(classicResponse.status),
+					`${kind} classic add to cart`
+				);
+				classicResponse = await classic.request(
+					`/?page_id=${fixture.classicCheckoutPage}`
+				);
+				assert.equal(
+					classicResponse.status,
+					200,
+					`${kind} classic checkout page`
+				);
+				const classicBefore = checkoutEvents(
+					getCheckoutActionHistory()
+				);
+				const form = new URLSearchParams({
+					post_data: new URLSearchParams({
+						billing_first_name: 'Classic',
+						billing_last_name: kind,
+						billing_email: `classic-${kind}@example.test`,
+						billing_phone: '+447700900001',
+					}).toString(),
+				});
+				const html = await classicResponse.text();
+				assert.match(
+					html,
+					/class=["'][^"']*woocommerce-checkout/,
+					`${kind}: final checkout page must render the Classic form`
+				);
+				const reviewNonce = classicReviewNonce(html);
+				assert.ok(
+					reviewNonce,
+					`${kind}: shortcode Classic checkout page must expose update_order_review_nonce (rendered form: ${/class=[\"'][^\"']*woocommerce-checkout/.test(html)})`
+				);
+				form.set('security', reviewNonce);
+				classicResponse = await classic.request(
+					'/?wc-ajax=update_order_review',
+					{
+						method: 'POST',
+						headers: {
+							'content-type': 'application/x-www-form-urlencoded',
+						},
+						body: form.toString(),
+					}
+				);
+				await assertHttpOk(
+					classicResponse,
+					`${kind} classic checkout AJAX`
+				);
+				const classicAfter = checkoutEvents(getCheckoutActionHistory());
+				const classicAdded = newForKey(classicBefore, classicAfter);
+				assert.ok(
+					classicAdded.length > 0,
+					`${kind}: Classic AJAX must create a new action ID`
+				);
+				const classicEvent = newestAction(classicAdded).args.event;
+				assertEvent(classicEvent);
+				await assertClassicClearRefill({
+					kind,
+					browser: classic,
+					productId: fixture.product,
+					reviewNonce,
+					reviewBody: form.get('post_data'),
+					initialEvent: classicEvent,
+					getActions: getCheckoutActionHistory,
+				});
+				classicResponse = await classic.request(
+					`/?page_id=${fixture.classicCheckoutPage}`
+				);
+				await assertHttpOk(
+					classicResponse,
+					`${kind} first manual-return visit`
+				);
+				await assertManualReturnSignal(
+					classic,
+					await classicResponse.text(),
+					`${kind} Classic first visit`,
+					getCheckoutActionHistory
+				);
+				classicResponse = await classic.request(
+					`/?page_id=${fixture.classicCheckoutPage}`
+				);
+				await assertHttpOk(
+					classicResponse,
+					`${kind} second manual-return visit`
+				);
+				await assertManualReturnSignal(
+					classic,
+					await classicResponse.text(),
+					`${kind} Classic second visit`,
+					getCheckoutActionHistory
+				);
+				process.stdout.write(
+					`ARCH-035 Classic ${kind}: checkout AJAX capture PASS\n`
+				);
+
+				// Blocks: genuine Store API cart and checkout PATCH HTTP requests.
+				const blocks = session(siteUrl, cookie);
+				let r = await blocks.request('/wp-json/wc/store/v1/cart');
+				assert.equal(r.status, 200, `${kind} cart GET`);
+				r = await blocks.request('/wp-json/wc/store/v1/cart/add-item', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ id: fixture.product, quantity: 1 }),
+				});
+				assert.equal(
+					r.status,
+					201,
+					`${kind} cart add-item: ${await r.clone().text()}`
+				);
+				r = await blocks.request('/wp-json/wc/store/v1/checkout');
+				assert.equal(r.status, 200, `${kind} Store API checkout GET`);
+				const body = {
+					billing_address: {
+						first_name: 'Test',
+						last_name: kind,
+						email: `${kind}@example.test`,
+						phone: '+447700900001',
+						country: 'GB',
+						address_1: '10 Test Street',
+						city: 'London',
+						postcode: 'SE1 1AA',
+					},
+				};
+				// A real Blocks checkout saves customer address separately from PATCH.
+				// With an existing key (notably a logged-in shopper who just used
+				// Classic checkout), cart/update-customer can publish that changed
+				// snapshot first. PATCH must not duplicate an identical observation.
+				const previous = checkoutEvents(getCheckoutActionHistory());
+				await persistBlocksBilling(blocks, body.billing_address, kind);
+				const afterCustomer = checkoutEvents(
+					getCheckoutActionHistory()
+				);
+				r = await blocks.request('/wp-json/wc/store/v1/checkout', {
+					method: 'PATCH',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(body),
+				});
+				assert.equal(
+					r.status,
+					200,
+					`${kind} Store API PATCH: ${await r.clone().text()}`
+				);
+				const after = checkoutEvents(getCheckoutActionHistory());
+				const customerAdded = newForKey(previous, afterCustomer);
+				const patchAdded = newForKey(afterCustomer, after);
+				const initialAdded = newForKey(previous, after);
+				assert.ok(
+					initialAdded.length > 0,
+					`${kind}: customer update or checkout PATCH must enqueue an event ` +
+						`(customer actions: ${customerAdded.length}, PATCH actions: ${patchAdded.length})`
+				);
+				// Both routes may emit if PATCH observes a genuinely different cart.
+				// Reject only duplicate snapshots for the same checkout identity.
+				for (const customerAction of customerAdded) {
+					for (const patchAction of patchAdded) {
+						if (
+							customerAction.args.event.checkoutKey ===
+							patchAction.args.event.checkoutKey
+						) {
+							assert.notDeepEqual(
+								patchAction.args.event.checkout,
+								customerAction.args.event.checkout,
+								`${kind}: checkout PATCH must not duplicate a customer-update snapshot`
+							);
+						}
+					}
+				}
+				const first = newestAction(initialAdded).args.event;
+				assertEvent(first);
+				assert.ok(
+					initialAdded.every(
+						(row) =>
+							row.args.event.checkoutKey === first.checkoutKey
+					),
+					`${kind}: Store API customer update and PATCH must use one checkout key`
+				);
+				assert.equal(
+					first.checkout?.contact?.firstName,
+					body.billing_address.first_name,
+					`${kind}: first queued Store API snapshot must contain updated billing name`
+				);
+				// An identical PATCH must not publish another event after the first update.
+				r = await blocks.request('/wp-json/wc/store/v1/checkout', {
+					method: 'PATCH',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(body),
+				});
+				assert.equal(r.status, 200);
+				const unchangedRows = checkoutEvents(
+					getCheckoutActionHistory()
+				);
+				assert.equal(
+					newForKey(after, unchangedRows).length,
+					0,
+					`${kind}: identical PATCH must not enqueue another action`
+				);
+				body.billing_address.first_name = 'Updated';
+				await persistBlocksBilling(blocks, body.billing_address, kind);
+				r = await blocks.request('/wp-json/wc/store/v1/checkout', {
+					method: 'PATCH',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(body),
+				});
+				assert.equal(r.status, 200);
+				const patchResult = await r.json();
+				const responseMatches =
+					patchResult?.billing_address?.first_name ===
+					body.billing_address.first_name;
+				const revisedRows = checkoutEvents(getCheckoutActionHistory());
+				const revisedAdded = newForKey(unchangedRows, revisedRows);
+				const diagnostic = changedCheckoutDiagnostic(
+					unchangedRows,
+					revisedRows,
+					body.billing_address.first_name,
+					responseMatches
+				);
+				assert.ok(
+					responseMatches,
+					`${kind}: checkout response did not reflect the saved billing change: ${diagnostic}`
+				);
+				assert.ok(
+					revisedAdded.length > 0,
+					`${kind}: changed customer update or PATCH must enqueue a new action: ${diagnostic}`
+				);
+				const revised = newestAction(revisedAdded).args.event;
+				assert.equal(
+					revised.checkout?.contact?.firstName,
+					body.billing_address.first_name,
+					`${kind}: queued snapshot must contain updated billing name: ${diagnostic}`
+				);
+				assert.equal(revised.checkoutKey, first.checkoutKey);
+				assert.notEqual(revised.eventId, first.eventId);
+				// An HTTP API outage must not be on the customer's PATCH request path.
+				setActivityStatus(503);
+				const sentBefore = getActivityRequests().length;
+				body.billing_address.last_name = `${kind}-outage`;
+				await persistBlocksBilling(blocks, body.billing_address, kind);
+				r = await blocks.request('/wp-json/wc/store/v1/checkout', {
+					method: 'PATCH',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(body),
+				});
+				await assertHttpOk(
+					r,
+					`${kind}: checkout PATCH during Moda API outage`
+				);
+				const outageRows = checkoutEvents(getCheckoutActionHistory());
+				const outageAdded = newForKey(revisedRows, outageRows);
+				const capturedEventIds = new Set(
+					outageAdded.map((row) => row.args.event.eventId)
+				);
+				const synchronousCaptures = getActivityRequests()
+					.slice(sentBefore)
+					.filter((request) => capturedEventIds.has(request.eventId));
+				assert.deepEqual(
+					synchronousCaptures,
+					[],
+					'capture must not synchronously call the Moda API for checkout events'
+				);
+				assert.ok(
+					outageAdded.length > 0,
+					`${kind}: outage customer update or PATCH must create a new action`
+				);
+				const outageAction = newestAction(outageAdded);
+				const outageEvent = outageAction.args.event;
+				assertEvent(outageEvent);
+				assert.equal(outageAction.args.attempt, 1);
+				assert.notEqual(
+					outageEvent.eventId,
+					revised.eventId,
+					'changed checkout creates an outage event'
+				);
+				assert.equal(outageEvent.checkoutKey, first.checkoutKey);
+				// Run this particular persisted action through the real Action Scheduler
+				// runner, not an arbitrary batch of other pending checkout actions.
+				await runScheduledCheckoutAction(wpAsync, outageAction);
+				assertActivityRequestForEvent(
+					getActivityRequests().slice(sentBefore),
+					outageEvent.eventId,
+					503,
+					`${kind}: initial checkout activity during outage`
+				);
+				const pending = checkoutEvents(getPendingCheckoutActions());
+				assert.ok(
+					!pending.some(
+						(row) => String(row.id) === String(outageAction.id)
+					),
+					`${kind}: Action Scheduler must complete the original delivery action`
+				);
+				// Inspect only actions persisted *after* the selected original action ran.
+				const retries = newCheckoutActions(outageRows, pending).filter(
+					(row) =>
+						row.args?.attempt === 2 &&
+						row.args?.event?.eventId === outageEvent.eventId
+				);
+				assert.equal(
+					retries.length,
+					1,
+					`${kind}: 503 must persist exactly one attempt 2 for the original checkout event`
+				);
+				const retry = retries[0];
+				assert.deepEqual(retry.args.event, outageEvent);
+				assert.equal(
+					retry.args.installationId,
+					outageAction.args.installationId
+				);
+				assert.equal(retry.args.shopId, outageAction.args.shopId);
+				setActivityStatus(202);
+				// WordPress clock remains unchanged: run the delayed retry callback with
+				// its persisted payload rather than changing production backoff delays.
+				const retryRequestsBefore = getActivityRequests().length;
+				await deliverCapturedAction(wpAsync, retry);
+				assertActivityRequestForEvent(
+					getActivityRequests().slice(retryRequestsBefore),
+					outageEvent.eventId,
+					202,
+					`${kind}: retry of original checkout event`
+				);
+				await assertStoreApiClearRefill({
+					kind,
+					browser: blocks,
+					productId: fixture.product,
+					checkoutBody: body,
+					initialEvent: first,
+					getActions: getCheckoutActionHistory,
+				});
+				const blocksCartPage = await blocks.request('/cart/');
+				await assertHttpOk(
+					blocksCartPage,
+					`${kind} Blocks cart manual-return page`
+				);
+				await assertManualReturnSignal(
+					blocks,
+					await blocksCartPage.text(),
+					`${kind} Blocks cart visit`,
+					getCheckoutActionHistory
+				);
+				// Capture order events before placement, so HPOS order creation can be
+				// verified separately from earlier checkout events.
+				const beforeOrder = getPendingCheckoutActions();
+				// Place an actual order using Woo Store API; verify HPOS order-object metadata.
+				r = await blocks.request('/wp-json/wc/store/v1/checkout', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({
+						...body,
+						payment_method: 'cod',
+						customer_note: 'ARCH035 live checkout',
+					}),
+				});
+				assert.equal(
+					r.status,
+					200,
+					`${kind} Store API order placement: ${await r.clone().text()}`
+				);
+				const placed = await r.json();
+				assert.ok(
+					Number(placed.order_id) > 0,
+					`${kind}: real order id`
+				);
+				const persisted = parseJsonOutput(
+					wp(
+						'eval',
+						`
+        $order = wc_get_order(${Number(placed.order_id)});
+        echo wp_json_encode(array('key' => $order->get_meta('_moda_checkout_key', true),
+          'dataStore' => $order->get_data_store()->get_current_class_name()));
+      `
+					)
+				);
+				assert.equal(
+					persisted.key,
+					first.checkoutKey,
+					'HPOS order must retain the captured checkout key'
+				);
+				assert.ok(
+					/OrdersTableDataStore/.test(persisted.dataStore),
+					`HPOS must use the order-table data store (actual: ${persisted.dataStore})`
+				);
+				await assertOrderWordPress({
+					kind,
+					orderId: placed.order_id,
+					checkoutKey: first.checkoutKey,
+					beforeOrder,
+					checkoutAction: newestAction(revisedAdded),
+					getActions: getPendingCheckoutActions,
+					newActions: newCheckoutActions,
+					deliverAction: (action) =>
+						deliverCapturedAction(wpAsync, action),
+					wpAsync,
+					getActivityRequests,
+					setActivityStatus,
+				});
+				wp(
+					'eval',
+					`wc_get_order(${Number(placed.order_id)})->delete(true);`
+				);
+				process.stdout.write(
+					`ARCH-035 Blocks ${kind}: capture, dedup, change, 503, retry and HPOS PASS\n`
+				);
+			}
+		}
+		// The focused restore mode isolates the restore/UI lifecycle from the
+		// broader checkout-capture assertions above.
+		if (!restoreOnly) {
+			// Real Classic and Blocks carts verify the exact nested Shared restoration
+			// projection with one original coupon and one selected variation.
+			const classicRestore = session(siteUrl);
+			await addVariableCartAndCoupon(classicRestore, fixture, 'Classic');
+			let restoreResponse = await classicRestore.request(
 				`/?page_id=${fixture.classicCheckoutPage}`
 			);
-			assert.equal(
-				classicResponse.status,
-				200,
-				`${kind} classic checkout page`
+			await assertHttpOk(
+				restoreResponse,
+				'restoration Classic checkout page'
 			);
-			const classicBefore = checkoutEvents(getCheckoutActionHistory());
-			const form = new URLSearchParams({
-				post_data: new URLSearchParams({
-					billing_first_name: 'Classic',
-					billing_last_name: kind,
-					billing_email: `classic-${kind}@example.test`,
-					billing_phone: '+447700900001',
-				}).toString(),
-			});
-			const html = await classicResponse.text();
-			assert.match(
-				html,
-				/class=["'][^"']*woocommerce-checkout/,
-				`${kind}: final checkout page must render the Classic form`
-			);
-			const reviewNonce = classicReviewNonce(html);
+			const restoreHtml = await restoreResponse.text();
+			const restoreNonce = classicReviewNonce(restoreHtml);
 			assert.ok(
-				reviewNonce,
-				`${kind}: shortcode Classic checkout page must expose update_order_review_nonce (rendered form: ${/class=[\"'][^\"']*woocommerce-checkout/.test(html)})`
+				restoreNonce,
+				'restoration Classic page must expose the checkout review nonce'
 			);
-			form.set('security', reviewNonce);
-			classicResponse = await classic.request(
+			const restoreForm = new URLSearchParams({
+				post_data: new URLSearchParams({
+					billing_email: 'restore-classic@example.test',
+				}).toString(),
+				security: restoreNonce,
+			});
+			const classicBefore = checkoutEvents(getCheckoutActionHistory());
+			restoreResponse = await classicRestore.request(
 				'/?wc-ajax=update_order_review',
 				{
 					method: 'POST',
 					headers: {
 						'content-type': 'application/x-www-form-urlencoded',
 					},
-					body: form.toString(),
+					body: restoreForm.toString(),
 				}
 			);
 			await assertHttpOk(
-				classicResponse,
-				`${kind} classic checkout AJAX`
+				restoreResponse,
+				'restoration Classic checkout AJAX'
 			);
 			const classicAfter = checkoutEvents(getCheckoutActionHistory());
 			const classicAdded = newForKey(classicBefore, classicAfter);
 			assert.ok(
 				classicAdded.length > 0,
-				`${kind}: Classic AJAX must create a new action ID`
+				'Classic variation/coupon checkout must enqueue an action'
 			);
-			const classicEvent = newestAction(classicAdded).args.event;
-			assertEvent(classicEvent);
-			await assertClassicClearRefill({
-				kind,
-				browser: classic,
-				productId: fixture.product,
-				reviewNonce,
-				reviewBody: form.get('post_data'),
-				initialEvent: classicEvent,
-				getActions: getCheckoutActionHistory,
-			});
-			classicResponse = await classic.request(`/?page_id=${fixture.classicCheckoutPage}`);
-			await assertHttpOk(classicResponse, `${kind} first manual-return visit`);
-			await assertManualReturnSignal(classic, await classicResponse.text(), `${kind} Classic first visit`, getCheckoutActionHistory);
-			classicResponse = await classic.request(`/?page_id=${fixture.classicCheckoutPage}`);
-			await assertHttpOk(classicResponse, `${kind} second manual-return visit`);
-			await assertManualReturnSignal(classic, await classicResponse.text(), `${kind} Classic second visit`, getCheckoutActionHistory);
-			process.stdout.write(
-				`ARCH-035 Classic ${kind}: checkout AJAX capture PASS\n`
+			assertSupportedVariationAndCoupon(
+				newestAction(classicAdded).args.event,
+				fixture,
+				'Classic'
 			);
 
-			// Blocks: genuine Store API cart and checkout PATCH HTTP requests.
-			const blocks = session(siteUrl, cookie);
-			let r = await blocks.request('/wp-json/wc/store/v1/cart');
-			assert.equal(r.status, 200, `${kind} cart GET`);
-			r = await blocks.request('/wp-json/wc/store/v1/cart/add-item', {
-				method: 'POST',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify({ id: fixture.product, quantity: 1 }),
-			});
-			assert.equal(
-				r.status,
-				201,
-				`${kind} cart add-item: ${await r.clone().text()}`
+			const blocksRestore = session(siteUrl);
+			await addVariableCartAndCoupon(blocksRestore, fixture, 'Blocks');
+			restoreResponse = await blocksRestore.request(
+				'/wp-json/wc/store/v1/checkout'
 			);
-			r = await blocks.request('/wp-json/wc/store/v1/checkout');
-			assert.equal(r.status, 200, `${kind} Store API checkout GET`);
-			const body = {
+			assert.equal(
+				restoreResponse.status,
+				200,
+				'restoration Blocks checkout GET'
+			);
+			const blocksBody = {
 				billing_address: {
-					first_name: 'Test',
-					last_name: kind,
-					email: `${kind}@example.test`,
-					phone: '+447700900001',
+					first_name: 'Restore',
+					last_name: 'Blocks',
+					email: 'restore-blocks@example.test',
+					phone: '+447400123456',
 					country: 'GB',
 					address_1: '10 Test Street',
 					city: 'London',
 					postcode: 'SE1 1AA',
 				},
 			};
-			// A real Blocks checkout saves customer address separately from PATCH.
-			// With an existing key (notably a logged-in shopper who just used
-			// Classic checkout), cart/update-customer can publish that changed
-			// snapshot first. PATCH must not duplicate an identical observation.
-			const previous = checkoutEvents(getCheckoutActionHistory());
-			await persistBlocksBilling(blocks, body.billing_address, kind);
-			const afterCustomer = checkoutEvents(getCheckoutActionHistory());
-			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
-				method: 'PATCH',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify(body),
-			});
-			assert.equal(
-				r.status,
-				200,
-				`${kind} Store API PATCH: ${await r.clone().text()}`
+			const blocksBefore = checkoutEvents(getCheckoutActionHistory());
+			await persistBlocksBilling(
+				blocksRestore,
+				blocksBody.billing_address,
+				'restoration Blocks'
 			);
-			const after = checkoutEvents(getCheckoutActionHistory());
-			const customerAdded = newForKey(previous, afterCustomer);
-			const patchAdded = newForKey(afterCustomer, after);
-			const initialAdded = newForKey(previous, after);
-			assert.ok(
-				initialAdded.length > 0,
-				`${kind}: customer update or checkout PATCH must enqueue an event ` +
-					`(customer actions: ${customerAdded.length}, PATCH actions: ${patchAdded.length})`
-			);
-			// Both routes may emit if PATCH observes a genuinely different cart.
-			// Reject only duplicate snapshots for the same checkout identity.
-			for (const customerAction of customerAdded) {
-				for (const patchAction of patchAdded) {
-					if (
-						customerAction.args.event.checkoutKey ===
-						patchAction.args.event.checkoutKey
-					) {
-						assert.notDeepEqual(
-							patchAction.args.event.checkout,
-							customerAction.args.event.checkout,
-							`${kind}: checkout PATCH must not duplicate a customer-update snapshot`
-						);
-					}
+			restoreResponse = await blocksRestore.request(
+				'/wp-json/wc/store/v1/checkout',
+				{
+					method: 'PATCH',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(blocksBody),
 				}
-			}
-			const first = newestAction(initialAdded).args.event;
-			assertEvent(first);
-			assert.ok(
-				initialAdded.every(
-					(row) => row.args.event.checkoutKey === first.checkoutKey
-				),
-				`${kind}: Store API customer update and PATCH must use one checkout key`
 			);
 			assert.equal(
-				first.checkout?.contact?.firstName,
-				body.billing_address.first_name,
-				`${kind}: first queued Store API snapshot must contain updated billing name`
-			);
-			// An identical PATCH must not publish another event after the first update.
-			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
-				method: 'PATCH',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify(body),
-			});
-			assert.equal(r.status, 200);
-			const unchangedRows = checkoutEvents(getCheckoutActionHistory());
-			assert.equal(
-				newForKey(after, unchangedRows).length,
-				0,
-				`${kind}: identical PATCH must not enqueue another action`
-			);
-			body.billing_address.first_name = 'Updated';
-			await persistBlocksBilling(blocks, body.billing_address, kind);
-			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
-				method: 'PATCH',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify(body),
-			});
-			assert.equal(r.status, 200);
-			const patchResult = await r.json();
-			const responseMatches =
-				patchResult?.billing_address?.first_name ===
-				body.billing_address.first_name;
-			const revisedRows = checkoutEvents(getCheckoutActionHistory());
-			const revisedAdded = newForKey(unchangedRows, revisedRows);
-			const diagnostic = changedCheckoutDiagnostic(
-				unchangedRows,
-				revisedRows,
-				body.billing_address.first_name,
-				responseMatches
-			);
-			assert.ok(
-				responseMatches,
-				`${kind}: checkout response did not reflect the saved billing change: ${diagnostic}`
-			);
-			assert.ok(
-				revisedAdded.length > 0,
-				`${kind}: changed customer update or PATCH must enqueue a new action: ${diagnostic}`
-			);
-			const revised = newestAction(revisedAdded).args.event;
-			assert.equal(
-				revised.checkout?.contact?.firstName,
-				body.billing_address.first_name,
-				`${kind}: queued snapshot must contain updated billing name: ${diagnostic}`
-			);
-			assert.equal(revised.checkoutKey, first.checkoutKey);
-			assert.notEqual(revised.eventId, first.eventId);
-			// An HTTP API outage must not be on the customer's PATCH request path.
-			setActivityStatus(503);
-			const sentBefore = getActivityRequests().length;
-			body.billing_address.last_name = `${kind}-outage`;
-			await persistBlocksBilling(blocks, body.billing_address, kind);
-			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
-				method: 'PATCH',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify(body),
-			});
-			await assertHttpOk(
-				r,
-				`${kind}: checkout PATCH during Moda API outage`
-			);
-			const outageRows = checkoutEvents(getCheckoutActionHistory());
-			const outageAdded = newForKey(revisedRows, outageRows);
-			const capturedEventIds = new Set(
-				outageAdded.map((row) => row.args.event.eventId)
-			);
-			const synchronousCaptures = getActivityRequests()
-				.slice(sentBefore)
-				.filter((request) => capturedEventIds.has(request.eventId));
-			assert.deepEqual(
-				synchronousCaptures,
-				[],
-				'capture must not synchronously call the Moda API for checkout events'
-			);
-			assert.ok(
-				outageAdded.length > 0,
-				`${kind}: outage customer update or PATCH must create a new action`
-			);
-			const outageAction = newestAction(outageAdded);
-			const outageEvent = outageAction.args.event;
-			assertEvent(outageEvent);
-			assert.equal(outageAction.args.attempt, 1);
-			assert.notEqual(
-				outageEvent.eventId,
-				revised.eventId,
-				'changed checkout creates an outage event'
-			);
-			assert.equal(outageEvent.checkoutKey, first.checkoutKey);
-			// Run this particular persisted action through the real Action Scheduler
-			// runner, not an arbitrary batch of other pending checkout actions.
-			await runScheduledCheckoutAction(wpAsync, outageAction);
-			assertActivityRequestForEvent(
-				getActivityRequests().slice(sentBefore),
-				outageEvent.eventId,
-				503,
-				`${kind}: initial checkout activity during outage`
-			);
-			const pending = checkoutEvents(getPendingCheckoutActions());
-			assert.ok(
-				!pending.some(
-					(row) => String(row.id) === String(outageAction.id)
-				),
-				`${kind}: Action Scheduler must complete the original delivery action`
-			);
-			// Inspect only actions persisted *after* the selected original action ran.
-			const retries = newCheckoutActions(outageRows, pending).filter(
-				(row) =>
-					row.args?.attempt === 2 &&
-					row.args?.event?.eventId === outageEvent.eventId
-			);
-			assert.equal(
-				retries.length,
-				1,
-				`${kind}: 503 must persist exactly one attempt 2 for the original checkout event`
-			);
-			const retry = retries[0];
-			assert.deepEqual(retry.args.event, outageEvent);
-			assert.equal(
-				retry.args.installationId,
-				outageAction.args.installationId
-			);
-			assert.equal(retry.args.shopId, outageAction.args.shopId);
-			setActivityStatus(202);
-			// WordPress clock remains unchanged: run the delayed retry callback with
-			// its persisted payload rather than changing production backoff delays.
-			const retryRequestsBefore = getActivityRequests().length;
-			await deliverCapturedAction(wpAsync, retry);
-			assertActivityRequestForEvent(
-				getActivityRequests().slice(retryRequestsBefore),
-				outageEvent.eventId,
-				202,
-				`${kind}: retry of original checkout event`
-			);
-			await assertStoreApiClearRefill({
-				kind,
-				browser: blocks,
-				productId: fixture.product,
-				checkoutBody: body,
-				initialEvent: first,
-				getActions: getCheckoutActionHistory,
-			});
-			const blocksCartPage = await blocks.request('/cart/');
-			await assertHttpOk(blocksCartPage, `${kind} Blocks cart manual-return page`);
-			await assertManualReturnSignal(
-				blocks,
-				await blocksCartPage.text(),
-				`${kind} Blocks cart visit`,
-				getCheckoutActionHistory
-			);
-			// Capture order events before placement, so HPOS order creation can be
-			// verified separately from earlier checkout events.
-			const beforeOrder = getPendingCheckoutActions();
-			// Place an actual order using Woo Store API; verify HPOS order-object metadata.
-			r = await blocks.request('/wp-json/wc/store/v1/checkout', {
-				method: 'POST',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify({
-					...body,
-					payment_method: 'cod',
-					customer_note: 'ARCH035 live checkout',
-				}),
-			});
-			assert.equal(
-				r.status,
+				restoreResponse.status,
 				200,
-				`${kind} Store API order placement: ${await r.clone().text()}`
+				'restoration Blocks checkout PATCH'
 			);
-			const placed = await r.json();
-			assert.ok(Number(placed.order_id) > 0, `${kind}: real order id`);
-			const persisted = parseJsonOutput(
-				wp(
-					'eval',
-					`
-        $order = wc_get_order(${Number(placed.order_id)});
-        echo wp_json_encode(array('key' => $order->get_meta('_moda_checkout_key', true),
-          'dataStore' => $order->get_data_store()->get_current_class_name()));
-      `
-				)
-			);
-			assert.equal(
-				persisted.key,
-				first.checkoutKey,
-				'HPOS order must retain the captured checkout key'
+			const blocksAdded = newForKey(
+				blocksBefore,
+				checkoutEvents(getCheckoutActionHistory())
 			);
 			assert.ok(
-				/OrdersTableDataStore/.test(persisted.dataStore),
-				`HPOS must use the order-table data store (actual: ${persisted.dataStore})`
+				blocksAdded.length > 0,
+				'Blocks variation/coupon checkout must enqueue an action'
 			);
-			await assertOrderWordPress({
-				kind,
-				orderId: placed.order_id,
-				checkoutKey: first.checkoutKey,
-				beforeOrder,
-				checkoutAction: newestAction(revisedAdded),
-				getActions: getPendingCheckoutActions,
-				newActions: newCheckoutActions,
-				deliverAction: (action) =>
-					deliverCapturedAction(wpAsync, action),
-				wpAsync,
-				getActivityRequests,
-				setActivityStatus,
-			});
-			wp(
-				'eval',
-				`wc_get_order(${Number(placed.order_id)})->delete(true);`
+			assertSupportedVariationAndCoupon(
+				newestAction(blocksAdded).args.event,
+				fixture,
+				'Blocks'
 			);
-			process.stdout.write(
-				`ARCH-035 Blocks ${kind}: capture, dedup, change, 503, retry and HPOS PASS\n`
-			);
-		}
-
-		}
-		// The focused restore mode isolates the restore/UI lifecycle from the
-		// broader checkout-capture assertions above.
-		if (!restoreOnly) {
-		// Real Classic and Blocks carts verify the exact nested Shared restoration
-		// projection with one original coupon and one selected variation.
-		const classicRestore = session(siteUrl);
-		await addVariableCartAndCoupon(classicRestore, fixture, 'Classic');
-		let restoreResponse = await classicRestore.request(`/?page_id=${fixture.classicCheckoutPage}`);
-		await assertHttpOk(restoreResponse, 'restoration Classic checkout page');
-		const restoreHtml = await restoreResponse.text();
-		const restoreNonce = classicReviewNonce(restoreHtml);
-		assert.ok(restoreNonce, 'restoration Classic page must expose the checkout review nonce');
-		const restoreForm = new URLSearchParams({
-			post_data: new URLSearchParams({ billing_email: 'restore-classic@example.test' }).toString(),
-			security: restoreNonce,
-		});
-		const classicBefore = checkoutEvents(getCheckoutActionHistory());
-		restoreResponse = await classicRestore.request('/?wc-ajax=update_order_review', {
-			method: 'POST',
-			headers: { 'content-type': 'application/x-www-form-urlencoded' },
-			body: restoreForm.toString(),
-		});
-		await assertHttpOk(restoreResponse, 'restoration Classic checkout AJAX');
-		const classicAfter = checkoutEvents(getCheckoutActionHistory());
-		const classicAdded = newForKey(classicBefore, classicAfter);
-		assert.ok(classicAdded.length > 0, 'Classic variation/coupon checkout must enqueue an action');
-		assertSupportedVariationAndCoupon(newestAction(classicAdded).args.event, fixture, 'Classic');
-
-		const blocksRestore = session(siteUrl);
-		await addVariableCartAndCoupon(blocksRestore, fixture, 'Blocks');
-		restoreResponse = await blocksRestore.request('/wp-json/wc/store/v1/checkout');
-		assert.equal(restoreResponse.status, 200, 'restoration Blocks checkout GET');
-		const blocksBody = {
-			billing_address: {
-				first_name: 'Restore', last_name: 'Blocks', email: 'restore-blocks@example.test',
-				phone: '+447400123456', country: 'GB', address_1: '10 Test Street', city: 'London', postcode: 'SE1 1AA',
-			},
-		};
-		const blocksBefore = checkoutEvents(getCheckoutActionHistory());
-		await persistBlocksBilling(blocksRestore, blocksBody.billing_address, 'restoration Blocks');
-		restoreResponse = await blocksRestore.request('/wp-json/wc/store/v1/checkout', {
-			method: 'PATCH',
-			headers: { 'content-type': 'application/json' },
-			body: JSON.stringify(blocksBody),
-		});
-		assert.equal(restoreResponse.status, 200, 'restoration Blocks checkout PATCH');
-		const blocksAdded = newForKey(blocksBefore, checkoutEvents(getCheckoutActionHistory()));
-		assert.ok(blocksAdded.length > 0, 'Blocks variation/coupon checkout must enqueue an action');
-		assertSupportedVariationAndCoupon(newestAction(blocksAdded).args.event, fixture, 'Blocks');
 		}
 
 		await assertConfirmedRestore({
@@ -954,36 +1916,84 @@ MODA_FIXTURE
 		// Store API requests. This coupon is free-shipping-only, and these carts
 		// have no shipping package, so the total must stay unchanged.
 		const classicCoupon = session(siteUrl);
-		let couponResponse = await classicCoupon.request(`/?add-to-cart=${fixture.product}`);
-		assert.ok([200, 302].includes(couponResponse.status), 'coupon Classic add to cart');
-		couponResponse = await classicCoupon.request(`/?page_id=${fixture.classicCheckoutPage}`);
-		assert.equal(couponResponse.status, 200, 'coupon Classic checkout page');
+		let couponResponse = await classicCoupon.request(
+			`/?add-to-cart=${fixture.product}`
+		);
+		assert.ok(
+			[200, 302].includes(couponResponse.status),
+			'coupon Classic add to cart'
+		);
+		couponResponse = await classicCoupon.request(
+			`/?page_id=${fixture.classicCheckoutPage}`
+		);
+		assert.equal(
+			couponResponse.status,
+			200,
+			'coupon Classic checkout page'
+		);
 		const couponPage = await couponResponse.text();
 		const couponReviewNonce = classicReviewNonce(couponPage);
 		assert.ok(couponReviewNonce, 'coupon Classic review nonce');
 		const classicReview = new URLSearchParams({
-			post_data: new URLSearchParams({ billing_email: 'coupon-classic@example.test' }).toString(),
+			post_data: new URLSearchParams({
+				billing_email: 'coupon-classic@example.test',
+			}).toString(),
 			security: couponReviewNonce,
 		});
 		const classicCouponBefore = checkoutEvents(getCheckoutActionHistory());
-		couponResponse = await classicCoupon.request('/?wc-ajax=update_order_review', {
-			method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: classicReview.toString(),
-		});
+		couponResponse = await classicCoupon.request(
+			'/?wc-ajax=update_order_review',
+			{
+				method: 'POST',
+				headers: {
+					'content-type': 'application/x-www-form-urlencoded',
+				},
+				body: classicReview.toString(),
+			}
+		);
 		await assertHttpOk(couponResponse, 'coupon Classic checkout start');
-		const classicStarted = newForKey(classicCouponBefore, checkoutEvents(getCheckoutActionHistory()));
-		assert.ok(classicStarted.length, 'coupon Classic checkout must be observed');
+		const classicStarted = newForKey(
+			classicCouponBefore,
+			checkoutEvents(getCheckoutActionHistory())
+		);
+		assert.ok(
+			classicStarted.length,
+			'coupon Classic checkout must be observed'
+		);
 		const classicInitial = newestAction(classicStarted).args.event;
-		assert.deepEqual(classicInitial.checkout.restoration.appliedCouponCodes, []);
-		const applyCouponNonce = wp('eval', `echo wp_create_nonce('apply-coupon');`).trim();
-		const removeCouponNonce = wp('eval', `echo wp_create_nonce('woocommerce-remove-coupon');`).trim();
+		assert.deepEqual(
+			classicInitial.checkout.restoration.appliedCouponCodes,
+			[]
+		);
+		const applyCouponNonce = wp(
+			'eval',
+			`echo wp_create_nonce('apply-coupon');`
+		).trim();
+		const removeCouponNonce = wp(
+			'eval',
+			`echo wp_create_nonce('woocommerce-remove-coupon');`
+		).trim();
 		await assertCouponTransitions({
-			kind: 'Classic', fixture, initialEvent: classicInitial, getActions: getCheckoutActionHistory,
+			kind: 'Classic',
+			fixture,
+			initialEvent: classicInitial,
+			getActions: getCheckoutActionHistory,
 			applyCoupon: async () => {
 				for (const code of fixture.observeCouponCodes) {
-					const response = await classicCoupon.request('/?wc-ajax=apply_coupon', {
-						method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
-						body: new URLSearchParams({ coupon_code: code, security: applyCouponNonce }).toString(),
-					});
+					const response = await classicCoupon.request(
+						'/?wc-ajax=apply_coupon',
+						{
+							method: 'POST',
+							headers: {
+								'content-type':
+									'application/x-www-form-urlencoded',
+							},
+							body: new URLSearchParams({
+								coupon_code: code,
+								security: applyCouponNonce,
+							}).toString(),
+						}
+					);
 					await assertHttpOk(response, 'coupon Classic apply/stack');
 				}
 			},
@@ -992,11 +2002,24 @@ MODA_FIXTURE
 				// snapshot unchanged; a fresh review request may itself update form
 				// contact state and is not a duplicate capture.
 				for (const code of fixture.observeCouponCodes) {
-					const response = await classicCoupon.request('/?wc-ajax=apply_coupon', {
-						method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
-						body: new URLSearchParams({ coupon_code: code, security: applyCouponNonce }).toString(),
-					});
-					await assertHttpOk(response, 'repeated coupon Classic action');
+					const response = await classicCoupon.request(
+						'/?wc-ajax=apply_coupon',
+						{
+							method: 'POST',
+							headers: {
+								'content-type':
+									'application/x-www-form-urlencoded',
+							},
+							body: new URLSearchParams({
+								coupon_code: code,
+								security: applyCouponNonce,
+							}).toString(),
+						}
+					);
+					await assertHttpOk(
+						response,
+						'repeated coupon Classic action'
+					);
 				}
 			},
 			removeCoupon: async () => {
@@ -1004,59 +2027,139 @@ MODA_FIXTURE
 					const response = await classicCoupon.request(
 						`/?remove_coupon=${encodeURIComponent(code)}&_wpnonce=${encodeURIComponent(removeCouponNonce)}`
 					);
-					assert.ok([200, 302].includes(response.status), 'coupon Classic remove/stack');
+					assert.ok(
+						[200, 302].includes(response.status),
+						'coupon Classic remove/stack'
+					);
 				}
 			},
 		});
 
 		const blocksCoupon = session(siteUrl);
-		let blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/cart');
-		assert.equal(blocksCouponResponse.status, 200, 'coupon Blocks cart session');
-		blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/cart/add-item', {
-			method: 'POST', headers: { 'content-type': 'application/json' },
-			body: JSON.stringify({ id: fixture.product, quantity: 1 }),
-		});
-		assert.equal(blocksCouponResponse.status, 201, 'coupon Blocks add item');
-		blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/checkout');
-		assert.equal(blocksCouponResponse.status, 200, 'coupon Blocks checkout GET');
-		const blocksCouponBody = { billing_address: {
-			first_name: 'Coupon', last_name: 'Blocks', email: 'coupon-blocks@example.test',
-			country: 'GB', address_1: '10 Test Street', city: 'London', postcode: 'SE1 1AA',
-		} };
+		let blocksCouponResponse = await blocksCoupon.request(
+			'/wp-json/wc/store/v1/cart'
+		);
+		assert.equal(
+			blocksCouponResponse.status,
+			200,
+			'coupon Blocks cart session'
+		);
+		blocksCouponResponse = await blocksCoupon.request(
+			'/wp-json/wc/store/v1/cart/add-item',
+			{
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ id: fixture.product, quantity: 1 }),
+			}
+		);
+		assert.equal(
+			blocksCouponResponse.status,
+			201,
+			'coupon Blocks add item'
+		);
+		blocksCouponResponse = await blocksCoupon.request(
+			'/wp-json/wc/store/v1/checkout'
+		);
+		assert.equal(
+			blocksCouponResponse.status,
+			200,
+			'coupon Blocks checkout GET'
+		);
+		const blocksCouponBody = {
+			billing_address: {
+				first_name: 'Coupon',
+				last_name: 'Blocks',
+				email: 'coupon-blocks@example.test',
+				country: 'GB',
+				address_1: '10 Test Street',
+				city: 'London',
+				postcode: 'SE1 1AA',
+			},
+		};
 		const blocksCouponBefore = checkoutEvents(getCheckoutActionHistory());
-		await persistBlocksBilling(blocksCoupon, blocksCouponBody.billing_address, 'coupon Blocks');
-		blocksCouponResponse = await blocksCoupon.request('/wp-json/wc/store/v1/checkout', {
-			method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(blocksCouponBody),
-		});
-		assert.equal(blocksCouponResponse.status, 200, 'coupon Blocks checkout start');
-		const blocksStarted = newForKey(blocksCouponBefore, checkoutEvents(getCheckoutActionHistory()));
-		assert.ok(blocksStarted.length, 'coupon Blocks checkout must be observed');
+		await persistBlocksBilling(
+			blocksCoupon,
+			blocksCouponBody.billing_address,
+			'coupon Blocks'
+		);
+		blocksCouponResponse = await blocksCoupon.request(
+			'/wp-json/wc/store/v1/checkout',
+			{
+				method: 'PATCH',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify(blocksCouponBody),
+			}
+		);
+		assert.equal(
+			blocksCouponResponse.status,
+			200,
+			'coupon Blocks checkout start'
+		);
+		const blocksStarted = newForKey(
+			blocksCouponBefore,
+			checkoutEvents(getCheckoutActionHistory())
+		);
+		assert.ok(
+			blocksStarted.length,
+			'coupon Blocks checkout must be observed'
+		);
 		const blocksInitial = newestAction(blocksStarted).args.event;
-		assert.deepEqual(blocksInitial.checkout.restoration.appliedCouponCodes, []);
+		assert.deepEqual(
+			blocksInitial.checkout.restoration.appliedCouponCodes,
+			[]
+		);
 		await assertCouponTransitions({
-			kind: 'Blocks', fixture, initialEvent: blocksInitial, getActions: getCheckoutActionHistory,
+			kind: 'Blocks',
+			fixture,
+			initialEvent: blocksInitial,
+			getActions: getCheckoutActionHistory,
 			applyCoupon: async () => {
 				for (const code of fixture.observeCouponCodes) {
-					const response = await blocksCoupon.request('/wp-json/wc/store/v1/cart/apply-coupon', {
-						method: 'POST', headers: { 'content-type': 'application/json' },
-						body: JSON.stringify({ code }),
-					});
-					assert.equal(response.status, 200, 'coupon Blocks apply/stack');
+					const response = await blocksCoupon.request(
+						'/wp-json/wc/store/v1/cart/apply-coupon',
+						{
+							method: 'POST',
+							headers: { 'content-type': 'application/json' },
+							body: JSON.stringify({ code }),
+						}
+					);
+					assert.equal(
+						response.status,
+						200,
+						'coupon Blocks apply/stack'
+					);
 				}
 			},
 			duplicateSnapshot: async () => {
-				const response = await blocksCoupon.request('/wp-json/wc/store/v1/checkout', {
-					method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(blocksCouponBody),
-				});
-				assert.equal(response.status, 200, 'unchanged coupon Blocks PATCH');
+				const response = await blocksCoupon.request(
+					'/wp-json/wc/store/v1/checkout',
+					{
+						method: 'PATCH',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify(blocksCouponBody),
+					}
+				);
+				assert.equal(
+					response.status,
+					200,
+					'unchanged coupon Blocks PATCH'
+				);
 			},
 			removeCoupon: async () => {
 				for (const code of [...fixture.observeCouponCodes].reverse()) {
-					const response = await blocksCoupon.request('/wp-json/wc/store/v1/cart/remove-coupon', {
-						method: 'POST', headers: { 'content-type': 'application/json' },
-						body: JSON.stringify({ code }),
-					});
-					assert.equal(response.status, 200, 'coupon Blocks remove/stack');
+					const response = await blocksCoupon.request(
+						'/wp-json/wc/store/v1/cart/remove-coupon',
+						{
+							method: 'POST',
+							headers: { 'content-type': 'application/json' },
+							body: JSON.stringify({ code }),
+						}
+					);
+					assert.equal(
+						response.status,
+						200,
+						'coupon Blocks remove/stack'
+					);
 				}
 			},
 		});
@@ -1067,358 +2170,4 @@ MODA_FIXTURE
 			`unlink(WPMU_PLUGIN_DIR . '/arch035-manual-scheduler.php'); update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); ${fixture.previousComingSoon === null ? "delete_option('woocommerce_coming_soon');" : `update_option('woocommerce_coming_soon', ${JSON.stringify(fixture.previousComingSoon)});`} wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_post(${fixture.blocksCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.offerCoupon}, true); wp_delete_post(${fixture.conflictCoupon}, true); wp_delete_post(${fixture.expiredCoupon}, true); wp_delete_post(${fixture.exhaustedCoupon}, true); wp_delete_post(${fixture.observeCoupon}, true); wp_delete_post(${fixture.observeCouponTwo}, true);`
 		);
 	}
-}
-
-async function assertBlocksDisplayedTotal(page, cart) {
-	const expected = new Intl.NumberFormat('en-GB', {
-		style: 'currency', currency: cart.totals.currency_code,
-	}).format(Number(cart.totals.total_price) / (10 ** cart.totals.currency_minor_unit));
-	// The block mounts before its order summary finishes resolving. Wait for
-	// the shopper-visible amount, not just the initial loading placeholders.
-	await page.waitForFunction((value) => {
-		const total = document.querySelector('.wc-block-components-totals-footer-item .wc-block-formatted-money-amount');
-		return total?.textContent.trim() === value && total.getBoundingClientRect().width > 0;
-	}, expected, { timeout: 15000 });
-}
-
-async function assertConfirmedRestore({ siteUrl, fixture, createSession, wp, getCheckoutActionHistory, getRestoreResolveRequests, setRestoreResolveResult }) {
-	const recoveryId = 'recovery_restore_fixture';
-	const token = 'A'.repeat(43);
-	const capturedVariation = getCheckoutActionHistory()
-		.map((row) => row.args?.event?.checkout?.restoration)
-		.find((restore) => restore?.kind === 'supported' && restore.lines?.some((line) => line.variationId === String(fixture.variation)));
-	const capturedVariationLine = capturedVariation?.lines.find((line) => line.variationId === String(fixture.variation)) ?? {
-		productId: String(fixture.variableProduct),
-		variationId: String(fixture.variation),
-		quantity: 1,
-		attributes: fixture.variationAttributes,
-	};
-	const snapshot = {
-		schemaVersion: 'woo.cart-restore.v1',
-		kind: 'supported',
-		appliedCouponCodes: [fixture.couponCode, ...fixture.rejectedCouponCodes],
-		lines: [{ ...capturedVariationLine, quantity: 1 }],
-	};
-	const eligible = {
-		schemaVersion: 'woo.restore.resolve.v1',
-		status: 'eligible',
-		recoveryId,
-		checkoutKey: 'woo-restore-checkout-key',
-		snapshot,
-		outreachOffer: { kind: 'CHECKOUT_CODE', code: fixture.offerCouponCode, providerDiscountId: 'woo:coupon:offer5' },
-	};
-	setRestoreResolveResult(200, eligible);
-	const browser = createSession(siteUrl);
-	let response = await browser.request('/wp-json/wc/store/v1/cart');
-	assert.equal(response.status, 200);
-	response = await browser.request(`/?add-to-cart=${fixture.product}`);
-	assert.ok([200, 302].includes(response.status));
-	const before = await (await browser.request('/wp-json/wc/store/v1/cart')).json();
-	assert.equal(before.items.length, 1, 'visitor basket exists before opening the link');
-	const shopperCouponNonce = wp('eval', `echo wp_create_nonce('apply-coupon');`).trim();
-	response = await browser.request('/?wc-ajax=apply_coupon', {
-		method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
-		body: new URLSearchParams({ coupon_code: 'arch053-shopper-invalid', security: shopperCouponNonce }).toString(),
-	});
-	assert.equal(response.status, 200, 'ordinary shopper coupon rejection is handled by WooCommerce');
-	assert.match(await response.text(), /arch053-shopper-invalid/i,
-		'ordinary shopper-entered coupon errors remain visible in Woo’s coupon response');
-	const link = `/?moda_interact_resume=1&r=${recoveryId}&t=${token}`;
-	const resolveCountBeforePreview = getRestoreResolveRequests().length;
-	response = await browser.request(link, { method: 'HEAD' });
-	assert.equal(response.status, 200, 'HEAD preview is nonmutating');
-	response = await browser.request(link);
-	assert.equal(response.status, 200, 'customer receives a confirmation page');
-	assert.equal(response.headers.get('cache-control'), 'no-store');
-	assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
-	const confirmation = await response.text();
-	assert.match(confirmation, /Replace current basket and continue/);
-	assert.doesNotMatch(confirmation, /<script/i);
-	for (const [, absoluteUrl] of confirmation.matchAll(/(https?:\/\/[^"'\s<>]+)/gi)) {
-		assert.equal(
-			new URL(absoluteUrl).origin,
-			new URL(siteUrl).origin,
-			'confirmation page must not reference third-party URLs'
-		);
-	}
-	assert.doesNotMatch(confirmation, /woo-restore-checkout-key/);
-	assert.equal(getRestoreResolveRequests().length, resolveCountBeforePreview, 'GET/HEAD do not resolve the link');
-	const afterPreview = await (await browser.request('/wp-json/wc/store/v1/cart')).json();
-	assert.deepEqual(afterPreview.items, before.items, 'GET/HEAD leave the current cart unchanged');
-	const nonce = confirmation.match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
-	assert.ok(nonce, 'landing page provides a Woo-session-bound nonce');
-	const form = new URLSearchParams({ moda_interact_resume: '1', r: recoveryId, t: token, nonce, confirm: 'replace' });
-	response = await browser.request('/', {
-		method: 'POST',
-		headers: { 'content-type': 'application/x-www-form-urlencoded', origin: 'https://attacker.example' },
-		body: form.toString(),
-	});
-	assert.equal(response.status, 303, 'cross-origin confirmation is rejected');
-	assert.equal(getRestoreResolveRequests().length, resolveCountBeforePreview, 'forged POST never calls Moda');
-	const afterForgedPost = await (await browser.request('/wp-json/wc/store/v1/cart')).json();
-	assert.deepEqual(afterForgedPost.items, before.items, 'forged POST preserves visitor cart');
-
-	const actionIdsBefore = new Set(getCheckoutActionHistory().map((row) => String(row.id)));
-	response = await browser.request('/', {
-		method: 'POST',
-		headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
-		body: form.toString(),
-	});
-	assert.equal(response.status, 303, 'confirmed restoration redirects to checkout');
-	const redirect = new URL(response.headers.get('location'), siteUrl);
-	assert.equal(redirect.origin, new URL(siteUrl).origin, 'redirect remains same-origin');
-	assert.equal(redirect.searchParams.has('error'), false, 'no Moda error marker is exposed');
-	const afterRestore = await (await browser.request('/wp-json/wc/store/v1/cart')).json();
-	assert.equal(afterRestore.items.length, 1, 'restoration replaces the existing basket');
-	assert.equal(Number(afterRestore.items[0].quantity), 1);
-	assert.ok([fixture.variableProduct, fixture.variation].includes(Number(afterRestore.items[0].id)),
-		`restored variation is present; expected parent ${fixture.variableProduct} or variation ${fixture.variation}, got ${JSON.stringify(afterRestore.items)}`);
-	assert.deepEqual(afterRestore.coupons.map((coupon) => coupon.code), [fixture.couponCode, fixture.offerCouponCode],
-		'Woo applies the currently valid original coupon and the confirmed stackable outreach coupon while rejecting deleted originals');
-	assert.ok(Number(afterRestore.totals.total_price) < 1799, 'Woo recalculates the restored variation after both native discounts');
-	assert.equal(getRestoreResolveRequests().length, resolveCountBeforePreview + 1);
-	const newCheckoutActions = getCheckoutActionHistory().filter((row) => !actionIdsBefore.has(String(row.id)) && row.args?.event?.eventType === 'CHECKOUT_UPDATED');
-	assert.equal(newCheckoutActions.length, 1, 'one fresh durable resumption event is enqueued');
-	assert.equal(newCheckoutActions[0].args.event.checkoutKey, eligible.checkoutKey);
-	assert.deepEqual(newCheckoutActions[0].args.event.checkout.restoration.appliedCouponCodes, [fixture.couponCode, fixture.offerCouponCode],
-		'fresh resumption evidence records the original and outreach coupons Woo actually applied');
-
-	const classicPage = await browser.request(`/?page_id=${fixture.classicCheckoutPage}`);
-	assert.equal(classicPage.status, 200, 'Classic checkout renders the restored cart');
-	const classicCheckoutHtml = await classicPage.text();
-	assert.match(classicCheckoutHtml, /woocommerce-checkout/);
-	for (const code of fixture.rejectedCouponCodes) {
-		assert.equal(classicCheckoutHtml.toLowerCase().includes(code.toLowerCase()), false,
-			`rejected coupon ${code} is not shown to the shopper`);
-	}
-	const blocksPage = await browser.request(`/?page_id=${fixture.blocksCheckoutPage}`);
-	assert.equal(blocksPage.status, 200, 'Blocks checkout renders the restored cart');
-	assert.match(await blocksPage.text(), /wc-block-checkout|blocks-checkout\.js|woocommerce\/checkout/);
-	const blocksCheckout = await browser.request('/wp-json/wc/store/v1/checkout');
-	assert.equal(blocksCheckout.status, 200, 'Blocks checkout Store API accepts restored cart');
-	const blocksBody = await blocksCheckout.text();
-	for (const code of fixture.rejectedCouponCodes) {
-		assert.equal(blocksBody.toLowerCase().includes(code.toLowerCase()), false,
-			`Blocks response does not expose rejected original coupon ${code}`);
-	}
-
-	await browser.request(`/?add-to-cart=${fixture.product}`);
-	const newerBasket = await (await browser.request('/wp-json/wc/store/v1/cart')).json();
-	assert.equal(newerBasket.items.length, 2);
-	const duplicateLanding = await browser.request(link);
-	const duplicateNonce = (await duplicateLanding.text()).match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
-	const duplicateForm = new URLSearchParams({ moda_interact_resume: '1', r: recoveryId, t: token, nonce: duplicateNonce, confirm: 'replace' });
-	const beforeDuplicateResolve = getRestoreResolveRequests().length;
-	response = await browser.request('/', {
-		method: 'POST',
-		headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
-		body: duplicateForm.toString(),
-	});
-	assert.equal(response.status, 303);
-	assert.equal(getRestoreResolveRequests().length, beforeDuplicateResolve, 'same visitor cannot replay a completed link');
-	assert.equal((await (await browser.request('/wp-json/wc/store/v1/cart')).json()).items.length, 2, 'replay preserves the newer basket');
-
-	const deniedBrowser = createSession(siteUrl);
-	await deniedBrowser.request('/wp-json/wc/store/v1/cart');
-	await deniedBrowser.request(`/?add-to-cart=${fixture.product}`);
-	const deniedBefore = await (await deniedBrowser.request('/wp-json/wc/store/v1/cart')).json();
-	const deniedId = 'recovery_stale_fixture';
-	setRestoreResolveResult(404);
-	const deniedLink = `/?moda_interact_resume=1&r=${deniedId}&t=${'B'.repeat(43)}`;
-	const deniedLanding = await deniedBrowser.request(deniedLink);
-	const deniedHtml = await deniedLanding.text();
-	const deniedNonce = deniedHtml.match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
-	const deniedForm = new URLSearchParams({ moda_interact_resume: '1', r: deniedId, t: 'B'.repeat(43), nonce: deniedNonce, confirm: 'replace' });
-	response = await deniedBrowser.request('/', {
-		method: 'POST',
-		headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
-		body: deniedForm.toString(),
-	});
-	assert.equal(response.status, 303);
-	assert.equal(new URL(response.headers.get('location'), siteUrl).searchParams.has('error'), false);
-	assert.deepEqual((await (await deniedBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, deniedBefore.items, 'stale link preserves visitor cart');
-	assert.equal(deniedHtml.includes('error'), false, 'confirmation landing contains no failure detail');
-
-	const unavailableBrowser = createSession(siteUrl);
-	await unavailableBrowser.request('/wp-json/wc/store/v1/cart');
-	await unavailableBrowser.request(`/?add-to-cart=${fixture.product}`);
-	const unavailableBefore = await (await unavailableBrowser.request('/wp-json/wc/store/v1/cart')).json();
-	const unavailableId = 'recovery_provider_error_fixture';
-	setRestoreResolveResult(503);
-	const unavailableLink = `/?moda_interact_resume=1&r=${unavailableId}&t=${'D'.repeat(43)}`;
-	const unavailableLanding = await unavailableBrowser.request(unavailableLink);
-	const unavailableNonce = (await unavailableLanding.text()).match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
-	const unavailableForm = new URLSearchParams({ moda_interact_resume: '1', r: unavailableId, t: 'D'.repeat(43), nonce: unavailableNonce, confirm: 'replace' });
-	response = await unavailableBrowser.request('/', {
-		method: 'POST',
-		headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
-		body: unavailableForm.toString(),
-	});
-	assert.equal(response.status, 303, 'v1 resolver outage redirects safely');
-	assert.equal(new URL(response.headers.get('location'), siteUrl).searchParams.has('error'), false);
-	assert.deepEqual((await (await unavailableBrowser.request('/wp-json/wc/store/v1/cart')).json()).items, unavailableBefore.items,
-		'v1 resolver outage preserves the visitor basket');
-	assert.ok(getRestoreResolveRequests().some((request) => request.recoveryId === unavailableId && request.status === 503),
-		'v1 provider error reaches the WordPress integration fixture');
-
-	const conflictPayload = {
-		...eligible,
-		recoveryId: 'recovery_offer_fixture',
-		snapshot: { ...snapshot, appliedCouponCodes: [fixture.conflictCouponCode, ...fixture.rejectedCouponCodes] },
-		outreachOffer: { kind: 'CHECKOUT_CODE', code: fixture.offerCouponCode, providerDiscountId: 'woo:coupon:offer5' },
-	};
-	for (const [id, responsePayload] of [['recovery_offer_fixture', conflictPayload]]) {
-		const protectedBrowser = createSession(siteUrl);
-		await protectedBrowser.request('/wp-json/wc/store/v1/cart');
-		await protectedBrowser.request(`/?add-to-cart=${fixture.product}`);
-		const existing = await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json();
-		setRestoreResolveResult(200, responsePayload);
-		const protectedLink = `/?moda_interact_resume=1&r=${id}&t=${'C'.repeat(43)}`;
-		const landing = await protectedBrowser.request(protectedLink);
-		const protectedNonce = (await landing.text()).match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
-		const protectedForm = new URLSearchParams({ moda_interact_resume: '1', r: id, t: 'C'.repeat(43), nonce: protectedNonce, confirm: 'replace' });
-		response = await protectedBrowser.request('/', {
-			method: 'POST',
-			headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
-			body: protectedForm.toString(),
-		});
-		assert.equal(response.status, 303);
-		const restoredOfferCart = await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json();
-		assert.equal(restoredOfferCart.items.length, 1, 'confirmed offer still restores the proven basket');
-		assert.ok(
-			[fixture.variableProduct, fixture.variation].includes(Number(restoredOfferCart.items[0].id)),
-			`group conflict should restore the snapshot variation; cart items were ${JSON.stringify(restoredOfferCart.items)}`
-		);
-		assert.deepEqual(restoredOfferCart.coupons.map((coupon) => coupon.code), [fixture.conflictCouponCode],
-			'a verified offer conflict preserves the original coupon before the shopper chooses');
-		assert.equal(existing.items.length, 1, 'conflict case began with one visitor basket line');
-		const classicChoicePage = await protectedBrowser.request(`/?page_id=${fixture.classicCheckoutPage}`);
-		assert.equal(classicChoicePage.status, 200);
-		const classicChoiceHtml = await classicChoicePage.text();
-		assert.match(classicChoiceHtml, /moda-interact-outreach-choice/,
-			'Classic checkout renders the optional choice after a confirmed conflict');
-		assert.match(classicChoiceHtml, /Try the offered coupons instead/);
-		assert.match(classicChoiceHtml, /class="checkout woocommerce-checkout"/,
-			'Classic test renders the actual WooCommerce checkout form');
-		const classicChoiceControl = classicChoiceHtml.match(/<div class="moda-interact-outreach-choice">[\s\S]*?<\/form><\/div>/)?.[0];
-		assert.ok(classicChoiceControl, 'Classic choice has its own protected form');
-		assert.doesNotMatch(classicChoiceControl, /recovery_offer_fixture|arch053conflict20|arch053offer5/,
-			'choice markup does not expose recovery or coupon identifiers; Woo totals may show applied coupons');
-		const choiceNonce = classicChoiceControl.match(/name="_wpnonce" value="([A-Za-z0-9_-]+)"/i)?.[1];
-		assert.ok(choiceNonce, 'Classic choice has a server-generated nonce');
-		const classicChoiceResponse = await protectedBrowser.request('/arch035-classic-checkout/', {
-			method: 'POST',
-			headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
-			body: new URLSearchParams({ moda_interact_outreach_coupon_choice: 'try_offered', _wpnonce: choiceNonce }).toString(),
-		});
-		assert.equal(classicChoiceResponse.status, 303, 'Classic choice safely redirects');
-		const chosenClassicCart = await (await protectedBrowser.request('/wp-json/wc/store/v1/cart')).json();
-		assert.deepEqual(chosenClassicCart.coupons.map((coupon) => coupon.code), [fixture.offerCouponCode],
-			'Classic choice removes the conflicting original and applies the verified offer');
-		assert.notEqual(chosenClassicCart.totals.total_price, restoredOfferCart.totals.total_price,
-			'Classic choice recalculates the WooCommerce total without promising a lower total');
-	}
-
-	// Exercise the real Checkout block and SlotFill in Chromium, including
-	// native form submission, live rejection rollback and changed-cart redraw.
-	const blocksBrowser = await chromium.launch({ headless: true });
-	try {
-		wp('eval', `update_option('woocommerce_checkout_page_id', ${Number(fixture.blocksCheckoutPage)});`);
-		for (const scenario of ['switch', 'rejected', 'cart-change']) {
-			const blocksRestore = createSession(siteUrl);
-			await blocksRestore.request('/wp-json/wc/store/v1/cart');
-			await blocksRestore.request(`/?add-to-cart=${fixture.product}`);
-			const blocksId = `recovery_blocks_choice_${scenario}`;
-			setRestoreResolveResult(200, { ...conflictPayload, recoveryId: blocksId });
-			const blocksLanding = await blocksRestore.request(`/?moda_interact_resume=1&r=${blocksId}&t=${'E'.repeat(43)}`);
-			const blocksNonce = (await blocksLanding.text()).match(/name="nonce" value="([A-Za-z0-9_-]{43})"/)?.[1];
-			const blocksConfirm = await blocksRestore.request('/', {
-				method: 'POST',
-				headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(siteUrl).origin },
-				body: new URLSearchParams({ moda_interact_resume: '1', r: blocksId, t: 'E'.repeat(43), nonce: blocksNonce, confirm: 'replace' }).toString(),
-			});
-			assert.equal(blocksConfirm.status, 303);
-			const restoredBlocksCart = await (await blocksRestore.request('/wp-json/wc/store/v1/cart')).json();
-			assert.deepEqual(restoredBlocksCart.coupons.map((coupon) => coupon.code), [fixture.conflictCouponCode],
-				'Blocks confirmation preserves the original coupon before the shopper chooses');
-			const page = await blocksBrowser.newPage();
-			const browserCookies = blocksRestore.cookieHeader().split('; ').filter(Boolean).map((cookie) => {
-				const separator = cookie.indexOf('=');
-				return { name: cookie.slice(0, separator), value: cookie.slice(separator + 1), domain: new URL(siteUrl).hostname, path: '/' };
-			});
-			await page.context().addCookies(browserCookies);
-			const pageErrors = [];
-			page.on('pageerror', (error) => pageErrors.push(error.name));
-			await page.goto(new URL(`/?page_id=${fixture.blocksCheckoutPage}`, siteUrl).href, { waitUntil: 'networkidle' });
-			await page.locator('[data-block-name="woocommerce/checkout"]:not(.is-loading)').waitFor({ state: 'visible', timeout: 15000 });
-			const choice = page.getByRole('button', { name: 'Try the offered coupons instead' });
-			await choice.waitFor({ state: 'visible', timeout: 15000 }).catch(async () => {
-				const blocksDebug = await page.evaluate(() => ({
-					available: window.wc?.wcSettings?.getSetting?.('moda-interact-outreach-choice_data', {})?.available,
-					experimentalOrderMeta: typeof window.wc?.blocksCheckout?.ExperimentalOrderMeta,
-					pluginRegistered: Boolean(window.wp?.plugins?.getPlugin?.('moda-interact-outreach-choice')),
-					choiceScriptLoaded: [...document.scripts].some((script) => script.src.includes('checkout-outreach-choice')),
-				}));
-				assert.fail(`Blocks choice did not render: ${JSON.stringify(blocksDebug)}`);
-			});
-			await assertBlocksDisplayedTotal(page, restoredBlocksCart);
-			if (process.env.MODA_CHECKOUT_EVIDENCE_DIR) {
-				await page.screenshot({ path: `${process.env.MODA_CHECKOUT_EVIDENCE_DIR}/blocks-${scenario}-before.png`, fullPage: true });
-			}
-			const choiceForm = page.locator('form.moda-interact-outreach-choice');
-			assert.deepEqual(await choiceForm.locator('input').evaluateAll((inputs) => inputs.map((input) => input.name).sort()),
-				['_wpnonce', 'moda_interact_outreach_coupon_choice'], 'Blocks posts only the action and nonce');
-			assert.doesNotMatch(await choiceForm.innerHTML(), /recovery_blocks_choice_|arch053|woo-restore/,
-				'Blocks control does not expose recovery or coupon identifiers');
-			if (scenario === 'cart-change') {
-				await blocksRestore.request(`/?add-to-cart=${fixture.product}`);
-				await page.reload({ waitUntil: 'networkidle' });
-				await page.locator('[data-block-name="woocommerce/checkout"]:not(.is-loading)').waitFor({ state: 'visible' });
-			} else {
-				if (scenario === 'rejected') {
-					wp('eval', `$coupon = new WC_Coupon(${Number(fixture.offerCoupon)}); $coupon->set_date_expires(time() - 60); $coupon->save();`);
-				}
-				try {
-					const [navigation] = await Promise.all([
-						page.waitForNavigation({ waitUntil: 'networkidle' }),
-						choice.click(),
-					]);
-					assert.equal(navigation.status(), 200, `Blocks ${scenario} returns to checkout`);
-					await page.locator('[data-block-name="woocommerce/checkout"]:not(.is-loading)').waitFor({ state: 'visible' });
-				} finally {
-					if (scenario === 'rejected') {
-						wp('eval', `$coupon = new WC_Coupon(${Number(fixture.offerCoupon)}); $coupon->set_date_expires(null); $coupon->save();`);
-					}
-				}
-			}
-			const afterChoice = await (await blocksRestore.request('/wp-json/wc/store/v1/cart')).json();
-			assert.deepEqual(afterChoice.coupons.map((coupon) => coupon.code),
-				scenario === 'switch' ? [fixture.offerCouponCode] : [fixture.conflictCouponCode],
-				`Blocks ${scenario} retains the Woo-approved coupon set`);
-			if (scenario === 'switch') {
-				assert.notEqual(afterChoice.totals.total_price, restoredBlocksCart.totals.total_price,
-					'Blocks explicit choice recalculates the actual total');
-			} else if (scenario === 'rejected') {
-				assert.equal(afterChoice.totals.total_price, restoredBlocksCart.totals.total_price,
-					'Blocks rejected offer restores the original total');
-			}
-			assert.equal(await page.getByRole('button', { name: 'Try the offered coupons instead' }).count(), 0,
-				`Blocks ${scenario} clears the one-time choice`);
-			const visibleText = await page.locator('body').innerText();
-			for (const code of fixture.rejectedCouponCodes) {
-				assert.equal(visibleText.toLowerCase().includes(code.toLowerCase()), false, 'Rejected coupon diagnostics stay private');
-			}
-			await assertBlocksDisplayedTotal(page, afterChoice);
-			assert.deepEqual(pageErrors, [], `Blocks ${scenario} renders without browser exceptions`);
-			if (process.env.MODA_CHECKOUT_EVIDENCE_DIR) {
-				await page.screenshot({ path: `${process.env.MODA_CHECKOUT_EVIDENCE_DIR}/blocks-${scenario}-after.png`, fullPage: true });
-			}
-			await page.close();
-			process.stdout.write(`ARCH-053 Blocks ${scenario} browser PASS\n`);
-		}
-	} finally {
-		await blocksBrowser.close();
-	}
-	setRestoreResolveResult(404);
-	process.stdout.write('ARCH-053 confirmed Woo restore integration PASS\n');
 }
