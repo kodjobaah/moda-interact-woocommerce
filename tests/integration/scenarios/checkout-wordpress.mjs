@@ -395,6 +395,16 @@ export async function assertCheckoutWordPress({
 		wp(
 			'eval',
 			`
+    // The fixture explicitly delivers pending actions. Background runners can
+    // otherwise consume a newly queued event before the assertion reads it.
+    $scheduler_fixture = WPMU_PLUGIN_DIR . '/arch035-manual-scheduler.php';
+    if (!wp_mkdir_p(WPMU_PLUGIN_DIR) || file_exists($scheduler_fixture)) throw new Exception('Cannot install checkout scheduler fixture');
+    if (false === file_put_contents($scheduler_fixture, <<<'MODA_FIXTURE'
+<?php
+add_filter('pre_get_ready_cron_jobs', '__return_empty_array');
+add_filter('action_scheduler_allow_async_request_runner', '__return_false');
+MODA_FIXTURE
+    )) throw new Exception('Cannot write checkout scheduler fixture');
     update_option('woocommerce_custom_orders_table_enabled', 'yes');
     update_option('woocommerce_enable_guest_checkout', 'yes');
     update_option('woocommerce_enable_signup_and_login_from_checkout', 'yes');
@@ -1054,7 +1064,7 @@ export async function assertCheckoutWordPress({
 		setActivityStatus(202);
 		wp(
 			'eval',
-			`update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); ${fixture.previousComingSoon === null ? "delete_option('woocommerce_coming_soon');" : `update_option('woocommerce_coming_soon', ${JSON.stringify(fixture.previousComingSoon)});`} wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_post(${fixture.blocksCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.offerCoupon}, true); wp_delete_post(${fixture.conflictCoupon}, true); wp_delete_post(${fixture.expiredCoupon}, true); wp_delete_post(${fixture.exhaustedCoupon}, true); wp_delete_post(${fixture.observeCoupon}, true); wp_delete_post(${fixture.observeCouponTwo}, true);`
+			`unlink(WPMU_PLUGIN_DIR . '/arch035-manual-scheduler.php'); update_option('woocommerce_checkout_page_id', ${JSON.stringify(fixture.previousCheckoutPage)}); ${fixture.previousComingSoon === null ? "delete_option('woocommerce_coming_soon');" : `update_option('woocommerce_coming_soon', ${JSON.stringify(fixture.previousComingSoon)});`} wp_delete_post(${fixture.classicCheckoutPage}, true); wp_delete_post(${fixture.blocksCheckoutPage}, true); wp_delete_user(${fixture.customer}); wp_delete_post(${fixture.product}, true); wp_delete_post(${fixture.variableProduct}, true); wp_delete_post(${fixture.variation}, true); wp_delete_post(${fixture.coupon}, true); wp_delete_post(${fixture.offerCoupon}, true); wp_delete_post(${fixture.conflictCoupon}, true); wp_delete_post(${fixture.expiredCoupon}, true); wp_delete_post(${fixture.exhaustedCoupon}, true); wp_delete_post(${fixture.observeCoupon}, true); wp_delete_post(${fixture.observeCouponTwo}, true);`
 		);
 	}
 }
