@@ -180,8 +180,7 @@ export function humanActionAvailability(summary, now = Date.now()) {
 		windowOpen: open,
 		suspended: blocked,
 		followUpUsed: conversation?.followUp?.sequence2Used === true,
-		// API-002 does not project due time or an approved template list; never
-		// infer eligibility or render an invented selectable provider variant.
-		canTemplate: false,
+		canRequestTemplates: conversation?.controlMode === 'HUMAN' &&
+			!blocked && !open && conversation?.followUp?.sequence2Used !== true,
 	};
 }
