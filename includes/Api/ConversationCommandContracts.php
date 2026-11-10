@@ -57,6 +57,16 @@ final class ConversationCommandContracts {
 	}
 
 	public static function response( mixed $value, string $operation, string $conversation_id ): bool {
+		if ( 'templates' === $operation ) {
+			if ( ! self::keys( $value, array( 'schemaVersion', 'templates' ) ) || 1 !== $value['schemaVersion'] ||
+				! is_array( $value['templates'] ) || ! array_is_list( $value['templates'] ) || count( $value['templates'] ) > 30 ) return false;
+			foreach ( $value['templates'] as $choice ) {
+				if ( ! self::keys( $choice, array( 'name', 'language' ) ) ||
+					! is_string( $choice['name'] ) || ! preg_match( '/^[a-z][a-z0-9_]{0,254}$/D', $choice['name'] ) ||
+					! is_string( $choice['language'] ) || ! preg_match( '/^[a-z]{2,3}(?:_[A-Z]{2})?$/D', $choice['language'] ) ) return false;
+			}
+			return true;
+		}
 		if ( ! is_array( $value ) || ( $value['schemaVersion'] ?? null ) !== 1 ||
 			( $value['conversationId'] ?? null ) !== $conversation_id ) return false;
 		if ( 'control' === $operation ) return self::keys( $value, array( 'schemaVersion', 'conversationId', 'controlMode', 'controlRevision', 'controlChangedAt' ) ) &&

@@ -33,10 +33,10 @@ final class RecoveryConversationCommandController {
 
 	public function registerRoutes(): void {
 		$base = '/merchant/recoveries/(?P<recoveryId>[A-Za-z0-9_-]{1,191})/conversation';
-		foreach ( array( 'control' => '/control', 'messages' => '/messages',
+		foreach ( array( 'control' => '/control', 'messages' => '/messages', 'templates' => '/follow-up-templates',
 			'status' => '/send-commands/(?P<commandId>[A-Za-z0-9_-]{1,191})' ) as $kind => $suffix ) {
 			register_rest_route( 'moda-interact/v1', $base . $suffix, array(
-				'methods' => 'status' === $kind ? 'GET' : 'POST',
+				'methods' => in_array( $kind, array( 'status', 'templates' ), true ) ? 'GET' : 'POST',
 				'callback' => fn( \WP_REST_Request $request ) => $this->handle( $request, $kind ),
 				'permission_callback' => array( $this, 'authorize' ),
 			) );
@@ -54,13 +54,13 @@ final class RecoveryConversationCommandController {
 		$ids = $request->get_url_params();
 		$recovery_id = $ids['recoveryId'] ?? null;
 		$command_id = $ids['commandId'] ?? null;
-		$method = 'status' === $operation ? 'GET' : 'POST';
+		$method = in_array( $operation, array( 'status', 'templates' ), true ) ? 'GET' : 'POST';
 		$query = $request->get_query_params();
 		if ( isset( $query['_locale'] ) && 'user' === $query['_locale'] ) unset( $query['_locale'] );
 		if ( ! ConversationCommandContracts::identifier( $recovery_id ) || $query ||
 			$method !== $request->get_method() || array() !== $request->get_body_params() ||
 			array() !== $request->get_file_params() ||
-			( 'status' === $operation ? ( ! ConversationCommandContracts::identifier( $command_id ) ||
+			( 'GET' === $method ? ( ( 'status' === $operation ? ! ConversationCommandContracts::identifier( $command_id ) : null !== $command_id ) ||
 				null !== $request->get_json_params() || '' !== $request->get_body() ) :
 				( null !== $command_id || ! preg_match( '#^application/json(?:\s*;\s*charset=utf-8)?$#iD',
 					(string) $request->get_header( 'Content-Type' ) ) ||
@@ -82,7 +82,7 @@ final class RecoveryConversationCommandController {
 				return self::error( 'CONVERSATION_UNAVAILABLE', 404 );
 			}
 			$result = $this->client->merchantConversationCommand( $connection, $conversation, $operation,
-				'status' === $operation ? null : $request->get_json_params(), $command_id );
+				'GET' === $method ? null : $request->get_json_params(), $command_id );
 			$after = $this->installations->read();
 			if ( 'valid' !== $after['state'] || $after['record'] !== $connection ||
 				$this->identity->currentCanonicalUrl() !== $connection['canonicalSiteUrl'] ) return self::error( 'RECONNECT_REQUIRED', 409 );

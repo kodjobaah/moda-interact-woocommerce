@@ -473,19 +473,20 @@ final class ModaApiClient {
 	public function merchantConversationCommand( array $connection, string $conversation_id, string $operation,
 		?array $payload = null, ?string $command_id = null ): array {
 		if ( ! InstallationStore::isValidRecord( $connection ) || ! ConversationCommandContracts::identifier( $conversation_id ) ||
-			! in_array( $operation, array( 'control', 'messages', 'status' ), true ) ||
-			( 'status' === $operation ? ( null !== $payload || ! ConversationCommandContracts::identifier( $command_id ) ) :
+			! in_array( $operation, array( 'control', 'messages', 'status', 'templates' ), true ) ||
+			( in_array( $operation, array( 'status', 'templates' ), true ) ? ( null !== $payload ||
+				( 'status' === $operation ? ! ConversationCommandContracts::identifier( $command_id ) : null !== $command_id ) ) :
 				( null !== $command_id || ! ConversationCommandContracts::request( $payload, $operation ) ) ) ) {
 			throw new ModaApiClientException( 'invalid_request' );
 		}
 		$path = '/v1/merchant/conversations/' . rawurlencode( $conversation_id ) . '/' .
 			( 'status' === $operation ? 'send-commands/' . rawurlencode( $command_id ) :
-				( 'control' === $operation ? 'control' : 'messages' ) );
+				( 'templates' === $operation ? 'follow-up-templates' : $operation ) );
 		$body = null === $payload ? null : wp_json_encode( $payload );
 		if ( null !== $payload && ( ! is_string( $body ) || strlen( $body ) > 6144 ) ) throw new ModaApiClientException( 'invalid_request' );
 		$headers = self::installationHeaders( $connection );
 		if ( null !== $body ) $headers['Content-Type'] = 'application/json';
-		$response = $this->request( $path, 'status' === $operation ? 'GET' : 'POST', $headers, $body,
+		$response = $this->request( $path, null === $body ? 'GET' : 'POST', $headers, $body,
 			self::DEFAULT_TIMEOUT_SECONDS, 16385 );
 		$status = wp_remote_retrieve_response_code( $response );
 		if ( ! in_array( $status, 'messages' === $operation ? array( 200, 202 ) : array( 200 ), true ) ) {

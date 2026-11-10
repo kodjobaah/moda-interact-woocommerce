@@ -44,7 +44,7 @@ final class RecoveryConversationCommandControllerTest extends TestCase {
 	}
 
 	private static function request( string $operation, ?array $body = null ): WP_REST_Request {
-		$request = new WP_REST_Request( 'status' === $operation ? 'GET' : 'POST', array(), $body );
+		$request = new WP_REST_Request( in_array( $operation, array( 'status', 'templates' ), true ) ? 'GET' : 'POST', array(), $body );
 		$request->set_url_params( 'status' === $operation ? array( 'recoveryId' => 'rec_1', 'commandId' => 'cmd_1' ) : array( 'recoveryId' => 'rec_1' ) );
 		if ( 'status' !== $operation ) $request->set_header( 'Content-Type', 'application/json' );
 		return $request;
@@ -67,7 +67,7 @@ final class RecoveryConversationCommandControllerTest extends TestCase {
 
 	public function test_local_routes_guard_capability_nonce_and_derive_conversation_from_recovery(): void {
 		$calls = array(); $controller = $this->controller( $calls, self::control() );
-		$controller->registerRoutes(); self::assertCount( 3, $GLOBALS['moda_interact_registered_rest_routes'] );
+		$controller->registerRoutes(); self::assertCount( 4, $GLOBALS['moda_interact_registered_rest_routes'] );
 		$request = self::request( 'control', array( 'targetMode' => 'HUMAN', 'expectedControlRevision' => 4 ) );
 		$GLOBALS['moda_interact_valid_rest_nonce'] = false;
 		self::assertSame( 403, $controller->handle( $request, 'control' )->get_status() );
@@ -84,6 +84,15 @@ final class RecoveryConversationCommandControllerTest extends TestCase {
 		self::assertSame( '/v1/merchant/conversations/conv_1/control', parse_url( $calls[1][0], PHP_URL_PATH ) );
 		self::assertSame( 'Bearer ' . self::installation()['credential'], $calls[1][1]['headers']['Authorization'] );
 		self::assertSame( 'private, no-store', $result->get_headers()['Cache-Control'] );
+	}
+
+	public function test_loads_approved_follow_up_choices_for_the_selected_recovery(): void {
+		$calls = array();
+		$reply = array( 'schemaVersion' => 1, 'templates' => array( array( 'name' => 'cart_reminder', 'language' => 'en_GB' ) ) );
+		$result = $this->controller( $calls, $reply )->handle( self::request( 'templates' ), 'templates' );
+		self::assertSame( 200, $result->get_status() );
+		self::assertSame( $reply, $result->get_data() );
+		self::assertSame( '/v1/merchant/conversations/conv_1/follow-up-templates', parse_url( $calls[1][0], PHP_URL_PATH ) );
 	}
 
 	public function test_request_and_response_contracts_fail_closed(): void {

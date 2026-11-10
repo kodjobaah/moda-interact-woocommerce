@@ -1,3 +1,5 @@
+import { createElement } from '@wordpress/element';
+import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 import { ConversationPanel } from '../../src/recoveries/detail/conversation/conversation-panel';
 import { HumanModeControls } from '../../src/recoveries/detail/human/human-mode-controls';
@@ -5,6 +7,10 @@ import { HumanReplyComposer } from '../../src/recoveries/detail/human/human-repl
 import { HumanCommandStatus } from '../../src/recoveries/detail/human/human-command-status';
 import { HumanConversationController } from '../../src/recoveries/detail/human/human-conversation-controller';
 import { RecoveryDetailController } from '../../src/recoveries/detail/recovery-detail-controller';
+
+// Render with the same React version used by WordPress.
+const wordpressRequire = createRequire(createRequire(import.meta.url).resolve('@wordpress/element'));
+const { renderToStaticMarkup } = wordpressRequire('react-dom/server');
 
 const conversation = {
 	id: 'conv_1',
@@ -107,6 +113,16 @@ describe('ARCH-040 WooCommerce Shopify-aligned conversation behaviour', () => {
 		).toHaveLength(1);
 	});
 
+	it('shows an approved follow-up only when choices are available for the closed conversation', () => {
+		const closed = { ...summary, conversation: { ...conversation, windowExpiresAt: null } };
+		const render = (templates) => renderToStaticMarkup(createElement(HumanReplyComposer, {
+			summary: closed, human: { templates },
+		}));
+		expect(render([])).not.toContain('<form');
+		const html = render([{ name: 'approved_reminder', language: 'en_GB' }]);
+		expect(html).toContain('approved_reminder (en_GB)');
+		expect(html).toContain('type="submit"');
+	});
 	it('provides an observable result of a status check even when FAILED remains FAILED', async () => {
 		const client = {
 			send: vi.fn().mockResolvedValue(accepted),
