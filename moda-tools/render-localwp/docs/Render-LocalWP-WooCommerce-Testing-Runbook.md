@@ -279,7 +279,7 @@ Render Background must continue using:
 MODA_WOOCOMMERCE_CONNECTION_MODE=public
 ```
 
-The recovery worker needs its existing database and BullMQ/Redis configuration. It must also be able to decrypt API-sealed Woo read credentials. In the inspected Background implementation, the Woo reader expects `MODA_WOO_REST_READ_KEYRING`; the newer API implementation may derive its encryption keys from `COMMERCE_CONNECTION_KEYS_JSON` and `COMMERCE_CONNECTION_ACTIVE_KEY_ID`. **Preserve the working same-key-material arrangement appropriate to each deployed code version. Never paste key values into screenshots, shell history, tickets or this runbook.**
+The recovery worker needs its existing database and BullMQ/Redis configuration. Hosted API and Background use the same deployment-owned `MODA_ENCRYPTION_KEYS_JSON` map and `MODA_ENCRYPTION_ACTIVE_KEY_ID` selector to encrypt and decrypt Woo read credentials. Preserve all historical key IDs and material when consolidating the old maps. These hosted encryption secrets must never be installed in WordPress or exposed to merchant JavaScript. **Never paste key values into screenshots, shell history, tickets or this runbook.**
 
 No environment variable for the ngrok *shop URL* should be added to Render Background: it reads `WooCommerceInstallation.canonicalSiteUrl` from the shared PostgreSQL database. API callbacks have their own `MODA_WOO_REST_READ_PUBLIC_ORIGIN` setting, which is unrelated to the Woo target.
 
