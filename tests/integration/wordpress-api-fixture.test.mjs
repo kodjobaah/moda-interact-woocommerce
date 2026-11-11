@@ -177,7 +177,7 @@ test('woo.shop-brand.v1 HTTPS fixture validates installation auth, immutable eve
 		schemaVersion: 'woo.shop-brand.v1',
 		eventId: `woo-brand-${createHash('sha256')
 			.update(`install_wp_fixture\0${JSON.stringify(canonical)}`).digest('hex')}`,
-		observedAt: '2026-10-27T12:00:00.000000Z',
+		observedAt: '2026-10-27T12:00:00.000Z',
 		...canonical,
 	};
 	const post = (payload, headers = {}) => request(
