@@ -40,6 +40,10 @@ function errorLabel(error) {
 // Composer stays below the transcript; it never starts a second send while a command exists.
 export function HumanReplyComposer({ summary, human }) {
 	const [draft, setDraft] = useState('');
+	const [templateKey, setTemplateKey] = useState('');
+	const choices = human?.templates ?? [];
+	const keyFor = (choice) => choice.name + ':' + choice.language;
+	const selected = choices.find((choice) => keyFor(choice) === templateKey) ?? choices[0];
 	const actions = humanActionAvailability(summary);
 	const pending = human?.busy || human?.checking || !!human?.command;
 	const submit = async (event) => {
@@ -103,6 +107,23 @@ export function HumanReplyComposer({ summary, human }) {
 						'moda-interact'
 					)
 				)
+			: null,
+		actions.canRequestTemplates && selected
+			? createElement('form', { className: 'moda-recovery-detail__composer', onSubmit: (event) => {
+				event.preventDefault();
+				if (!pending) void human.onSendTemplate(selected);
+			} },
+			createElement('label', { htmlFor: 'moda-approved-follow-up' }, __('Follow-up', 'moda-interact')),
+			createElement('select', {
+				id: 'moda-approved-follow-up', value: keyFor(selected), disabled: pending,
+				onChange: (event) => setTemplateKey(event.target.value),
+			}, choices.map((choice) => createElement('option', { key: keyFor(choice), value: keyFor(choice) },
+				choice.name + ' (' + choice.language + ')'))),
+			createElement('button', { type: 'submit', className: 'button button-primary', disabled: pending },
+				__('Send', 'moda-interact')))
+			: null,
+		human?.templateLookupFailed
+			? createElement('p', { role: 'alert' }, __('Approved follow-up template unavailable.', 'moda-interact'))
 			: null,
 		human?.error
 			? createElement('p', { role: 'alert' }, errorLabel(human.error))

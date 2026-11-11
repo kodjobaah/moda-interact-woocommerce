@@ -60,6 +60,7 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 
 	it('calls only WP recovery-derived routes, never hosted/Meta endpoints', async () => {
 		const request = vi.fn(async ({ path }) => {
+			if (path.endsWith('/follow-up-templates')) return { schemaVersion: 1, templates: [] };
 			if (path.endsWith('/control')) {
 				return {
 					schemaVersion: 1,
@@ -91,10 +92,12 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 			'Hello'
 		);
 		await client.status('rec_1', 'conv_1', 'cmd_1');
+		await client.templates('rec_1');
 		expect(request.mock.calls.map(([args]) => args.path)).toEqual([
 			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/control',
 			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/messages',
 			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/send-commands/cmd_1',
+			'/moda-interact/v1/merchant/recoveries/rec_1/conversation/follow-up-templates',
 		]);
 	});
 
@@ -127,7 +130,7 @@ describe('ARCH-040 WooCommerce recovery human commands', () => {
 					...conversation,
 					followUp: { sequence2Used: true, initiatedBy: 'HUMAN' },
 				},
-			}).canTemplate
+			}).canRequestTemplates
 		).toBe(false);
 	});
 

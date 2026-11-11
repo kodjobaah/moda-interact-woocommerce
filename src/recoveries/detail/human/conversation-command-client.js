@@ -57,7 +57,7 @@ export function createConversationCommandClient(request = apiFetch) {
 		try {
 			const response = await request({
 				path,
-				method: operation === 'status' ? 'GET' : 'POST',
+				method: data === null ? 'GET' : 'POST',
 				...(data ? { data } : {}),
 				signal,
 			});
@@ -69,6 +69,13 @@ export function createConversationCommandClient(request = apiFetch) {
 		}
 	}
 	return {
+		async templates(recoveryId, signal) {
+			const result = await call(recoveryId, 'follow-up-templates', null, null, signal);
+			if (result?.schemaVersion !== 1 || !Array.isArray(result.templates)) {
+				throw new Error('REMOTE_RESPONSE_INVALID');
+			}
+			return result.templates;
+		},
 		async control(recoveryId, conversation, mode, revision, signal) {
 			if (
 				!conversation?.id ||

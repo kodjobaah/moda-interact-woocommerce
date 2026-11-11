@@ -155,7 +155,7 @@ export class HumanConversationController {
 		const availability = humanActionAvailability(this.summary);
 		if (!(
 			(kind === 'HUMAN_TEXT' && availability.canText) ||
-			(kind === 'RECOVERY_FOLLOW_UP_TEMPLATE' && availability.canTemplate)
+			(kind === 'RECOVERY_FOLLOW_UP_TEMPLATE' && availability.canRequestTemplates)
 		)) {
 			return false;
 		}

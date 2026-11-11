@@ -103,7 +103,8 @@ export function HumanModeControls({ summary, human }) {
 				: null,
 			actions.mode === 'HUMAN' &&
 				!actions.windowOpen &&
-				!actions.suspended
+				!actions.suspended &&
+				!human?.templates?.length
 				? createElement(
 						'p',
 						null,
