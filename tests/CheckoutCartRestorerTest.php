@@ -51,20 +51,12 @@ if ( ! function_exists( 'wc_get_logger' ) ) {
 		};
 	}
 }
-if ( ! function_exists( 'add_filter' ) ) {
-	function add_filter( string $hook, callable $callback, int $priority = 10, int $accepted_args = 1 ): bool {
-		$GLOBALS['arch053_test_filters'][ $hook ][] = $callback;
-		return true;
-	}
-}
 if ( ! function_exists( 'remove_filter' ) ) {
 	function remove_filter( string $hook, callable $callback, int $priority = 10 ): bool {
-		foreach ( array( 'arch053_test_filters', 'arch046_checkbox_filters' ) as $registry ) {
-			if ( ! is_array( $GLOBALS[ $registry ][ $hook ] ?? null ) ) continue;
-			$GLOBALS[ $registry ][ $hook ] = array_values( array_filter(
-				$GLOBALS[ $registry ][ $hook ], static fn( $registered ): bool => $registered !== $callback
-			) );
-		}
+		if ( ! is_array( $GLOBALS['moda_interact_test_filters'][ $hook ] ?? null ) ) return false;
+		$GLOBALS['moda_interact_test_filters'][ $hook ] = array_values( array_filter(
+			$GLOBALS['moda_interact_test_filters'][ $hook ], static fn( $registered ): bool => $registered !== $callback
+		) );
 		return true;
 	}
 }
@@ -93,12 +85,8 @@ final class RestoreTestCart extends WC_Cart {
 		if ( $code === $this->throw_coupon_code ) throw new RuntimeException( $this->throw_coupon_message );
 		if ( in_array( strtolower( $code ), $this->rejected_coupon_codes, true ) ) {
 			$message = 'Coupon code ' . $code . ' is invalid.';
-			foreach ( array( 'arch053_test_filters', 'arch046_checkbox_filters' ) as $registry ) {
-				foreach ( $GLOBALS[ $registry ]['woocommerce_coupon_error'] ?? array() as $filter ) $message = $filter( $message );
-			}
-			foreach ( array( 'arch053_test_filters', 'arch046_checkbox_filters' ) as $registry ) {
-				foreach ( $GLOBALS[ $registry ]['woocommerce_add_error'] ?? array() as $filter ) $message = $filter( $message );
-			}
+			foreach ( $GLOBALS['moda_interact_test_filters']['woocommerce_coupon_error'] ?? array() as $filter ) $message = $filter( $message );
+			foreach ( $GLOBALS['moda_interact_test_filters']['woocommerce_add_error'] ?? array() as $filter ) $message = $filter( $message );
 			if ( '' !== $message ) $GLOBALS['restore_test_error_notices'][] = $message;
 			$GLOBALS['restore_test_error_notices'][] = 'unrelated extension error';
 			return false;
@@ -121,9 +109,12 @@ final class CheckoutCartRestorerTest extends TestCase {
 	private CheckoutCartRestorer $restorer;
 	private RestoreTestCart $cart;
 	private mixed $previous_test_logger;
+	private array $previous_test_filters;
 	private object $logger;
 
 	protected function setUp(): void {
+		$this->previous_test_filters = $GLOBALS['moda_interact_test_filters'];
+		$GLOBALS['moda_interact_test_filters'] = array();
 		$this->previous_test_logger = $GLOBALS['moda_interact_test_logger'] ?? null;
 		$this->logger = new class {
 			public array $errors = array();
@@ -145,6 +136,7 @@ final class CheckoutCartRestorerTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
+		$GLOBALS['moda_interact_test_filters'] = $this->previous_test_filters;
 		if ( null === $this->previous_test_logger ) unset( $GLOBALS['moda_interact_test_logger'] );
 		else $GLOBALS['moda_interact_test_logger'] = $this->previous_test_logger;
 		parent::tearDown();
@@ -211,6 +203,51 @@ final class CheckoutCartRestorerTest extends TestCase {
 		self::assertSame( 1, $this->cart->calculations );
 		self::assertSame( array( 'unrelated Woo notice', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error', 'unrelated extension error' ), $GLOBALS['restore_test_error_notices'],
 			'Only Woo coupon rejection errors are suppressed; pre-existing and unrelated errors remain untouched.' );
+	}
+
+	public function test_coupon_suppression_is_scoped_to_restore_and_preserves_unrelated_filters(): void {
+		$observed = array();
+		$unrelated_coupon_filter = static function ( string $message ) use ( &$observed ): string {
+			$observed[] = $message;
+			return $message;
+		};
+		$unrelated_notice_filter = static fn( string $message ): string => $message;
+		add_filter( 'woocommerce_coupon_error', $unrelated_coupon_filter );
+		add_filter( 'woocommerce_add_error', $unrelated_notice_filter );
+		$before = $GLOBALS['moda_interact_test_filters'];
+		$this->cart->rejected_coupon_codes = array( 'expired' );
+
+		$result = ( new CheckoutCouponRestorer() )->restore( $this->cart, array( 'expired' ) );
+
+		self::assertSame( array( 'expired' ), $result['rejectedCodes'] );
+		self::assertSame( array( 'Coupon code expired is invalid.' ), $observed );
+		self::assertSame( array( 'unrelated Woo notice', 'unrelated extension error' ), $GLOBALS['restore_test_error_notices'] );
+		self::assertSame( $before, $GLOBALS['moda_interact_test_filters'], 'Only the restoration-owned callback is removed.' );
+
+		$this->cart->apply_coupon( 'expired' );
+		self::assertCount( 2, $observed, 'The unrelated callback remains active after restoration.' );
+		self::assertContains( 'Coupon code expired is invalid.', $GLOBALS['restore_test_error_notices'],
+			'Normal Woo coupon errors are no longer suppressed after restoration.' );
+	}
+
+	public function test_coupon_exception_removes_only_restoration_suppression(): void {
+		$unrelated = static fn( string $message ): string => $message;
+		add_filter( 'woocommerce_coupon_error', $unrelated );
+		$before = $GLOBALS['moda_interact_test_filters'];
+		$this->cart->throw_coupon_code = 'failed';
+		$this->cart->rejected_coupon_codes = array( 'expired' );
+
+		try {
+			( new CheckoutCouponRestorer() )->restore( $this->cart, array( 'failed' ) );
+			self::fail( 'The fake dependency error must reach the caller.' );
+		} catch ( RuntimeException $error ) {
+			self::assertSame( 'coupon service failed', $error->getMessage() );
+		}
+
+		self::assertSame( $before, $GLOBALS['moda_interact_test_filters'], 'Cleanup also runs when coupon application throws.' );
+		$this->cart->apply_coupon( 'expired' );
+		self::assertContains( 'Coupon code expired is invalid.', $GLOBALS['restore_test_error_notices'],
+			'An exceptional restoration cannot leave suppression active for later checkout activity.' );
 	}
 
 	public function test_unexpected_coupon_error_rolls_back_cart_and_does_not_commit(): void {
